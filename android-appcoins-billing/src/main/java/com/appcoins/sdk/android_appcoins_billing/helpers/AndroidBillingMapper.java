@@ -7,18 +7,13 @@ import com.appcoins.sdk.billing.Purchase;
 import com.appcoins.sdk.billing.PurchasesResult;
 import com.appcoins.sdk.billing.SkuDetails;
 import com.appcoins.sdk.billing.SkuDetailsResult;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 class AndroidBillingMapper {
-  private final JsonParser jsonParser;
-
-  public AndroidBillingMapper(JsonParser jsonParser) {
-    this.jsonParser = jsonParser;
-  }
 
   public PurchasesResult mapPurchases(Bundle bundle, String skuType) {
     int responseCode = bundle.getInt("RESPONSE_CODE");
@@ -35,44 +30,39 @@ class AndroidBillingMapper {
       String signature = signatureList.get(i);
       String id = idsList.get(i);
 
-      JsonObject jsonElement = jsonParser.parse(purchaseData)
-          .getAsJsonObject();
-      String orderId = jsonElement.get("orderId")
-          .getAsString();
-      String packageName = jsonElement.get("packageName")
-          .getAsString();
-      String sku = jsonElement.get("productId")
-          .getAsString();
-      long purchaseTime = jsonElement.get("purchaseTime")
-          .getAsLong();
-      int purchaseState = jsonElement.get("purchaseState")
-          .getAsInt();
+      JSONObject jsonElement = null;
+      try {
+        jsonElement = new JSONObject(purchaseData);
+        String orderId = jsonElement.getString("orderId");
+        String packageName = jsonElement.getString("packageName");
+        String sku = jsonElement.getString("productId");
+        long purchaseTime = jsonElement.getLong("purchaseTime");
+        int purchaseState = jsonElement.getInt("purchaseState");
 
-      String developerPayload = null;
-      if (jsonElement.get("developerPayload") != null) {
-        developerPayload = jsonElement.get("developerPayload")
-            .getAsString();
-      }
-      String token = null;
-      if (jsonElement.get("token") != null) {
-        token = jsonElement.get("token")
-            .getAsString();
-      }
+        String developerPayload = null;
+        if (jsonElement.get("developerPayload") != null) {
+          developerPayload = jsonElement.getString("developerPayload");
+        }
+        String token = null;
+        if (jsonElement.get("token") != null) {
+          token = jsonElement.getString("token");
+        }
 
-      if (token == null) {
-        token = jsonElement.get("purchaseToken")
-            .getAsString();
+        if (token == null) {
+          token = jsonElement.getString("purchaseToken");
+        }
+        boolean isAutoRenewing = false;
+        if (jsonElement.get("autoRenewing") != null) {
+          isAutoRenewing = jsonElement.getBoolean("autoRenewing");
+        }
+        //Base64 decoded string
+        byte[] decodedSignature = Base64.decode(signature, Base64.DEFAULT);
+        list.add(
+            new Purchase(id, skuType, purchaseData, decodedSignature, purchaseTime, purchaseState,
+                developerPayload, token, packageName, sku, isAutoRenewing));
+      } catch (JSONException e) {
+        e.printStackTrace();
       }
-      boolean isAutoRenewing = false;
-      if (jsonElement.get("autoRenewing") != null) {
-        isAutoRenewing = jsonElement.get("autoRenewing")
-            .getAsBoolean();
-      }
-      //Base64 decoded string
-      byte[] decodedSignature = Base64.decode(signature, Base64.DEFAULT);
-      list.add(
-          new Purchase(id, skuType, purchaseData, decodedSignature, purchaseTime, purchaseState,
-              developerPayload, token, packageName, sku, isAutoRenewing));
     }
 
     return new PurchasesResult(list, responseCode);
@@ -102,26 +92,24 @@ class AndroidBillingMapper {
   }
 
   public SkuDetails parseSkuDetails(String skuType, String skuDetailsData) {
-    JsonObject jsonElement = jsonParser.parse(skuDetailsData)
-        .getAsJsonObject();
+    try {
+      JSONObject jsonElement = new JSONObject(skuDetailsData);
 
-    String sku = jsonElement.get("productId")
-        .getAsString();
-    String type = jsonElement.get("type")
-        .getAsString();
-    String price = jsonElement.get("price")
-        .getAsString();
-    Long priceAmountMicros = jsonElement.get("price_amount_micros")
-        .getAsLong();
-    String priceCurrencyCode = jsonElement.get("price_currency_code")
-        .getAsString();
-    String title = jsonElement.get("title")
-        .getAsString();
-    String description = jsonElement.get("description")
-        .getAsString();
+      String sku = jsonElement.getString("productId");
+      String type = jsonElement.getString("type");
+      String price = jsonElement.getString("price");
+      Long priceAmountMicros = jsonElement.getLong("price_amount_micros");
+      String priceCurrencyCode = jsonElement.getString("price_currency_code");
+      String title = jsonElement.getString("title");
+      String description = jsonElement.getString("description");
 
-    return new SkuDetails(skuType, sku, type, price, priceAmountMicros, priceCurrencyCode, title,
-        description);
+      return new SkuDetails(skuType, sku, type, price, priceAmountMicros, priceCurrencyCode, title,
+          description);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return new SkuDetails(skuType, "", "", "", 0, "", "", "");
   }
 
   public LaunchBillingFlowResult mapBundleToHashMapGetIntent(Bundle bundle) {
