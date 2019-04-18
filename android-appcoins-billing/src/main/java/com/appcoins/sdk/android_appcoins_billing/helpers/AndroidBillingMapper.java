@@ -40,20 +40,33 @@ class AndroidBillingMapper {
         int purchaseState = jsonElement.getInt("purchaseState");
 
         String developerPayload = null;
-        if (jsonElement.get("developerPayload") != null) {
-          developerPayload = jsonElement.getString("developerPayload");
+        try {
+          if (jsonElement.getString("developerPayload") != null) {
+            developerPayload = jsonElement.getString("developerPayload");
+          }
+        } catch (org.json.JSONException e) {
+
         }
+
         String token = null;
-        if (jsonElement.get("token") != null) {
-          token = jsonElement.getString("token");
+        try {
+          if (jsonElement.getString("token") != null) {
+            token = jsonElement.getString("token");
+          }
+        } catch (org.json.JSONException e) {
+
         }
 
         if (token == null) {
           token = jsonElement.getString("purchaseToken");
         }
         boolean isAutoRenewing = false;
-        if (jsonElement.get("autoRenewing") != null) {
-          isAutoRenewing = jsonElement.getBoolean("autoRenewing");
+        try {
+          if (jsonElement.getString("autoRenewing") != null) {
+            isAutoRenewing = jsonElement.getBoolean("autoRenewing");
+          }
+        } catch (org.json.JSONException e) {
+
         }
         //Base64 decoded string
         byte[] decodedSignature = Base64.decode(signature, Base64.DEFAULT);
