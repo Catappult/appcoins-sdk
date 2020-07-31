@@ -157,7 +157,13 @@ public class WalletUtils {
   public static String getUserAgent() {
     if (userAgent == null) {
       DisplayMetrics displayMetrics = getDisplayMetrics();
-      userAgent = buildUserAgent(displayMetrics.widthPixels, displayMetrics.heightPixels);
+      int widthPixels = 0;
+      int heightPixels = 0;
+      if (displayMetrics != null) {
+        widthPixels = displayMetrics.widthPixels;
+        heightPixels = displayMetrics.heightPixels;
+      }
+      userAgent = buildUserAgent(widthPixels, heightPixels);
     }
     return userAgent;
   }
@@ -188,6 +194,9 @@ public class WalletUtils {
 
   private static DisplayMetrics getDisplayMetrics() {
     WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+    if (wm == null) {
+      return null;
+    }
     Display display = wm.getDefaultDisplay();
     DisplayMetrics displayMetrics = new DisplayMetrics();
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
