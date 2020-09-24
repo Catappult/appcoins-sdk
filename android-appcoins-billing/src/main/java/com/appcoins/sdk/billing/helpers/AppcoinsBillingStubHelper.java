@@ -44,6 +44,8 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
   private static AppcoinsBillingStubHelper appcoinsBillingStubHelper;
   private static int SUPPORTED_API_VERSION = 3;
   private static int MAX_SKUS_SEND_WS = 49; // 0 to 49
+  private static SkuDetails skuDetails;
+  private static BuyItemProperties buyItemProperties;
 
   private AppcoinsBillingStubHelper() {
     appcoinsBillingStubHelper = this;
@@ -106,8 +108,8 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
     return responseWs;
   }
 
-  @Override public Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type,
-      String developerPayload) {
+  @Override public Bundle getBuyIntent(int apiVersion, final String packageName, final String sku,
+      final String type, String developerPayload) {
     if (WalletUtils.hasWalletInstalled()) {
       try {
         return serviceAppcoinsBilling.getBuyIntent(apiVersion, packageName, sku, type,
@@ -123,14 +125,12 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
           new DeveloperPayload(developerPayload, PayloadHelper.getPayload(developerPayload),
               PayloadHelper.getOrderReference(developerPayload),
               PayloadHelper.getOrigin(developerPayload));
-      final BuyItemProperties buyItemProperties =
-          new BuyItemProperties(apiVersion, packageName, sku, type, developerPayloadObject);
 
       final Context context = WalletUtils.getContext();
       Intent intent;
       if (hasRequiredFields(type, sku) && !WalletUtils.getIabAction()
           .equals(BuildConfig.CAFE_BAZAAR_IAB_BIND_ACTION)) {
-        intent = IabActivity.newIntent(context, buyItemProperties);
+        return startPayAsGuest(apiVersion, packageName, sku, type, developerPayloadObject, context);
       } else {
         if (WalletUtils.deviceSupportsWallet(Build.VERSION.SDK_INT)) {
           intent = InstallDialogActivity.newIntent(context, buyItemProperties);
@@ -149,6 +149,40 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
       response.putInt(Utils.RESPONSE_CODE, ResponseCode.OK.getValue());
       return response;
     }
+  }
+
+  private Bundle startPayAsGuest(int apiVersion, final String packageName, final String sku,
+      final String type, DeveloperPayload developerPayloadObject, final Context context) {
+    final CountDownLatch latch = new CountDownLatch(1);
+    if (Looper.myLooper() == Looper.getMainLooper()) {
+      Thread t = new Thread(new Runnable() {
+        @Override public void run() {
+          skuDetails = getMappedSkuDetails(sku, packageName, type);
+          latch.countDown();
+        }
+      });
+      t.start();
+      try {
+        latch.await();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+        Bundle bundle = new Bundle();
+        bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.BILLING_UNAVAILABLE.getValue());
+        return bundle;
+      }
+    } else {
+      skuDetails = getMappedSkuDetails(sku, packageName, type);
+    }
+    buyItemProperties =
+        new BuyItemProperties(apiVersion, packageName, sku, type, developerPayloadObject,
+            skuDetails);
+    Intent intent = IabActivity.newIntent(context, buyItemProperties);
+    PendingIntent pendingIntent =
+        PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    Bundle response = new Bundle();
+    response.putParcelable("BUY_INTENT", pendingIntent);
+    response.putInt(Utils.RESPONSE_CODE, ResponseCode.OK.getValue());
+    return response;
   }
 
   @Override public Bundle getPurchases(int apiVersion, final String packageName, String type,
@@ -224,6 +258,12 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
     responseWs.putStringArrayList("DETAILS_LIST", skuDetails);
   }
 
+  private SkuDetails getSingleSkuDetailsFromService(String packageName, String type,
+      Bundle skusBundle) {
+    List<String> sku = skusBundle.getStringArrayList(Utils.GET_SKU_DETAILS_ITEM_LIST);
+    return requestSingleSkuDetails(sku, packageName, type);
+  }
+
   private ArrayList<SkuDetails> requestSkuDetails(List<String> sku, String packageName,
       String type) {
     List<String> skuSendList = new ArrayList<>();
@@ -240,6 +280,20 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
       }
     }
     return skuDetailsList;
+  }
+
+  private SkuDetails requestSingleSkuDetails(List<String> sku, String packageName, String type) {
+    String response =
+        WSServiceController.getSkuDetailsService(BuildConfig.HOST_WS, packageName, sku,
+            WalletUtils.getUserAgent());
+    return AndroidBillingMapper.mapSingleSkuDetails(type, response);
+  }
+
+  private SkuDetails getMappedSkuDetails(String sku, String packageName, String type) {
+    List<String> skuList = new ArrayList<>();
+    skuList.add(sku);
+    Bundle skuBundle = AndroidBillingMapper.mapArrayListToBundleSkuDetails(skuList);
+    return getSingleSkuDetailsFromService(packageName, type, skuBundle);
   }
 
   private ArrayList<String> buildResponse(SkuDetailsResult skuDetailsResult) {
