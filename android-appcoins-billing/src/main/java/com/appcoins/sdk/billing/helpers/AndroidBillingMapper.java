@@ -21,67 +21,67 @@ public class AndroidBillingMapper {
 
   public static PurchasesResult mapPurchases(Bundle bundle, String skuType) {
     int responseCode = bundle.getInt("RESPONSE_CODE");
+    List<Purchase> list = new ArrayList<>();
     ArrayList<String> purchaseDataList =
         bundle.getStringArrayList(Utils.RESPONSE_INAPP_PURCHASE_DATA_LIST);
     ArrayList<String> signatureList =
         bundle.getStringArrayList(Utils.RESPONSE_INAPP_SIGNATURE_LIST);
     ArrayList<String> idsList = bundle.getStringArrayList(Utils.RESPONSE_INAPP_PURCHASE_ID_LIST);
 
-    List<Purchase> list = new ArrayList<>();
+    if (purchaseDataList != null && signatureList != null && idsList != null) {
+      for (int i = 0; i < purchaseDataList.size(); ++i) {
+        String purchaseData = purchaseDataList.get(i);
+        String signature = signatureList.get(i);
+        String id = idsList.get(i);
 
-    for (int i = 0; i < purchaseDataList.size(); ++i) {
-      String purchaseData = purchaseDataList.get(i);
-      String signature = signatureList.get(i);
-      String id = idsList.get(i);
-
-      JSONObject jsonElement = null;
-      try {
-        jsonElement = new JSONObject(purchaseData);
-        String orderId = jsonElement.getString("orderId");
-        String packageName = jsonElement.getString("packageName");
-        String sku = jsonElement.getString("productId");
-        long purchaseTime = jsonElement.getLong("purchaseTime");
-        int purchaseState = jsonElement.getInt("purchaseState");
-
-        String developerPayload = null;
+        JSONObject jsonElement = null;
         try {
-          if (jsonElement.getString("developerPayload") != null) {
-            developerPayload = jsonElement.getString("developerPayload");
-          }
-        } catch (org.json.JSONException e) {
-          Log.d("JSON:", " Field error" + e.getLocalizedMessage());
-        }
+          jsonElement = new JSONObject(purchaseData);
+          String orderId = jsonElement.getString("orderId");
+          String packageName = jsonElement.getString("packageName");
+          String sku = jsonElement.getString("productId");
+          long purchaseTime = jsonElement.getLong("purchaseTime");
+          int purchaseState = jsonElement.getInt("purchaseState");
 
-        String token = null;
-        try {
-          if (jsonElement.getString("token") != null) {
-            token = jsonElement.getString("token");
+          String developerPayload = null;
+          try {
+            if (jsonElement.getString("developerPayload") != null) {
+              developerPayload = jsonElement.getString("developerPayload");
+            }
+          } catch (org.json.JSONException e) {
+            Log.d("JSON:", " Field error" + e.getLocalizedMessage());
           }
-        } catch (org.json.JSONException e) {
-          Log.d("JSON:", " Field error " + e.getLocalizedMessage());
-        }
 
-        if (token == null) {
-          token = jsonElement.getString("purchaseToken");
-        }
-        boolean isAutoRenewing = false;
-        try {
-          if (jsonElement.getString("autoRenewing") != null) {
-            isAutoRenewing = jsonElement.getBoolean("autoRenewing");
+          String token = null;
+          try {
+            if (jsonElement.getString("token") != null) {
+              token = jsonElement.getString("token");
+            }
+          } catch (org.json.JSONException e) {
+            Log.d("JSON:", " Field error " + e.getLocalizedMessage());
           }
-        } catch (org.json.JSONException e) {
-          Log.d("JSON:", " Field error " + e.getLocalizedMessage());
+
+          if (token == null) {
+            token = jsonElement.getString("purchaseToken");
+          }
+          boolean isAutoRenewing = false;
+          try {
+            if (jsonElement.getString("autoRenewing") != null) {
+              isAutoRenewing = jsonElement.getBoolean("autoRenewing");
+            }
+          } catch (org.json.JSONException e) {
+            Log.d("JSON:", " Field error " + e.getLocalizedMessage());
+          }
+          //Base64 decoded string
+          byte[] decodedSignature = Base64.decode(signature, Base64.DEFAULT);
+          list.add(
+              new Purchase(id, skuType, purchaseData, decodedSignature, purchaseTime, purchaseState,
+                  developerPayload, token, packageName, sku, isAutoRenewing));
+        } catch (JSONException e) {
+          e.printStackTrace();
         }
-        //Base64 decoded string
-        byte[] decodedSignature = Base64.decode(signature, Base64.DEFAULT);
-        list.add(
-            new Purchase(id, skuType, purchaseData, decodedSignature, purchaseTime, purchaseState,
-                developerPayload, token, packageName, sku, isAutoRenewing));
-      } catch (JSONException e) {
-        e.printStackTrace();
       }
     }
-
     return new PurchasesResult(list, responseCode);
   }
 

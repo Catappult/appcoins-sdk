@@ -9,14 +9,16 @@ public class BuyItemProperties implements Serializable {
   private String sku;
   private String type;
   private DeveloperPayload developerPayload;
+  private SkuDetails skuDetails;
 
   public BuyItemProperties(int apiVersion, String packageName, String sku, String type,
-      DeveloperPayload developerPayload) {
+      DeveloperPayload developerPayload, SkuDetails skuDetails) {
     this.apiVersion = apiVersion;
     this.packageName = packageName;
     this.sku = sku;
     this.type = type;
     this.developerPayload = developerPayload;
+    this.skuDetails = skuDetails;
   }
 
   public DeveloperPayload getDeveloperPayload() {
@@ -37,5 +39,9 @@ public class BuyItemProperties implements Serializable {
 
   public String getType() {
     return type;
+  }
+
+  public SkuDetails getSkuDetails() {
+    return skuDetails;
   }
 }
