@@ -133,6 +133,10 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
         return startPayAsGuest(apiVersion, packageName, sku, type, developerPayloadObject, context);
       } else {
         if (WalletUtils.deviceSupportsWallet(Build.VERSION.SDK_INT)) {
+          skuDetails = getMappedSkuDetails(sku, packageName, type);
+          buyItemProperties =
+              new BuyItemProperties(apiVersion, packageName, sku, type, developerPayloadObject,
+                  skuDetails);
           intent = InstallDialogActivity.newIntent(context, buyItemProperties);
         } else {
           Bundle bundle = new Bundle();
