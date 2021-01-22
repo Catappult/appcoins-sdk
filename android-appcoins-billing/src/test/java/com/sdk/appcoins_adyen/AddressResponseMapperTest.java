@@ -22,7 +22,7 @@ public class AddressResponseMapperTest {
         + "}";
     AddressModel addressModel =
         addressResponseMapper.map(new RequestResponse(200, response, null), "0x");
-    Assert.assertEquals(addressModel.getAddress(), "0x12");
+    Assert.assertEquals(addressModel.getAddress(), "0x123");
   }
 
   @Test public void addressResponseEmptyTest() {
