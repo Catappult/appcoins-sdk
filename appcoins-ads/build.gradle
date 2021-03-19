@@ -147,7 +147,7 @@ bintray {
     name = "${project.name}"
     userOrg = "${BDS_BINTRAY_ORG}"
     licenses = ['GPL-3.0']
-    vcsUrl = 'https://github.com/Aptoide/bds-sdk/appcoins-ads'
+    vcsUrl = 'https://github.com/Catappult/appcoins-sdk/appcoins-ads'
 
     version {
       name = project.version
