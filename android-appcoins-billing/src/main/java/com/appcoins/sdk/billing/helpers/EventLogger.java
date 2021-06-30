@@ -31,7 +31,7 @@ public class EventLogger implements Runnable {
     String eventName = purchaseEventName;
 
     int sdkVersionCode = BuildConfig.VERSION_CODE;
-    String sdkPackageName = BuildConfig.APPLICATION_ID;
+    String sdkPackageName = BuildConfig.LIBRARY_PACKAGE_NAME;
 
     Boolean hasWallet = WalletUtils.hasWalletInstalled();
 
