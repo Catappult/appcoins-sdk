@@ -25,4 +25,13 @@
       </intent-filter>
     </activity>
   </application>
+
+  <queries>
+    <intent>
+      <action android:name="com.hezardastaan.wallet.iab.action.BIND"/>
+    </intent>
+    <intent>
+      <action android:name="com.appcoins.wallet.iab.action.BIND"/>
+    </intent>
+  </queries>
 </manifest>

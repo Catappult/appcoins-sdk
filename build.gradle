@@ -7,7 +7,6 @@ allprojects {
   buildscript {
     repositories {
       mavenCentral()
-      jcenter()
       maven { url "https://dl.bintray.com/aptoide/Aptoide" }
       maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
@@ -15,7 +14,6 @@ allprojects {
 
   repositories {
     mavenCentral()
-    jcenter()
     google()
     maven { url "https://dl.bintray.com/aptoide/Aptoide" }
   }
@@ -24,7 +22,6 @@ allprojects {
 buildscript {
   repositories {
     mavenCentral()
-    jcenter()
     maven { url "https://dl.bintray.com/aptoide/Aptoide" }
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     google()
@@ -44,6 +41,5 @@ configure(allprojects) {
 
   repositories {
     mavenCentral()
-    jcenter()
   }
 }
