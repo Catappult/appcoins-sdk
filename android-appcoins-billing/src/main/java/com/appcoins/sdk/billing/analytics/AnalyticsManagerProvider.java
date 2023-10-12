@@ -1,8 +1,8 @@
 package com.appcoins.sdk.billing.analytics;
 
-import cm.aptoide.analytics.AnalyticsManager;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.service.BdsService;
+import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager;
 import java.util.ArrayList;
 import java.util.List;
 

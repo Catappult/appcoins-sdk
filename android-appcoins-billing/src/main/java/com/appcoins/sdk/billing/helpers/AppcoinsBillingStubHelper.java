@@ -128,11 +128,11 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
 
       final Context context = WalletUtils.getContext();
       Intent intent;
-      if (hasRequiredFields(type, sku) && !WalletUtils.getIabAction()
-          .equals(BuildConfig.CAFE_BAZAAR_IAB_BIND_ACTION)) {
-        return startPayAsGuest(apiVersion, packageName, sku, type, developerPayloadObject, context);
-      } else {
-        if (WalletUtils.deviceSupportsWallet(Build.VERSION.SDK_INT)) {
+      //if (hasRequiredFields(type, sku) && !WalletUtils.getIabAction()
+      //    .equals(BuildConfig.CAFE_BAZAAR_IAB_BIND_ACTION)) {
+      //  return startPayAsGuest(apiVersion, packageName, sku, type, developerPayloadObject, context);
+      //} else {
+      if (WalletUtils.deviceSupportsWallet(Build.VERSION.SDK_INT)) {
           skuDetails = getMappedSkuDetails(sku, packageName, type);
           buyItemProperties =
               new BuyItemProperties(apiVersion, packageName, sku, type, developerPayloadObject,
@@ -143,10 +143,11 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
           bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.BILLING_UNAVAILABLE.getValue());
           return bundle;
         }
-      }
+      //}
       WalletUtils.setPayAsGuestSessionId();
+      int flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
       PendingIntent pendingIntent =
-          PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+          PendingIntent.getActivity(context, 0, intent, flags);
       Bundle response = new Bundle();
       response.putParcelable("BUY_INTENT", pendingIntent);
 
@@ -181,8 +182,9 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
         new BuyItemProperties(apiVersion, packageName, sku, type, developerPayloadObject,
             skuDetails);
     Intent intent = IabActivity.newIntent(context, buyItemProperties);
-    PendingIntent pendingIntent =
-        PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    int flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
+    PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, flags);
+
     Bundle response = new Bundle();
     response.putParcelable("BUY_INTENT", pendingIntent);
     response.putInt(Utils.RESPONSE_CODE, ResponseCode.OK.getValue());
