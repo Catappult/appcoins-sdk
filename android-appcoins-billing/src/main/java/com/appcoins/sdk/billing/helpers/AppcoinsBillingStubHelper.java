@@ -25,14 +25,20 @@ import com.appcoins.sdk.billing.SkuDetailsResult;
 import com.appcoins.sdk.billing.UriCommunicationAppcoinsBilling;
 import com.appcoins.sdk.billing.WSServiceController;
 import com.appcoins.sdk.billing.WalletBinderUtil;
+import com.appcoins.sdk.billing.analytics.AnalyticsManagerProvider;
+import com.appcoins.sdk.billing.analytics.IndicativeAnalytics;
+import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.listeners.StartPurchaseAfterBindListener;
 import com.appcoins.sdk.billing.payasguest.BillingRepository;
 import com.appcoins.sdk.billing.payasguest.IabActivity;
 import com.appcoins.sdk.billing.service.BdsService;
+import com.indicative.client.android.Indicative;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import static com.appcoins.sdk.billing.helpers.DeviceInformationHelperKt.getDeviceInfo;
+import static com.appcoins.sdk.billing.helpers.WalletUtils.context;
 
 public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Serializable {
   final static String INAPP_PURCHASE_ID_LIST = "INAPP_PURCHASE_ID_LIST";
@@ -54,6 +60,7 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
   public static AppcoinsBillingStubHelper getInstance() {
     if (appcoinsBillingStubHelper == null) {
       appcoinsBillingStubHelper = new AppcoinsBillingStubHelper();
+      Indicative.launch(context, BuildConfig.INDICATIVE_API_KEY);
     }
     return appcoinsBillingStubHelper;
   }
@@ -110,11 +117,19 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
 
   @Override public Bundle getBuyIntent(int apiVersion, final String packageName, final String sku,
       final String type, String developerPayload) {
+
+    startIndicative(packageName, sku);
+    SdkAnalytics sdkAnalytics =
+        new SdkAnalytics(AnalyticsManagerProvider.provideAnalyticsManager());
+    sdkAnalytics.sendPurchaseIntentEvent();
+
     if (WalletUtils.hasWalletInstalled()) {
       try {
+        sdkAnalytics.sendOpenWalletAttemptEvent(false);
         return serviceAppcoinsBilling.getBuyIntent(apiVersion, packageName, sku, type,
             developerPayload);
       } catch (RemoteException e) {
+        sdkAnalytics.sendOpenWalletAttemptEvent(true);
         e.printStackTrace();
         Bundle response = new Bundle();
         response.putInt(Utils.RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.getValue());
@@ -133,21 +148,19 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
       //  return startPayAsGuest(apiVersion, packageName, sku, type, developerPayloadObject, context);
       //} else {
       if (WalletUtils.deviceSupportsWallet(Build.VERSION.SDK_INT)) {
-          skuDetails = getMappedSkuDetails(sku, packageName, type);
-          buyItemProperties =
-              new BuyItemProperties(apiVersion, packageName, sku, type, developerPayloadObject,
-                  skuDetails);
-          intent = InstallDialogActivity.newIntent(context, buyItemProperties);
-        } else {
-          Bundle bundle = new Bundle();
-          bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.BILLING_UNAVAILABLE.getValue());
-          return bundle;
-        }
+        skuDetails = getMappedSkuDetails(sku, packageName, type);
+        buyItemProperties =
+            new BuyItemProperties(apiVersion, packageName, sku, type, developerPayloadObject,
+                skuDetails);
+        intent = InstallDialogActivity.newIntent(context, buyItemProperties, sdkAnalytics);
+      } else {
+        Bundle bundle = new Bundle();
+        bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.BILLING_UNAVAILABLE.getValue());
+        return bundle;
+      }
       //}
-      WalletUtils.setPayAsGuestSessionId();
       int flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
-      PendingIntent pendingIntent =
-          PendingIntent.getActivity(context, 0, intent, flags);
+      PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, flags);
       Bundle response = new Bundle();
       response.putParcelable("BUY_INTENT", pendingIntent);
 
@@ -156,8 +169,15 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
     }
   }
 
+  public void startIndicative(final String packageName, final String sku) {
+    WalletUtils.setPayAsGuestSessionId();
+    IndicativeAnalytics indicativeAnalytics = new IndicativeAnalytics(WalletUtils.getContext());
+    indicativeAnalytics.setInstanceId(String.valueOf(WalletUtils.getPayAsGuestSessionId()));
+    indicativeAnalytics.setIndicativeSuperProperties(packageName, BuildConfig.VERSION_CODE, sku, getDeviceInfo());
+  }
+
   private Bundle startPayAsGuest(int apiVersion, final String packageName, final String sku,
-      final String type, DeveloperPayload developerPayloadObject, final Context context) {
+      final String type, DeveloperPayload developerPayloadObject, final Context context, SdkAnalytics sdkAnalytics) {
     final CountDownLatch latch = new CountDownLatch(1);
     if (Looper.myLooper() == Looper.getMainLooper()) {
       Thread t = new Thread(new Runnable() {
@@ -181,7 +201,7 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
     buyItemProperties =
         new BuyItemProperties(apiVersion, packageName, sku, type, developerPayloadObject,
             skuDetails);
-    Intent intent = IabActivity.newIntent(context, buyItemProperties);
+    Intent intent = IabActivity.newIntent(context, buyItemProperties, sdkAnalytics);
     int flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
     PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, flags);
 
@@ -327,6 +347,17 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
 
     List<ResolveInfo> intentServices = context.getPackageManager()
         .queryIntentServices(serviceIntent, 0);
+
+    Log.d("CUSTOM_TAG", "AppcoinsBillingStubHelper: packageName = ["
+        + packageName
+        + "] , iabAction = ["
+        + iabAction
+        + "] , context = ["
+        + context
+        + "], intentServices = ["
+        + intentServices
+        + "]");
+
     if (intentServices != null && !intentServices.isEmpty()) {
       WalletBinderUtil.bindService(context, serviceIntent, new ServiceConnection() {
         @Override public void onServiceConnected(ComponentName name, IBinder service) {

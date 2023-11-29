@@ -33,6 +33,7 @@ import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.sdk.billing.BuyItemProperties;
 import com.appcoins.sdk.billing.analytics.AnalyticsManagerProvider;
 import com.appcoins.sdk.billing.analytics.BillingAnalytics;
+import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.helpers.translations.TranslationsRepository;
 import com.appcoins.sdk.billing.listeners.StartPurchaseAfterBindListener;
 import java.io.IOException;
@@ -72,15 +73,19 @@ public class InstallDialogActivity extends Activity {
       "https://cafebazaar.ir/app/" + BuildConfig.CAFE_BAZAAR_WALLET_PACKAGE_NAME;
   private static final String FIRST_IMPRESSION_KEY = "first_impression";
   private final static String BUY_ITEM_PROPERTIES = "buy_item_properties";
+  private final static String SDK_ANALYTICS = "sdk_analytics";
   private final String appBannerResourcePath = "appcoins-wallet/resources/app-banner";
   public AppcoinsBillingStubHelper appcoinsBillingStubHelper;
   public BuyItemProperties buyItemProperties;
+  public SdkAnalytics sdkAnalytics;
   private TranslationsRepository translations;
   private boolean firstImpression = true;
 
-  public static Intent newIntent(Context context, BuyItemProperties buyItemProperties) {
+  public static Intent newIntent(Context context, BuyItemProperties buyItemProperties,
+      SdkAnalytics sdkAnalytics) {
     Intent intent = new Intent(context, InstallDialogActivity.class);
     intent.putExtra(BUY_ITEM_PROPERTIES, buyItemProperties);
+    intent.putExtra(SDK_ANALYTICS, sdkAnalytics);
     return intent;
   }
 
@@ -90,6 +95,7 @@ public class InstallDialogActivity extends Activity {
         new BillingAnalytics(AnalyticsManagerProvider.provideAnalyticsManager());
     appcoinsBillingStubHelper = AppcoinsBillingStubHelper.getInstance();
     buyItemProperties = (BuyItemProperties) getIntent().getSerializableExtra(BUY_ITEM_PROPERTIES);
+    sdkAnalytics = (SdkAnalytics) getIntent().getSerializableExtra(SDK_ANALYTICS);
     translations = TranslationsRepository.getInstance(this);
     if (savedInstanceState != null) {
       firstImpression = savedInstanceState.getBoolean(FIRST_IMPRESSION_KEY, true);
@@ -107,12 +113,15 @@ public class InstallDialogActivity extends Activity {
 
     showInstallationDialog(installationDialog);
     handlePurchaseStartEvent(billingAnalytics);
+
+    sdkAnalytics.walletInstallImpression();
   }
 
   @Override protected void onResume() {
     super.onResume();
     if (WalletUtils.hasWalletInstalled()) {
       showLoadingDialog();
+      sdkAnalytics.installWalletAptoideSuccess();
       appcoinsBillingStubHelper.createRepository(new StartPurchaseAfterBindListener() {
         @Override public void startPurchaseAfterBind() {
           makeTheStoredPurchase();
@@ -127,6 +136,7 @@ public class InstallDialogActivity extends Activity {
   }
 
   @Override public void onBackPressed() {
+    sdkAnalytics.walletInstallClick("back_button");
     Bundle response = new Bundle();
     response.putInt(Utils.RESPONSE_CODE, RESULT_USER_CANCELED);
     Intent intent = new Intent();
@@ -255,6 +265,7 @@ public class InstallDialogActivity extends Activity {
     skipButton.setClickable(true);
     skipButton.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
+        sdkAnalytics.walletInstallClick("cancel");
         Bundle response = new Bundle();
         response.putInt(Utils.RESPONSE_CODE, RESULT_USER_CANCELED);
 
@@ -298,6 +309,7 @@ public class InstallDialogActivity extends Activity {
     installButton.setLayoutParams(installButtonParams);
     installButton.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
+        sdkAnalytics.walletInstallClick("install_wallet");
         redirectToWalletInstallation(storeUrl);
       }
     });
@@ -320,8 +332,10 @@ public class InstallDialogActivity extends Activity {
   private void redirectToRemainingStores(String storeUrl) {
     Intent storeIntent = buildStoreViewIntent(storeUrl);
     if (isAbleToRedirect(storeIntent)) {
+      sdkAnalytics.downloadWalletAptoideImpression();
       startActivity(storeIntent);
     } else {
+      sdkAnalytics.downloadWalletFallbackImpression();
       startActivityForBrowser(GOOGLE_PLAY_URL);
     }
   }
