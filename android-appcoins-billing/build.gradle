@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
+apply plugin: "kotlin-android"
 apply plugin: 'com.kezong.fat-aar' //https://github.com/kezong/fat-aar-android
 
 android {
@@ -62,6 +63,8 @@ android {
       buildConfigField 'String', 'DEFAULT_STORE_ADDRESS',
           "\"" + project.DEFAULT_STORE_ADDRESS + "\""
       buildConfigField 'String', 'BDS_BASE_HOST', project.BDS_BASE_HOST_DEV
+      buildConfigField 'String', 'INDICATIVE_API_KEY',
+          project.INDICATIVE_API_KEY
     }
     release {
       minifyEnabled false
@@ -96,6 +99,8 @@ android {
       buildConfigField 'String', 'DEFAULT_STORE_ADDRESS',
           "\"" + project.DEFAULT_STORE_ADDRESS + "\""
       buildConfigField 'String', 'BDS_BASE_HOST', project.BDS_BASE_HOST_PROD
+      buildConfigField 'String', 'INDICATIVE_API_KEY',
+          project.INDICATIVE_API_KEY
       minifyEnabled false
     }
   }
@@ -109,6 +114,9 @@ dependencies {
   testImplementation 'org.json:json:20190722'
   androidTestImplementation 'com.android.support.test:runner:1.0.2'
   androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+  implementation 'com.indicative.client.android:Indicative-Android:1.1.0'
+  implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.10'
 
   api project(':appcoins-billing')
   api project(':appcoins-adyen')
