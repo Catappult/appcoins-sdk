@@ -76,7 +76,7 @@ android {
           project.INDICATIVE_API_KEY
     }
     release {
-      minifyEnabled false
+      minifyEnabled true
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
       buildConfigField "String", "IAB_BIND_ACTION",
           "\"" + project.APPCOINS_IAB_BIND_ACTION + "\""
@@ -110,7 +110,6 @@ android {
       buildConfigField 'String', 'BDS_BASE_HOST', project.BDS_BASE_HOST_PROD
       buildConfigField 'String', 'INDICATIVE_API_KEY',
           project.INDICATIVE_API_KEY
-      minifyEnabled false
     }
   }
 }
