@@ -1,12 +1,13 @@
 package com.appcoins.sdk.billing.analytics.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AnalyticsManager {
+public class AnalyticsManager implements Serializable {
   private static final String TAG = AnalyticsManager.class.getSimpleName();
   private final KnockEventLogger knockEventLogger;
   private final KeyValueNormalizer analyticsNormalizer;
@@ -52,7 +53,7 @@ public class AnalyticsManager {
       if (loggerEntry.getValue()
           .contains(eventName)) {
         loggerEntry.getKey()
-            .log(eventName, data, action, context);
+            .logEvent(eventName, data, action, context);
         eventsSent++;
       }
     }

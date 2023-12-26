@@ -8,6 +8,7 @@ import android.content.ServiceConnection;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
@@ -170,10 +171,15 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
   }
 
   public void startIndicative(final String packageName, final String sku) {
+    new Handler(Looper.getMainLooper()).post(new Runnable() {
+      @Override
+      public void run() {
+        Indicative.launch(context, BuildConfig.INDICATIVE_API_KEY);
+      }
+    });
     WalletUtils.setPayAsGuestSessionId();
-    IndicativeAnalytics indicativeAnalytics = new IndicativeAnalytics(WalletUtils.getContext());
-    indicativeAnalytics.setInstanceId(String.valueOf(WalletUtils.getPayAsGuestSessionId()));
-    indicativeAnalytics.setIndicativeSuperProperties(packageName, BuildConfig.VERSION_CODE, sku, getDeviceInfo());
+    IndicativeAnalytics.INSTANCE.setInstanceId(String.valueOf(WalletUtils.getPayAsGuestSessionId()));
+    IndicativeAnalytics.INSTANCE.setIndicativeSuperProperties(packageName, BuildConfig.VERSION_CODE, sku, getDeviceInfo());
   }
 
   private Bundle startPayAsGuest(int apiVersion, final String packageName, final String sku,
