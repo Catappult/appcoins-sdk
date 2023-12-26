@@ -30,6 +30,15 @@ android {
     buildConfigField 'String', 'VERSION_NAME', "\"${defaultConfig.versionName}\""
   }
 
+  compileOptions {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+  }
+
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_1_8.toString()
+  }
+
   buildTypes {
     debug {
       minifyEnabled false
@@ -109,14 +118,14 @@ android {
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 
-  testImplementation 'junit:junit:4.12'
-  testImplementation 'org.mockito:mockito-core:2.28.2'
-  testImplementation 'org.json:json:20190722'
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'org.mockito:mockito-core:4.8.0'
+  testImplementation 'org.json:json:20220924'
   androidTestImplementation 'com.android.support.test:runner:1.0.2'
   androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
-  implementation 'com.indicative.client.android:Indicative-Android:1.1.0'
-  implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.10'
+  api 'com.indicative.client.android:Indicative-Android:1.1.0'
+  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
   api project(':appcoins-billing')
   api project(':appcoins-adyen')
