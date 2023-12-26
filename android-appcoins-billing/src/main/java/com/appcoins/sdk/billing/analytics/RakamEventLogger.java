@@ -32,7 +32,7 @@ class RakamEventLogger implements EventLogger {
   }
 
   @Override
-  public void log(String eventName, Map<String, Object> data, AnalyticsManager.Action action,
+  public void logEvent(String eventName, Map<String, Object> data, AnalyticsManager.Action action,
       String context) {
 
     Map<String, Object> body = new LinkedHashMap<>();
