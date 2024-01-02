@@ -18,6 +18,7 @@ import com.appcoins.sdk.billing.BuyItemProperties;
 import com.appcoins.sdk.billing.WebViewActivity;
 import com.appcoins.sdk.billing.analytics.AnalyticsManagerProvider;
 import com.appcoins.sdk.billing.analytics.BillingAnalytics;
+import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.helpers.InstallDialogActivity;
 import com.appcoins.sdk.billing.helpers.translations.TranslationsRepository;
 import com.appcoins.sdk.billing.listeners.payasguest.ActivityResultListener;
@@ -39,17 +40,21 @@ public class IabActivity extends Activity implements IabView {
   private final static int WEB_VIEW_REQUEST_CODE = 1234;
   private final static String FIRST_IMPRESSION_KEY = "first_impression";
   private final static String BUY_ITEM_PROPERTIES = "buy_item_properties";
+  private final static String SDK_ANALYTICS = "sdk_analytics";
   private static int IAB_ACTIVITY_ID;
   private TranslationsRepository translations;
   private FrameLayout frameLayout;
   private BuyItemProperties buyItemProperties;
+  private SdkAnalytics sdkAnalytics;
   private ActivityResultListener activityResultListener;
   private boolean backEnabled = true;
   private boolean firstImpression = true;
 
-  public static Intent newIntent(Context context, BuyItemProperties buyItemProperties) {
+  public static Intent newIntent(Context context, BuyItemProperties buyItemProperties,
+      SdkAnalytics sdkAnalytics) {
     Intent intent = new Intent(context, IabActivity.class);
     intent.putExtra(BUY_ITEM_PROPERTIES, buyItemProperties);
+    intent.putExtra(SDK_ANALYTICS, sdkAnalytics);
     intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     return intent;
   }
@@ -73,6 +78,7 @@ public class IabActivity extends Activity implements IabView {
     setContentView(frameLayout);
 
     buyItemProperties = (BuyItemProperties) getIntent().getSerializableExtra(BUY_ITEM_PROPERTIES);
+    sdkAnalytics = (SdkAnalytics) getIntent().getSerializableExtra(SDK_ANALYTICS);
     translations = TranslationsRepository.getInstance(this);
     if (savedInstanceState == null) {
       navigateToPaymentSelection();
@@ -187,8 +193,8 @@ public class IabActivity extends Activity implements IabView {
   }
 
   @Override public void navigateToInstallDialog() {
-    Intent intent =
-        InstallDialogActivity.newIntent(this.getApplicationContext(), buyItemProperties);
+    Intent intent = InstallDialogActivity.newIntent(this.getApplicationContext(), buyItemProperties,
+        sdkAnalytics);
     finish();
     startActivity(intent);
   }

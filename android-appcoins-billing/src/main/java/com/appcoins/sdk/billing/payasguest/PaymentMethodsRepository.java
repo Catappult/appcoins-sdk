@@ -31,7 +31,7 @@ class PaymentMethodsRepository {
         paymentMethodsListener.onResponse(paymentMethodsResponseMapper.map(requestResponse));
       }
     };
-    bdsService.makeRequest("/broker/8.20191014/methods", "GET", new ArrayList<String>(), queries,
+    bdsService.makeRequest("/broker/8.20210101/methods", "GET", new ArrayList<String>(), queries,
         new HashMap<String, String>(), new HashMap<String, Object>(), serviceResponseListener);
   }
 

@@ -19,8 +19,21 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
--keep class com.indicative.client.android.** { *; }
--keep class com.appcoins.sdk.billing.AppcoinsBillingClient { *; }
--keep class com.appcoins.sdk.billing.PurchasesUpdatedListener { *; }
--keep class com.appcoins.sdk.billing.types.SkuType { *; }
--keep class com.appcoins.sdk.billing.helpers.CatapultBillingAppCoinsFactory { *; }
+-keep class com.appcoins.sdk.billing.BillingFlowParams {
+    *;
+}
+-keep class com.appcoins.sdk.billing.Purchase {
+    *;
+}
+-keep class com.appcoins.sdk.billing.PurchasesResult {
+    *;
+}
+-keep class com.appcoins.sdk.billing.ResponseCode {
+    *;
+}
+-keep class com.appcoins.sdk.billing.SkuDetails {
+    *;
+}
+-keep class com.appcoins.sdk.billing.SkuDetailsParams {
+    *;
+}

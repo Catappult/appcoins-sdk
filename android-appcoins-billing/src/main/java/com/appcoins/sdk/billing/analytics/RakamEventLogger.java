@@ -5,9 +5,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
-import cm.aptoide.analytics.AnalyticsManager;
-import cm.aptoide.analytics.EventLogger;
 import com.appcoins.billing.sdk.BuildConfig;
+import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager;
+import com.appcoins.sdk.billing.analytics.manager.EventLogger;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.service.BdsService;
 import java.util.Collections;
@@ -32,7 +32,7 @@ class RakamEventLogger implements EventLogger {
   }
 
   @Override
-  public void log(String eventName, Map<String, Object> data, AnalyticsManager.Action action,
+  public void logEvent(String eventName, Map<String, Object> data, AnalyticsManager.Action action,
       String context) {
 
     Map<String, Object> body = new LinkedHashMap<>();

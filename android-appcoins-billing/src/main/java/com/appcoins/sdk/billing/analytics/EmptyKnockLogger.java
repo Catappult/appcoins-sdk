@@ -1,8 +1,10 @@
 package com.appcoins.sdk.billing.analytics;
 
-import cm.aptoide.analytics.KnockEventLogger;
 
-class EmptyKnockLogger implements KnockEventLogger {
+import com.appcoins.sdk.billing.analytics.manager.KnockEventLogger;
+import java.io.Serializable;
+
+class EmptyKnockLogger implements KnockEventLogger, Serializable {
   @Override public void log(String url) {
 
   }

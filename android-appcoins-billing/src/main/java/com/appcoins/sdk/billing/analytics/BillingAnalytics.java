@@ -1,6 +1,6 @@
 package com.appcoins.sdk.billing.analytics;
 
-import cm.aptoide.analytics.AnalyticsManager;
+import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager;
 import java.util.HashMap;
 import java.util.Map;
 

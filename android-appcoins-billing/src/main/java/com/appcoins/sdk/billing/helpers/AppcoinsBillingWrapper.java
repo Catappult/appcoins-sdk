@@ -9,6 +9,9 @@ import com.appcoins.sdk.billing.payasguest.BillingRepository;
 import com.appcoins.sdk.billing.service.BdsService;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static com.appcoins.sdk.billing.helpers.AppcoinsBillingStubHelper.INAPP_DATA_SIGNATURE_LIST;
 import static com.appcoins.sdk.billing.helpers.AppcoinsBillingStubHelper.INAPP_PURCHASE_DATA_LIST;
@@ -22,7 +25,7 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
   private final AppcoinsBilling appcoinsBilling;
   private final AppCoinsPendingIntentCaller pendingIntentCaller;
   private final String walletId;
-  private int timeoutInMillis;
+  private final int timeoutInMillis;
 
   AppcoinsBillingWrapper(AppcoinsBilling appcoinsBilling,
       AppCoinsPendingIntentCaller pendingIntentCaller, String walletId, int timeoutInMillis) {
@@ -34,6 +37,7 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
 
   @Override public int isBillingSupported(int apiVersion, String packageName, String type)
       throws RemoteException {
+    pingConnection(apiVersion, packageName, type);
     return appcoinsBilling.isBillingSupported(apiVersion, packageName, type);
   }
 
@@ -95,5 +99,18 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
           guestPurchaseInteract.consumeGuestPurchase(this.walletId, packageName, purchaseToken);
     }
     return responseCode;
+  }
+  private void pingConnection(final int apiVersion, final String packageName, final String type) {
+    ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    executorService.scheduleAtFixedRate(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          appcoinsBilling.isBillingSupported(apiVersion, packageName, type);
+        } catch (RemoteException e) {
+          e.printStackTrace();
+        }
+      }
+    }, 0L, 60L, TimeUnit.SECONDS);
   }
 }
