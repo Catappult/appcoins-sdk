@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
+apply plugin: "kotlin-android"
 apply plugin: 'com.kezong.fat-aar' //https://github.com/kezong/fat-aar-android
 
 android {
@@ -27,6 +28,15 @@ android {
     buildConfigField "int", "MIN_SDK_VERSION", "$minSdkVersion.apiLevel"
     buildConfigField 'int', 'VERSION_CODE', "${defaultConfig.versionCode}"
     buildConfigField 'String', 'VERSION_NAME', "\"${defaultConfig.versionName}\""
+  }
+
+  compileOptions {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+  }
+
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_1_8.toString()
   }
 
   buildTypes {
@@ -62,9 +72,11 @@ android {
       buildConfigField 'String', 'DEFAULT_STORE_ADDRESS',
           "\"" + project.DEFAULT_STORE_ADDRESS + "\""
       buildConfigField 'String', 'BDS_BASE_HOST', project.BDS_BASE_HOST_DEV
+      buildConfigField 'String', 'INDICATIVE_API_KEY',
+          project.INDICATIVE_API_KEY
     }
     release {
-      minifyEnabled false
+      minifyEnabled true
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
       buildConfigField "String", "IAB_BIND_ACTION",
           "\"" + project.APPCOINS_IAB_BIND_ACTION + "\""
@@ -96,7 +108,8 @@ android {
       buildConfigField 'String', 'DEFAULT_STORE_ADDRESS',
           "\"" + project.DEFAULT_STORE_ADDRESS + "\""
       buildConfigField 'String', 'BDS_BASE_HOST', project.BDS_BASE_HOST_PROD
-      minifyEnabled false
+      buildConfigField 'String', 'INDICATIVE_API_KEY',
+          project.INDICATIVE_API_KEY
     }
   }
 }
@@ -104,11 +117,14 @@ android {
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 
-  testImplementation 'junit:junit:4.12'
-  testImplementation 'org.mockito:mockito-core:2.28.2'
-  testImplementation 'org.json:json:20190722'
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'org.mockito:mockito-core:4.8.0'
+  testImplementation 'org.json:json:20220924'
   androidTestImplementation 'com.android.support.test:runner:1.0.2'
   androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+  api 'com.indicative.client.android:Indicative-Android:1.1.0'
+  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
   api project(':appcoins-billing')
   api project(':appcoins-adyen')
