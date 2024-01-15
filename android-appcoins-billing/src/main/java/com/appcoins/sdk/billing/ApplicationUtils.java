@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Base64;
 import android.util.Log;
+import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.helpers.Utils;
+import com.appcoins.sdk.billing.helpers.WalletUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +23,8 @@ class ApplicationUtils {
   static boolean handleActivityResult(Billing billing, int resultCode, Intent data,
       PurchasesUpdatedListener purchaseFinishedListener) {
 
+    SdkAnalytics sdkAnalytics = WalletUtils.getSdkAnalytics();
+
     if (data == null) {
       logError("Null data in IAB activity result.");
       purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.getValue(),
@@ -33,6 +37,7 @@ class ApplicationUtils {
     String dataSignature = data.getStringExtra(RESPONSE_INAPP_SIGNATURE);
 
     if (resultCode == Activity.RESULT_OK && responseCode == ResponseCode.OK.getValue()) {
+      sdkAnalytics.sendPurchaseStatusEvent("success", getResponseDesc(responseCode));
       logDebug("Successful resultcode from purchase activity.");
       logDebug("Purchase data: " + purchaseData);
       logDebug("Data signature: " + dataSignature);
@@ -83,15 +88,17 @@ class ApplicationUtils {
       // result code was OK, but in-app billing response was not OK.
       logDebug("Result code was OK but in-app billing response was not OK: " + getResponseDesc(
           responseCode));
+      sdkAnalytics.sendPurchaseStatusEvent("error", getResponseDesc(responseCode));
       purchaseFinishedListener.onPurchasesUpdated(responseCode, Collections.<Purchase>emptyList());
     } else if (resultCode == Activity.RESULT_CANCELED) {
-
       logDebug("Purchase canceled - Response: " + getResponseDesc(responseCode));
+      sdkAnalytics.sendPurchaseStatusEvent("user_canceled", getResponseDesc(responseCode));
       purchaseFinishedListener.onPurchasesUpdated(ResponseCode.USER_CANCELED.getValue(),
           Collections.<Purchase>emptyList());
     } else {
       logError("Purchase failed. Result code: " + resultCode + ". Response: " + getResponseDesc(
           responseCode));
+      sdkAnalytics.sendPurchaseStatusEvent("error", getResponseDesc(responseCode));
       purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.getValue(),
           Collections.<Purchase>emptyList());
     }

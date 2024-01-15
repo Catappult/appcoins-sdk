@@ -11,13 +11,11 @@ object IndicativeAnalytics : Serializable {
   fun setIndicativeSuperProperties(
     packageName: String?,
     versionCode: Int?,
-    skuDetails: String?,
     deviceInformation: DeviceInformation
   ) {
     superProperties[AnalyticsSuperLabels.GAME_PACKAGE_NAME] = packageName ?: ""
     superProperties[AnalyticsSuperLabels.SDK_VERSION_CODE] = versionCode ?: ""
     superProperties[AnalyticsSuperLabels.SDK_PACKAGE] = "android-billing"
-    superProperties[AnalyticsSuperLabels.SKU_NAME] = skuDetails ?: ""
     superProperties[AnalyticsSuperLabels.INSTANCE_ID] = instanceId
 
     // device information:
