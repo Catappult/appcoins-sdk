@@ -3,9 +3,12 @@ package com.appcoins.sdk.billing.helpers;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 import com.appcoins.billing.AppcoinsBilling;
 import com.appcoins.billing.sdk.BuildConfig;
+import com.appcoins.sdk.billing.ResponseCode;
 import com.appcoins.sdk.billing.payasguest.BillingRepository;
+import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 import com.appcoins.sdk.billing.service.BdsService;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -49,8 +52,22 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
 
   @Override public Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type,
       String developerPayload) throws RemoteException {
-    Bundle bundle =
-        appcoinsBilling.getBuyIntent(apiVersion, packageName, sku, type, developerPayload);
+    Log.w("CUSTOM_TAG", "AppcoinsBillingWrapper: getBuyIntent: ");
+    Bundle bundle = null;
+    for (PaymentFlowMethod method : WalletUtils.getPayflowMethodsList()) {
+      if (method instanceof PaymentFlowMethod.Wallet ||
+          method instanceof PaymentFlowMethod.GamesHub) {
+        bundle = WalletUtils.startServiceBind(method, appcoinsBilling,
+            apiVersion, sku, type, developerPayload);
+        if (bundle != null) {
+          break;
+        }
+      }
+    }
+    if (bundle == null) {
+      bundle = new Bundle();
+      bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.getValue());
+    }
     pendingIntentCaller.saveIntent(bundle);
     return bundle;
   }
