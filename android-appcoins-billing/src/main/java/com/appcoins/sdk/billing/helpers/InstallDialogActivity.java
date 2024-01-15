@@ -66,11 +66,7 @@ public class InstallDialogActivity extends Activity {
   private static final String INSTALL_BUTTON_COLOR = "#ffffbb33";
   private static final String INSTALL_BUTTON_TEXT_COLOR = "#ffffffff";
   private static final String GOOGLE_PLAY_URL =
-      "https://play.google.com/store/apps/details?id=" + BuildConfig.BDS_WALLET_PACKAGE_NAME;
-  private static final String CAFE_BAZAAR_APP_URL =
-      "bazaar://details?id=" + BuildConfig.CAFE_BAZAAR_WALLET_PACKAGE_NAME;
-  private static final String CAFE_BAZAAR_WEB_URL =
-      "https://cafebazaar.ir/app/" + BuildConfig.CAFE_BAZAAR_WALLET_PACKAGE_NAME;
+      "https://play.google.com/store/apps/details?id=" + BuildConfig.APPCOINS_WALLET_PACKAGE_NAME;
   private static final String FIRST_IMPRESSION_KEY = "first_impression";
   private final static String BUY_ITEM_PROPERTIES = "buy_item_properties";
   private final static String SDK_ANALYTICS = "sdk_analytics";
@@ -101,7 +97,7 @@ public class InstallDialogActivity extends Activity {
       firstImpression = savedInstanceState.getBoolean(FIRST_IMPRESSION_KEY, true);
     }
     String storeUrl = "market://details?id="
-        + BuildConfig.BDS_WALLET_PACKAGE_NAME
+        + BuildConfig.APPCOINS_WALLET_PACKAGE_NAME
         + "&utm_source=appcoinssdk&app_source="
         + this.getPackageName();
 
@@ -438,7 +434,7 @@ public class InstallDialogActivity extends Activity {
 
   private Intent buildStoreViewIntent(String storeUrl) {
     final Intent appStoreIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(storeUrl));
-    if (WalletUtils.getAptoideVersion() >= MINIMUM_APTOIDE_VERSION) {
+    if (WalletUtils.getAppInstalledVersion(BuildConfig.APTOIDE_PACKAGE_NAME) >= MINIMUM_APTOIDE_VERSION) {
       appStoreIntent.setPackage(BuildConfig.APTOIDE_PACKAGE_NAME);
     }
     return appStoreIntent;

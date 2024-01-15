@@ -29,18 +29,14 @@ import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.poa
 public class WalletUtils {
 
   private static final String URL_BROWSER = "https://play.google.com/store/apps/details?id="
-      + com.appcoins.billing.sdk.BuildConfig.BDS_WALLET_PACKAGE_NAME;
-  private static final String CAFE_BAZAAR_APP_URL =
-      "bazaar://details?id=" + BuildConfig.CAFE_BAZAAR_WALLET_PACKAGE_NAME;
-  private static final String CAFE_BAZAAR_WEB_URL =
-      "https://cafebazaar.ir/app/" + BuildConfig.CAFE_BAZAAR_WALLET_PACKAGE_NAME;
+      + com.appcoins.billing.sdk.BuildConfig.APPCOINS_WALLET_PACKAGE_NAME;
   public static Context context;
   private static String POA_NOTIFICATION_HEADS_UP = "POA_NOTIFICATION_HEADS_UP";
   private static int POA_NOTIFICATION_ID = 0;
   private static int MINIMUM_APTOIDE_VERSION = 9908;
   private static int UNINSTALLED_APTOIDE_VERSION_CODE = 0;
   private static String URL_INTENT_INSTALL = "market://details?id="
-      + BuildConfig.BDS_WALLET_PACKAGE_NAME
+      + BuildConfig.APPCOINS_WALLET_PACKAGE_NAME
       + "&utm_source=appcoinssdk&app_source=";
   private static String URL_APTOIDE_PARAMETERS = "&utm_source=appcoinssdk&app_source=";
   private static PendingIntent pendingIntent;

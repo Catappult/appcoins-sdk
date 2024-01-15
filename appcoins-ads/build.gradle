@@ -32,42 +32,36 @@ android {
   buildTypes {
     debug {
       minifyEnabled false
-      buildConfigField 'String', 'BDS_WALLET_PACKAGE_NAME',
-          project.BDS_WALLET_PACKAGE_NAME_DEV
-      buildConfigField "String", "ADVERTISEMENT_BIND_ACTION",
-          "\"" + project.APPCOINS_ADVERTISEMENT_BIND + "\""
+      buildConfigField 'String', 'APPCOINS_WALLET_PACKAGE_NAME',
+          project.APPCOINS_WALLET_PACKAGE_NAME_DEV
+      buildConfigField "String", "APPCOINS_WALLET_ADVERTISEMENT_BIND_ACTION",
+          project.APPCOINS_WALLET_ADVERTISEMENT_BIND_ACTION_DEV
       buildConfigField 'String', 'APTOIDE_PACKAGE_NAME',
           project.APTOIDE_PACKAGE_NAME_DEV
-      buildConfigField 'String', 'CAFE_BAZAAR_PACKAGE_NAME',
-          project.CAFE_BAZAAR_PACKAGE_NAME
-      buildConfigField 'String', 'CAFE_BAZAAR_WALLET_PACKAGE_NAME',
-          project.CAFE_BAZAAR_WALLET_PACKAGE_NAME
+
       buildConfigField 'String', 'SERVICE_BIND_LIST',
           "\"" + project.APTOIDE_PACKAGE_NAME_DEV.replace('\"', '') +
               "," +
-              project.BDS_WALLET_PACKAGE_NAME_DEV.replace('\"', '') +
+              project.APPCOINS_WALLET_PACKAGE_NAME_DEV.replace('\"', '') +
               "," +
-              project.CAFE_BAZAAR_WALLET_PACKAGE_NAME.replace('\"', '') +
+              project.GAMESHUB_PACKAGE_NAME_DEV.replace('\"', '') +
               "\""
     }
     release {
       minifyEnabled false
-      buildConfigField 'String', 'BDS_WALLET_PACKAGE_NAME',
-          project.BDS_WALLET_PACKAGE_NAME
-      buildConfigField "String", "ADVERTISEMENT_BIND_ACTION",
-          "\"" + project.APPCOINS_ADVERTISEMENT_BIND + "\""
+      buildConfigField 'String', 'APPCOINS_WALLET_PACKAGE_NAME',
+          project.APPCOINS_WALLET_PACKAGE_NAME
+      buildConfigField "String", "APPCOINS_WALLET_ADVERTISEMENT_BIND_ACTION",
+          project.APPCOINS_WALLET_ADVERTISEMENT_BIND_ACTION
       buildConfigField 'String', 'APTOIDE_PACKAGE_NAME',
           project.APTOIDE_PACKAGE_NAME
-      buildConfigField 'String', 'CAFE_BAZAAR_PACKAGE_NAME',
-          project.CAFE_BAZAAR_PACKAGE_NAME
-      buildConfigField 'String', 'CAFE_BAZAAR_WALLET_PACKAGE_NAME',
-          project.CAFE_BAZAAR_WALLET_PACKAGE_NAME
+
       buildConfigField 'String', 'SERVICE_BIND_LIST',
           "\"" + project.APTOIDE_PACKAGE_NAME.replace('\"', '') +
               "," +
-              project.BDS_WALLET_PACKAGE_NAME.replace('\"', '') +
+              project.APPCOINS_WALLET_PACKAGE_NAME.replace('\"', '') +
               "," +
-              project.CAFE_BAZAAR_WALLET_PACKAGE_NAME.replace('\"', '') +
+              project.GAMESHUB_PACKAGE_NAME.replace('\"', '') +
               "\""
       minifyEnabled false
     }

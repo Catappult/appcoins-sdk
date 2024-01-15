@@ -81,26 +81,21 @@ public class WalletUtils {
     }
   }
 
-  static int getAptoideVersion() {
-
-    final PackageInfo pInfo;
-    int versionCode = UNINSTALLED_APTOIDE_VERSION_CODE;
-
+  public static int getAppInstalledVersion(String packageName) {
     try {
-      pInfo = context.getPackageManager()
-          .getPackageInfo(BuildConfig.APTOIDE_PACKAGE_NAME, 0);
-
+      PackageInfo packageInfo = context.getPackageManager()
+          .getPackageInfo(packageName, 0);
       //VersionCode is deprecated for api 28
       if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        versionCode = (int) pInfo.getLongVersionCode();
+        return (int) packageInfo.getLongVersionCode();
       } else {
         //noinspection deprecation
-        versionCode = pInfo.versionCode;
+        return packageInfo.versionCode;
       }
     } catch (PackageManager.NameNotFoundException e) {
       e.printStackTrace();
+      return -1;
     }
-    return versionCode;
   }
 
   public static void initIap(Context context) {
