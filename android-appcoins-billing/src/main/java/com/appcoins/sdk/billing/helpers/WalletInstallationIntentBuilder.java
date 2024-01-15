@@ -7,9 +7,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import com.appcoins.billing.sdk.BuildConfig;
 
-import static com.appcoins.sdk.billing.helpers.CafeBazaarUtils.getUserCountry;
-import static com.appcoins.sdk.billing.helpers.CafeBazaarUtils.userFromIran;
-
 public class WalletInstallationIntentBuilder {
 
   private final static int MINIMUM_APTOIDE_VERSION = 9908;
@@ -32,19 +29,6 @@ public class WalletInstallationIntentBuilder {
   }
 
   public Intent getWalletInstallationIntent() {
-    final Intent cafeBazaarIntent = buildBrowserIntent(CAFE_BAZAAR_APP_URL);
-    if (WalletUtils.isAppInstalled(BuildConfig.CAFE_BAZAAR_PACKAGE_NAME, packageManager)
-        && isAbleToRedirect(cafeBazaarIntent)) {
-      cafeBazaarIntent.setPackage(BuildConfig.CAFE_BAZAAR_PACKAGE_NAME);
-      return cafeBazaarIntent;
-    } else if (userFromIran(getUserCountry(context))) {
-      return startActivityForBrowser(CAFE_BAZAAR_WEB_URL);
-    } else {
-      return redirectToRemainingStores(storeUrl);
-    }
-  }
-
-  private Intent redirectToRemainingStores(String storeUrl) {
     Intent storeIntent = buildStoreViewIntent(storeUrl);
     if (isAbleToRedirect(storeIntent)) {
       return storeIntent;

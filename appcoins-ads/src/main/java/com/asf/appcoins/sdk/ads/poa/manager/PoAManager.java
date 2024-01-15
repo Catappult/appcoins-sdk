@@ -271,7 +271,7 @@ public class PoAManager
   }
 
   @OnLifecycleEvent(Lifecycle.Event.ON_START) public void onForeground() {
-    isWalletInstalled = WalletUtils.hasWalletInstalled();
+    isWalletInstalled = WalletUtils.hasBillingServiceInstalled();
     foreground = true;
 
     if (isWalletInstalled) {

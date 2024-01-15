@@ -1,8 +1,6 @@
 package com.appcoins.sdk.billing.helpers.translations;
 
 import android.content.Context;
-import com.appcoins.billing.sdk.BuildConfig;
-import com.appcoins.sdk.billing.helpers.WalletUtils;
 import java.util.List;
 import java.util.Locale;
 
@@ -35,12 +33,6 @@ public class TranslationsRepository {
 
   private void fetchTranslations() {
     Locale locale = Locale.getDefault();
-    if (WalletUtils.getIabAction()
-        .equals(BuildConfig.CAFE_BAZAAR_IAB_BIND_ACTION)) {
-      if (needsToRefreshModel(locale.getLanguage(), locale.getCountry()) || languageFromIran()) {
-        translate("fa", "IR");
-      }
-    }
     if (needsToRefreshModel(locale.getLanguage(), locale.getCountry())) {
       translate(locale.getLanguage(), locale.getCountry());
     }

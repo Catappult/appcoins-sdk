@@ -4,13 +4,13 @@ import android.content.Context;
 import android.telephony.TelephonyManager;
 import java.util.Locale;
 
-class CafeBazaarUtils {
+public class UserCountryUtils {
 
   static boolean userFromIran(String userCountry) {
     return userCountry.equalsIgnoreCase("ir") || userCountry.equalsIgnoreCase("iran");
   }
 
-  static String getUserCountry(Context context) {
+  public static String getUserCountry(Context context) {
     TelephonyManager telephonyManager =
         (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
     String userCountry = Locale.getDefault()

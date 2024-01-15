@@ -41,8 +41,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import static android.graphics.Typeface.BOLD;
-import static com.appcoins.sdk.billing.helpers.CafeBazaarUtils.getUserCountry;
-import static com.appcoins.sdk.billing.helpers.CafeBazaarUtils.userFromIran;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.appcoins_wallet;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_body;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_close_button;
@@ -115,7 +113,7 @@ public class InstallDialogActivity extends Activity {
 
   @Override protected void onResume() {
     super.onResume();
-    if (WalletUtils.hasWalletInstalled()) {
+    if (WalletUtils.hasBillingServiceInstalled()) {
       showLoadingDialog();
       sdkAnalytics.installWalletAptoideSuccess();
       appcoinsBillingStubHelper.createRepository(new StartPurchaseAfterBindListener() {
@@ -306,24 +304,12 @@ public class InstallDialogActivity extends Activity {
     installButton.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
         sdkAnalytics.walletInstallClick("install_wallet");
-        redirectToWalletInstallation(storeUrl);
+        redirectToRemainingStores(storeUrl);
       }
     });
     return installButton;
   }
 
-  private void redirectToWalletInstallation(final String storeUrl) {
-    final Intent cafeBazaarIntent = buildBrowserIntent(CAFE_BAZAAR_APP_URL);
-    if (WalletUtils.isAppInstalled(BuildConfig.CAFE_BAZAAR_PACKAGE_NAME, getPackageManager())
-        && isAbleToRedirect(cafeBazaarIntent)) {
-      cafeBazaarIntent.setPackage(BuildConfig.CAFE_BAZAAR_PACKAGE_NAME);
-      startActivity(cafeBazaarIntent);
-    } else if (userFromIran(getUserCountry(getApplicationContext()))) {
-      startActivityForBrowser(CAFE_BAZAAR_WEB_URL);
-    } else {
-      redirectToRemainingStores(storeUrl);
-    }
-  }
 
   private void redirectToRemainingStores(String storeUrl) {
     Intent storeIntent = buildStoreViewIntent(storeUrl);

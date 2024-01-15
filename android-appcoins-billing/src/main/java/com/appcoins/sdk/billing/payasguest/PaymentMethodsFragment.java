@@ -169,7 +169,7 @@ public class PaymentMethodsFragment extends Fragment implements PaymentMethodsVi
 
   @Override public void onResume() {
     super.onResume();
-    if (WalletUtils.hasWalletInstalled()) {
+    if (WalletUtils.hasBillingServiceInstalled()) {
       layout.getDialogLayout()
           .setVisibility(View.GONE);
       layout.getIntentLoadingView()

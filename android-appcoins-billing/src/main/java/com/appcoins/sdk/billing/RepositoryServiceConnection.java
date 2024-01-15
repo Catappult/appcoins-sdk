@@ -8,13 +8,14 @@ import android.os.IBinder;
 import android.util.Log;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
+import com.appcoins.sdk.billing.payflow.PayflowManager;
 
 public class RepositoryServiceConnection implements ServiceConnection, RepositoryConnection {
   private static final String TAG = RepositoryServiceConnection.class.getSimpleName();
   private final Context context;
   private final ConnectionLifeCycle connectionLifeCycle;
   private AppCoinsBillingStateListener listener;
-  private boolean hasWalletInstalled;
+  private boolean hasBillingServiceInstalled;
 
   public RepositoryServiceConnection(Context context, ConnectionLifeCycle connectionLifeCycle) {
     this.context = context;
@@ -53,17 +54,17 @@ public class RepositoryServiceConnection implements ServiceConnection, Repositor
         WalletUtils.setBillingServiceInfoToBind(WalletUtils.getPayflowMethodsList().get(0));
       }
     } else {
-      hasWalletInstalled = false;
+      hasBillingServiceInstalled = false;
     }
     String packageName = WalletUtils.getBillingServicePackageName();
-    String iabAction = WalletUtils.getIabAction();
+    String iabAction = WalletUtils.getBillingServiceIabAction();
     Intent serviceIntent = new Intent(iabAction);
     serviceIntent.setPackage(packageName);
     WalletBinderUtil.bindService(context, serviceIntent, this, Context.BIND_AUTO_CREATE);
   }
 
   @Override public void endConnection() {
-    if (hasWalletInstalled) {
+    if (hasBillingServiceInstalled) {
       context.unbindService(this);
     }
     connectionLifeCycle.onDisconnect(listener);

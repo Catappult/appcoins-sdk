@@ -16,8 +16,9 @@ public class WalletBinderUtil {
 
   public static BindType bindType = BindType.AIDL;
 
-  public static boolean walletNotInstalledBehaviour(ServiceConnection connection) {
-    bindType = BindType.WALLET_NOT_INSTALLED;
+  public static boolean BillingServiceNotInstalledBehaviour(ServiceConnection connection) {
+    Log.w("CUSTOM_TAG", "WalletBinderUtil: bindService: BillingServiceNotInstalledBehaviour");
+    bindType = BindType.BILLING_SERVICE_NOT_INSTALLED;
     connection.onServiceConnected(
         new ComponentName("", AppcoinsBillingStubHelper.class.getSimpleName()),
         new IBinderWalletNotInstalled());
@@ -36,7 +37,7 @@ public class WalletBinderUtil {
     return true;
   }
 
-  public static boolean walletInstalledBehaviour(Context context,
+  public static boolean BillingServiceInstalledBehaviour(Context context,
       final ServiceConnection connection, Intent serviceIntent, int serviceIntentFlags) {
     if (context.bindService(serviceIntent, connection, serviceIntentFlags)) {
       bindType = BindType.AIDL;
@@ -48,10 +49,12 @@ public class WalletBinderUtil {
 
   public static boolean bindService(Context context, Intent serviceIntent,
       ServiceConnection connection, int serviceIntentFlags) {
-    if (WalletUtils.hasWalletInstalled()) {
-      return walletInstalledBehaviour(context, connection, serviceIntent, serviceIntentFlags);
+    if (WalletUtils.hasBillingServiceInstalled()) {
+      Log.w("CUSTOM_TAG", "WalletBinderUtil: bindService: BillingServiceInstalledBehaviour servicIntent " + serviceIntent + " serviceIntentFlags " + serviceIntentFlags + " connection " + connection);
+      return BillingServiceInstalledBehaviour(context, connection, serviceIntent,
+          serviceIntentFlags);
     } else {
-      return walletNotInstalledBehaviour(connection);
+      return BillingServiceNotInstalledBehaviour(connection);
     }
   }
 
