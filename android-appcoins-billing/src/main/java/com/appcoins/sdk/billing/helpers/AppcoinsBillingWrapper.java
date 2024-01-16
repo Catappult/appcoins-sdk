@@ -52,17 +52,9 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
 
   @Override public Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type,
       String developerPayload) throws RemoteException {
-    Bundle bundle = null;
-    for (PaymentFlowMethod method : WalletUtils.getPayflowMethodsList()) {
-      if (method instanceof PaymentFlowMethod.Wallet ||
-          method instanceof PaymentFlowMethod.GamesHub) {
-        bundle = WalletUtils.startServiceBind(method, appcoinsBilling,
-            apiVersion, sku, type, developerPayload);
-        if (bundle != null) {
-          break;
-        }
-      }
-    }
+    Bundle bundle;
+    bundle = WalletUtils.startServiceBind(appcoinsBilling,
+        apiVersion, sku, type, developerPayload);
     if (bundle == null) {
       bundle = new Bundle();
       bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.getValue());

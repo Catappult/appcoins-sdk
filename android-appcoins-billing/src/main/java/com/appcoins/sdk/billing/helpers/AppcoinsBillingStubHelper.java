@@ -116,35 +116,30 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
 
     new PayflowManager(packageName).getPayflowPriority();
 
-    Bundle bundle = new Bundle();
+    Bundle bundle = null;
     if (WalletUtils.hasBillingServiceInstalled()) {
-      for (PaymentFlowMethod method : WalletUtils.getPayflowMethodsList()) {
-        if (method instanceof PaymentFlowMethod.Wallet ||
-            method instanceof PaymentFlowMethod.GamesHub) {
-          bundle = WalletUtils.startServiceBind(method, serviceAppcoinsBilling,
-              apiVersion, sku, type, developerPayload);
-          if (bundle != null) {
-            break;
-          }
-        }
-      }
+      bundle = WalletUtils.startServiceBind(serviceAppcoinsBilling,
+            apiVersion, sku, type, developerPayload);
       if (bundle == null) {
         bundle = new Bundle();
         bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.getValue());
       }
-      return bundle;
     } else {
-      setBuyItemPropertiesForPayflow(packageName, apiVersion, sku, type, developerPayload);
-      for (PaymentFlowMethod method : WalletUtils.getPayflowMethodsList()) {
-        if (method instanceof PaymentFlowMethod.PayAsAGuest) {
-          bundle = WalletUtils.startPayAsGuest(buyItemProperties);
-        } else if (method instanceof PaymentFlowMethod.WebFirstPayment) {
-          // TODO Perform action for WebFirstPayment
+      if (hasRequiredFields(type, sku)) {
+        for (PaymentFlowMethod method : WalletUtils.getPayflowMethodsList()) {
+          if (method instanceof PaymentFlowMethod.PayAsAGuest) {
+            bundle = WalletUtils.startPayAsGuest(buyItemProperties);
+          } else if (method instanceof PaymentFlowMethod.WebFirstPayment) {
+            // TODO Perform action for WebFirstPayment
+          }
         }
-        return bundle;
       }
-      return WalletUtils.startInstallFlow(buyItemProperties);
+      if (bundle == null) {
+        setBuyItemPropertiesForPayflow(packageName, apiVersion, sku, type, developerPayload);
+        bundle = WalletUtils.startInstallFlow(buyItemProperties);
+      }
     }
+    return bundle;
   }
 
   private void setBuyItemPropertiesForPayflow(String packageName, int apiVersion, String sku,

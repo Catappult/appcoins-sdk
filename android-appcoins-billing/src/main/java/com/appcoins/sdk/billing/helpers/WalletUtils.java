@@ -47,18 +47,42 @@ public class WalletUtils {
     return billingPackageName != null;
   }
 
-  static Bundle startServiceBind(PaymentFlowMethod method, AppcoinsBilling serviceAppcoinsBilling,
-      int apiVersion, String sku, String type, String developerPayload) {
+  public static Bundle startServiceBind(AppcoinsBilling serviceAppcoinsBilling, int apiVersion,
+      String sku, String type, String developerPayload) {
     try {
-      Log.d(WalletUtils.class.getSimpleName(), "startServiceBind: " + method);
-      sdkAnalytics.sendCallBindServiceAttemptEvent(method.getName(), method.getPriority());
-      return serviceAppcoinsBilling.getBuyIntent(apiVersion, context.getPackageName(), sku, type,
-          developerPayload);
-    } catch (Exception e) {
-      sdkAnalytics.sendCallBindServiceFailEvent(method.getName(), method.getPriority());
-      e.printStackTrace();
+      if (paymentFlowMethods.isEmpty() && isAppAvailableToBind(BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION)) {
+        return handleBindServiceAttempt(serviceAppcoinsBilling, "wallet", 1, apiVersion, sku, type, developerPayload);
+      }
+      for (PaymentFlowMethod method : paymentFlowMethods) {
+        if (method instanceof PaymentFlowMethod.Wallet || method instanceof PaymentFlowMethod.GamesHub) {
+          Bundle bundle = handleBindServiceAttempt(serviceAppcoinsBilling, method.getName(), method.getPriority(),
+              apiVersion, sku, type, developerPayload);
+          if (bundle != null) {
+            return bundle;
+          }
+        }
+      }
       return null;
+    } catch (Exception e) {
+      return handleBindServiceFail(e, "wallet", 1);
     }
+  }
+
+  private static Bundle handleBindServiceAttempt(AppcoinsBilling serviceAppcoinsBilling, String methodName,
+      int methodPriority, int apiVersion, String sku,
+      String type, String developerPayload) {
+    try {
+      sdkAnalytics.sendCallBindServiceAttemptEvent(methodName, methodPriority);
+      return serviceAppcoinsBilling.getBuyIntent(apiVersion, context.getPackageName(), sku, type, developerPayload);
+    } catch (Exception e) {
+      return handleBindServiceFail(e, methodName, methodPriority);
+    }
+  }
+
+  private static Bundle handleBindServiceFail(Exception e, String methodName, int methodPriority) {
+    sdkAnalytics.sendCallBindServiceFailEvent(methodName, methodPriority);
+    e.printStackTrace();
+    return null;
   }
 
   public static Bundle startPayAsGuest(BuyItemProperties buyItemProperties) {
@@ -89,7 +113,7 @@ public class WalletUtils {
     return response;
   }
 
-  static Bundle startInstallFlow(BuyItemProperties buyItemProperties) {
+  public static Bundle startInstallFlow(BuyItemProperties buyItemProperties) {
     Intent intent;
     if (WalletUtils.deviceSupportsWallet(Build.VERSION.SDK_INT)) {
       intent = InstallDialogActivity.newIntent(context, buyItemProperties, sdkAnalytics);
@@ -109,6 +133,7 @@ public class WalletUtils {
 
   public static void setPayflowMethodsList(List<PaymentFlowMethod> paymentFlowMethodsList) {
     if (paymentFlowMethodsList != null) {
+      Log.d("CUSTOM_TAG", "WalletUtils: setPayflowMethodsList: paymentFlowMethods updated with: " + paymentFlowMethodsList);
       paymentFlowMethods = paymentFlowMethodsList;
     }
   }
@@ -117,6 +142,7 @@ public class WalletUtils {
     if (paymentFlowMethods == null || paymentFlowMethods.isEmpty()) {
       return Collections.emptyList();
     } else {
+      Log.d("CUSTOM_TAG", "WalletUtils: setPayflowMethodsList: getPayflowMethodsList: " + paymentFlowMethods);
       return paymentFlowMethods;
     }
   }
