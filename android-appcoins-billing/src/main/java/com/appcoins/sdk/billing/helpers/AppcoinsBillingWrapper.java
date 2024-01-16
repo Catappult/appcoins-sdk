@@ -52,7 +52,6 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
 
   @Override public Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type,
       String developerPayload) throws RemoteException {
-    Log.w("CUSTOM_TAG", "AppcoinsBillingWrapper: getBuyIntent: ");
     Bundle bundle = null;
     for (PaymentFlowMethod method : WalletUtils.getPayflowMethodsList()) {
       if (method instanceof PaymentFlowMethod.Wallet ||

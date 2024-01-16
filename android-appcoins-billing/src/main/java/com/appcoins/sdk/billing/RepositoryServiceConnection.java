@@ -47,15 +47,8 @@ public class RepositoryServiceConnection implements ServiceConnection, Repositor
     WalletUtils.getSdkAnalytics().sendStartConnetionEvent();
 
     new PayflowManager(context.getPackageName()).getPayflowPriority();
+    hasBillingServiceInstalled = WalletUtils.hasBillingServiceInstalled();
 
-    if (WalletUtils.hasBillingServiceInstalled()) {
-      hasBillingServiceInstalled = true;
-      if (!WalletUtils.getPayflowMethodsList().isEmpty()) {
-        WalletUtils.setBillingServiceInfoToBind(WalletUtils.getPayflowMethodsList().get(0));
-      }
-    } else {
-      hasBillingServiceInstalled = false;
-    }
     String packageName = WalletUtils.getBillingServicePackageName();
     String iabAction = WalletUtils.getBillingServiceIabAction();
     Intent serviceIntent = new Intent(iabAction);

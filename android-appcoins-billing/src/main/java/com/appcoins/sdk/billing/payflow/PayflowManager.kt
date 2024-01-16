@@ -1,6 +1,5 @@
 package com.appcoins.sdk.billing.payflow
 
-import android.util.Log
 import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.helpers.UserCountryUtils.getUserCountry
 import com.appcoins.sdk.billing.helpers.WalletUtils
@@ -14,7 +13,6 @@ class PayflowManager(val packageName: String) {
   fun getPayflowPriority() {
     val payflowListener = object : PayflowListener {
       override fun onResponse(payflowList: List<PaymentFlowMethod>?) {
-        Log.w("CUSTOM_TAG", "PayflowManager: getPayflowPriority: onResponse list $payflowList")
         if (!payflowList.isNullOrEmpty()) {
           val sortedMethods = payflowList.sortedBy { it.priority }
           setPayflowMethodsList(sortedMethods)

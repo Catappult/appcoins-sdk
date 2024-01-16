@@ -114,13 +114,6 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
   @Override public Bundle getBuyIntent(int apiVersion, final String packageName, final String sku,
       final String type, String developerPayload) {
 
-    Log.w("CUSTOM_TAG", "AppcoinsBillingStubHelper: getBuyIntent: packageName = ["
-        + packageName
-        + "] , sku = ["
-        + sku
-        + "] , type = ["
-        + type
-        + "]");
     new PayflowManager(packageName).getPayflowPriority();
 
     Bundle bundle = new Bundle();
@@ -309,18 +302,10 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
     Intent serviceIntent = new Intent(iabAction);
     serviceIntent.setPackage(packageName);
 
-    Log.w("CUSTOM_TAG", "AppcoinsBillingStubHelper: createRepository: packageName = ["
-        + packageName
-        + "] , iabAction = ["
-        + iabAction
-        + "] , context = ["
-        + context
-        + "]");
-
     if (WalletUtils.isAppAvailableToBind(iabAction)) {
       WalletBinderUtil.bindService(context, serviceIntent, new ServiceConnection() {
         @Override public void onServiceConnected(ComponentName name, IBinder service) {
-          serviceAppcoinsBilling = Stub.asInterface(service, name.getClassName());
+          serviceAppcoinsBilling = Stub.asInterface(service);
           startPurchaseAfterConnectionListener.startPurchaseAfterBind();
           Log.d(TAG, "onServiceConnected() called service = [" + serviceAppcoinsBilling + "]");
         }
@@ -352,11 +337,10 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
   }
 
   public static abstract class Stub {
-    public static AppcoinsBilling asInterface(IBinder service, String componentName) {
-      Log.w("CUSTOM_TAG", "Stub: asInterface: bindType " + WalletBinderUtil.getBindType() + " service " + service + " componentName " + componentName);
+    public static AppcoinsBilling asInterface(IBinder service) {
+      Log.d(TAG, "Stub: asInterface: bindType " + WalletBinderUtil.getBindType() + " service " + service);
 
       if (WalletBinderUtil.getBindType() == BindType.BILLING_SERVICE_NOT_INSTALLED) {
-        Log.w("CUSTOM_TAG", "Stub: asInterface: BILLING_SERVICE_NOT_INSTALLED case ");
         return AppcoinsBillingStubHelper.getInstance();
       } else {
         SharedPreferencesRepository sharedPreferencesRepository =
@@ -372,10 +356,8 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
               MessageRequesterFactory.create(WalletUtils.getLifecycleActivityProvider(),
                   priorityPackage, "appcoins://billing/communication/processor/1",
                   "appcoins://billing/communication/requester/1", BdsService.TIME_OUT_IN_MILLIS);
-          Log.w("CUSTOM_TAG", "Stub: asInterface: URI_CONNECTION case ");
           appcoinsBilling = new UriCommunicationAppcoinsBilling(messageRequester);
         } else {
-          Log.w("CUSTOM_TAG", "Stub: asInterface: AIDL case, service = [" + service + "] ");
           appcoinsBilling = AppcoinsBilling.Stub.asInterface(service);
         }
         return new AppcoinsBillingWrapper(appcoinsBilling,
