@@ -42,16 +42,15 @@ public class WalletUtils {
 
   public static boolean hasBillingServiceInstalled() {
     if (billingPackageName == null) {
-      setDefaultBillingServiceInfoToBind();
+      setBillingServiceInfoToBind();
     }
     return billingPackageName != null;
   }
 
   static Bundle startServiceBind(PaymentFlowMethod method, AppcoinsBilling serviceAppcoinsBilling,
       int apiVersion, String sku, String type, String developerPayload) {
-    Log.w("CUSTOM_TAG", "WalletUtils: startServiceBind: method to start = " + method);
-    setBillingServiceInfoToBind(method);
     try {
+      Log.d(WalletUtils.class.getSimpleName(), "startServiceBind: " + method);
       sdkAnalytics.sendCallBindServiceAttemptEvent(method.getName(), method.getPriority());
       return serviceAppcoinsBilling.getBuyIntent(apiVersion, context.getPackageName(), sku, type,
           developerPayload);
@@ -124,18 +123,25 @@ public class WalletUtils {
 
   public static String getBillingServicePackageName() {
     if (billingPackageName == null) {
-      setDefaultBillingServiceInfoToBind();
+      setBillingServiceInfoToBind();
     }
     return billingPackageName;
   }
 
   public static String getBillingServiceIabAction() {
     if (billingIabAction == null) {
-      setDefaultBillingServiceInfoToBind();
+      setBillingServiceInfoToBind();
     }
     return billingIabAction;
   }
 
+  public static void setBillingServiceInfoToBind() {
+    if ( paymentFlowMethods == null && billingPackageName == null) {
+      setDefaultBillingServiceInfoToBind();
+    } else if (paymentFlowMethods != null && !paymentFlowMethods.isEmpty()) {
+      setBillingServiceInfoToBind(paymentFlowMethods.get(0));
+    }
+  }
   public static void setDefaultBillingServiceInfoToBind() {
     if (isAppAvailableToBind(BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION)) {
       billingPackageName = BuildConfig.APPCOINS_WALLET_PACKAGE_NAME;

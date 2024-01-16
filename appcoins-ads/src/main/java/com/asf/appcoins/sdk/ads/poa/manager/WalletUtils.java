@@ -20,7 +20,7 @@ import com.appcoins.sdk.billing.helpers.translations.TranslationsRepository;
 import com.asf.appcoins.sdk.ads.BuildConfig;
 import java.util.Locale;
 
-import static com.appcoins.sdk.billing.helpers.WalletUtils.setDefaultBillingServiceInfoToBind;
+import static com.appcoins.sdk.billing.helpers.WalletUtils.setBillingServiceInfoToBind;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.poa_wallet_not_installed_notification_body;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.poa_wallet_not_installed_notification_title;
 
@@ -50,14 +50,14 @@ public class WalletUtils {
 
   public static boolean hasBillingServiceInstalled() {
     if (billingPackageName == null) {
-      setDefaultBillingServiceInfoToBind();
+      setBillingServiceInfoToBind();
     }
     return billingPackageName != null;
   }
 
   public static String getBillingServicePackageName() {
     if (billingPackageName == null) {
-      setDefaultBillingServiceInfoToBind();
+      setBillingServiceInfoToBind();
     }
     return billingPackageName;
   }
