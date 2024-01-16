@@ -33,7 +33,7 @@ public class EventLogger implements Runnable {
     int sdkVersionCode = BuildConfig.VERSION_CODE;
     String sdkPackageName = BuildConfig.LIBRARY_PACKAGE_NAME;
 
-    Boolean hasWallet = WalletUtils.hasWalletInstalled();
+    Boolean hasWallet = WalletUtils.hasBillingServiceInstalled();
 
     JSONObject jsonObj = new JSONObject();
     jsonObj.put("aptoide_vercode", Integer.toString(sdkVersionCode));

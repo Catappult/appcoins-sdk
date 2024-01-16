@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ResolveInfo;
 import android.os.IBinder;
-import android.util.Log;
 import com.asf.appcoins.sdk.ads.BuildConfig;
 import com.asf.appcoins.sdk.ads.poa.manager.WalletUtils;
 import java.util.List;
@@ -33,7 +32,7 @@ public class AppcoinsAdvertisementConnection implements ServiceConnection {
 
   public void startConnection(final AppcoinsAdvertisementListenner appcoinsAdvertisementListenner) {
     this.listenner = appcoinsAdvertisementListenner;
-    Intent serviceIntent = new Intent(BuildConfig.ADVERTISEMENT_BIND_ACTION);
+    Intent serviceIntent = new Intent(BuildConfig.APPCOINS_WALLET_ADVERTISEMENT_BIND_ACTION);
 
     serviceIntent.setPackage(WalletUtils.getBillingServicePackageName());
 

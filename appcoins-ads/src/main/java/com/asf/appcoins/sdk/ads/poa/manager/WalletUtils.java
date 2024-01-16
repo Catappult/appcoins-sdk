@@ -11,7 +11,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
@@ -19,28 +18,23 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import com.appcoins.sdk.billing.helpers.translations.TranslationsRepository;
 import com.asf.appcoins.sdk.ads.BuildConfig;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
+import static com.appcoins.sdk.billing.helpers.WalletUtils.setBillingServiceInfoToBind;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.poa_wallet_not_installed_notification_body;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.poa_wallet_not_installed_notification_title;
 
 public class WalletUtils {
 
   private static final String URL_BROWSER = "https://play.google.com/store/apps/details?id="
-      + com.appcoins.billing.sdk.BuildConfig.BDS_WALLET_PACKAGE_NAME;
-  private static final String CAFE_BAZAAR_APP_URL =
-      "bazaar://details?id=" + BuildConfig.CAFE_BAZAAR_WALLET_PACKAGE_NAME;
-  private static final String CAFE_BAZAAR_WEB_URL =
-      "https://cafebazaar.ir/app/" + BuildConfig.CAFE_BAZAAR_WALLET_PACKAGE_NAME;
+      + com.appcoins.billing.sdk.BuildConfig.APPCOINS_WALLET_PACKAGE_NAME;
   public static Context context;
   private static String POA_NOTIFICATION_HEADS_UP = "POA_NOTIFICATION_HEADS_UP";
   private static int POA_NOTIFICATION_ID = 0;
   private static int MINIMUM_APTOIDE_VERSION = 9908;
   private static int UNINSTALLED_APTOIDE_VERSION_CODE = 0;
   private static String URL_INTENT_INSTALL = "market://details?id="
-      + BuildConfig.BDS_WALLET_PACKAGE_NAME
+      + BuildConfig.APPCOINS_WALLET_PACKAGE_NAME
       + "&utm_source=appcoinssdk&app_source=";
   private static String URL_APTOIDE_PARAMETERS = "&utm_source=appcoinssdk&app_source=";
   private static PendingIntent pendingIntent;
@@ -54,56 +48,16 @@ public class WalletUtils {
     context = cont;
   }
 
-  static boolean hasWalletInstalled() {
+  public static boolean hasBillingServiceInstalled() {
     if (billingPackageName == null) {
-      getPackageToBind();
+      setBillingServiceInfoToBind();
     }
     return billingPackageName != null;
   }
 
-  private static void getPackageToBind() {
-    List<String> intentServicesResponse = new ArrayList<>();
-
-    if (isAppInstalled(com.appcoins.billing.sdk.BuildConfig.CAFE_BAZAAR_PACKAGE_NAME,
-        context.getPackageManager()) || userFromIran(getUserCountry(context))) {
-      iabAction = com.appcoins.billing.sdk.BuildConfig.CAFE_BAZAAR_IAB_BIND_ACTION;
-    } else {
-      iabAction = com.appcoins.billing.sdk.BuildConfig.IAB_BIND_ACTION;
-    }
-
-    Intent serviceIntent = new Intent(iabAction);
-
-    List<ResolveInfo> intentServices = context.getPackageManager()
-        .queryIntentServices(serviceIntent, 0);
-
-    if (intentServices != null && intentServices.size() > 0) {
-      for (ResolveInfo intentService : intentServices) {
-        intentServicesResponse.add(intentService.serviceInfo.packageName);
-      }
-      billingPackageName = chooseServiceToBind(intentServicesResponse, iabAction);
-    }
-  }
-
-  private static String chooseServiceToBind(List<String> packageNameServices, String iabAction) {
-    if (iabAction.equals(com.appcoins.billing.sdk.BuildConfig.CAFE_BAZAAR_IAB_BIND_ACTION)) {
-      if (packageNameServices.contains(BuildConfig.CAFE_BAZAAR_WALLET_PACKAGE_NAME)) {
-        return BuildConfig.CAFE_BAZAAR_WALLET_PACKAGE_NAME;
-      }
-      return null;
-    } else {
-      String[] packagesOrdered = BuildConfig.SERVICE_BIND_LIST.split(",");
-      for (String address : packagesOrdered) {
-        if (packageNameServices.contains(address)) {
-          return address;
-        }
-      }
-    }
-    return null;
-  }
-
   public static String getBillingServicePackageName() {
     if (billingPackageName == null) {
-      getPackageToBind();
+      setBillingServiceInfoToBind();
     }
     return billingPackageName;
   }
@@ -139,17 +93,7 @@ public class WalletUtils {
 
   static void createInstallWalletNotification() {
     PackageManager packageManager = context.getPackageManager();
-    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(CAFE_BAZAAR_APP_URL));
-    if (isAppInstalled(BuildConfig.CAFE_BAZAAR_PACKAGE_NAME, packageManager) && isAbleToRedirect(
-        intent, packageManager)) {
-      intent.setPackage(BuildConfig.CAFE_BAZAAR_PACKAGE_NAME);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-      buildNotification(intent);
-    } else if (userFromIran(getUserCountry(context))) {
-      intent = getNotificationIntentForBrowser(CAFE_BAZAAR_WEB_URL, packageManager);
-    } else {
-      intent = redirectToRemainingStores(packageManager);
-    }
+    Intent intent = redirectToRemainingStores(packageManager);
     if (intent != null) {
       createNotification(intent);
     }
@@ -256,7 +200,7 @@ public class WalletUtils {
   @SuppressLint("NewApi")
   private static Notification buildNotification(String channelId, Intent intent) {
     Notification.Builder builder;
-    pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+    pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
     builder = new Notification.Builder(context, channelId);
     builder.setContentIntent(pendingIntent);
 
@@ -306,7 +250,7 @@ public class WalletUtils {
   private static Notification buildNotificationOlderVersion(Intent intent) {
 
     Notification.Builder builder;
-    pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+    pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
     builder = new Notification.Builder(context);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {

@@ -41,8 +41,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import static android.graphics.Typeface.BOLD;
-import static com.appcoins.sdk.billing.helpers.CafeBazaarUtils.getUserCountry;
-import static com.appcoins.sdk.billing.helpers.CafeBazaarUtils.userFromIran;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.appcoins_wallet;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_body;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_close_button;
@@ -66,11 +64,7 @@ public class InstallDialogActivity extends Activity {
   private static final String INSTALL_BUTTON_COLOR = "#ffffbb33";
   private static final String INSTALL_BUTTON_TEXT_COLOR = "#ffffffff";
   private static final String GOOGLE_PLAY_URL =
-      "https://play.google.com/store/apps/details?id=" + BuildConfig.BDS_WALLET_PACKAGE_NAME;
-  private static final String CAFE_BAZAAR_APP_URL =
-      "bazaar://details?id=" + BuildConfig.CAFE_BAZAAR_WALLET_PACKAGE_NAME;
-  private static final String CAFE_BAZAAR_WEB_URL =
-      "https://cafebazaar.ir/app/" + BuildConfig.CAFE_BAZAAR_WALLET_PACKAGE_NAME;
+      "https://play.google.com/store/apps/details?id=" + BuildConfig.APPCOINS_WALLET_PACKAGE_NAME;
   private static final String FIRST_IMPRESSION_KEY = "first_impression";
   private final static String BUY_ITEM_PROPERTIES = "buy_item_properties";
   private final static String SDK_ANALYTICS = "sdk_analytics";
@@ -101,7 +95,7 @@ public class InstallDialogActivity extends Activity {
       firstImpression = savedInstanceState.getBoolean(FIRST_IMPRESSION_KEY, true);
     }
     String storeUrl = "market://details?id="
-        + BuildConfig.BDS_WALLET_PACKAGE_NAME
+        + BuildConfig.APPCOINS_WALLET_PACKAGE_NAME
         + "&utm_source=appcoinssdk&app_source="
         + this.getPackageName();
 
@@ -119,7 +113,7 @@ public class InstallDialogActivity extends Activity {
 
   @Override protected void onResume() {
     super.onResume();
-    if (WalletUtils.hasWalletInstalled()) {
+    if (WalletUtils.hasBillingServiceInstalled()) {
       showLoadingDialog();
       sdkAnalytics.installWalletAptoideSuccess();
       appcoinsBillingStubHelper.createRepository(new StartPurchaseAfterBindListener() {
@@ -310,24 +304,12 @@ public class InstallDialogActivity extends Activity {
     installButton.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
         sdkAnalytics.walletInstallClick("install_wallet");
-        redirectToWalletInstallation(storeUrl);
+        redirectToRemainingStores(storeUrl);
       }
     });
     return installButton;
   }
 
-  private void redirectToWalletInstallation(final String storeUrl) {
-    final Intent cafeBazaarIntent = buildBrowserIntent(CAFE_BAZAAR_APP_URL);
-    if (WalletUtils.isAppInstalled(BuildConfig.CAFE_BAZAAR_PACKAGE_NAME, getPackageManager())
-        && isAbleToRedirect(cafeBazaarIntent)) {
-      cafeBazaarIntent.setPackage(BuildConfig.CAFE_BAZAAR_PACKAGE_NAME);
-      startActivity(cafeBazaarIntent);
-    } else if (userFromIran(getUserCountry(getApplicationContext()))) {
-      startActivityForBrowser(CAFE_BAZAAR_WEB_URL);
-    } else {
-      redirectToRemainingStores(storeUrl);
-    }
-  }
 
   private void redirectToRemainingStores(String storeUrl) {
     Intent storeIntent = buildStoreViewIntent(storeUrl);
@@ -438,7 +420,7 @@ public class InstallDialogActivity extends Activity {
 
   private Intent buildStoreViewIntent(String storeUrl) {
     final Intent appStoreIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(storeUrl));
-    if (WalletUtils.getAptoideVersion() >= MINIMUM_APTOIDE_VERSION) {
+    if (WalletUtils.getAppInstalledVersion(BuildConfig.APTOIDE_PACKAGE_NAME) >= MINIMUM_APTOIDE_VERSION) {
       appStoreIntent.setPackage(BuildConfig.APTOIDE_PACKAGE_NAME);
     }
     return appStoreIntent;
