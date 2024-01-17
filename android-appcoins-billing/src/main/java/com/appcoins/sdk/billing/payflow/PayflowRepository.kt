@@ -1,6 +1,5 @@
 package com.appcoins.sdk.billing.payflow
 
-import android.util.Log
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.service.ServiceResponseListener
@@ -17,11 +16,6 @@ class PayflowRepository(private val bdsService: BdsService) {
     vanillaVersionCode: Int?,
     locale: String?,
   ) {
-    Log.w(
-      "CUSTOM_TAG",
-      "PayflowRepository: getPayflowPriority: packageName $packageName, packageVersionCode $packageVersionCode, sdkVersion, $sdkVersionCode, walletVersionCode $walletVersionCode, gamesHubVersionCode $gamesHubVersionCode, vanillaVersionCode $vanillaVersionCode, locale $locale"
-    )
-
     val queries: MutableMap<String, String> = LinkedHashMap()
     queries["package"] = packageName
     queries["package_vercode"] = packageVersionCode.toString()

@@ -121,22 +121,27 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
       bundle = WalletUtils.startServiceBind(serviceAppcoinsBilling,
             apiVersion, sku, type, developerPayload);
       if (bundle == null) {
+        Log.d(TAG, "Service is installed, but no bundle is available to handle the bind");
         bundle = new Bundle();
         bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.getValue());
       }
     } else {
-      if (hasRequiredFields(type, sku)) {
+      if (hasRequiredFields(type, sku) && !WalletUtils.getPayflowMethodsList().isEmpty()) {
         for (PaymentFlowMethod method : WalletUtils.getPayflowMethodsList()) {
           if (method instanceof PaymentFlowMethod.PayAsAGuest) {
+            Log.d(TAG, "Service is NOT installed and should StartPayAsGuest with buyItemProperties = [" + buyItemProperties + "]");
             bundle = WalletUtils.startPayAsGuest(buyItemProperties);
           } else if (method instanceof PaymentFlowMethod.WebFirstPayment) {
             // TODO Perform action for WebFirstPayment
           }
+          if (bundle != null) {
+            return bundle;
+          }
         }
-      }
-      if (bundle == null) {
+      } else {
+        Log.d(TAG, "Service is NOT installed and should start install flow with buyItemProperties = [" + buyItemProperties + "]");
         setBuyItemPropertiesForPayflow(packageName, apiVersion, sku, type, developerPayload);
-        bundle = WalletUtils.startInstallFlow(buyItemProperties);
+        return WalletUtils.startInstallFlow(buyItemProperties);
       }
     }
     return bundle;
@@ -333,7 +338,7 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
 
   public static abstract class Stub {
     public static AppcoinsBilling asInterface(IBinder service) {
-      Log.d(TAG, "Stub: asInterface: bindType " + WalletBinderUtil.getBindType() + " service " + service);
+      Log.d(TAG, "Stub: BindType " + WalletBinderUtil.getBindType() + ", service " + service);
 
       if (WalletBinderUtil.getBindType() == BindType.BILLING_SERVICE_NOT_INSTALLED) {
         return AppcoinsBillingStubHelper.getInstance();

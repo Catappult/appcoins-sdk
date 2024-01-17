@@ -50,15 +50,16 @@ public class WalletUtils {
   public static Bundle startServiceBind(AppcoinsBilling serviceAppcoinsBilling, int apiVersion,
       String sku, String type, String developerPayload) {
     try {
-      if (paymentFlowMethods.isEmpty() && isAppAvailableToBind(BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION)) {
+      if ((paymentFlowMethods == null || paymentFlowMethods.isEmpty()) && isAppAvailableToBind(BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION)) {
         return handleBindServiceAttempt(serviceAppcoinsBilling, "wallet", 1, apiVersion, sku, type, developerPayload);
-      }
-      for (PaymentFlowMethod method : paymentFlowMethods) {
-        if (method instanceof PaymentFlowMethod.Wallet || method instanceof PaymentFlowMethod.GamesHub) {
-          Bundle bundle = handleBindServiceAttempt(serviceAppcoinsBilling, method.getName(), method.getPriority(),
-              apiVersion, sku, type, developerPayload);
-          if (bundle != null) {
-            return bundle;
+      } else {
+        for (PaymentFlowMethod method : paymentFlowMethods) {
+          if (method instanceof PaymentFlowMethod.Wallet || method instanceof PaymentFlowMethod.GamesHub) {
+            Bundle bundle = handleBindServiceAttempt(serviceAppcoinsBilling, method.getName(), method.getPriority(),
+                apiVersion, sku, type, developerPayload);
+            if (bundle != null) {
+              return bundle;
+            }
           }
         }
       }
@@ -86,54 +87,53 @@ public class WalletUtils {
   }
 
   public static Bundle startPayAsGuest(BuyItemProperties buyItemProperties) {
-    final CountDownLatch latch = new CountDownLatch(1);
-    if (Looper.myLooper() == Looper.getMainLooper()) {
-      Thread t = new Thread(new Runnable() {
-        @Override public void run() {
-          latch.countDown();
-        }
-      });
-      t.start();
-      try {
-        latch.await();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-        Bundle bundle = new Bundle();
-        bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.BILLING_UNAVAILABLE.getValue());
-        return bundle;
-      }
+    if (isMainThread()) {
+      return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
     }
     Intent intent = IabActivity.newIntent(context, buyItemProperties, sdkAnalytics);
-    int flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
-    PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, flags);
-
-    Bundle response = new Bundle();
-    response.putParcelable("BUY_INTENT", pendingIntent);
-    response.putInt(Utils.RESPONSE_CODE, ResponseCode.OK.getValue());
-    return response;
+    return createIntentBundle(intent);
   }
 
   public static Bundle startInstallFlow(BuyItemProperties buyItemProperties) {
-    Intent intent;
-    if (WalletUtils.deviceSupportsWallet(Build.VERSION.SDK_INT)) {
-      intent = InstallDialogActivity.newIntent(context, buyItemProperties, sdkAnalytics);
-    } else {
-      Bundle bundle = new Bundle();
-      bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.BILLING_UNAVAILABLE.getValue());
-      return bundle;
+    if (!WalletUtils.deviceSupportsWallet(Build.VERSION.SDK_INT)) {
+      return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
     }
-    int flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
-    PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, flags);
-    Bundle response = new Bundle();
-    response.putParcelable("BUY_INTENT", pendingIntent);
+    Intent intent = InstallDialogActivity.newIntent(context, buyItemProperties, sdkAnalytics);
+    return createIntentBundle(intent);
+  }
 
-    response.putInt(Utils.RESPONSE_CODE, ResponseCode.OK.getValue());
-    return response;
+  private static Bundle createIntentBundle(Intent intent) {
+    PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
+        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+    Bundle bundle = new Bundle();
+    bundle.putParcelable("BUY_INTENT", pendingIntent);
+    bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.OK.getValue());
+    return bundle;
+  }
+
+  private static boolean isMainThread() {
+    final CountDownLatch latch = new CountDownLatch(1);
+    if (Looper.myLooper() == Looper.getMainLooper()) {
+      new Thread(latch::countDown).start();
+      try {
+        latch.await();
+        return true;
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+    return false;
+  }
+
+  private static Bundle createBundleWithResponseCode(int responseCode) {
+    Bundle bundle = new Bundle();
+    bundle.putInt(Utils.RESPONSE_CODE, responseCode);
+    return bundle;
   }
 
   public static void setPayflowMethodsList(List<PaymentFlowMethod> paymentFlowMethodsList) {
     if (paymentFlowMethodsList != null) {
-      Log.d("CUSTOM_TAG", "WalletUtils: setPayflowMethodsList: paymentFlowMethods updated with: " + paymentFlowMethodsList);
       paymentFlowMethods = paymentFlowMethodsList;
     }
   }
@@ -142,7 +142,6 @@ public class WalletUtils {
     if (paymentFlowMethods == null || paymentFlowMethods.isEmpty()) {
       return Collections.emptyList();
     } else {
-      Log.d("CUSTOM_TAG", "WalletUtils: setPayflowMethodsList: getPayflowMethodsList: " + paymentFlowMethods);
       return paymentFlowMethods;
     }
   }
