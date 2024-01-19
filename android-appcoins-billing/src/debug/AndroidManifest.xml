@@ -9,7 +9,7 @@
       <action android:name="com.appcoins.wallet.dev.iab.action.BIND"/>
     </intent>
     <intent>
-      <action android:name="com.dti.folderlauncher.dev.iab.action.BIND"/>
+      <action android:name="com.dti.hub.stg.iab.action.BIND"/>
     </intent>
     <package android:name="cm.aptoide.pt.dev" />
   </queries>
