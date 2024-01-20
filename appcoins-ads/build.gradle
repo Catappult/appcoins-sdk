@@ -44,6 +44,8 @@ android {
               "," +
               project.APPCOINS_WALLET_PACKAGE_NAME_DEV.replace('\"', '') +
               "," +
+              project.GAMESHUB_PACKAGE_NAME_STG.replace('\"', '') +
+              "," +
               project.GAMESHUB_PACKAGE_NAME_DEV.replace('\"', '') +
               "\""
     }
