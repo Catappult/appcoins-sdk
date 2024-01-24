@@ -47,17 +47,23 @@ android {
       buildConfigField 'String', 'APPCOINS_WALLET_PACKAGE_NAME',
           project.APPCOINS_WALLET_PACKAGE_NAME_DEV
       buildConfigField 'String', 'GAMESHUB_PACKAGE_NAME',
+          project.GAMESHUB_PACKAGE_NAME_STG
+      buildConfigField 'String', 'GAMESHUB_PACKAGE_NAME_ALTERNATIVE',
           project.GAMESHUB_PACKAGE_NAME_DEV
 
       buildConfigField 'String', 'APPCOINS_WALLET_IAB_BIND_ACTION',
           project.APPCOINS_WALLET_IAB_BIND_ACTION_DEV
       buildConfigField 'String', 'GAMESHUB_IAB_BIND_ACTION',
+          project.GAMESHUB_IAB_BIND_ACTION_STG
+      buildConfigField 'String', 'GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE',
           project.GAMESHUB_IAB_BIND_ACTION_DEV
 
       buildConfigField 'String', 'SERVICE_BIND_LIST',
           "\"" + project.APTOIDE_PACKAGE_NAME_DEV.replace('\"', '') +
               "," +
               project.APPCOINS_WALLET_PACKAGE_NAME_DEV.replace('\"', '') +
+              "," +
+              project.GAMESHUB_PACKAGE_NAME_STG.replace('\"', '') +
               "," +
               project.GAMESHUB_PACKAGE_NAME_DEV.replace('\"', '') +
               "\""
@@ -87,10 +93,14 @@ android {
           project.APPCOINS_WALLET_PACKAGE_NAME
       buildConfigField 'String', 'GAMESHUB_PACKAGE_NAME',
           project.GAMESHUB_PACKAGE_NAME
+      buildConfigField 'String', 'GAMESHUB_PACKAGE_NAME_ALTERNATIVE',
+          project.GAMESHUB_PACKAGE_NAME
 
       buildConfigField 'String', 'APPCOINS_WALLET_IAB_BIND_ACTION',
           project.APPCOINS_WALLET_IAB_BIND_ACTION
       buildConfigField 'String', 'GAMESHUB_IAB_BIND_ACTION',
+          project.GAMESHUB_IAB_BIND_ACTION
+      buildConfigField 'String', 'GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE',
           project.GAMESHUB_IAB_BIND_ACTION
 
       buildConfigField 'String', 'SERVICE_BIND_LIST',

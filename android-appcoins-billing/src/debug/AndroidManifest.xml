@@ -11,6 +11,9 @@
     <intent>
       <action android:name="com.dti.hub.stg.iab.action.BIND"/>
     </intent>
+    <intent>
+      <action android:name="com.dti.hub.dev.iab.action.BIND"/>
+    </intent>
     <package android:name="cm.aptoide.pt.dev" />
   </queries>
 
