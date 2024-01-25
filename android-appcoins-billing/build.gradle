@@ -73,7 +73,7 @@ android {
       buildConfigField 'String', 'BACKEND_BASE',
           "\"" + project.ROPSTEN_NETWORK_BACKEND_BASE_HOST + "\""
       buildConfigField 'String', 'BDS_BASE_HOST', project.BDS_BASE_HOST_DEV
-      buildConfigField 'String', 'PAYFLOW_HOST', project.PAYFLOW_NETWORK_BASE_HOST
+      buildConfigField 'String', 'PAYFLOW_HOST', project.PAYFLOW_NETWORK_BASE_HOST_DEV
 
       buildConfigField 'String', 'ADYEN_PUBLIC_KEY', project.ADYEN_PUBLIC_KEY_DEV
       buildConfigField 'String', 'INDICATIVE_API_KEY',
