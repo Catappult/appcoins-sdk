@@ -42,23 +42,28 @@ android {
   buildTypes {
     debug {
       minifyEnabled false
-
       buildConfigField 'String', 'APTOIDE_PACKAGE_NAME',
           project.APTOIDE_PACKAGE_NAME_DEV
       buildConfigField 'String', 'APPCOINS_WALLET_PACKAGE_NAME',
           project.APPCOINS_WALLET_PACKAGE_NAME_DEV
       buildConfigField 'String', 'GAMESHUB_PACKAGE_NAME',
+          project.GAMESHUB_PACKAGE_NAME_STG
+      buildConfigField 'String', 'GAMESHUB_PACKAGE_NAME_ALTERNATIVE',
           project.GAMESHUB_PACKAGE_NAME_DEV
 
       buildConfigField 'String', 'APPCOINS_WALLET_IAB_BIND_ACTION',
           project.APPCOINS_WALLET_IAB_BIND_ACTION_DEV
       buildConfigField 'String', 'GAMESHUB_IAB_BIND_ACTION',
+          project.GAMESHUB_IAB_BIND_ACTION_STG
+      buildConfigField 'String', 'GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE',
           project.GAMESHUB_IAB_BIND_ACTION_DEV
 
       buildConfigField 'String', 'SERVICE_BIND_LIST',
           "\"" + project.APTOIDE_PACKAGE_NAME_DEV.replace('\"', '') +
               "," +
               project.APPCOINS_WALLET_PACKAGE_NAME_DEV.replace('\"', '') +
+              "," +
+              project.GAMESHUB_PACKAGE_NAME_STG.replace('\"', '') +
               "," +
               project.GAMESHUB_PACKAGE_NAME_DEV.replace('\"', '') +
               "\""
@@ -68,7 +73,7 @@ android {
       buildConfigField 'String', 'BACKEND_BASE',
           "\"" + project.ROPSTEN_NETWORK_BACKEND_BASE_HOST + "\""
       buildConfigField 'String', 'BDS_BASE_HOST', project.BDS_BASE_HOST_DEV
-      buildConfigField 'String', 'PAYFLOW_HOST', project.PAYFLOW_NETWORK_BASE_HOST
+      buildConfigField 'String', 'PAYFLOW_HOST', project.PAYFLOW_NETWORK_BASE_HOST_DEV
 
       buildConfigField 'String', 'ADYEN_PUBLIC_KEY', project.ADYEN_PUBLIC_KEY_DEV
       buildConfigField 'String', 'INDICATIVE_API_KEY',
@@ -80,7 +85,6 @@ android {
     }
     release {
       minifyEnabled false
-      debuggable true
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
       buildConfigField 'String', 'APTOIDE_PACKAGE_NAME',
@@ -89,10 +93,14 @@ android {
           project.APPCOINS_WALLET_PACKAGE_NAME
       buildConfigField 'String', 'GAMESHUB_PACKAGE_NAME',
           project.GAMESHUB_PACKAGE_NAME
+      buildConfigField 'String', 'GAMESHUB_PACKAGE_NAME_ALTERNATIVE',
+          project.GAMESHUB_PACKAGE_NAME
 
       buildConfigField 'String', 'APPCOINS_WALLET_IAB_BIND_ACTION',
           project.APPCOINS_WALLET_IAB_BIND_ACTION
       buildConfigField 'String', 'GAMESHUB_IAB_BIND_ACTION',
+          project.GAMESHUB_IAB_BIND_ACTION
+      buildConfigField 'String', 'GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE',
           project.GAMESHUB_IAB_BIND_ACTION
 
       buildConfigField 'String', 'SERVICE_BIND_LIST',

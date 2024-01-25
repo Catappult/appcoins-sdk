@@ -9,7 +9,10 @@
       <action android:name="com.appcoins.wallet.dev.iab.action.BIND"/>
     </intent>
     <intent>
-      <action android:name="com.dti.folderlauncher.dev.iab.action.BIND"/>
+      <action android:name="com.dti.hub.stg.iab.action.BIND"/>
+    </intent>
+    <intent>
+      <action android:name="com.dti.hub.dev.iab.action.BIND"/>
     </intent>
     <package android:name="cm.aptoide.pt.dev" />
   </queries>
@@ -24,5 +27,16 @@
     <activity
         android:name="com.appcoins.sdk.billing.WebViewActivity"
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
+        <activity android:name="com.appcoins.sdk.billing.UriCommunicationActivity"
+            android:exported="true">
+          <intent-filter>
+            <action android:name="android.intent.action.VIEW"/>
+            <data
+                android:host="billing"
+                android:path="/communication/requester/1"
+                android:scheme="appcoins"/>
+            <category android:name="android.intent.category.DEFAULT"/>
+          </intent-filter>
+        </activity>
   </application>
 </manifest>
