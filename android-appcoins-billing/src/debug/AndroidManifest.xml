@@ -14,6 +14,9 @@
     <intent>
       <action android:name="com.dti.hub.dev.iab.action.BIND"/>
     </intent>
+    <package android:name="com.appcoins.wallet.dev" />
+    <package android:name="com.dti.hub.stg" />
+    <package android:name="com.dti.hub.dev" />
     <package android:name="cm.aptoide.pt.dev" />
   </queries>
 
