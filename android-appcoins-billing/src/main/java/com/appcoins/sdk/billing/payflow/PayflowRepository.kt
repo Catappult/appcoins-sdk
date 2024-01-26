@@ -1,6 +1,5 @@
 package com.appcoins.sdk.billing.payflow
 
-import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.service.ServiceResponseListener
 
@@ -27,11 +26,7 @@ class PayflowRepository(private val bdsService: BdsService) {
 
     val serviceResponseListener =
       ServiceResponseListener { requestResponse ->
-        WalletUtils.getSdkAnalytics()
-          .sendCallBackendPayflowEvent(requestResponse.responseCode, requestResponse.response)
-
-        val payflowResponseMapper = PayflowResponseMapper()
-        payflowListener.onResponse(payflowResponseMapper.map(requestResponse))
+        payflowListener.onResponse(PayflowResponseMapper().map(requestResponse))
       }
     bdsService.makeRequest(
       "/payment_flow", "GET", emptyList(), queries, emptyMap(), emptyMap(), serviceResponseListener
