@@ -11,6 +11,8 @@
     <intent>
       <action android:name="com.dti.folderlauncher.iab.action.BIND"/>
     </intent>
+    <package android:name="com.appcoins.wallet" />
+    <package android:name="com.dti.folderlauncher" />
     <package android:name="cm.aptoide.pt" />
   </queries>
 

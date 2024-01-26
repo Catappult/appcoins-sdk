@@ -31,10 +31,10 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
     )
   }
 
-  fun sendCallBackendPayflowEvent(responseCode: Int, responseMessage: String) {
+  fun sendCallBackendPayflowEvent(responseCode: Int?, responseMessage: String?) {
     val eventData: MutableMap<String, Any> = HashMap()
-    eventData[AnalyticsLabels.PAYFLOW_RESPONSE_CODE] = responseCode
-    eventData[AnalyticsLabels.PAYFLOW_RESPONSE_MESSAGE] = responseMessage
+    eventData[AnalyticsLabels.PAYFLOW_RESPONSE_CODE] = responseCode?.toString() ?: ""
+    eventData[AnalyticsLabels.PAYFLOW_RESPONSE_MESSAGE] = responseMessage ?: ""
 
     analyticsManager.logEvent(
       eventData,
