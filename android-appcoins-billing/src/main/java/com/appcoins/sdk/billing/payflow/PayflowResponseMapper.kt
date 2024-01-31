@@ -1,11 +1,14 @@
 package com.appcoins.sdk.billing.payflow
 
+import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import org.json.JSONObject
 
 class PayflowResponseMapper {
   fun map(response: RequestResponse): List<PaymentFlowMethod> {
+    WalletUtils.getSdkAnalytics()
+      .sendCallBackendPayflowEvent(response.responseCode, response.response)
     if (!isSuccess(response.responseCode) || response.response == null) return emptyList()
     return runCatching {
       JSONObject(response.response).optJSONObject("payment_methods")
