@@ -20,6 +20,7 @@ import com.appcoins.sdk.billing.BuyItemProperties;
 import com.appcoins.sdk.billing.ResponseCode;
 import com.appcoins.sdk.billing.analytics.AnalyticsManagerProvider;
 import com.appcoins.sdk.billing.analytics.IndicativeAnalytics;
+import com.appcoins.sdk.billing.analytics.IndicativeLaunchCallback;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.payasguest.IabActivity;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
@@ -177,9 +178,12 @@ public class WalletUtils {
       billingPackageName = BuildConfig.APPCOINS_WALLET_PACKAGE_NAME;
       billingIabAction = BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION;
     } else if (method instanceof PaymentFlowMethod.GamesHub) {
-      boolean shouldUseAlternative = BuildConfig.DEBUG && !isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION);
-      billingPackageName = shouldUseAlternative ? BuildConfig.GAMESHUB_PACKAGE_NAME_ALTERNATIVE : BuildConfig.GAMESHUB_PACKAGE_NAME;
-      billingIabAction = shouldUseAlternative ? BuildConfig.GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE : BuildConfig.GAMESHUB_IAB_BIND_ACTION;
+      boolean shouldUseAlternative =
+          BuildConfig.DEBUG && !isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION);
+      billingPackageName = shouldUseAlternative ? BuildConfig.GAMESHUB_PACKAGE_NAME_ALTERNATIVE
+          : BuildConfig.GAMESHUB_PACKAGE_NAME;
+      billingIabAction = shouldUseAlternative ? BuildConfig.GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE
+          : BuildConfig.GAMESHUB_IAB_BIND_ACTION;
     } else {
       setDefaultBillingServiceInfoToBind();
     }
@@ -192,7 +196,8 @@ public class WalletUtils {
     } else if (isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION)) {
       billingPackageName = BuildConfig.GAMESHUB_PACKAGE_NAME;
       billingIabAction = BuildConfig.GAMESHUB_IAB_BIND_ACTION;
-    } else if (BuildConfig.DEBUG && isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE)) {
+    } else if (BuildConfig.DEBUG && isAppAvailableToBind(
+        BuildConfig.GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE)) {
       billingPackageName = BuildConfig.GAMESHUB_PACKAGE_NAME_ALTERNATIVE;
       billingIabAction = BuildConfig.GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE;
     } else {
@@ -254,15 +259,20 @@ public class WalletUtils {
   }
 
   public static void startIndicative(final String packageName) {
-    new Handler(Looper.getMainLooper()).post(new Runnable() {
-      @Override public void run() {
-        Indicative.launch(context, BuildConfig.INDICATIVE_API_KEY);
+    launchIndicative(() -> new Thread(() -> {
+      IndicativeAnalytics.INSTANCE.setInstanceId(String.valueOf(getPayAsGuestSessionId()));
+      IndicativeAnalytics.INSTANCE.setIndicativeSuperProperties(packageName, BuildConfig.VERSION_CODE, getDeviceInfo());
+      SdkAnalytics sdkAnalytics = new SdkAnalytics(AnalyticsManagerProvider.provideAnalyticsManager());
+      sdkAnalytics.sendStartConnetionEvent();
+    }).start());
+  }
+  private static void launchIndicative(final IndicativeLaunchCallback callback) {
+    new Handler(Looper.getMainLooper()).post(() -> {
+      Indicative.launch(context, BuildConfig.INDICATIVE_API_KEY);
+      if (callback != null) {
+        callback.onLaunchComplete();
       }
     });
-    IndicativeAnalytics.INSTANCE.setInstanceId(String.valueOf(getPayAsGuestSessionId()));
-    IndicativeAnalytics.INSTANCE.setIndicativeSuperProperties(packageName, BuildConfig.VERSION_CODE,
-        getDeviceInfo());
-    sdkAnalytics = new SdkAnalytics(AnalyticsManagerProvider.provideAnalyticsManager());
   }
 
   public static SdkAnalytics getSdkAnalytics() {

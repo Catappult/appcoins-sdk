@@ -44,7 +44,6 @@ public class RepositoryServiceConnection implements ServiceConnection, Repositor
   @Override public void startConnection(final AppCoinsBillingStateListener listener) {
     this.listener = listener;
     WalletUtils.startIndicative(context.getPackageName());
-    WalletUtils.getSdkAnalytics().sendStartConnetionEvent();
 
     new PayflowManager(context.getPackageName()).getPayflowPriority();
     hasBillingServiceInstalled = WalletUtils.hasBillingServiceInstalled();
