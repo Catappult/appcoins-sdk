@@ -6,16 +6,21 @@ import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.helpers.WalletUtils.getAppInstalledVersion
 import com.appcoins.sdk.billing.helpers.WalletUtils.setPayflowMethodsList
 import com.appcoins.sdk.billing.service.BdsService
+import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 
 class PayflowManager(val packageName: String) {
   private val payflowRepository = PayflowRepository(BdsService(BuildConfig.PAYFLOW_HOST, 30000))
 
   fun getPayflowPriority() {
     val payflowListener = object : PayflowListener {
-      override fun onResponse(payflowList: List<PaymentFlowMethod>?) {
-        if (!payflowList.isNullOrEmpty()) {
-          val sortedMethods = payflowList.sortedBy { it.priority }
-          setPayflowMethodsList(sortedMethods)
+      override fun onResponse(payflowMethodResponse: PayflowMethodResponse) {
+        payflowMethodResponse.responseCode?.let { responseCode ->
+          val sortedMethods = payflowMethodResponse.paymentFlowList?.sortedBy { it.priority }
+          if (isSuccess(responseCode)) {
+            setPayflowMethodsList(sortedMethods)
+          } else {
+            setPayflowMethodsList(null)
+          }
         }
       }
     }
