@@ -132,7 +132,7 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
             Log.d(TAG, "Service is NOT installed and should StartPayAsGuest with buyItemProperties = [" + buyItemProperties + "]");
             bundle = WalletUtils.startPayAsGuest(buyItemProperties);
           } else if (method instanceof PaymentFlowMethod.WebFirstPayment) {
-            // TODO Perform action for WebFirstPayment
+            //TODO Perform action for WebFirstPayment
           }
           if (bundle != null) {
             return bundle;
@@ -151,11 +151,8 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
       String type, String developerPayload) {
 
     if (Looper.myLooper() == Looper.getMainLooper()) {
-      new Handler(Looper.getMainLooper()).post(new Runnable() {
-        @Override public void run() {
-          skuDetails = getMappedSkuDetails(sku, packageName, type);
-        }
-      });
+      new Handler(Looper.getMainLooper()).post(
+          () -> skuDetails = getMappedSkuDetails(sku, packageName, type));
     } else {
       skuDetails = getMappedSkuDetails(sku, packageName, type);
     }

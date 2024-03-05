@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 import com.appcoins.billing.AppcoinsBilling;
@@ -48,6 +47,9 @@ public class WalletUtils {
     }
     return billingPackageName != null;
   }
+  // Workaround for a quick fix, to be used in the installation flow since we know the wallet is
+  // installed and there is not the need to check the backend.
+  // As a longer term solution, the installation flow should wait for the response
   public static boolean hasWalletInstalled() {
     if (billingPackageName == null && isAppAvailableToBind(BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION)) {
       setWalletBillingInfo();
@@ -61,11 +63,8 @@ public class WalletUtils {
       // temporary workaround for the possibility of the endpoint failing, with two hardcoded options
       // but the logic should be reused instead of this hardcoded solution
       if (paymentFlowMethods == null) {
-        if (Objects.equals(billingPackageName, BuildConfig.APPCOINS_WALLET_PACKAGE_NAME)) {
-          return handleBindServiceAttempt(serviceAppcoinsBilling, "wallet", 1, apiVersion, sku,
-              type, developerPayload);
-        } else if (Objects.equals(billingPackageName, BuildConfig.GAMESHUB_PACKAGE_NAME)) {
-          return handleBindServiceAttempt(serviceAppcoinsBilling, "games_hub_checkout", 1, apiVersion, sku,
+        if (Objects.equals(billingPackageName, BuildConfig.APPCOINS_WALLET_PACKAGE_NAME) || Objects.equals(billingPackageName, BuildConfig.GAMESHUB_PACKAGE_NAME)) {
+          return handleBindServiceAttempt(serviceAppcoinsBilling, packageToMethodName(), 1, apiVersion, sku,
               type, developerPayload);
         }
       } else {
@@ -82,7 +81,7 @@ public class WalletUtils {
       }
       return null;
     } catch (Exception e) {
-      return handleBindServiceFail(e, "wallet", 1);
+      return handleBindServiceFail(e, packageToMethodName(), 1);
     }
   }
 
@@ -226,6 +225,25 @@ public class WalletUtils {
   private static void clearBillingServiceInfo() {
     billingPackageName = null;
     billingIabAction = null;
+  }
+
+  private static String packageToMethodName() {
+    boolean shouldUseAlternative =
+        BuildConfig.DEBUG && !isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION);
+    String gamesHub = shouldUseAlternative ? BuildConfig.GAMESHUB_PACKAGE_NAME_ALTERNATIVE
+        : BuildConfig.GAMESHUB_PACKAGE_NAME;
+
+     if (billingPackageName == null) {
+      return "unknown";
+    } else {
+      if (billingPackageName.equalsIgnoreCase(BuildConfig.APPCOINS_WALLET_PACKAGE_NAME)) {
+       return "wallet";
+      } else if (billingPackageName.equalsIgnoreCase(gamesHub)){
+        return "games_hub_checkout";
+      } else {
+        return "unknown";
+      }
+    }
   }
 
   public static boolean isAppAvailableToBind(String action) {

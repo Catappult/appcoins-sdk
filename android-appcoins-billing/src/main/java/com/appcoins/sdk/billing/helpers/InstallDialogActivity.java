@@ -36,11 +36,13 @@ import com.appcoins.sdk.billing.analytics.BillingAnalytics;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.helpers.translations.TranslationsRepository;
 import com.appcoins.sdk.billing.listeners.StartPurchaseAfterBindListener;
+import com.appcoins.sdk.billing.payflow.PayflowManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
 import static android.graphics.Typeface.BOLD;
+import static com.appcoins.sdk.billing.helpers.WalletUtils.context;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.appcoins_wallet;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_body;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_close_button;
@@ -113,14 +115,11 @@ public class InstallDialogActivity extends Activity {
 
   @Override protected void onResume() {
     super.onResume();
-    if (WalletUtils.hasBillingServiceInstalled()) {
+    new PayflowManager(context.getPackageName()).getPayflowPriority();
+    if (WalletUtils.hasWalletInstalled()) {
       showLoadingDialog();
       sdkAnalytics.installWalletAptoideSuccess();
-      appcoinsBillingStubHelper.createRepository(new StartPurchaseAfterBindListener() {
-        @Override public void startPurchaseAfterBind() {
-          makeTheStoredPurchase();
-        }
-      });
+      appcoinsBillingStubHelper.createRepository(this::makeTheStoredPurchase);
     }
   }
 
@@ -141,7 +140,20 @@ public class InstallDialogActivity extends Activity {
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    Log.d("InstallDialogActivity", "onActivityResult: resultCode "+ resultCode);
     finishActivity(resultCode, data);
+  }
+
+  private void handleServiceInstalled(){
+    Log.d("InstallDialogActivity", "onResume: hasBillingServiceInstalled ");
+    showLoadingDialog();
+    sdkAnalytics.installWalletAptoideSuccess();
+    appcoinsBillingStubHelper.createRepository(new StartPurchaseAfterBindListener() {
+      @Override public void startPurchaseAfterBind() {
+        Log.d("InstallDialogActivity", "onResume: hasBillingServiceInstalled - startPurchaseAfterBind");
+        makeTheStoredPurchase();
+      }
+    });
   }
 
   private void handlePurchaseStartEvent(BillingAnalytics billingAnalytics) {
