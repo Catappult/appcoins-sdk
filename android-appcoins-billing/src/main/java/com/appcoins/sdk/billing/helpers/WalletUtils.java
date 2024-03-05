@@ -27,6 +27,7 @@ import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 import com.indicative.client.android.Indicative;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 import static com.appcoins.sdk.billing.helpers.DeviceInformationHelperKt.getDeviceInfo;
@@ -47,14 +48,26 @@ public class WalletUtils {
     }
     return billingPackageName != null;
   }
+  public static boolean hasWalletInstalled() {
+    if (billingPackageName == null && isAppAvailableToBind(BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION)) {
+      setWalletBillingInfo();
+    }
+    return billingPackageName != null;
+  }
 
   public static Bundle startServiceBind(AppcoinsBilling serviceAppcoinsBilling, int apiVersion,
       String sku, String type, String developerPayload) {
     try {
-      if ((paymentFlowMethods == null || paymentFlowMethods.isEmpty()) && isAppAvailableToBind(
-          BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION)) {
-        return handleBindServiceAttempt(serviceAppcoinsBilling, "wallet", 1, apiVersion, sku, type,
-            developerPayload);
+      // temporary workaround for the possibility of the endpoint failing, with two hardcoded options
+      // but the logic should be reused instead of this hardcoded solution
+      if (paymentFlowMethods == null) {
+        if (Objects.equals(billingPackageName, BuildConfig.APPCOINS_WALLET_PACKAGE_NAME)) {
+          return handleBindServiceAttempt(serviceAppcoinsBilling, "wallet", 1, apiVersion, sku,
+              type, developerPayload);
+        } else if (Objects.equals(billingPackageName, BuildConfig.GAMESHUB_PACKAGE_NAME)) {
+          return handleBindServiceAttempt(serviceAppcoinsBilling, "games_hub_checkout", 1, apiVersion, sku,
+              type, developerPayload);
+        }
       } else {
         for (PaymentFlowMethod method : paymentFlowMethods) {
           if (method instanceof PaymentFlowMethod.Wallet
@@ -166,44 +179,53 @@ public class WalletUtils {
   }
 
   public static void setBillingServiceInfoToBind() {
-    if (paymentFlowMethods == null && billingPackageName == null) {
-      setBillingServiceInfoToBind(null);
-    } else if (paymentFlowMethods != null && !paymentFlowMethods.isEmpty()) {
-      setBillingServiceInfoToBind(paymentFlowMethods.get(0));
-    }
-  }
-
-  public static void setBillingServiceInfoToBind(PaymentFlowMethod method) {
-    if (method instanceof PaymentFlowMethod.Wallet) {
-      billingPackageName = BuildConfig.APPCOINS_WALLET_PACKAGE_NAME;
-      billingIabAction = BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION;
-    } else if (method instanceof PaymentFlowMethod.GamesHub) {
-      boolean shouldUseAlternative =
-          BuildConfig.DEBUG && !isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION);
-      billingPackageName = shouldUseAlternative ? BuildConfig.GAMESHUB_PACKAGE_NAME_ALTERNATIVE
-          : BuildConfig.GAMESHUB_PACKAGE_NAME;
-      billingIabAction = shouldUseAlternative ? BuildConfig.GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE
-          : BuildConfig.GAMESHUB_IAB_BIND_ACTION;
-    } else {
+    if (paymentFlowMethods == null) {
       setDefaultBillingServiceInfoToBind();
+    } else if (paymentFlowMethods.isEmpty()) {
+      clearBillingServiceInfo();
+    } else {
+      for (PaymentFlowMethod method : paymentFlowMethods) {
+        if (method instanceof PaymentFlowMethod.Wallet) {
+          setWalletBillingInfo();
+        } else if (method instanceof PaymentFlowMethod.GamesHub) {
+          setGamesHubBillingInfo();
+        } else {
+          clearBillingServiceInfo();
+        }
+        if (billingPackageName != null) {
+          break;
+        }
+      }
     }
   }
 
   private static void setDefaultBillingServiceInfoToBind() {
     if (isAppAvailableToBind(BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION)) {
-      billingPackageName = BuildConfig.APPCOINS_WALLET_PACKAGE_NAME;
-      billingIabAction = BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION;
+      setWalletBillingInfo();
     } else if (isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION)) {
-      billingPackageName = BuildConfig.GAMESHUB_PACKAGE_NAME;
-      billingIabAction = BuildConfig.GAMESHUB_IAB_BIND_ACTION;
-    } else if (BuildConfig.DEBUG && isAppAvailableToBind(
-        BuildConfig.GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE)) {
-      billingPackageName = BuildConfig.GAMESHUB_PACKAGE_NAME_ALTERNATIVE;
-      billingIabAction = BuildConfig.GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE;
+      setGamesHubBillingInfo();
     } else {
-      billingPackageName = null;
-      billingIabAction = null;
+      clearBillingServiceInfo();
     }
+  }
+
+  private static void setWalletBillingInfo() {
+    billingPackageName = BuildConfig.APPCOINS_WALLET_PACKAGE_NAME;
+    billingIabAction = BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION;
+  }
+
+  private static void setGamesHubBillingInfo() {
+    boolean shouldUseAlternative =
+        BuildConfig.DEBUG && !isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION);
+    billingPackageName = shouldUseAlternative ? BuildConfig.GAMESHUB_PACKAGE_NAME_ALTERNATIVE
+        : BuildConfig.GAMESHUB_PACKAGE_NAME;
+    billingIabAction = shouldUseAlternative ? BuildConfig.GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE
+        : BuildConfig.GAMESHUB_IAB_BIND_ACTION;
+  }
+
+  private static void clearBillingServiceInfo() {
+    billingPackageName = null;
+    billingIabAction = null;
   }
 
   public static boolean isAppAvailableToBind(String action) {

@@ -6,16 +6,19 @@ import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import org.json.JSONObject
 
 class PayflowResponseMapper {
-  fun map(response: RequestResponse): List<PaymentFlowMethod> {
+  fun map(response: RequestResponse): PayflowMethodResponse {
     WalletUtils.getSdkAnalytics()
       .sendCallBackendPayflowEvent(response.responseCode, response.response)
-    if (!isSuccess(response.responseCode) || response.response == null) return emptyList()
-    return runCatching {
+
+    if (!isSuccess(response.responseCode) || response.response == null) {
+      return PayflowMethodResponse(response.responseCode, emptyList())
+    }
+
+    val paymentFlowList = runCatching {
       JSONObject(response.response).optJSONObject("payment_methods")
         ?.let { paymentMethodsObject ->
           paymentMethodsObject.keys().asSequence().mapNotNull { methodName: String ->
-            val priority =
-              paymentMethodsObject.optJSONObject(methodName)?.optInt("priority") ?: -1
+            val priority = paymentMethodsObject.optJSONObject(methodName)?.optInt("priority") ?: -1
             when (methodName) {
               "wallet" -> PaymentFlowMethod.Wallet(methodName, priority)
               "pay_as_a_guest" -> PaymentFlowMethod.PayAsAGuest(methodName, priority)
@@ -29,9 +32,14 @@ class PayflowResponseMapper {
       it.printStackTrace()
       emptyList()
     }
+    return PayflowMethodResponse(response.responseCode, paymentFlowList)
   }
 }
 
+data class PayflowMethodResponse(
+  val responseCode: Int?,
+  val paymentFlowList: List<PaymentFlowMethod>?
+)
 
 sealed class PaymentFlowMethod(val name: String, val priority: Int) {
   class Wallet(name: String, priority: Int) : PaymentFlowMethod(name, priority)
