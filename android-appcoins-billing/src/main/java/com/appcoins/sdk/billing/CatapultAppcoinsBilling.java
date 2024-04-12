@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.util.Log;
+
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.helpers.AppCoinsPendingIntentCaller;
 import com.appcoins.sdk.billing.helpers.EventLogger;
@@ -67,21 +68,30 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient {
         return responseCode;
       }
 
-      PendingIntent pendingIntent = launchBillingFlowResult.getBuyIntent();
-      AppCoinsPendingIntentCaller.startPendingAppCoinsIntent(activity,
-          pendingIntent.getIntentSender(), REQUEST_CODE, null, 0, 0, 0);
-    } catch (NullPointerException e) {
-      e.printStackTrace();
-      return ResponseCode.ERROR.getValue();
-    } catch (IntentSender.SendIntentException e) {
-      e.printStackTrace();
-      return ResponseCode.ERROR.getValue();
-    } catch (ServiceConnectionException e) {
-      e.printStackTrace();
-      return ResponseCode.SERVICE_UNAVAILABLE.getValue();
+            PendingIntent pendingIntent = launchBillingFlowResult.getBuyIntent();
+            Intent webIntent = launchBillingFlowResult.getWebBuyIntent();
+            if (pendingIntent != null) {
+                Log.i("CatapultAppcoinsBilling", "launchBillingFlow: pendingIntent != null");
+                AppCoinsPendingIntentCaller.startPendingAppCoinsIntent(activity,
+                        pendingIntent.getIntentSender(), REQUEST_CODE, null, 0, 0, 0);
+            } else if (webIntent != null) {
+                Log.i("CatapultAppcoinsBilling", "launchBillingFlow: webIntent != null");
+                activity.startActivity(webIntent);
+            } else if (pendingIntent == null && webIntent == null){
+                Log.i("CatapultAppcoinsBilling", "launchBillingFlow: both intents are null");
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return ResponseCode.ERROR.getValue();
+        } catch (IntentSender.SendIntentException e) {
+            e.printStackTrace();
+            return ResponseCode.ERROR.getValue();
+        } catch (ServiceConnectionException e) {
+            e.printStackTrace();
+            return ResponseCode.SERVICE_UNAVAILABLE.getValue();
+        }
+        return ResponseCode.OK.getValue();
     }
-    return ResponseCode.OK.getValue();
-  }
 
   @Override public void startConnection(final AppCoinsBillingStateListener listener) {
     if (!isReady()) {

@@ -132,6 +132,7 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
             Log.d(TAG, "Service is NOT installed and should StartPayAsGuest with buyItemProperties = [" + buyItemProperties + "]");
             bundle = WalletUtils.startPayAsGuest(buyItemProperties);
           } else if (method instanceof PaymentFlowMethod.WebFirstPayment) {
+            bundle = WalletUtils.startWebFirstPayment(buyItemProperties);
             //TODO Perform action for WebFirstPayment
           }
           if (bundle != null) {
@@ -139,9 +140,9 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
           }
         }
       } else {
-        Log.d(TAG, "Service is NOT installed and should start install flow with buyItemProperties = [" + buyItemProperties + "]");
+        Log.i(TAG, "Service is NOT installed and should execute first web payment with buyItemProperties = [" + buyItemProperties + "]");
         setBuyItemPropertiesForPayflow(packageName, apiVersion, sku, type, developerPayload);
-        return WalletUtils.startInstallFlow(buyItemProperties);
+        return WalletUtils.startWebFirstPayment(buyItemProperties);
       }
     }
     return bundle;

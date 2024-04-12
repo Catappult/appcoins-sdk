@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,9 +25,11 @@ import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.payasguest.IabActivity;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 import com.indicative.client.android.Indicative;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 import static com.appcoins.sdk.billing.helpers.DeviceInformationHelperKt.getDeviceInfo;
@@ -111,13 +114,39 @@ public class WalletUtils {
     return createIntentBundle(intent);
   }
 
-  public static Bundle startInstallFlow(BuyItemProperties buyItemProperties) {
-    if (!WalletUtils.deviceSupportsWallet(Build.VERSION.SDK_INT)) {
-      return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
+    public static Bundle startWebFirstPayment(BuyItemProperties buyItemProperties) {
+        if (isMainThread()) {
+            return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
+        }
+        Integer randomInt = new Random().nextInt(4001) + 1000;
+
+        Intent intent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("https://wallet.dev.appcoins.io/iap/sdk?" +
+                        "origin=BDS" +
+                        "&" +
+                        "domain=com.appcoins.trivialdrivesample.test" +
+                        "&" +
+                        "product=gas" +
+                        "&" +
+                        "type=INAPP" +
+                        "&" +
+                        "metadata=PAYLOAD%20TESTING" +
+                        "&" +
+                        "reference=orderId%3D170238289" + randomInt +
+                        "&" +
+                        "country=PT"));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setPackage("com.android.chrome");
+        return createWebIntentBundle(intent);
     }
-    Intent intent = InstallDialogActivity.newIntent(context, buyItemProperties, sdkAnalytics);
-    return createIntentBundle(intent);
-  }
+
+    public static Bundle startInstallFlow(BuyItemProperties buyItemProperties) {
+        if (!WalletUtils.deviceSupportsWallet(Build.VERSION.SDK_INT)) {
+            return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
+        }
+        Intent intent = InstallDialogActivity.newIntent(context, buyItemProperties, sdkAnalytics);
+        return createIntentBundle(intent);
+    }
 
   private static Bundle createIntentBundle(Intent intent) {
     PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
