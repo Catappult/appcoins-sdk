@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 import com.appcoins.billing.AppcoinsBilling;
@@ -120,23 +121,24 @@ public class WalletUtils {
         }
         Integer randomInt = new Random().nextInt(4001) + 1000;
 
-        Intent intent = new Intent(Intent.ACTION_VIEW,
-                Uri.parse("https://wallet.dev.appcoins.io/iap/sdk?" +
-                        "origin=BDS" +
-                        "&" +
-                        "domain=com.appcoins.trivialdrivesample.test" +
-                        "&" +
-                        "product=gas" +
-                        "&" +
-                        "type=INAPP" +
-                        "&" +
-                        "metadata=PAYLOAD%20TESTING" +
-                        "&" +
-                        "reference=orderId%3D170238289" + randomInt +
-                        "&" +
-                        "country=PT"));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setPackage("com.android.chrome");
+        String url = "https://wallet.dev.appcoins.io/iap/sdk?" +
+                "origin=BDS" +
+                "&" +
+                "domain=com.appcoins.trivialdrivesample.test" +
+                "&" +
+                "product=gas" +
+                "&" +
+                "type=INAPP" +
+                "&" +
+                "metadata=PAYLOAD%20TESTING" +
+                "&" +
+                "reference=orderId%3D170238289" + randomInt +
+                "&" +
+                "country=PT";
+        Log.i("WalletUtils", "startWebFirstPayment: url = " + url);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.setPackage("com.android.chrome"); // Specify the package name of the browser
         return createWebIntentBundle(intent);
     }
 
@@ -147,6 +149,13 @@ public class WalletUtils {
         Intent intent = InstallDialogActivity.newIntent(context, buyItemProperties, sdkAnalytics);
         return createIntentBundle(intent);
     }
+
+  private static Bundle createWebIntentBundle(Intent intent) {
+    Bundle bundle = new Bundle();
+    bundle.putParcelable("WEB_BUY_INTENT", intent);
+    bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.OK.getValue());
+    return bundle;
+  }
 
   private static Bundle createIntentBundle(Intent intent) {
     PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
