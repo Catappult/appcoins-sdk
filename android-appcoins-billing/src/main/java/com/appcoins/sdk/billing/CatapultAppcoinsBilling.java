@@ -68,17 +68,15 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient {
         return responseCode;
       }
 
-            PendingIntent pendingIntent = launchBillingFlowResult.getBuyIntent();
-            Intent webIntent = launchBillingFlowResult.getWebBuyIntent();
-            if (pendingIntent != null) {
-                Log.i("CatapultAppcoinsBilling", "launchBillingFlow: pendingIntent != null");
+            PendingIntent buyIntent = launchBillingFlowResult.getBuyIntent();
+            Intent webBuyIntent = launchBillingFlowResult.getWebBuyIntent();
+            if (buyIntent != null) {
+              Log.i("CatapultAppcoinsBilling", "launchBillingFlow: buyIntent != null");
                 AppCoinsPendingIntentCaller.startPendingAppCoinsIntent(activity,
-                        pendingIntent.getIntentSender(), REQUEST_CODE, null, 0, 0, 0);
-            } else if (webIntent != null) {
-                Log.i("CatapultAppcoinsBilling", "launchBillingFlow: webIntent != null");
-                activity.startActivity(webIntent);
-            } else if (pendingIntent == null && webIntent == null){
-                Log.i("CatapultAppcoinsBilling", "launchBillingFlow: both intents are null");
+                        buyIntent.getIntentSender(), REQUEST_CODE, null, 0, 0, 0);
+            } else if (webBuyIntent != null) {
+                Log.i("CatapultAppcoinsBilling", "launchBillingFlow: webBuyIntent != null");
+                activity.startActivity(webBuyIntent);
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
@@ -115,6 +113,13 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient {
       return true;
     }
     return false;
+  }
+
+  @Override
+  public boolean onIntentResult(int resultCode, String data) {
+    Log.i("CatapultAppcoinsBilling", "onIntentResult: resultCode=" + resultCode + " data=" + data);
+    //ApplicationUtils.handleActivityResult(billing, resultCode, new Intent(data), purchaseFinishedListener);
+    return true;
   }
 }
 

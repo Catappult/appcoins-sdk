@@ -27,7 +27,7 @@ import com.appcoins.sdk.billing.payasguest.IabActivity;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 import com.indicative.client.android.Indicative;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -115,30 +115,14 @@ public class WalletUtils {
     return createIntentBundle(intent);
   }
 
-    public static Bundle startWebFirstPayment(BuyItemProperties buyItemProperties) {
+    public static Bundle startWebFirstPayment(PaymentFlowMethod method) {
         if (isMainThread()) {
             return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
         }
-        Integer randomInt = new Random().nextInt(4001) + 1000;
 
-        String url = "https://wallet.dev.appcoins.io/iap/sdk?" +
-                "origin=BDS" +
-                "&" +
-                "domain=com.appcoins.trivialdrivesample.test" +
-                "&" +
-                "product=gas" +
-                "&" +
-                "type=INAPP" +
-                "&" +
-                "metadata=PAYLOAD%20TESTING" +
-                "&" +
-                "reference=orderId%3D170238289" + randomInt +
-                "&" +
-                "country=PT";
-        Log.i("WalletUtils", "startWebFirstPayment: url = " + url);
-
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        intent.setPackage("com.android.chrome"); // Specify the package name of the browser
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(method.getPaymentUrl()));
+        // TODO handle different types of default Browsers
+        intent.setPackage("com.android.chrome");
         return createWebIntentBundle(intent);
     }
 
@@ -194,11 +178,38 @@ public class WalletUtils {
   }
 
   public static List<PaymentFlowMethod> getPayflowMethodsList() {
-    if (paymentFlowMethods == null || paymentFlowMethods.isEmpty()) {
+    Log.i("WalletUtils", "getPayflowMethodsList: checking payflow methods list");
+    return getWebPaymentFlowMethod();
+    /*if (paymentFlowMethods == null || paymentFlowMethods.isEmpty()) {
       return Collections.emptyList();
     } else {
       return paymentFlowMethods;
-    }
+    }*/
+  }
+
+  private static List<PaymentFlowMethod> getWebPaymentFlowMethod() {
+    List<PaymentFlowMethod> paymentFlowMethodsList = new ArrayList<>();
+
+    Integer randomInt = new Random().nextInt(4001) + 1000;
+
+    String url = "https://wallet.dev.appcoins.io/iap/sdk?" +
+            "origin=BDS" +
+            "&" +
+            "domain=com.appcoins.trivialdrivesample.test" +
+            "&" +
+            "product=gas" +
+            "&" +
+            "type=INAPP" +
+            "&" +
+            "metadata=PAYLOAD%20TESTING" +
+            "&" +
+            "reference=orderId%3D170238289" + randomInt +
+            "&" +
+            "country=PT";
+    Log.i("WalletUtils", "startWebFirstPayment: url = " + url);
+
+    paymentFlowMethodsList.add(new PaymentFlowMethod.WebFirstPayment("",1, url));
+    return paymentFlowMethodsList;
   }
 
   public static String getBillingServicePackageName() {

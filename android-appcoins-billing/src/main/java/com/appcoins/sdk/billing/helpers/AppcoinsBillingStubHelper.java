@@ -132,17 +132,17 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
             Log.d(TAG, "Service is NOT installed and should StartPayAsGuest with buyItemProperties = [" + buyItemProperties + "]");
             bundle = WalletUtils.startPayAsGuest(buyItemProperties);
           } else if (method instanceof PaymentFlowMethod.WebFirstPayment) {
-            bundle = WalletUtils.startWebFirstPayment(buyItemProperties);
-            //TODO Perform action for WebFirstPayment
+            Log.d(TAG, "Service is NOT installed and should make WebFirstPayment with buyItemProperties = [" + buyItemProperties + "]");
+            bundle = WalletUtils.startWebFirstPayment(method);
           }
           if (bundle != null) {
             return bundle;
           }
         }
       } else {
-        Log.i(TAG, "Service is NOT installed and should execute first web payment with buyItemProperties = [" + buyItemProperties + "]");
+        Log.d(TAG, "Service is NOT installed and should start install flow with buyItemProperties = [" + buyItemProperties + "]");
         setBuyItemPropertiesForPayflow(packageName, apiVersion, sku, type, developerPayload);
-        return WalletUtils.startWebFirstPayment(buyItemProperties);
+        return WalletUtils.startInstallFlow(buyItemProperties);
       }
     }
     return bundle;
