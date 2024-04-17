@@ -59,6 +59,7 @@ import static com.appcoins.sdk.billing.payasguest.IabActivity.PAYPAL;
 public class PaymentMethodsFragment extends Fragment implements PaymentMethodsView {
 
   private final static String BUY_ITEM_PROPERTIES = "buy_item_properties";
+  private final static String WEB_BUY_INTENT = "WEB_BUY_INTENT";
   private static String SELECTED_RADIO_KEY = "selected_radio";
   private static final String SEND_WALLET_INSTALLED_KEY = "first_impression";
   private IabView iabView;
@@ -479,15 +480,15 @@ public class PaymentMethodsFragment extends Fragment implements PaymentMethodsVi
             .getRawPayload());
 
         PendingIntent buyIntentPendingIntent = intent.getParcelable(KEY_BUY_INTENT);
-        Intent webIntentPendingIntent = intent.getParcelable("WEB_BUY_INTENT");
+        Intent webIntentPendingIntent = intent.getParcelable(WEB_BUY_INTENT);
+
         layout.getIntentLoadingView()
                 .setVisibility(View.INVISIBLE);
+
         if (buyIntentPendingIntent != null) {
-            Log.i("PaymentMethodsFragment", "makeTheStoredPurchase: buyIntentPendingIntent != null");
             iabView.startIntentSenderForResult(buyIntentPendingIntent.getIntentSender(),
                     IabActivity.LAUNCH_INSTALL_BILLING_FLOW_REQUEST_CODE);
         } else if (webIntentPendingIntent != null) {
-            Log.i("PaymentMethodsFragment", "makeTheStoredPurchase: webIntentPendingIntent != null");
             context.startActivity(webIntentPendingIntent);
         } else {
             iabView.finishWithError();

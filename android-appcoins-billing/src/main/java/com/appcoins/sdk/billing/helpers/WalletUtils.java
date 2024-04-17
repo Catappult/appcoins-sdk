@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 import com.appcoins.billing.AppcoinsBilling;
@@ -27,10 +26,9 @@ import com.appcoins.sdk.billing.payasguest.IabActivity;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 import com.indicative.client.android.Indicative;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 import static com.appcoins.sdk.billing.helpers.DeviceInformationHelperKt.getDeviceInfo;
@@ -178,38 +176,11 @@ public class WalletUtils {
   }
 
   public static List<PaymentFlowMethod> getPayflowMethodsList() {
-    Log.i("WalletUtils", "getPayflowMethodsList: checking payflow methods list");
-    return getWebPaymentFlowMethod();
-    /*if (paymentFlowMethods == null || paymentFlowMethods.isEmpty()) {
+    if (paymentFlowMethods == null || paymentFlowMethods.isEmpty()) {
       return Collections.emptyList();
     } else {
       return paymentFlowMethods;
-    }*/
-  }
-
-  private static List<PaymentFlowMethod> getWebPaymentFlowMethod() {
-    List<PaymentFlowMethod> paymentFlowMethodsList = new ArrayList<>();
-
-    Integer randomInt = new Random().nextInt(4001) + 1000;
-
-    String url = "https://wallet.dev.appcoins.io/iap/sdk?" +
-            "origin=BDS" +
-            "&" +
-            "domain=com.appcoins.trivialdrivesample.test" +
-            "&" +
-            "product=gas" +
-            "&" +
-            "type=INAPP" +
-            "&" +
-            "metadata=PAYLOAD%20TESTING" +
-            "&" +
-            "reference=orderId%3D170238289" + randomInt +
-            "&" +
-            "country=PT";
-    Log.i("WalletUtils", "startWebFirstPayment: url = " + url);
-
-    paymentFlowMethodsList.add(new PaymentFlowMethod.WebFirstPayment("",1, url));
-    return paymentFlowMethodsList;
+    }
   }
 
   public static String getBillingServicePackageName() {

@@ -20,10 +20,7 @@ public class WebIapCommunicationActivity extends Activity {
         Intent intent = getIntent();
         Uri uri = intent.getData();
 
-        Log.i("WebIapCommunicationActivity", "onCreate: uri=" + uri.toString());
-
         String redirectResult = uri.getQueryParameter(REDIRECT_RESULT);
-        Log.i("WebIapCommunicationActivity", "onCreate: redirectResult=" + redirectResult);
 
         if (redirectResult != null) {
             SDKWebResponse sdkWebResponse =
