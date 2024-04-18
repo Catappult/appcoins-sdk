@@ -85,7 +85,6 @@ if (secretPropsFile.exists()) {
   ext["sonatypeStagingProfileId"] = System.getenv('SONATYPE_STAGING_PROFILE_ID')
 }
 
-project.afterEvaluate {
 publishing {
   publications {
     release(MavenPublication) {
@@ -93,11 +92,45 @@ publishing {
       artifactId project.name
       version PUBLISH_VERSION
 
-      artifact bundleReleaseAar
+      artifact("$buildDir/outputs/aar/${project.name}-${System.getenv('BUILD_TYPE_NAME')}.aar")
+      artifact androidSourcesJar
+
+      pom {
+        name = project.name
+        description = 'AppCoins Billing SDK'
+        url = 'https://github.com/Catappult/appcoins-sdk/appcoins-core'
+        licenses {
+          license {
+            name = 'The Apache License, Version 3.0'
+            url = 'http://www.apache.org/licenses/LICENSE-3.0.txt'
+          }
+        }
+        developers {
+          developer {
+            id = 'appcoins.wallet'
+            name = 'AppCoins Wallet Team'
+            email = 'wallet@aptoide.com'
+          }
+        }
+        scm {
+          connection = 'scm:git:github.com/Catappult/appcoins-sdk.git'
+          developerConnection = 'scm:git:ssh://github.com/Catappult/appcoins-sdk.git'
+          url = 'https://github.com/Catappult/appcoins-sdk'
+        }
+        withXml {
+          def dependenciesNode = asNode().appendNode('dependencies')
+
+          project.configurations.implementation.allDependencies.each {
+            def dependencyNode = dependenciesNode.appendNode('dependency')
+            dependencyNode.appendNode('groupId', it.group)
+            dependencyNode.appendNode('artifactId', it.name)
+            dependencyNode.appendNode('version', it.version)
+          }
+        }
+      }
     }
   }
   repositories {
-    mavenLocal()
     maven {
       name = "sonatype"
 
@@ -112,5 +145,8 @@ publishing {
     }
   }
 }
+
+signing {
+  sign publishing.publications
 }
 //end publish configuration
