@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.appcoins.sdk.billing.listeners.SDKWebResponse;
 import com.appcoins.sdk.billing.listeners.SDKWebResponseStream;
@@ -54,8 +53,6 @@ public class WebIapCommunicationActivity extends Activity {
 
     private static final String REDIRECT_RESULT = "redirectResult";
     private static final String DATA = "data";
-    private static final String ERROR_CODE = "errorCode";
-    private static final String ERROR_DETAILS = "errorDetails";
     private static final String SUCCESS = "SUCCESS";
     private static final String ERROR = "ERROR";
     private static final String CANCEL = "CANCEL";
