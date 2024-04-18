@@ -36,18 +36,18 @@ public class SDKWebResponseStream {
     }
 
     public void collect(Consumer<SDKWebResponse> collector) {
-        collectors.add(collector);
+        addIfNotPresent(collector);
         if (currentValue != null) {
             collector.accept(currentValue);
         }
     }
 
     public void collectFromNow(Consumer<SDKWebResponse> collector) {
-        collectors.add(collector);
+        addIfNotPresent(collector);
     }
 
     public void collectFromNowOnce(Consumer<SDKWebResponse> collector) {
-        singleCollectors.add(collector);
+        addSingleCollectorIfNotPresent(collector);
     }
 
     private void notifyCollectors(SDKWebResponse value) {
@@ -63,5 +63,17 @@ public class SDKWebResponseStream {
 
     public interface Consumer<SDKWebResponse> {
         void accept(SDKWebResponse value);
+    }
+
+    private void addIfNotPresent(Consumer<SDKWebResponse> collector) {
+        if (!collectors.contains(collector)) {
+            collectors.add(collector);
+        }
+    }
+
+    private void addSingleCollectorIfNotPresent(Consumer<SDKWebResponse> collector) {
+        if (!singleCollectors.contains(collector)) {
+            singleCollectors.add(collector);
+        }
     }
 }

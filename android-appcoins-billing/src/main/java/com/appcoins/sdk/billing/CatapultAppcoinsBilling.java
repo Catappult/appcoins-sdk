@@ -74,6 +74,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient {
                 AppCoinsPendingIntentCaller.startPendingAppCoinsIntent(activity,
                         buyIntent.getIntentSender(), REQUEST_CODE, null, 0, 0, 0);
             } else if (webBuyIntent != null) {
+                PaymentsResultsManager.getInstance().collectPaymentResult(this);
                 activity.startActivity(webBuyIntent);
             }
         } catch (NullPointerException e) {
@@ -113,11 +114,12 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient {
     return false;
   }
 
-  @Override
-  public boolean onIntentResult(int resultCode, String data) {
-    Log.i("CatapultAppcoinsBilling", "onIntentResult: resultCode=" + resultCode + " data=" + data);
-    //ApplicationUtils.handleActivityResult(billing, resultCode, new Intent(data), purchaseFinishedListener);
-    return true;
+  public Billing getBilling() {
+    return billing;
+  }
+
+  public PurchasesUpdatedListener getPurchaseFinishedListener() {
+    return purchaseFinishedListener;
   }
 }
 
