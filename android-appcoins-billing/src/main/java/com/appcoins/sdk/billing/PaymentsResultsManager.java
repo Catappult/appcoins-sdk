@@ -27,11 +27,8 @@ class PaymentsResultsManager {
 
     private final SDKWebResponseStream.Consumer<SDKWebResponse> sdkWebResponseCollector =
             sdkWebResponse -> {
-                Log.i("CatappultAppcoins", "collectFromNow: received new sdkWebResponse -> " + sdkWebResponse.toString());
-                ApplicationUtils.handleActivityResult(
-                        catapultAppcoinsBilling.getBilling(),
-                        sdkWebResponse.getResultCode(),
-                        null, //new Intent(sdkWebResponse.getData()),
+                ApplicationUtils.handleDeeplinkResult(
+                        sdkWebResponse,
                         catapultAppcoinsBilling.getPurchaseFinishedListener());
             };
 }

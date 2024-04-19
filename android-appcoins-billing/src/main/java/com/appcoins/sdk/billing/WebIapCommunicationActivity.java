@@ -17,43 +17,10 @@ public class WebIapCommunicationActivity extends Activity {
         Intent intent = getIntent();
         Uri uri = intent.getData();
 
-        if (uri!=null){
-            String redirectResult = uri.getQueryParameter(REDIRECT_RESULT);
-
-            if (redirectResult != null) {
-                SDKWebResponse sdkWebResponse =
-                        new SDKWebResponse(
-                                mapRedirectResultToResultCode(redirectResult),
-                                uri.getQueryParameter(DATA)
-                        );
-                SDKWebResponseStream.getInstance().emit(sdkWebResponse);
-            }
+        if (uri != null) {
+            SDKWebResponseStream.getInstance().emit(new SDKWebResponse(uri));
         }
 
         finish();
     }
-
-    private int mapRedirectResultToResultCode(String redirectResult) {
-        int resultCode;
-        switch (redirectResult) {
-            case SUCCESS:
-                resultCode = -1;
-                break;
-            case ERROR:
-                resultCode = 1;
-                break;
-            case CANCEL:
-                resultCode = 0;
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + redirectResult);
-        }
-        return resultCode;
-    }
-
-    private static final String REDIRECT_RESULT = "redirectResult";
-    private static final String DATA = "data";
-    private static final String SUCCESS = "SUCCESS";
-    private static final String ERROR = "ERROR";
-    private static final String CANCEL = "CANCEL";
 }
