@@ -67,28 +67,28 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient {
         return responseCode;
       }
 
-            PendingIntent buyIntent = launchBillingFlowResult.getBuyIntent();
-            Intent webBuyIntent = launchBillingFlowResult.getWebBuyIntent();
+      PendingIntent buyIntent = launchBillingFlowResult.getBuyIntent();
+      Intent webBuyIntent = launchBillingFlowResult.getWebBuyIntent();
 
-            if (buyIntent != null) {
-                AppCoinsPendingIntentCaller.startPendingAppCoinsIntent(activity,
-                        buyIntent.getIntentSender(), REQUEST_CODE, null, 0, 0, 0);
-            } else if (webBuyIntent != null) {
-                PaymentsResultsManager.getInstance().collectPaymentResult(this);
-                activity.startActivity(webBuyIntent);
-            }
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            return ResponseCode.ERROR.getValue();
-        } catch (IntentSender.SendIntentException e) {
-            e.printStackTrace();
-            return ResponseCode.ERROR.getValue();
-        } catch (ServiceConnectionException e) {
-            e.printStackTrace();
-            return ResponseCode.SERVICE_UNAVAILABLE.getValue();
-        }
-        return ResponseCode.OK.getValue();
+      if (buyIntent != null) {
+        AppCoinsPendingIntentCaller.startPendingAppCoinsIntent(activity,
+          buyIntent.getIntentSender(), REQUEST_CODE, null, 0, 0, 0);
+      } else if (webBuyIntent != null) {
+        PaymentsResultsManager.getInstance().collectPaymentResult(this);
+        activity.startActivity(webBuyIntent);
+      }
+    } catch (NullPointerException e) {
+      e.printStackTrace();
+      return ResponseCode.ERROR.getValue();
+    } catch (IntentSender.SendIntentException e) {
+      e.printStackTrace();
+      return ResponseCode.ERROR.getValue();
+    } catch (ServiceConnectionException e) {
+      e.printStackTrace();
+      return ResponseCode.SERVICE_UNAVAILABLE.getValue();
     }
+    return ResponseCode.OK.getValue();
+  }
 
   @Override public void startConnection(final AppCoinsBillingStateListener listener) {
     if (!isReady()) {

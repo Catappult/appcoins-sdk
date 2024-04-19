@@ -12,7 +12,6 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -479,21 +478,21 @@ public class PaymentMethodsFragment extends Fragment implements PaymentMethodsVi
         buyItemProperties.getDeveloperPayload()
             .getRawPayload());
 
-        PendingIntent buyIntentPendingIntent = intent.getParcelable(KEY_BUY_INTENT);
-        Intent webIntentPendingIntent = intent.getParcelable(WEB_BUY_INTENT);
+    PendingIntent buyIntentPendingIntent = intent.getParcelable(KEY_BUY_INTENT);
+    Intent webIntentPendingIntent = intent.getParcelable(WEB_BUY_INTENT);
 
-        layout.getIntentLoadingView()
-                .setVisibility(View.INVISIBLE);
+    layout.getIntentLoadingView()
+        .setVisibility(View.INVISIBLE);
 
-        if (buyIntentPendingIntent != null) {
-            iabView.startIntentSenderForResult(buyIntentPendingIntent.getIntentSender(),
-                    IabActivity.LAUNCH_INSTALL_BILLING_FLOW_REQUEST_CODE);
-        } else if (webIntentPendingIntent != null) {
-            context.startActivity(webIntentPendingIntent);
-        } else {
-            iabView.finishWithError();
-        }
+    if (buyIntentPendingIntent != null) {
+      iabView.startIntentSenderForResult(buyIntentPendingIntent.getIntentSender(),
+         IabActivity.LAUNCH_INSTALL_BILLING_FLOW_REQUEST_CODE);
+    } else if (webIntentPendingIntent != null) {
+      context.startActivity(webIntentPendingIntent);
+    } else {
+      iabView.finishWithError();
     }
+  }
 
   private boolean isVisible(View view) {
     return view.getVisibility() == View.VISIBLE;

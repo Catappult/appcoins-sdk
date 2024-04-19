@@ -22,7 +22,7 @@ class PaymentsResultsManager {
 
     public void collectPaymentResult(CatapultAppcoinsBilling catapultAppcoinsBilling) {
         this.catapultAppcoinsBilling = catapultAppcoinsBilling;
-        SDKWebResponseStream.getInstance().collectFromNow(sdkWebResponseCollector);
+        SDKWebResponseStream.getInstance().collect(sdkWebResponseCollector);
     }
 
     private final SDKWebResponseStream.Consumer<SDKWebResponse> sdkWebResponseCollector =

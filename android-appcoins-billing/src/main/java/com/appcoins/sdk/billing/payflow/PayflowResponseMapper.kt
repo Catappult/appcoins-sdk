@@ -6,45 +6,43 @@ import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import org.json.JSONObject
 
 class PayflowResponseMapper {
-    fun map(response: RequestResponse): PayflowMethodResponse {
-        WalletUtils.getSdkAnalytics()
-            .sendCallBackendPayflowEvent(response.responseCode, response.response)
+  fun map(response: RequestResponse): PayflowMethodResponse {
+    WalletUtils.getSdkAnalytics()
+      .sendCallBackendPayflowEvent(response.responseCode, response.response)
 
-        if (!isSuccess(response.responseCode) || response.response == null) {
-            return PayflowMethodResponse(response.responseCode, emptyList())
-        }
-
-        val paymentFlowList = runCatching {
-            JSONObject(response.response).optJSONObject("payment_methods")
-                ?.let { paymentMethodsObject ->
-                    paymentMethodsObject.keys().asSequence().mapNotNull { methodName: String ->
-                        val priority =
-                            paymentMethodsObject.optJSONObject(methodName)?.optInt("priority") ?: -1
-                        when (methodName) {
-                            "wallet" -> PaymentFlowMethod.Wallet(methodName, priority)
-                            "pay_as_a_guest" -> PaymentFlowMethod.PayAsAGuest(methodName, priority)
-                            "games_hub_checkout" -> PaymentFlowMethod.GamesHub(methodName, priority)
-                            "first_payment_via_web" -> {
-                                val paymentUrl = paymentMethodsObject.optJSONObject(methodName)
-                                    ?.optString("payment_url")
-                                PaymentFlowMethod.WebFirstPayment(methodName, priority, paymentUrl)
-                            }
-
-                            else -> null
-                        }
-                    }.toList()
-                } ?: emptyList()
-        }.getOrElse {
-            it.printStackTrace()
-            emptyList()
-        }
-        return PayflowMethodResponse(response.responseCode, paymentFlowList)
+    if (!isSuccess(response.responseCode) || response.response == null) {
+      return PayflowMethodResponse(response.responseCode, emptyList())
     }
+
+    val paymentFlowList = runCatching {
+      JSONObject(response.response).optJSONObject("payment_methods")
+        ?.let { paymentMethodsObject ->
+          paymentMethodsObject.keys().asSequence().mapNotNull { methodName: String ->
+            val priority = paymentMethodsObject.optJSONObject(methodName)?.optInt("priority") ?: -1
+            when (methodName) {
+              "wallet" -> PaymentFlowMethod.Wallet(methodName, priority)
+              "pay_as_a_guest" -> PaymentFlowMethod.PayAsAGuest(methodName, priority)
+              "games_hub_checkout" -> PaymentFlowMethod.GamesHub(methodName, priority)
+              "first_payment_via_web" -> {
+                  val paymentUrl = paymentMethodsObject.optJSONObject(methodName)
+                      ?.optString("payment_url")
+                  PaymentFlowMethod.WebFirstPayment(methodName, priority, paymentUrl)
+              }
+              else -> null
+            }
+          }.toList()
+        } ?: emptyList()
+    }.getOrElse {
+      it.printStackTrace()
+      emptyList()
+    }
+    return PayflowMethodResponse(response.responseCode, paymentFlowList)
+  }
 }
 
 data class PayflowMethodResponse(
-    val responseCode: Int?,
-    val paymentFlowList: List<PaymentFlowMethod>?
+  val responseCode: Int?,
+  val paymentFlowList: List<PaymentFlowMethod>?
 )
 
 sealed class PaymentFlowMethod(
@@ -52,9 +50,9 @@ sealed class PaymentFlowMethod(
     val priority: Int,
     val paymentUrl: String? = null
 ) {
-    class Wallet(name: String, priority: Int) : PaymentFlowMethod(name, priority)
-    class PayAsAGuest(name: String, priority: Int) : PaymentFlowMethod(name, priority)
-    class GamesHub(name: String, priority: Int) : PaymentFlowMethod(name, priority)
-    class WebFirstPayment(name: String, priority: Int, paymentUrl: String?) :
-        PaymentFlowMethod(name, priority, paymentUrl)
+  class Wallet(name: String, priority: Int) : PaymentFlowMethod(name, priority)
+  class PayAsAGuest(name: String, priority: Int) : PaymentFlowMethod(name, priority)
+  class GamesHub(name: String, priority: Int) : PaymentFlowMethod(name, priority)
+  class WebFirstPayment(name: String, priority: Int, paymentUrl: String?) :
+      PaymentFlowMethod(name, priority, paymentUrl)
 }

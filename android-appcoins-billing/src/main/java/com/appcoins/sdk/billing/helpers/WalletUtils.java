@@ -25,7 +25,6 @@ import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.payasguest.IabActivity;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 import com.indicative.client.android.Indicative;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -124,13 +123,13 @@ public class WalletUtils {
         return createWebIntentBundle(intent);
     }
 
-    public static Bundle startInstallFlow(BuyItemProperties buyItemProperties) {
-        if (!WalletUtils.deviceSupportsWallet(Build.VERSION.SDK_INT)) {
-            return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
-        }
-        Intent intent = InstallDialogActivity.newIntent(context, buyItemProperties, sdkAnalytics);
-        return createIntentBundle(intent);
+  public static Bundle startInstallFlow(BuyItemProperties buyItemProperties) {
+    if (!WalletUtils.deviceSupportsWallet(Build.VERSION.SDK_INT)) {
+      return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
     }
+    Intent intent = InstallDialogActivity.newIntent(context, buyItemProperties, sdkAnalytics);
+    return createIntentBundle(intent);
+  }
 
   private static Bundle createWebIntentBundle(Intent intent) {
     Bundle bundle = new Bundle();

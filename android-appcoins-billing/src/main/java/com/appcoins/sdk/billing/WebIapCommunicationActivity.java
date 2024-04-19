@@ -1,6 +1,5 @@
 package com.appcoins.sdk.billing;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -11,7 +10,6 @@ import com.appcoins.sdk.billing.listeners.SDKWebResponseStream;
 
 public class WebIapCommunicationActivity extends Activity {
 
-    @SuppressLint("LongLogTag")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,15 +17,17 @@ public class WebIapCommunicationActivity extends Activity {
         Intent intent = getIntent();
         Uri uri = intent.getData();
 
-        String redirectResult = uri.getQueryParameter(REDIRECT_RESULT);
+        if (uri!=null){
+            String redirectResult = uri.getQueryParameter(REDIRECT_RESULT);
 
-        if (redirectResult != null) {
-            SDKWebResponse sdkWebResponse =
-                    new SDKWebResponse(
-                            mapRedirectResultToResultCode(redirectResult),
-                            uri.getQueryParameter(DATA)
-                    );
-            SDKWebResponseStream.getInstance().emit(sdkWebResponse);
+            if (redirectResult != null) {
+                SDKWebResponse sdkWebResponse =
+                        new SDKWebResponse(
+                                mapRedirectResultToResultCode(redirectResult),
+                                uri.getQueryParameter(DATA)
+                        );
+                SDKWebResponseStream.getInstance().emit(sdkWebResponse);
+            }
         }
 
         finish();
