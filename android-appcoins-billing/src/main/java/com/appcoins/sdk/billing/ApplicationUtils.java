@@ -106,10 +106,12 @@ class ApplicationUtils {
     return true;
   }
 
-  static void handleDeeplinkResult(SDKWebResponse sdkWebResponse, PurchasesUpdatedListener purchaseFinishedListener) {
-
-    SdkAnalytics sdkAnalytics = WalletUtils.getSdkAnalytics();
-
+  static void handleDeeplinkResult(
+          SDKWebResponse sdkWebResponse,
+          BillingFlowParams billingFlowParams,
+          String developerPayload,
+          PurchasesUpdatedListener purchaseFinishedListener
+  ) {
     if (sdkWebResponse.getResponseCode() == null) {
       logError("No response code returned on Web Result.");
       purchaseFinishedListener.onPurchasesUpdated(
@@ -120,7 +122,7 @@ class ApplicationUtils {
     }
 
     if (sdkWebResponse.getResponseCode() == ResponseCode.OK.getValue()) {
-      sdkAnalytics.sendPurchaseStatusEvent("success", getResponseDesc(sdkWebResponse.getResponseCode()));
+      WalletUtils.getSdkAnalytics().sendPurchaseStatusEvent("success", getResponseDesc(sdkWebResponse.getResponseCode()));
       logDebug("Successful resultcode from purchase activity.");
       logDebug("OrderId: " + sdkWebResponse.getOrderId());
       logDebug("PurchaseToken: " + sdkWebResponse.getPurchaseToken());
@@ -136,7 +138,7 @@ class ApplicationUtils {
       }
 
         try {
-          Purchase purchase = sdkWebResponse.toPurchase();
+          Purchase purchase = sdkWebResponse.toPurchase(billingFlowParams, developerPayload);
 
           List<Purchase> purchases = new ArrayList<>();
           purchases.add(purchase);

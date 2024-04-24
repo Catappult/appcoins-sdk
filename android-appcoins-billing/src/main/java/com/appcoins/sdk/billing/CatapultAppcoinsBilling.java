@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.util.Log;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.helpers.AppCoinsPendingIntentCaller;
 import com.appcoins.sdk.billing.helpers.EventLogger;
@@ -51,8 +50,6 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient {
       String payload = PayloadHelper.buildIntentPayload(billingFlowParams.getOrderReference(),
           billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin());
 
-      Log.d("Message: ", payload);
-
       Thread eventLoggerThread = new Thread(new EventLogger(billingFlowParams.getSku(),
           activity.getApplicationContext()
               .getPackageName()));
@@ -74,7 +71,12 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient {
         AppCoinsPendingIntentCaller.startPendingAppCoinsIntent(activity,
           buyIntent.getIntentSender(), REQUEST_CODE, null, 0, 0, 0);
       } else if (webBuyIntent != null) {
-        PaymentsResultsManager.getInstance().collectPaymentResult(this);
+        PaymentsResultsManager.getInstance()
+                .collectPaymentResult(
+                        billingFlowParams,
+                        payload,
+                        this
+                );
         activity.startActivity(webBuyIntent);
       }
     } catch (NullPointerException e) {

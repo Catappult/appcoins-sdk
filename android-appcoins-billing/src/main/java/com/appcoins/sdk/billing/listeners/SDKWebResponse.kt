@@ -1,6 +1,7 @@
 package com.appcoins.sdk.billing.listeners
 
 import android.net.Uri
+import com.appcoins.sdk.billing.BillingFlowParams
 import com.appcoins.sdk.billing.Purchase
 
 data class SDKWebResponse(
@@ -14,23 +15,25 @@ data class SDKWebResponse(
         uri.getQueryParameter(ORDER_ID)
     )
 
-    fun toPurchase(): Purchase =
+    fun toPurchase(
+        billingFlowParams: BillingFlowParams? = null,
+        developerPayload: String? = null
+    ): Purchase =
         Purchase(
             orderId,
-            IN_APP,
+            billingFlowParams?.skuType,
             null,
             null,
             0L,
             0,
-            null,
+            developerPayload,
             purchaseToken,
             null,
-            null,
+            billingFlowParams?.sku,
             false
         )
 
     companion object {
-        private const val IN_APP = "inapp"
         private const val RESPONSE_CODE = "responseCode"
         private const val PURCHASE_TOKEN = "purchaseToken"
         private const val ORDER_ID = "orderId"

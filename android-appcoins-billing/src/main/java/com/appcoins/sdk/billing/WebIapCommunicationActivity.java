@@ -18,9 +18,27 @@ public class WebIapCommunicationActivity extends Activity {
         Uri uri = intent.getData();
 
         if (uri != null) {
-            SDKWebResponseStream.getInstance().emit(new SDKWebResponse(uri));
+            SDKWebResponse sdkWebResponse = new SDKWebResponse(uri);
+            saveGuestWalletId(uri);
+            SDKWebResponseStream.getInstance().emit(sdkWebResponse);
         }
 
         finish();
     }
+
+    private void saveGuestWalletId(Uri uri) {
+        String guestWalletId = uri.getQueryParameter(GUEST_WALLET_ID_KEY);
+        if (guestWalletId == null || guestWalletId.isEmpty()) {
+            return;
+        }
+
+        SharedPreferencesRepository sharedPreferencesRepository =
+                new SharedPreferencesRepository(
+                        this,
+                        SharedPreferencesRepository.TTL_IN_SECONDS
+                );
+        sharedPreferencesRepository.setWalletId(guestWalletId);
+    }
+
+    private static final String GUEST_WALLET_ID_KEY = "guestWalletID";
 }
