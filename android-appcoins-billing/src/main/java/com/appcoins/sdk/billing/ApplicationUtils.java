@@ -106,7 +106,7 @@ class ApplicationUtils {
     return true;
   }
 
-  static void handleDeeplinkResult(
+  static void handleWebBasedResult(
           SDKWebResponse sdkWebResponse,
           BillingFlowParams billingFlowParams,
           String developerPayload,
@@ -156,11 +156,7 @@ class ApplicationUtils {
         return;
       }
 
-    logAndSendAnalyticsForUnsuccessfulResult(
-            sdkWebResponse.getResponseCode(),
-            purchaseFinishedListener
-    );
-
+    logAndSendAnalyticsForUnsuccessfulResult(sdkWebResponse.getResponseCode());
     purchaseFinishedListener.onPurchasesUpdated(
             sdkWebResponse.getResponseCode(),
             Collections.emptyList()
@@ -198,23 +194,16 @@ class ApplicationUtils {
     return data.optString(objectId);
   }
 
-  private static void logAndSendAnalyticsForUnsuccessfulResult(
-          Integer responseCode,
-          PurchasesUpdatedListener purchaseFinishedListener
-  ) {
+  private static void logAndSendAnalyticsForUnsuccessfulResult(Integer responseCode) {
     SdkAnalytics sdkAnalytics = WalletUtils.getSdkAnalytics();
 
     if (responseCode == ResponseCode.USER_CANCELED.getValue()) {
       logDebug("Purchase canceled - Response: " + getResponseDesc(responseCode));
       sdkAnalytics.sendPurchaseStatusEvent("user_canceled", getResponseDesc(responseCode));
-      purchaseFinishedListener.onPurchasesUpdated(ResponseCode.USER_CANCELED.getValue(),
-              Collections.emptyList());
     } else {
       logError("Purchase failed. Response code: " + getResponseDesc(
               responseCode));
       sdkAnalytics.sendPurchaseStatusEvent("error", getResponseDesc(responseCode));
-      purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.getValue(),
-              Collections.emptyList());
     }
   }
 

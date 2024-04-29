@@ -29,7 +29,7 @@ class PaymentsResultsManager {
 
     private final SDKWebResponseStream.Consumer<SDKWebResponse> sdkWebResponseCollector =
             sdkWebResponse -> {
-                ApplicationUtils.handleDeeplinkResult(
+                ApplicationUtils.handleWebBasedResult(
                         sdkWebResponse,
                         billingFlowParams,
                         developerPayload,

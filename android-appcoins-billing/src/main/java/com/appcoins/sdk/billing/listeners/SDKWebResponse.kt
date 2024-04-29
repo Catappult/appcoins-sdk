@@ -1,18 +1,18 @@
 package com.appcoins.sdk.billing.listeners
 
-import android.net.Uri
 import com.appcoins.sdk.billing.BillingFlowParams
 import com.appcoins.sdk.billing.Purchase
+import org.json.JSONObject
 
 data class SDKWebResponse(
     val responseCode: Int?,
     val purchaseToken: String?,
     val orderId: String?,
 ) {
-    constructor(uri: Uri) : this(
-        uri.getQueryParameter(RESPONSE_CODE)?.toInt(),
-        uri.getQueryParameter(PURCHASE_TOKEN),
-        uri.getQueryParameter(ORDER_ID)
+    constructor(jsonObject: JSONObject) : this(
+        jsonObject.optInt(RESPONSE_CODE),
+        jsonObject.optString(PURCHASE_TOKEN),
+        jsonObject.optString(ORDER_ID)
     )
 
     fun toPurchase(
