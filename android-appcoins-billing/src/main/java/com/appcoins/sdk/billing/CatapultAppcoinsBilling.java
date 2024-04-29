@@ -71,6 +71,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient {
         AppCoinsPendingIntentCaller.startPendingAppCoinsIntent(activity,
           buyIntent.getIntentSender(), REQUEST_CODE, null, 0, 0, 0);
       } else if (webBuyIntent != null) {
+        WalletUtils.getSdkAnalytics().sendPurchaseViaWebEvent(billingFlowParams.getSku());
         PaymentsResultsManager.getInstance()
                 .collectPaymentResult(
                         billingFlowParams,

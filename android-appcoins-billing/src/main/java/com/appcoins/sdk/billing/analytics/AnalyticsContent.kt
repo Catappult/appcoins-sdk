@@ -28,6 +28,7 @@ object SdkAnalyticsEvents {
   const val SDK_START_CONNECTION = "sdk_start_connection"
   const val SDK_IAP_PURCHASE_INTENT_START = "sdk_iap_purchase_intent_click"
   const val SDK_IAP_PAYMENT_STATUS_FEEDBACK = "sdk_iap_payment_status_feedback"
+  const val SDK_WEB_PAYMENT_IMPRESSION = "sdk_web_payment_impression"
 }
 
 object SdkInstallFlowEvents {

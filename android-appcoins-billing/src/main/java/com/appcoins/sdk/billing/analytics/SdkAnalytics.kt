@@ -31,6 +31,18 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
     )
   }
 
+  fun sendPurchaseViaWebEvent(skuDetails: String) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.SKU_NAME] = skuDetails
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkAnalyticsEvents.SDK_WEB_PAYMENT_IMPRESSION,
+      AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
   fun sendCallBackendPayflowEvent(responseCode: Int?, responseMessage: String?) {
     val eventData: MutableMap<String, Any> = HashMap()
     eventData[AnalyticsLabels.PAYFLOW_RESPONSE_CODE] = responseCode?.toString() ?: ""
