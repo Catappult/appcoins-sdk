@@ -118,8 +118,6 @@ public class WalletUtils {
         }
 
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(method.getPaymentUrl()));
-        // TODO handle different types of default Browsers
-        intent.setPackage("com.android.chrome");
         return createWebIntentBundle(intent);
     }
 

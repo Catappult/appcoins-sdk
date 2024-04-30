@@ -9,9 +9,7 @@ import com.appcoins.sdk.billing.listeners.SDKWebResponseStream
 import org.java_websocket.WebSocket
 import org.java_websocket.handshake.ClientHandshake
 import org.java_websocket.server.WebSocketServer
-import org.json.JSONException
 import org.json.JSONObject
-import java.lang.NullPointerException
 import java.net.InetSocketAddress
 
 class WebPaymentCommunicationWebSocket : WebSocketServer(InetSocketAddress(PORT)) {
@@ -36,9 +34,9 @@ class WebPaymentCommunicationWebSocket : WebSocketServer(InetSocketAddress(PORT)
             val jsonObject = JSONObject(message)
             saveGuestWalletId(jsonObject)
             SDKWebResponseStream.getInstance().emit(SDKWebResponse(jsonObject))
-        } catch (jsonException: JSONException) {
+        } catch (exception: Exception) {
             SDKWebResponseStream.getInstance().emit(SDKWebResponse(ResponseCode.ERROR.value))
-            jsonException.printStackTrace()
+            exception.printStackTrace()
         }
     }
 
@@ -76,9 +74,7 @@ class WebPaymentCommunicationWebSocket : WebSocketServer(InetSocketAddress(PORT)
                 SharedPreferencesRepository.TTL_IN_SECONDS
             )
             sharedPreferencesRepository.walletId = guestWalletId
-        } catch (exception: JSONException) {
-            exception.printStackTrace()
-        } catch (exception: NullPointerException) {
+        } catch (exception: Exception) {
             exception.printStackTrace()
         }
     }
