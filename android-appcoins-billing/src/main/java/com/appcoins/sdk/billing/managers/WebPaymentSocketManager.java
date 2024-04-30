@@ -8,15 +8,11 @@ import java.net.UnknownHostException;
 
 public class WebPaymentSocketManager {
 
-    private WebPaymentCommunicationWebSocket webPaymentCommunicationWebSocket = null;
+    private final WebPaymentCommunicationWebSocket webPaymentCommunicationWebSocket;
     private static WebPaymentSocketManager instance;
 
     private WebPaymentSocketManager() {
-        try {
-            webPaymentCommunicationWebSocket = new WebPaymentCommunicationWebSocket();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+        webPaymentCommunicationWebSocket = new WebPaymentCommunicationWebSocket();
     }
 
     public static synchronized WebPaymentSocketManager getInstance() {

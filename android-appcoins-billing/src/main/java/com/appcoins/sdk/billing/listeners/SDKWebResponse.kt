@@ -6,8 +6,8 @@ import org.json.JSONObject
 
 data class SDKWebResponse(
     val responseCode: Int?,
-    val purchaseToken: String?,
-    val orderId: String?,
+    val purchaseToken: String? = null,
+    val orderId: String? = null,
 ) {
     constructor(jsonObject: JSONObject) : this(
         jsonObject.optInt(RESPONSE_CODE),
@@ -33,9 +33,9 @@ data class SDKWebResponse(
             false
         )
 
-    companion object {
-        private const val RESPONSE_CODE = "responseCode"
-        private const val PURCHASE_TOKEN = "purchaseToken"
-        private const val ORDER_ID = "orderId"
+    private companion object {
+        const val RESPONSE_CODE = "responseCode"
+        const val PURCHASE_TOKEN = "purchaseToken"
+        const val ORDER_ID = "orderId"
     }
 }
