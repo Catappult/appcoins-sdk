@@ -11,6 +11,7 @@ import org.java_websocket.handshake.ClientHandshake
 import org.java_websocket.server.WebSocketServer
 import org.json.JSONException
 import org.json.JSONObject
+import java.lang.NullPointerException
 import java.net.InetSocketAddress
 
 class WebPaymentCommunicationWebSocket : WebSocketServer(InetSocketAddress(PORT)) {
@@ -75,8 +76,10 @@ class WebPaymentCommunicationWebSocket : WebSocketServer(InetSocketAddress(PORT)
                 SharedPreferencesRepository.TTL_IN_SECONDS
             )
             sharedPreferencesRepository.walletId = guestWalletId
-        } catch (jsonException: JSONException) {
-            jsonException.printStackTrace()
+        } catch (exception: JSONException) {
+            exception.printStackTrace()
+        } catch (exception: NullPointerException) {
+            exception.printStackTrace()
         }
     }
 
