@@ -3,7 +3,6 @@ package com.appcoins.sdk.billing.service
 import android.content.Context
 import android.util.Log
 import com.appcoins.sdk.billing.ResponseCode
-import com.appcoins.sdk.billing.SharedPreferencesRepository
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
 import com.appcoins.sdk.billing.listeners.SDKWebResponseStream
 import org.java_websocket.WebSocket
@@ -12,7 +11,7 @@ import org.java_websocket.server.WebSocketServer
 import org.json.JSONObject
 import java.net.InetSocketAddress
 
-class WebPaymentCommunicationWebSocket : WebSocketServer(InetSocketAddress(PORT)) {
+class WebPaymentCommunicationWebSocket(port: Int) : WebSocketServer(InetSocketAddress(port)) {
 
     private var isStarted = false
     private var context: Context? = null
@@ -32,7 +31,6 @@ class WebPaymentCommunicationWebSocket : WebSocketServer(InetSocketAddress(PORT)
         Log.d(TAG, "Received message from " + conn.remoteSocketAddress + ": " + message)
         try {
             val jsonObject = JSONObject(message)
-            saveGuestWalletId(jsonObject)
             SDKWebResponseStream.getInstance().emit(SDKWebResponse(jsonObject))
         } catch (exception: Exception) {
             SDKWebResponseStream.getInstance().emit(SDKWebResponse(ResponseCode.ERROR.value))
@@ -40,8 +38,8 @@ class WebPaymentCommunicationWebSocket : WebSocketServer(InetSocketAddress(PORT)
         }
     }
 
-    override fun onError(conn: WebSocket, ex: Exception) {
-        ex.printStackTrace()
+    override fun onError(conn: WebSocket?, ex: Exception) {
+        Log.e(TAG, ex.message.toString())
     }
 
     override fun onStart() {
@@ -63,25 +61,7 @@ class WebPaymentCommunicationWebSocket : WebSocketServer(InetSocketAddress(PORT)
         }
     }
 
-    private fun saveGuestWalletId(jsonObject: JSONObject) {
-        try {
-            val guestWalletId = jsonObject.optString(GUEST_WALLET_ID_KEY)
-            if (guestWalletId.isEmpty()) {
-                return
-            }
-            val sharedPreferencesRepository = SharedPreferencesRepository(
-                context,
-                SharedPreferencesRepository.TTL_IN_SECONDS
-            )
-            sharedPreferencesRepository.walletId = guestWalletId
-        } catch (exception: Exception) {
-            exception.printStackTrace()
-        }
-    }
-
-    companion object {
-        private const val PORT = 8887
-        private const val GUEST_WALLET_ID_KEY = "guestWalletID"
-        private const val TAG = "WebPaymentSocket"
+    private companion object {
+        const val TAG = "WebPaymentSocket"
     }
 }

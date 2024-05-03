@@ -4,29 +4,43 @@ import android.content.Context;
 
 import com.appcoins.sdk.billing.service.WebPaymentCommunicationWebSocket;
 
-import java.net.UnknownHostException;
+import java.io.IOException;
+import java.net.ServerSocket;
 
 public class WebPaymentSocketManager {
 
     private final WebPaymentCommunicationWebSocket webPaymentCommunicationWebSocket;
     private static WebPaymentSocketManager instance;
 
-    private WebPaymentSocketManager() {
-        webPaymentCommunicationWebSocket = new WebPaymentCommunicationWebSocket();
+    private WebPaymentSocketManager(int port) {
+        webPaymentCommunicationWebSocket = new WebPaymentCommunicationWebSocket(port);
     }
 
     public static synchronized WebPaymentSocketManager getInstance() {
         if (instance == null) {
-            instance = new WebPaymentSocketManager();
+            instance = new WebPaymentSocketManager(getPortForWebSocket());
         }
         return instance;
     }
 
-    public void startServer(Context context) {
+    public int startServer(Context context) {
         try {
             webPaymentCommunicationWebSocket.start(context);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return webPaymentCommunicationWebSocket.getPort();
+    }
+
+    private static int getPortForWebSocket() {
+        int port = 0;
+        try {
+            ServerSocket serverSocket = new ServerSocket(0);
+            port = serverSocket.getLocalPort();
+            serverSocket.close();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+        return port;
     }
 }

@@ -12,7 +12,6 @@ import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
-import com.appcoins.sdk.billing.managers.WebPaymentSocketManager;
 
 public class CatapultAppcoinsBilling implements AppcoinsBillingClient {
   private static final int REQUEST_CODE = 51;
@@ -79,7 +78,6 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient {
                         payload,
                         this
                 );
-        WebPaymentSocketManager.getInstance().startServer(activity.getApplicationContext());
         activity.startActivity(webBuyIntent);
       }
     } catch (NullPointerException e) {
