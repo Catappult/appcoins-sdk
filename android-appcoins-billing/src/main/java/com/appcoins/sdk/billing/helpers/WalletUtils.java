@@ -27,7 +27,8 @@ import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.analytics.WalletAddressProvider;
 import com.appcoins.sdk.billing.managers.WebPaymentSocketManager;
 import com.appcoins.sdk.billing.payasguest.IabActivity;
-import com.appcoins.sdk.billing.payasguest.OemIdExtractorV1;
+import com.appcoins.sdk.billing.payasguest.oemid.OemIdExtractorV1;
+import com.appcoins.sdk.billing.payasguest.oemid.OemIdExtractorV2;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 import com.appcoins.sdk.billing.service.BdsService;
 import com.appcoins.sdk.billing.service.address.OemIdExtractorService;
@@ -304,7 +305,10 @@ public class WalletUtils {
   }
 
   public static String getOemIdForPackage(String packageName){
-    return new OemIdExtractorService(new OemIdExtractorV1(context)).extractOemId(packageName);
+    return new OemIdExtractorService(
+            new OemIdExtractorV1(context),
+            new OemIdExtractorV2(context)
+    ).extractOemId(packageName);
   }
 
   public static String getGuestWalletId(){
