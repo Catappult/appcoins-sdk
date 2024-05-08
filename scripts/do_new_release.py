@@ -50,11 +50,11 @@ no = {'no','n'}
 choice = input("Type yes to continue or no to abort:\n").lower()
 if choice in yes:
     # first publish to dev
-    subprocess.call(["sh", "publish_dev.sh"])
-    # ./publish_dev.sh
+    subprocess.call(["sh", "publishDebugToSonatype.sh"])
+    # ./publishDebugToSonatype.sh
 
     # now publish to prod
-    subprocess.call(["sh", "publish.sh"])
+    subprocess.call(["sh", "publishReleaseToSonatype.sh"])
 
     print("Success! Don't forget to merge commmit your changes to master and tag the new"
           " version there")
