@@ -11,6 +11,7 @@ import com.appcoins.sdk.billing.helpers.PayloadHelper;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
+import com.appcoins.sdk.billing.listeners.SDKWebResponse;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
 
 public class CatapultAppcoinsBilling implements AppcoinsBillingClient {
@@ -61,6 +62,12 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient {
       responseCode = launchBillingFlowResult.getResponseCode();
 
       if (responseCode != ResponseCode.OK.getValue()) {
+        ApplicationUtils.handleWebBasedResult(
+                new SDKWebResponse(ResponseCode.ERROR.getValue(), null, null),
+                billingFlowParams,
+                billingFlowParams.getDeveloperPayload(),
+                purchaseFinishedListener
+        );
         return responseCode;
       }
 
