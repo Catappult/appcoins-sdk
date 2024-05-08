@@ -46,19 +46,13 @@ public class RepositoryServiceConnection implements ServiceConnection, Repositor
     this.listener = listener;
     WalletUtils.startIndicative(context.getPackageName());
 
-    Runnable runnable = () -> {
-      Looper.prepare();
-      new PayflowManager(context.getPackageName()).getPayflowPriority(null);
-      hasBillingServiceInstalled = WalletUtils.hasBillingServiceInstalled();
+    new PayflowManager(context.getPackageName()).getPayflowPriorityAsync(null);
+    hasBillingServiceInstalled = WalletUtils.hasBillingServiceInstalled();
 
-      String packageName = WalletUtils.getBillingServicePackageName();
-      String iabAction = WalletUtils.getBillingServiceIabAction();
-      Intent serviceIntent = new Intent(iabAction);
-      serviceIntent.setPackage(packageName);WalletBinderUtil.bindService(context, serviceIntent, this, Context.BIND_AUTO_CREATE);
-      Looper.loop();
-    };
-
-    new Thread(runnable).start();
+    String packageName = WalletUtils.getBillingServicePackageName();
+    String iabAction = WalletUtils.getBillingServiceIabAction();
+    Intent serviceIntent = new Intent(iabAction);
+    serviceIntent.setPackage(packageName);WalletBinderUtil.bindService(context, serviceIntent, this, Context.BIND_AUTO_CREATE);
   }
 
   @Override public void endConnection() {

@@ -115,7 +115,7 @@ public class InstallDialogActivity extends Activity {
 
   @Override protected void onResume() {
     super.onResume();
-    new PayflowManager(context.getPackageName()).getPayflowPriority(null);
+    new PayflowManager(context.getPackageName()).getPayflowPriorityAsync(null);
     if (WalletUtils.hasWalletInstalled()) {
       showLoadingDialog();
       sdkAnalytics.installWalletAptoideSuccess();
