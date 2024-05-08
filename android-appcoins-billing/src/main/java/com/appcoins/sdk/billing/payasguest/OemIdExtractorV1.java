@@ -11,7 +11,7 @@ public class OemIdExtractorV1 implements OemIdExtractor {
 
   private Context context;
 
-  OemIdExtractorV1(Context context) {
+  public OemIdExtractorV1(Context context) {
 
     this.context = context;
   }

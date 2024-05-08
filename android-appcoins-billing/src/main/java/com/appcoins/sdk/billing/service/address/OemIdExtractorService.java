@@ -11,7 +11,7 @@ public class OemIdExtractorService {
     this.extractorV1 = extractorV1;
   }
 
-  String extractOemId(String packageName) {
+  public String extractOemId(String packageName) {
     return extractorV1.extract(packageName);
   }
 }

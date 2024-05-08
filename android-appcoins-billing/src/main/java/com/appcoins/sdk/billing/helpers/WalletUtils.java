@@ -27,8 +27,10 @@ import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.analytics.WalletAddressProvider;
 import com.appcoins.sdk.billing.managers.WebPaymentSocketManager;
 import com.appcoins.sdk.billing.payasguest.IabActivity;
+import com.appcoins.sdk.billing.payasguest.OemIdExtractorV1;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 import com.appcoins.sdk.billing.service.BdsService;
+import com.appcoins.sdk.billing.service.address.OemIdExtractorService;
 import com.appcoins.sdk.billing.service.wallet.WalletGenerationMapper;
 import com.appcoins.sdk.billing.service.wallet.WalletRepository;
 import com.indicative.client.android.Indicative;
@@ -125,7 +127,7 @@ public class WalletUtils {
         }
 
         int port = WebPaymentSocketManager.getInstance().startServer(context);
-        String paymentUrl = generatePaymentUrlWithGuestId(method, port);
+        String paymentUrl = generatePaymentUrlWithPort(method, port);
 
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl));
         return createWebIntentBundle(intent);
@@ -139,21 +141,8 @@ public class WalletUtils {
     return createIntentBundle(intent);
   }
 
-  private static String generatePaymentUrlWithGuestId(PaymentFlowMethod method, int port) {
-    BdsService backendService =
-            new BdsService(BuildConfig.BACKEND_BASE, BdsService.TIME_OUT_IN_MILLIS);
-    WalletAddressProvider walletAddressProvider =
-            WalletAddressProvider.provideWalletAddressProvider();
-    WalletRepository walletRepository =
-            new WalletRepository(backendService, new WalletGenerationMapper(), walletAddressProvider);
-    SharedPreferencesRepository sharedPreferencesRepository =
-            new SharedPreferencesRepository(context, SharedPreferencesRepository.TTL_IN_SECONDS);
-
-    WalletInteract walletInteract =
-            new WalletInteract(sharedPreferencesRepository, walletRepository);
-
-    String walletId = walletInteract.retrieveWalletId();
-    return method.getPaymentUrl() + "&guestWalletID=" + walletId + "&wsPort=" + port;
+  private static String generatePaymentUrlWithPort(PaymentFlowMethod method, int port) {
+    return method.getPaymentUrl() + "&wsPort=" + port;
   }
 
   private static Bundle createWebIntentBundle(Intent intent) {
@@ -312,6 +301,26 @@ public class WalletUtils {
       e.printStackTrace();
       return -1;
     }
+  }
+
+  public static String getOemIdForPackage(String packageName){
+    return new OemIdExtractorService(new OemIdExtractorV1(context)).extractOemId(packageName);
+  }
+
+  public static String getGuestWalletId(){
+    BdsService backendService =
+            new BdsService(BuildConfig.BACKEND_BASE, BdsService.TIME_OUT_IN_MILLIS);
+    WalletAddressProvider walletAddressProvider =
+            WalletAddressProvider.provideWalletAddressProvider();
+    WalletRepository walletRepository =
+            new WalletRepository(backendService, new WalletGenerationMapper(), walletAddressProvider);
+    SharedPreferencesRepository sharedPreferencesRepository =
+            new SharedPreferencesRepository(context, SharedPreferencesRepository.TTL_IN_SECONDS);
+
+    WalletInteract walletInteract =
+            new WalletInteract(sharedPreferencesRepository, walletRepository);
+
+    return  walletInteract.retrieveWalletId();
   }
 
   public static void initIap(Context context) {

@@ -5,6 +5,8 @@ import com.appcoins.sdk.billing.BillingFlowParams
 import com.appcoins.sdk.billing.helpers.UserCountryUtils.getUserCountry
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.helpers.WalletUtils.getAppInstalledVersion
+import com.appcoins.sdk.billing.helpers.WalletUtils.getGuestWalletId
+import com.appcoins.sdk.billing.helpers.WalletUtils.getOemIdForPackage
 import com.appcoins.sdk.billing.helpers.WalletUtils.setPayflowMethodsList
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.utils.ServiceUtils
@@ -17,6 +19,8 @@ class PayflowManager(val packageName: String) {
     val walletVersionCode = getAppInstalledVersion(BuildConfig.APPCOINS_WALLET_PACKAGE_NAME)
     val gamesHubVersionCode = handleGamesHubPackage()
     val vanillaVersionCode = getAppInstalledVersion(BuildConfig.APTOIDE_PACKAGE_NAME)
+    val oemid = getOemIdForPackage(packageName)
+    val guestWalletId = getGuestWalletId()
 
     val paymentFlowMethodList =
       payflowRepository.getPayflowPriority(
@@ -27,6 +31,8 @@ class PayflowManager(val packageName: String) {
         if (gamesHubVersionCode == -1) null else gamesHubVersionCode,
         if (vanillaVersionCode == -1) null else vanillaVersionCode,
         getUserCountry(WalletUtils.context),
+        oemid,
+        guestWalletId,
         billingFlowParams
       )
     setPayflowMethodsList(paymentFlowMethodList)
@@ -50,18 +56,22 @@ class PayflowManager(val packageName: String) {
     val walletVersionCode = getAppInstalledVersion(BuildConfig.APPCOINS_WALLET_PACKAGE_NAME)
     val gamesHubVersionCode = handleGamesHubPackage()
     val vanillaVersionCode = getAppInstalledVersion(BuildConfig.APTOIDE_PACKAGE_NAME)
+    val oemid = getOemIdForPackage(packageName)
+    val guestWalletId = getGuestWalletId()
 
-      payflowRepository.getPayflowPriorityAsync(
-        payflowListener,
-        packageName,
-        integratedGameVersionCode,
-        BuildConfig.VERSION_CODE,
-        if (walletVersionCode == -1) null else walletVersionCode,
-        if (gamesHubVersionCode == -1) null else gamesHubVersionCode,
-        if (vanillaVersionCode == -1) null else vanillaVersionCode,
-        getUserCountry(WalletUtils.context),
-        billingFlowParams
-      )
+    payflowRepository.getPayflowPriorityAsync(
+      payflowListener,
+      packageName,
+      integratedGameVersionCode,
+      BuildConfig.VERSION_CODE,
+      if (walletVersionCode == -1) null else walletVersionCode,
+      if (gamesHubVersionCode == -1) null else gamesHubVersionCode,
+      if (vanillaVersionCode == -1) null else vanillaVersionCode,
+      getUserCountry(WalletUtils.context),
+      oemid,
+      guestWalletId,
+      billingFlowParams
+    )
   }
 
   /**

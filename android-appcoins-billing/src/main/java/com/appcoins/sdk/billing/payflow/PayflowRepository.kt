@@ -17,6 +17,8 @@ class PayflowRepository(private val bdsService: BdsService) {
     gamesHubVersionCode: Int?,
     vanillaVersionCode: Int?,
     locale: String?,
+    oemId: String?,
+    guestWalletId: String?,
     billingFlowParams: BillingFlowParams?,
   ) : List<PaymentFlowMethod>? {
     val countDownLatch = CountDownLatch(1)
@@ -30,6 +32,8 @@ class PayflowRepository(private val bdsService: BdsService) {
     gamesHubVersionCode?.let { queries["gh_vercode"] = it.toString() }
     vanillaVersionCode?.let { queries["vanilla_vercode"] = it.toString() }
     locale?.let { queries["locale"] = it }
+    oemId?.let { queries["oemid"] = it }
+    guestWalletId?.let { queries["guestWalletId"] = it }
     billingFlowParams?.apply {
       sku?.let { queries["sku"] = it }
       developerPayload?.let { queries["metadata"] = it }
@@ -64,6 +68,8 @@ class PayflowRepository(private val bdsService: BdsService) {
     gamesHubVersionCode: Int?,
     vanillaVersionCode: Int?,
     locale: String?,
+    oemId: String?,
+    guestWalletId: String?,
     billingFlowParams: BillingFlowParams?,
   ) {
     val queries: MutableMap<String, String> = LinkedHashMap()
@@ -74,6 +80,8 @@ class PayflowRepository(private val bdsService: BdsService) {
     gamesHubVersionCode?.let { queries["gh_vercode"] = it.toString() }
     vanillaVersionCode?.let { queries["vanilla_vercode"] = it.toString() }
     locale?.let { queries["locale"] = it }
+    oemId?.let { queries["oemid"] = it }
+    guestWalletId?.let { queries["guestWalletId"] = it }
     billingFlowParams?.apply {
       sku?.let { queries["sku"] = it }
       developerPayload?.let { queries["metadata"] = it }
