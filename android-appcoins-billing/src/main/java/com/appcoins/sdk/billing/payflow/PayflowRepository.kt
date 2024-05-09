@@ -33,7 +33,7 @@ class PayflowRepository(private val bdsService: BdsService) {
     vanillaVersionCode?.let { queries["vanilla_vercode"] = it.toString() }
     locale?.let { queries["locale"] = it }
     oemId?.let { queries["oemid"] = it }
-    guestWalletId?.let { queries["guest_wallet_id"] = it }
+    guestWalletId?.let { queries["guest_id"] = it }
     billingFlowParams?.apply {
       sku?.let { queries["sku"] = it }
       developerPayload?.let { queries["metadata"] = it }
@@ -81,7 +81,7 @@ class PayflowRepository(private val bdsService: BdsService) {
     vanillaVersionCode?.let { queries["vanilla_vercode"] = it.toString() }
     locale?.let { queries["locale"] = it }
     oemId?.let { queries["oemid"] = it }
-    guestWalletId?.let { queries["guest_wallet_id"] = it }
+    guestWalletId?.let { queries["guest_id"] = it }
     billingFlowParams?.apply {
       sku?.let { queries["sku"] = it }
       developerPayload?.let { queries["metadata"] = it }
