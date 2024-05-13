@@ -127,7 +127,7 @@ public class WalletUtils {
             return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
         }
 
-        int port = WebPaymentSocketManager.getInstance().startServer(context);
+        int port = WebPaymentSocketManager.getInstance().startService(context);
         String paymentUrl = generatePaymentUrlWithPort(method, port);
 
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl));

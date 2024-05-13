@@ -1,8 +1,10 @@
 package com.appcoins.sdk.billing.managers;
 
 import android.content.Context;
+import android.content.Intent;
 
 import com.appcoins.sdk.billing.service.WebPaymentCommunicationWebSocket;
+import com.appcoins.sdk.billing.service.WebPaymentWebSocketService;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -23,13 +25,22 @@ public class WebPaymentSocketManager {
         return instance;
     }
 
-    public int startServer(Context context) {
+    public int startService(Context context) {
+        try {
+            Intent intent = new Intent(context.getApplicationContext(), WebPaymentWebSocketService.class);
+            context.getApplicationContext().startService(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return webPaymentCommunicationWebSocket.getPort();
+    }
+
+    public void startServer(Context context) {
         try {
             webPaymentCommunicationWebSocket.start(context);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return webPaymentCommunicationWebSocket.getPort();
     }
 
     private static int getPortForWebSocket() {

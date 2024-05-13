@@ -23,7 +23,7 @@ class WebPaymentCommunicationWebSocket(port: Int) : WebSocketServer(InetSocketAd
 
     override fun onClose(conn: WebSocket, code: Int, reason: String, remote: Boolean) {
         Log.i(TAG, "Connection closed.")
-        Log.d(TAG, "Closed connection to: " + conn.remoteSocketAddress)
+        Log.d(TAG, "Closed connection to: " + conn.remoteSocketAddress + " with reason: $reason")
     }
 
     override fun onMessage(conn: WebSocket, message: String) {
@@ -46,16 +46,17 @@ class WebPaymentCommunicationWebSocket(port: Int) : WebSocketServer(InetSocketAd
         Log.i(TAG, "WebSocket server started successfully")
     }
 
-    @Throws(InterruptedException::class)
-    override fun stop() {
-        super.stop()
+    override fun stop(timeout: Int, closeMessage: String?) {
+        Log.i(TAG, "WebSocket stopped with timeout=$timeout and closeMessage=$closeMessage.")
         context = null
+        isStarted = false
+        super.stop(timeout, closeMessage)
     }
 
     fun start(context: Context?) {
-        // TODO Secure WebSocket connection
         this.context = context
         if (!isStarted) {
+            connectionLostTimeout = 0
             super.start()
             isStarted = true
         }
