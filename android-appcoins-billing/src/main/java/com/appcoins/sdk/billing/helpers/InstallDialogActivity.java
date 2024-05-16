@@ -67,8 +67,6 @@ public class InstallDialogActivity extends Activity {
       "dialog_wallet_install_empty_image";
   private static final String INSTALL_BUTTON_COLOR = "#ffffbb33";
   private static final String INSTALL_BUTTON_TEXT_COLOR = "#ffffffff";
-  private static final String GOOGLE_PLAY_URL =
-      "https://play.google.com/store/apps/details?id=" + BuildConfig.APPCOINS_WALLET_PACKAGE_NAME;
   private static final String FIRST_IMPRESSION_KEY = "first_impression";
   private final static String BUY_ITEM_PROPERTIES = "buy_item_properties";
   private final static String SDK_ANALYTICS = "sdk_analytics";
@@ -330,8 +328,8 @@ public class InstallDialogActivity extends Activity {
       sendInternalAppDownloadAnalytic(storeIntentPair.getSecond());
       startActivity(storeIntentPair.getFirst());
     } else {
-      sdkAnalytics.downloadWalletFallbackImpression();
-      startActivityForBrowser(GOOGLE_PLAY_URL);
+      sdkAnalytics.downloadWalletFallbackImpression("browser");
+      startActivityForBrowser(BuildConfig.WALLET_APP_BROWSER_URL);
     }
   }
 
@@ -339,7 +337,7 @@ public class InstallDialogActivity extends Activity {
     if (isAptoidePackage) {
       sdkAnalytics.downloadWalletAptoideImpression();
     } else {
-      sdkAnalytics.downloadWalletFallbackImpression();
+      sdkAnalytics.downloadWalletFallbackImpression("native");
     }
   }
 

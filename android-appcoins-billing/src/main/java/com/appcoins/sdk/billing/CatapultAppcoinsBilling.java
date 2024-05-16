@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.util.Log;
+
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.helpers.AppCoinsPendingIntentCaller;
 import com.appcoins.sdk.billing.helpers.EventLogger;
@@ -50,6 +52,8 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient {
       WalletUtils.getSdkAnalytics().sendPurchaseIntentEvent(billingFlowParams.getSku());
       String payload = PayloadHelper.buildIntentPayload(billingFlowParams.getOrderReference(),
           billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin());
+
+      Log.d("Message: ", payload);
 
       Thread eventLoggerThread = new Thread(new EventLogger(billingFlowParams.getSku(),
           activity.getApplicationContext()

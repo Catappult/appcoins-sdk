@@ -16,6 +16,7 @@ object AnalyticsSuperLabels {
 object AnalyticsLabels {
   const val SKU_NAME = "sku_name"
   const val INSTALL_ACTION = "wallet_install_action"
+  const val STORE_TYPE = "store_type"
   const val PAYFLOW_RESPONSE_CODE = "response_code"
   const val PAYFLOW_RESPONSE_MESSAGE = "response_message"
   const val BIND_SERVICE_METHOD = "bind_service"

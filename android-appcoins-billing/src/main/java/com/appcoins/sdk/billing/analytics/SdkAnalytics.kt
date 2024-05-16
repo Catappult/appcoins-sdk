@@ -114,8 +114,10 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
     )
   }
 
-  fun downloadWalletFallbackImpression() {
-    val eventData: Map<String, Any> = emptyMap()
+  fun downloadWalletFallbackImpression(storeType: String) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.STORE_TYPE] = storeType
+
     analyticsManager.logEvent(
       eventData,
       SdkInstallFlowEvents.SDK_DOWNLOAD_WALLET_FALLBACK_IMPRESSION,

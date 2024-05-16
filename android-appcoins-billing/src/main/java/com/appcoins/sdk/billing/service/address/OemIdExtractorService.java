@@ -20,7 +20,7 @@ public class OemIdExtractorService {
         if (oemId == null || oemId.isEmpty()) {
             oemId = extractorV1.extract(packageName);
         }
-        Log.i("OemIdExtractor", "Extracted OemId -> " + oemId);
+        Log.d("OemIdExtractor", "Extracted OemId -> " + oemId);
         return oemId;
     }
 }
