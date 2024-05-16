@@ -52,6 +52,8 @@ import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iap
 import static com.appcoins.sdk.billing.utils.LayoutUtils.generateRandomId;
 import static com.appcoins.sdk.billing.utils.LayoutUtils.setBackground;
 
+import kotlin.Pair;
+
 public class InstallDialogActivity extends Activity {
 
   public final static String KEY_BUY_INTENT = "BUY_INTENT";
@@ -322,15 +324,22 @@ public class InstallDialogActivity extends Activity {
     return installButton;
   }
 
-
   private void redirectToRemainingStores(String storeUrl) {
-    Intent storeIntent = buildStoreViewIntent(storeUrl);
-    if (isAbleToRedirect(storeIntent)) {
-      sdkAnalytics.downloadWalletAptoideImpression();
-      startActivity(storeIntent);
+    Pair<Intent, Boolean> storeIntentPair = buildStoreViewIntent(storeUrl);
+    if (isAbleToRedirect(storeIntentPair.getFirst())) {
+      sendInternalAppDownloadAnalytic(storeIntentPair.getSecond());
+      startActivity(storeIntentPair.getFirst());
     } else {
       sdkAnalytics.downloadWalletFallbackImpression();
       startActivityForBrowser(GOOGLE_PLAY_URL);
+    }
+  }
+
+  private void sendInternalAppDownloadAnalytic(Boolean isAptoidePackage) {
+    if (isAptoidePackage) {
+      sdkAnalytics.downloadWalletAptoideImpression();
+    } else {
+      sdkAnalytics.downloadWalletFallbackImpression();
     }
   }
 
@@ -430,12 +439,13 @@ public class InstallDialogActivity extends Activity {
         .getDisplayMetrics());
   }
 
-  private Intent buildStoreViewIntent(String storeUrl) {
+  private Pair<Intent, Boolean> buildStoreViewIntent(String storeUrl) {
     final Intent appStoreIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(storeUrl));
     if (WalletUtils.getAppInstalledVersion(BuildConfig.APTOIDE_PACKAGE_NAME) >= MINIMUM_APTOIDE_VERSION) {
       appStoreIntent.setPackage(BuildConfig.APTOIDE_PACKAGE_NAME);
+      return new Pair<>(appStoreIntent, true);
     }
-    return appStoreIntent;
+    return new Pair<>(appStoreIntent, false);
   }
 
   private void showAppRelatedImagery(ImageView appIcon, ImageView appBanner,
