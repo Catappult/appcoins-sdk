@@ -23,7 +23,11 @@ class PayflowResponseMapper {
               "wallet" -> PaymentFlowMethod.Wallet(methodName, priority)
               "pay_as_a_guest" -> PaymentFlowMethod.PayAsAGuest(methodName, priority)
               "games_hub_checkout" -> PaymentFlowMethod.GamesHub(methodName, priority)
-              "first_payment_via_web" -> PaymentFlowMethod.WebFirstPayment(methodName, priority)
+              "first_payment_via_web" -> {
+                  val paymentUrl = paymentMethodsObject.optJSONObject(methodName)
+                      ?.optString("payment_url")
+                  PaymentFlowMethod.WebFirstPayment(methodName, priority, paymentUrl)
+              }
               else -> null
             }
           }.toList()
@@ -41,9 +45,14 @@ data class PayflowMethodResponse(
   val paymentFlowList: List<PaymentFlowMethod>?
 )
 
-sealed class PaymentFlowMethod(val name: String, val priority: Int) {
+sealed class PaymentFlowMethod(
+    val name: String,
+    val priority: Int,
+    val paymentUrl: String? = null
+) {
   class Wallet(name: String, priority: Int) : PaymentFlowMethod(name, priority)
   class PayAsAGuest(name: String, priority: Int) : PaymentFlowMethod(name, priority)
   class GamesHub(name: String, priority: Int) : PaymentFlowMethod(name, priority)
-  class WebFirstPayment(name: String, priority: Int) : PaymentFlowMethod(name, priority)
+  class WebFirstPayment(name: String, priority: Int, paymentUrl: String?) :
+      PaymentFlowMethod(name, priority, paymentUrl)
 }

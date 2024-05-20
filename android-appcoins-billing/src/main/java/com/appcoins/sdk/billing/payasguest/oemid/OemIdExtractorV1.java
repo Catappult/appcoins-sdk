@@ -1,7 +1,8 @@
-package com.appcoins.sdk.billing.payasguest;
+package com.appcoins.sdk.billing.payasguest.oemid;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
@@ -11,8 +12,7 @@ public class OemIdExtractorV1 implements OemIdExtractor {
 
   private Context context;
 
-  OemIdExtractorV1(Context context) {
-
+  public OemIdExtractorV1(Context context) {
     this.context = context;
   }
 

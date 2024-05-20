@@ -16,6 +16,7 @@ object AnalyticsSuperLabels {
 object AnalyticsLabels {
   const val SKU_NAME = "sku_name"
   const val INSTALL_ACTION = "wallet_install_action"
+  const val STORE_TYPE = "store_type"
   const val PAYFLOW_RESPONSE_CODE = "response_code"
   const val PAYFLOW_RESPONSE_MESSAGE = "response_message"
   const val BIND_SERVICE_METHOD = "bind_service"
@@ -28,6 +29,7 @@ object SdkAnalyticsEvents {
   const val SDK_START_CONNECTION = "sdk_start_connection"
   const val SDK_IAP_PURCHASE_INTENT_START = "sdk_iap_purchase_intent_click"
   const val SDK_IAP_PAYMENT_STATUS_FEEDBACK = "sdk_iap_payment_status_feedback"
+  const val SDK_WEB_PAYMENT_IMPRESSION = "sdk_web_payment_impression"
 }
 
 object SdkInstallFlowEvents {

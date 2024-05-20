@@ -75,6 +75,8 @@ android {
       buildConfigField 'String', 'BDS_BASE_HOST', project.BDS_BASE_HOST_DEV
       buildConfigField 'String', 'PAYFLOW_HOST', project.PAYFLOW_NETWORK_BASE_HOST_DEV
 
+      buildConfigField 'String', 'WALLET_APP_BROWSER_URL', project.WALLET_APP_BROWSER_URL
+
       buildConfigField 'String', 'ADYEN_PUBLIC_KEY', project.ADYEN_PUBLIC_KEY_DEV
       buildConfigField 'String', 'INDICATIVE_API_KEY',
           project.INDICATIVE_API_KEY_DEV
@@ -118,6 +120,8 @@ android {
       buildConfigField 'String', 'BDS_BASE_HOST', project.BDS_BASE_HOST_PROD
       buildConfigField 'String', 'PAYFLOW_HOST', project.PAYFLOW_NETWORK_BASE_HOST
 
+      buildConfigField 'String', 'WALLET_APP_BROWSER_URL', project.WALLET_APP_BROWSER_URL
+
       buildConfigField 'String', 'ADYEN_PUBLIC_KEY', project.ADYEN_PUBLIC_KEY
       buildConfigField 'String', 'INDICATIVE_API_KEY',
           project.INDICATIVE_API_KEY
@@ -140,6 +144,8 @@ dependencies {
 
   api 'com.indicative.client.android:Indicative-Android:1.1.0'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  implementation 'org.java-websocket:Java-WebSocket:1.5.3'
+
 
   api project(':appcoins-billing')
   api project(':appcoins-adyen')

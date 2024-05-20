@@ -7,6 +7,7 @@ import android.util.Log;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.helpers.Utils;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
+import com.appcoins.sdk.billing.listeners.SDKWebResponse;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -105,6 +106,63 @@ class ApplicationUtils {
     return true;
   }
 
+  static void handleWebBasedResult(
+          SDKWebResponse sdkWebResponse,
+          BillingFlowParams billingFlowParams,
+          String developerPayload,
+          PurchasesUpdatedListener purchaseFinishedListener
+  ) {
+    if (sdkWebResponse.getResponseCode() == null) {
+      logError("No response code returned on Web Result.");
+      purchaseFinishedListener.onPurchasesUpdated(
+              ResponseCode.ERROR.getValue(),
+              Collections.emptyList()
+      );
+      return;
+    }
+
+    if (sdkWebResponse.getResponseCode() == ResponseCode.OK.getValue()) {
+      WalletUtils.getSdkAnalytics().sendPurchaseStatusEvent("success", getResponseDesc(sdkWebResponse.getResponseCode()));
+      logDebug("Successful resultcode from purchase activity.");
+      logDebug("OrderId: " + sdkWebResponse.getOrderId());
+      logDebug("PurchaseToken: " + sdkWebResponse.getPurchaseToken());
+
+      if (sdkWebResponse.getPurchaseToken() == null || sdkWebResponse.getOrderId() == null) {
+        logError("BUG: either OrderId or PurchaseToken is null.");
+        purchaseFinishedListener.onPurchasesUpdated(
+                ResponseCode.ERROR.getValue(),
+                Collections.emptyList()
+        );
+
+        return;
+      }
+
+        try {
+          Purchase purchase = sdkWebResponse.toPurchase(billingFlowParams, developerPayload);
+
+          List<Purchase> purchases = new ArrayList<>();
+          purchases.add(purchase);
+
+          purchaseFinishedListener.onPurchasesUpdated(sdkWebResponse.getResponseCode(), purchases);
+        } catch (Exception e) {
+          e.printStackTrace();
+          purchaseFinishedListener.onPurchasesUpdated(
+                  ResponseCode.ERROR.getValue(),
+                  Collections.emptyList()
+          );
+          logError("Failed to parse purchase data.");
+          return;
+        }
+        return;
+      }
+
+    logAndSendAnalyticsForUnsuccessfulResult(sdkWebResponse.getResponseCode());
+    purchaseFinishedListener.onPurchasesUpdated(
+            sdkWebResponse.getResponseCode(),
+            Collections.emptyList()
+    );
+  }
+
   private static int getResponseCodeFromIntent(Intent i) {
     Object o = i.getExtras()
         .get(Utils.RESPONSE_CODE);
@@ -134,6 +192,19 @@ class ApplicationUtils {
 
   private static String getObjectFromJson(JSONObject data, String objectId) {
     return data.optString(objectId);
+  }
+
+  private static void logAndSendAnalyticsForUnsuccessfulResult(Integer responseCode) {
+    SdkAnalytics sdkAnalytics = WalletUtils.getSdkAnalytics();
+
+    if (responseCode == ResponseCode.USER_CANCELED.getValue()) {
+      logDebug("Purchase canceled - Response: " + getResponseDesc(responseCode));
+      sdkAnalytics.sendPurchaseStatusEvent("user_canceled", getResponseDesc(responseCode));
+    } else {
+      logError("Purchase failed. Response code: " + getResponseDesc(
+              responseCode));
+      sdkAnalytics.sendPurchaseStatusEvent("error", getResponseDesc(responseCode));
+    }
   }
 
   private static String getResponseDesc(int code) {

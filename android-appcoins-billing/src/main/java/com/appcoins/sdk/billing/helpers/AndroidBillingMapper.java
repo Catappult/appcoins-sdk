@@ -139,7 +139,7 @@ public class AndroidBillingMapper {
   public static LaunchBillingFlowResult mapBundleToHashMapGetIntent(Bundle bundle) {
 
     return new LaunchBillingFlowResult(bundle.getInt("RESPONSE_CODE"),
-        (PendingIntent) bundle.getParcelable("BUY_INTENT"));
+        bundle.getParcelable("BUY_INTENT"), bundle.getParcelable("WEB_BUY_INTENT"));
   }
 
   public static ArrayList<SkuDetails> mapSkuDetailsFromWS(String skuType,

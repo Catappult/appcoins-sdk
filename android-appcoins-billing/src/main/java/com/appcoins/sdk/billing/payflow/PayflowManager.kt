@@ -1,22 +1,49 @@
 package com.appcoins.sdk.billing.payflow
 
 import com.appcoins.billing.sdk.BuildConfig
+import com.appcoins.sdk.billing.BillingFlowParams
 import com.appcoins.sdk.billing.helpers.UserCountryUtils.getUserCountry
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.helpers.WalletUtils.getAppInstalledVersion
+import com.appcoins.sdk.billing.helpers.WalletUtils.getGuestWalletId
+import com.appcoins.sdk.billing.helpers.WalletUtils.getOemIdForPackage
 import com.appcoins.sdk.billing.helpers.WalletUtils.setPayflowMethodsList
 import com.appcoins.sdk.billing.service.BdsService
-import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
+import com.appcoins.sdk.billing.utils.ServiceUtils
 
 class PayflowManager(val packageName: String) {
   private val payflowRepository = PayflowRepository(BdsService(BuildConfig.PAYFLOW_HOST, 30000))
 
-  fun getPayflowPriority() {
+  fun getPayflowPriority(billingFlowParams: BillingFlowParams?) {
+    val integratedGameVersionCode = getAppInstalledVersion(packageName)
+    val walletVersionCode = getAppInstalledVersion(BuildConfig.APPCOINS_WALLET_PACKAGE_NAME)
+    val gamesHubVersionCode = handleGamesHubPackage()
+    val vanillaVersionCode = getAppInstalledVersion(BuildConfig.APTOIDE_PACKAGE_NAME)
+    val oemid = getOemIdForPackage(packageName)
+    val guestWalletId = getGuestWalletId()
+
+    val paymentFlowMethodList =
+      payflowRepository.getPayflowPriority(
+        packageName,
+        integratedGameVersionCode,
+        BuildConfig.VERSION_CODE,
+        if (walletVersionCode == -1) null else walletVersionCode,
+        if (gamesHubVersionCode == -1) null else gamesHubVersionCode,
+        if (vanillaVersionCode == -1) null else vanillaVersionCode,
+        getUserCountry(WalletUtils.context),
+        oemid,
+        guestWalletId,
+        billingFlowParams
+      )
+    setPayflowMethodsList(paymentFlowMethodList)
+  }
+
+  fun getPayflowPriorityAsync(billingFlowParams: BillingFlowParams?) {
     val payflowListener = object : PayflowListener {
       override fun onResponse(payflowMethodResponse: PayflowMethodResponse) {
         payflowMethodResponse.responseCode?.let { responseCode ->
           val sortedMethods = payflowMethodResponse.paymentFlowList?.sortedBy { it.priority }
-          if (isSuccess(responseCode)) {
+          if (ServiceUtils.isSuccess(responseCode)) {
             setPayflowMethodsList(sortedMethods)
           } else {
             setPayflowMethodsList(null)
@@ -29,8 +56,10 @@ class PayflowManager(val packageName: String) {
     val walletVersionCode = getAppInstalledVersion(BuildConfig.APPCOINS_WALLET_PACKAGE_NAME)
     val gamesHubVersionCode = handleGamesHubPackage()
     val vanillaVersionCode = getAppInstalledVersion(BuildConfig.APTOIDE_PACKAGE_NAME)
+    val oemid = getOemIdForPackage(packageName)
+    val guestWalletId = getGuestWalletId()
 
-    payflowRepository.getPayflowPriority(
+    payflowRepository.getPayflowPriorityAsync(
       payflowListener,
       packageName,
       integratedGameVersionCode,
@@ -39,6 +68,9 @@ class PayflowManager(val packageName: String) {
       if (gamesHubVersionCode == -1) null else gamesHubVersionCode,
       if (vanillaVersionCode == -1) null else vanillaVersionCode,
       getUserCountry(WalletUtils.context),
+      oemid,
+      guestWalletId,
+      billingFlowParams
     )
   }
 

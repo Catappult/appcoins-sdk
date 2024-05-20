@@ -45,7 +45,7 @@ public class RepositoryServiceConnection implements ServiceConnection, Repositor
     this.listener = listener;
     WalletUtils.startIndicative(context.getPackageName());
 
-    new PayflowManager(context.getPackageName()).getPayflowPriority();
+    new PayflowManager(context.getPackageName()).getPayflowPriorityAsync(null);
     hasBillingServiceInstalled = WalletUtils.hasBillingServiceInstalled();
 
     String packageName = WalletUtils.getBillingServicePackageName();

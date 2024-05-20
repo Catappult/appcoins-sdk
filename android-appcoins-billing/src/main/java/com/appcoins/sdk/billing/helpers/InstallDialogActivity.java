@@ -52,6 +52,8 @@ import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iap
 import static com.appcoins.sdk.billing.utils.LayoutUtils.generateRandomId;
 import static com.appcoins.sdk.billing.utils.LayoutUtils.setBackground;
 
+import kotlin.Pair;
+
 public class InstallDialogActivity extends Activity {
 
   public final static String KEY_BUY_INTENT = "BUY_INTENT";
@@ -65,8 +67,6 @@ public class InstallDialogActivity extends Activity {
       "dialog_wallet_install_empty_image";
   private static final String INSTALL_BUTTON_COLOR = "#ffffbb33";
   private static final String INSTALL_BUTTON_TEXT_COLOR = "#ffffffff";
-  private static final String GOOGLE_PLAY_URL =
-      "https://play.google.com/store/apps/details?id=" + BuildConfig.APPCOINS_WALLET_PACKAGE_NAME;
   private static final String FIRST_IMPRESSION_KEY = "first_impression";
   private final static String BUY_ITEM_PROPERTIES = "buy_item_properties";
   private final static String SDK_ANALYTICS = "sdk_analytics";
@@ -115,7 +115,7 @@ public class InstallDialogActivity extends Activity {
 
   @Override protected void onResume() {
     super.onResume();
-    new PayflowManager(context.getPackageName()).getPayflowPriority();
+    new PayflowManager(context.getPackageName()).getPayflowPriorityAsync(null);
     if (WalletUtils.hasWalletInstalled()) {
       showLoadingDialog();
       sdkAnalytics.installWalletAptoideSuccess();
@@ -322,15 +322,22 @@ public class InstallDialogActivity extends Activity {
     return installButton;
   }
 
-
   private void redirectToRemainingStores(String storeUrl) {
-    Intent storeIntent = buildStoreViewIntent(storeUrl);
-    if (isAbleToRedirect(storeIntent)) {
-      sdkAnalytics.downloadWalletAptoideImpression();
-      startActivity(storeIntent);
+    Pair<Intent, Boolean> storeIntentPair = buildStoreViewIntent(storeUrl);
+    if (isAbleToRedirect(storeIntentPair.getFirst())) {
+      sendInternalAppDownloadAnalytic(storeIntentPair.getSecond());
+      startActivity(storeIntentPair.getFirst());
     } else {
-      sdkAnalytics.downloadWalletFallbackImpression();
-      startActivityForBrowser(GOOGLE_PLAY_URL);
+      sdkAnalytics.downloadWalletFallbackImpression("browser");
+      startActivityForBrowser(BuildConfig.WALLET_APP_BROWSER_URL);
+    }
+  }
+
+  private void sendInternalAppDownloadAnalytic(Boolean isAptoidePackage) {
+    if (isAptoidePackage) {
+      sdkAnalytics.downloadWalletAptoideImpression();
+    } else {
+      sdkAnalytics.downloadWalletFallbackImpression("native");
     }
   }
 
@@ -430,12 +437,13 @@ public class InstallDialogActivity extends Activity {
         .getDisplayMetrics());
   }
 
-  private Intent buildStoreViewIntent(String storeUrl) {
+  private Pair<Intent, Boolean> buildStoreViewIntent(String storeUrl) {
     final Intent appStoreIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(storeUrl));
     if (WalletUtils.getAppInstalledVersion(BuildConfig.APTOIDE_PACKAGE_NAME) >= MINIMUM_APTOIDE_VERSION) {
       appStoreIntent.setPackage(BuildConfig.APTOIDE_PACKAGE_NAME);
+      return new Pair<>(appStoreIntent, true);
     }
-    return appStoreIntent;
+    return new Pair<>(appStoreIntent, false);
   }
 
   private void showAppRelatedImagery(ImageView appIcon, ImageView appBanner,

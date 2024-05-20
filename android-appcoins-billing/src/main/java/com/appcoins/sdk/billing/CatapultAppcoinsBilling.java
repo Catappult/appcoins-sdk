@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.util.Log;
+
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.helpers.AppCoinsPendingIntentCaller;
 import com.appcoins.sdk.billing.helpers.EventLogger;
@@ -12,6 +13,7 @@ import com.appcoins.sdk.billing.helpers.PayloadHelper;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
+import com.appcoins.sdk.billing.listeners.SDKWebResponse;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
 
 public class CatapultAppcoinsBilling implements AppcoinsBillingClient {
@@ -64,12 +66,31 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient {
       responseCode = launchBillingFlowResult.getResponseCode();
 
       if (responseCode != ResponseCode.OK.getValue()) {
+        ApplicationUtils.handleWebBasedResult(
+                new SDKWebResponse(ResponseCode.ERROR.getValue(), null, null),
+                billingFlowParams,
+                billingFlowParams.getDeveloperPayload(),
+                purchaseFinishedListener
+        );
         return responseCode;
       }
 
-      PendingIntent pendingIntent = launchBillingFlowResult.getBuyIntent();
-      AppCoinsPendingIntentCaller.startPendingAppCoinsIntent(activity,
-          pendingIntent.getIntentSender(), REQUEST_CODE, null, 0, 0, 0);
+      PendingIntent buyIntent = launchBillingFlowResult.getBuyIntent();
+      Intent webBuyIntent = launchBillingFlowResult.getWebBuyIntent();
+
+      if (buyIntent != null) {
+        AppCoinsPendingIntentCaller.startPendingAppCoinsIntent(activity,
+          buyIntent.getIntentSender(), REQUEST_CODE, null, 0, 0, 0);
+      } else if (webBuyIntent != null) {
+        WalletUtils.getSdkAnalytics().sendPurchaseViaWebEvent(billingFlowParams.getSku());
+        PaymentsResultsManager.getInstance()
+                .collectPaymentResult(
+                        billingFlowParams,
+                        payload,
+                        this
+                );
+        activity.startActivity(webBuyIntent);
+      }
     } catch (NullPointerException e) {
       e.printStackTrace();
       return ResponseCode.ERROR.getValue();
@@ -105,6 +126,14 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient {
       return true;
     }
     return false;
+  }
+
+  public Billing getBilling() {
+    return billing;
+  }
+
+  public PurchasesUpdatedListener getPurchaseFinishedListener() {
+    return purchaseFinishedListener;
   }
 }
 

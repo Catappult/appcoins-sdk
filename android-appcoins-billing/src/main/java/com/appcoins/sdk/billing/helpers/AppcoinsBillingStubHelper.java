@@ -15,6 +15,7 @@ import com.appcoins.billing.AppcoinsBilling;
 import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.communication.SyncIpcMessageRequester;
 import com.appcoins.communication.requester.MessageRequesterFactory;
+import com.appcoins.sdk.billing.BillingFlowParams;
 import com.appcoins.sdk.billing.BuyItemProperties;
 import com.appcoins.sdk.billing.DeveloperPayload;
 import com.appcoins.sdk.billing.ResponseCode;
@@ -114,7 +115,15 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
   @Override public Bundle getBuyIntent(int apiVersion, final String packageName, final String sku,
       final String type, String developerPayload) {
 
-    new PayflowManager(packageName).getPayflowPriority();
+    new PayflowManager(packageName).getPayflowPriority(
+            new BillingFlowParams(
+                    sku,
+                    type,
+                    PayloadHelper.getOrderReference(developerPayload),
+                    PayloadHelper.getPayload(developerPayload),
+                    PayloadHelper.getOrigin(developerPayload)
+            )
+    );
 
     Bundle bundle = null;
     if (WalletUtils.hasBillingServiceInstalled()) {
@@ -132,7 +141,8 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
             Log.d(TAG, "Service is NOT installed and should StartPayAsGuest with buyItemProperties = [" + buyItemProperties + "]");
             bundle = WalletUtils.startPayAsGuest(buyItemProperties);
           } else if (method instanceof PaymentFlowMethod.WebFirstPayment) {
-            //TODO Perform action for WebFirstPayment
+            Log.d(TAG, "Service is NOT installed and should make WebFirstPayment with buyItemProperties = [" + buyItemProperties + "]");
+            bundle = WalletUtils.startWebFirstPayment(method);
           }
           if (bundle != null) {
             return bundle;
