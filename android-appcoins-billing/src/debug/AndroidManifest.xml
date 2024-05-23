@@ -1,8 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.appcoins.billing.sdk">
 
   <uses-permission android:name="android.permission.WAKE_LOCK"/>
   <uses-permission android:name="com.appcoins.BILLING"/>
+  <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+      tools:ignore="QueryAllPackagesPermission" />
 
   <queries>
     <intent>
@@ -47,5 +50,7 @@
           </intent-filter>
         </activity>
     <service android:name="com.appcoins.sdk.billing.service.WebPaymentWebSocketService"/>
+    <service android:name="com.appcoins.sdk.billing.service.PayflowSSEService"/>
+    <service android:name="com.appcoins.sdk.billing.service.BillingLifecycleService" />
   </application>
 </manifest>

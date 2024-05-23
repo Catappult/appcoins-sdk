@@ -1,10 +1,10 @@
 package com.appcoins.sdk.billing.helpers;
 
+import static com.appcoins.sdk.billing.helpers.DeviceInformationHelperKt.getDeviceInfo;
+
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
@@ -12,35 +12,29 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
+
 import com.appcoins.billing.AppcoinsBilling;
 import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.sdk.billing.BuyItemProperties;
 import com.appcoins.sdk.billing.ResponseCode;
-import com.appcoins.sdk.billing.SharedPreferencesRepository;
-import com.appcoins.sdk.billing.WalletInteract;
 import com.appcoins.sdk.billing.analytics.AnalyticsManagerProvider;
 import com.appcoins.sdk.billing.analytics.IndicativeAnalytics;
 import com.appcoins.sdk.billing.analytics.IndicativeLaunchCallback;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
-import com.appcoins.sdk.billing.analytics.WalletAddressProvider;
 import com.appcoins.sdk.billing.managers.WebPaymentSocketManager;
 import com.appcoins.sdk.billing.payasguest.IabActivity;
-import com.appcoins.sdk.billing.payasguest.oemid.OemIdExtractorV1;
-import com.appcoins.sdk.billing.payasguest.oemid.OemIdExtractorV2;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
-import com.appcoins.sdk.billing.service.BdsService;
-import com.appcoins.sdk.billing.service.address.OemIdExtractorService;
-import com.appcoins.sdk.billing.service.wallet.WalletGenerationMapper;
-import com.appcoins.sdk.billing.service.wallet.WalletRepository;
 import com.indicative.client.android.Indicative;
+
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
-
-import static com.appcoins.sdk.billing.helpers.DeviceInformationHelperKt.getDeviceInfo;
 
 public class WalletUtils {
   public static Context context;
@@ -50,6 +44,7 @@ public class WalletUtils {
   private static Long payAsGuestSessionId;
   private static LifecycleActivityProvider lifecycleActivityProvider;
   private static List<PaymentFlowMethod> paymentFlowMethods;
+  private static String webPaymentUrl;
   private static SdkAnalytics sdkAnalytics;
 
   public static boolean hasBillingServiceInstalled() {
@@ -122,13 +117,12 @@ public class WalletUtils {
     return createIntentBundle(intent);
   }
 
-    public static Bundle startWebFirstPayment(PaymentFlowMethod method) {
+    public static Bundle startWebFirstPayment() {
         if (isMainThread()) {
             return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
         }
-
         int port = WebPaymentSocketManager.getInstance().startService(context);
-        String paymentUrl = generatePaymentUrlWithPort(method, port);
+        String paymentUrl = generatePaymentUrlWithPort(port);
 
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl));
         return createWebIntentBundle(intent);
@@ -142,8 +136,8 @@ public class WalletUtils {
     return createIntentBundle(intent);
   }
 
-  private static String generatePaymentUrlWithPort(PaymentFlowMethod method, int port) {
-    return method.getPaymentUrl() + "&wsPort=" + port;
+  private static String generatePaymentUrlWithPort(int port) {
+    return WalletUtils.getWebPaymentUrl() + "&wsPort=" + port;
   }
 
   private static Bundle createWebIntentBundle(Intent intent) {
@@ -183,10 +177,9 @@ public class WalletUtils {
     return bundle;
   }
 
-  public static void setPayflowMethodsList(List<PaymentFlowMethod> paymentFlowMethodsList) {
-    if (paymentFlowMethodsList != null) {
-      paymentFlowMethods = paymentFlowMethodsList;
-    }
+  public static void setPayflowMethodsList(@Nullable List<PaymentFlowMethod> paymentFlowMethodsList) {
+    paymentFlowMethods = paymentFlowMethodsList;
+    setBillingServiceInfoToBind();
   }
 
   public static List<PaymentFlowMethod> getPayflowMethodsList() {
@@ -195,6 +188,14 @@ public class WalletUtils {
     } else {
       return paymentFlowMethods;
     }
+  }
+
+  public static void setWebPaymentUrl(String webPaymentUrlToSet) {
+    webPaymentUrl = webPaymentUrlToSet;
+  }
+
+  public static String getWebPaymentUrl() {
+    return webPaymentUrl;
   }
 
   public static String getBillingServicePackageName() {
@@ -234,10 +235,13 @@ public class WalletUtils {
 
   private static void setDefaultBillingServiceInfoToBind() {
     if (isAppAvailableToBind(BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION)) {
+      Log.i("TAG", "setDefaultBillingServiceInfoToBind: APPCOINS_WALLET_IAB_BIND_ACTION");
       setWalletBillingInfo();
     } else if (isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION)) {
+      Log.i("TAG", "setDefaultBillingServiceInfoToBind: GAMESHUB_IAB_BIND_ACTION");
       setGamesHubBillingInfo();
     } else {
+      Log.i("TAG", "setDefaultBillingServiceInfoToBind: clearBillingServiceInfo");
       clearBillingServiceInfo();
     }
   }
@@ -285,46 +289,6 @@ public class WalletUtils {
     List<ResolveInfo> resolveInfoList = context.getPackageManager()
         .queryIntentServices(intent, 0);
     return !resolveInfoList.isEmpty();
-  }
-
-  public static int getAppInstalledVersion(String packageName) {
-    try {
-      PackageInfo packageInfo = context.getPackageManager()
-          .getPackageInfo(packageName, 0);
-      //VersionCode is deprecated for api 28
-      if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        return (int) packageInfo.getLongVersionCode();
-      } else {
-        //noinspection deprecation
-        return packageInfo.versionCode;
-      }
-    } catch (PackageManager.NameNotFoundException e) {
-      e.printStackTrace();
-      return -1;
-    }
-  }
-
-  public static String getOemIdForPackage(String packageName){
-    return new OemIdExtractorService(
-            new OemIdExtractorV1(context),
-            new OemIdExtractorV2(context)
-    ).extractOemId(packageName);
-  }
-
-  public static String getGuestWalletId(){
-    BdsService backendService =
-            new BdsService(BuildConfig.BACKEND_BASE, BdsService.TIME_OUT_IN_MILLIS);
-    WalletAddressProvider walletAddressProvider =
-            WalletAddressProvider.provideWalletAddressProvider();
-    WalletRepository walletRepository =
-            new WalletRepository(backendService, new WalletGenerationMapper(), walletAddressProvider);
-    SharedPreferencesRepository sharedPreferencesRepository =
-            new SharedPreferencesRepository(context, SharedPreferencesRepository.TTL_IN_SECONDS);
-
-    WalletInteract walletInteract =
-            new WalletInteract(sharedPreferencesRepository, walletRepository);
-
-    return  walletInteract.retrieveWalletId();
   }
 
   public static void initIap(Context context) {

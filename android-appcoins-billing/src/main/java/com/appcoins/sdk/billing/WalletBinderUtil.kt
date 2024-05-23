@@ -1,62 +1,127 @@
-package com.appcoins.sdk.billing;
+package com.appcoins.sdk.billing
 
-import android.annotation.SuppressLint;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.Build;
-import com.appcoins.billing.sdk.BuildConfig;
-import com.appcoins.sdk.billing.helpers.AppcoinsBillingStubHelper;
-import com.appcoins.sdk.billing.helpers.BindType;
-import com.appcoins.sdk.billing.helpers.IBinderWalletNotInstalled;
-import com.appcoins.sdk.billing.helpers.WalletUtils;
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.os.Build
+import android.util.Log
+import com.appcoins.billing.sdk.BuildConfig
+import com.appcoins.sdk.billing.helpers.BindType
+import com.appcoins.sdk.billing.helpers.IBinderWalletNotInstalled
+import com.appcoins.sdk.billing.helpers.WalletUtils
+import com.appcoins.sdk.billing.helpers.WebAppcoinsBilling
+import com.appcoins.sdk.billing.payflow.PayflowMethodResponse
+import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
 
-public class WalletBinderUtil {
+object WalletBinderUtil {
 
-  private static BindType bindType = BindType.AIDL;
+    private const val TAG = "WalletBinderUtil"
 
-  private static boolean BillingServiceNotInstalledBehaviour(ServiceConnection connection) {
-    bindType = BindType.BILLING_SERVICE_NOT_INSTALLED;
-    connection.onServiceConnected(
-        new ComponentName("", AppcoinsBillingStubHelper.class.getSimpleName()),
-        new IBinderWalletNotInstalled());
-    return true;
-  }
+    @JvmStatic
+    var bindType: BindType? = null
+        private set
 
-  @SuppressLint("ObsoleteSdkInt")
-  private static boolean bindFailedBehaviour(ServiceConnection connection) {
-    if (BuildConfig.URI_COMMUNICATION
-        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-      bindType = BindType.URI_CONNECTION;
-      connection.onServiceConnected(
-          new ComponentName("", UriCommunicationAppcoinsBilling.class.getSimpleName()),
-          new IBinderWalletNotInstalled());
+    @JvmStatic
+    fun initializeBillingRepository(
+        context: Context,
+        connection: ServiceConnection,
+        payflowMethodResponse: PayflowMethodResponse?,
+    ) {
+        payflowMethodResponse?.paymentFlowList?.forEach { paymentFlowMethod ->
+            when (paymentFlowMethod) {
+                is PaymentFlowMethod.Wallet, is PaymentFlowMethod.GamesHub -> {
+                    if (WalletUtils.hasBillingServiceInstalled()) {
+                        val successfullyBound = bindBillingService(context, connection)
+                        if (successfullyBound) return
+                    }
+                }
+
+                is PaymentFlowMethod.WebFirstPayment, is PaymentFlowMethod.PayAsAGuest -> {
+                    bindType = BindType.BILLING_SERVICE_NOT_INSTALLED
+                    connection.onServiceConnected(
+                        ComponentName("", WebAppcoinsBilling::class.java.simpleName),
+                        IBinderWalletNotInstalled()
+                    )
+                    return
+                }
+            }
+        }
+
+        if (WalletUtils.hasBillingServiceInstalled()) {
+            val successfullyBound = bindBillingService(context, connection)
+            if (successfullyBound) return
+        }
+        bindType = BindType.BILLING_SERVICE_NOT_INSTALLED
+        connection.onServiceConnected(
+            ComponentName("", WebAppcoinsBilling::class.java.simpleName),
+            IBinderWalletNotInstalled()
+        )
     }
-    return true;
-  }
 
-  private static boolean BillingServiceInstalledBehaviour(Context context,
-      final ServiceConnection connection, Intent serviceIntent, int serviceIntentFlags) {
-    if (context.bindService(serviceIntent, connection, serviceIntentFlags)) {
-      bindType = BindType.AIDL;
-    } else {
-      return bindFailedBehaviour(connection);
+    @JvmStatic
+    fun finishBillingRepository(context: Context, connection: ServiceConnection) {
+        try {
+            when (bindType) {
+                BindType.AIDL -> context.unbindService(connection)
+                BindType.BILLING_SERVICE_NOT_INSTALLED ->
+                    connection.onServiceDisconnected(
+                        ComponentName(context, WebAppcoinsBilling::class.java)
+                    )
+
+                BindType.URI_CONNECTION ->
+                    connection.onServiceDisconnected(
+                        ComponentName(context, UriCommunicationAppcoinsBilling::class.java)
+                    )
+            }
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+        }
     }
-    return true;
-  }
 
-  public static boolean bindService(Context context, Intent serviceIntent,
-      ServiceConnection connection, int serviceIntentFlags) {
-    if (WalletUtils.hasBillingServiceInstalled()) {
-      return BillingServiceInstalledBehaviour(context, connection, serviceIntent,
-          serviceIntentFlags);
-    } else {
-      return BillingServiceNotInstalledBehaviour(connection);
+    private fun bindFailedBehaviour(connection: ServiceConnection): Boolean {
+        if (BuildConfig.URI_COMMUNICATION
+            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH
+        ) {
+            Log.i(
+                TAG,
+                "BindFailedBehaviour: establishing URI Communication Protocol with Wallet."
+            )
+            bindType = BindType.URI_CONNECTION
+            connection.onServiceConnected(
+                ComponentName("", UriCommunicationAppcoinsBilling::class.java.simpleName),
+                IBinderWalletNotInstalled()
+            )
+            return true
+        }
+        Log.i(
+            TAG,
+            "BindFailedBehaviour: failed to establish URI Communication Protocol with Wallet."
+        )
+        return false
     }
-  }
 
-  public static BindType getBindType() {
-    return bindType;
-  }
+    private fun billingServiceInstalledBehaviour(
+        context: Context,
+        connection: ServiceConnection,
+        serviceIntent: Intent
+    ): Boolean =
+        if (context.bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)) {
+            Log.i(
+                TAG,
+                "BillingServiceInstalledBehaviour: binding to the wallet aidl."
+            )
+            bindType = BindType.AIDL
+            true
+        } else {
+            bindFailedBehaviour(connection)
+        }
+
+    private fun bindBillingService(context: Context, connection: ServiceConnection): Boolean {
+        val packageName = WalletUtils.getBillingServicePackageName()
+        val iabAction = WalletUtils.getBillingServiceIabAction()
+        val serviceIntent = Intent(iabAction)
+        serviceIntent.setPackage(packageName)
+        return billingServiceInstalledBehaviour(context, connection, serviceIntent)
+    }
 }

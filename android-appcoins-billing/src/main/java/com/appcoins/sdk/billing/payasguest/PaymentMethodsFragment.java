@@ -12,6 +12,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ import com.appcoins.sdk.billing.helpers.WalletInstallationIntentBuilder;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.helpers.translations.TranslationsRepository;
 import com.appcoins.sdk.billing.layouts.PaymentMethodsFragmentLayout;
+import com.appcoins.sdk.billing.listeners.PendingPurchaseStream;
 import com.appcoins.sdk.billing.listeners.StartPurchaseAfterBindListener;
 import com.appcoins.sdk.billing.mappers.BillingMapper;
 import com.appcoins.sdk.billing.mappers.GamificationMapper;
@@ -55,6 +57,8 @@ import static com.appcoins.sdk.billing.payasguest.IabActivity.CREDIT_CARD;
 import static com.appcoins.sdk.billing.payasguest.IabActivity.INSTALL_WALLET;
 import static com.appcoins.sdk.billing.payasguest.IabActivity.PAYPAL;
 
+import kotlin.Pair;
+
 public class PaymentMethodsFragment extends Fragment implements PaymentMethodsView {
 
   private final static String BUY_ITEM_PROPERTIES = "buy_item_properties";
@@ -67,7 +71,6 @@ public class PaymentMethodsFragment extends Fragment implements PaymentMethodsVi
   private String selectedRadioButton;
   private SkuDetailsModel skuDetailsModel;
   private WalletGenerationModel walletGenerationModel;
-  private AppcoinsBillingStubHelper appcoinsBillingStubHelper;
   private SkuPurchase itemAlreadyOwnedPurchase;
   private TranslationsRepository translations;
   private Context context;
@@ -78,7 +81,9 @@ public class PaymentMethodsFragment extends Fragment implements PaymentMethodsVi
     PaymentMethodsFragment paymentMethodsFragment = new PaymentMethodsFragment();
     Bundle bundle = new Bundle();
     bundle.putSerializable(BUY_ITEM_PROPERTIES, buyItemProperties);
+    Log.i("PaymentMethodsFragment", "putting argument: " + buyItemProperties);
     paymentMethodsFragment.setArguments(bundle);
+    Log.i("PaymentMethodsFragment", "after set arguments: " + paymentMethodsFragment.getArguments().getSerializable(BUY_ITEM_PROPERTIES));
     return paymentMethodsFragment;
   }
 
@@ -122,8 +127,8 @@ public class PaymentMethodsFragment extends Fragment implements PaymentMethodsVi
     WalletInstallationIntentBuilder walletInstallationIntentBuilder =
         new WalletInstallationIntentBuilder(context.getPackageManager(), context.getPackageName(),
             context.getApplicationContext());
-    appcoinsBillingStubHelper = AppcoinsBillingStubHelper.getInstance();
     buyItemProperties = (BuyItemProperties) getArguments().getSerializable(BUY_ITEM_PROPERTIES);
+    Log.i("PaymentMethodsFragment", "after getting arguments: " + buyItemProperties);
 
     paymentMethodsPresenter =
         new PaymentMethodsPresenter(this, paymentMethodsInteract, walletInstallationIntentBuilder,
@@ -174,11 +179,7 @@ public class PaymentMethodsFragment extends Fragment implements PaymentMethodsVi
           .setVisibility(View.GONE);
       layout.getIntentLoadingView()
           .setVisibility(View.VISIBLE);
-      appcoinsBillingStubHelper.createRepository(new StartPurchaseAfterBindListener() {
-        @Override public void startPurchaseAfterBind() {
-          makeTheStoredPurchase();
-        }
-      });
+      PendingPurchaseStream.getInstance().emit(new Pair<>(getActivity(), buyItemProperties));
       if (sendWalletInstalled) {
         sendWalletInstalled = false;
         billingAnalytics.sendPaymentSuccessEvent(buyItemProperties.getPackageName(),
@@ -471,7 +472,7 @@ public class PaymentMethodsFragment extends Fragment implements PaymentMethodsVi
     iabView = (IabView) context;
   }
 
-  private void makeTheStoredPurchase() {
+  /*private void makeTheStoredPurchase() {
     Bundle intent = appcoinsBillingStubHelper.getBuyIntent(buyItemProperties.getApiVersion(),
         buyItemProperties.getPackageName(), buyItemProperties.getSku(), buyItemProperties.getType(),
         buyItemProperties.getDeveloperPayload()
@@ -486,7 +487,7 @@ public class PaymentMethodsFragment extends Fragment implements PaymentMethodsVi
     } else {
       iabView.finishWithError();
     }
-  }
+  }*/
 
   private boolean isVisible(View view) {
     return view.getVisibility() == View.VISIBLE;

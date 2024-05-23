@@ -1,27 +1,27 @@
 package com.appcoins.sdk.billing.helpers;
 
+import static com.appcoins.sdk.billing.payasguest.BillingRepository.RESPONSE_ERROR;
+import static com.appcoins.sdk.billing.payasguest.BillingRepository.RESPONSE_SUCCESS;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ID_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ITEM_LIST;
+
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
+
 import com.appcoins.billing.AppcoinsBilling;
 import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.sdk.billing.ResponseCode;
 import com.appcoins.sdk.billing.payasguest.BillingRepository;
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 import com.appcoins.sdk.billing.service.BdsService;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import static com.appcoins.sdk.billing.helpers.AppcoinsBillingStubHelper.INAPP_DATA_SIGNATURE_LIST;
-import static com.appcoins.sdk.billing.helpers.AppcoinsBillingStubHelper.INAPP_PURCHASE_DATA_LIST;
-import static com.appcoins.sdk.billing.helpers.AppcoinsBillingStubHelper.INAPP_PURCHASE_ID_LIST;
-import static com.appcoins.sdk.billing.helpers.AppcoinsBillingStubHelper.INAPP_PURCHASE_ITEM_LIST;
-import static com.appcoins.sdk.billing.payasguest.BillingRepository.RESPONSE_ERROR;
-import static com.appcoins.sdk.billing.payasguest.BillingRepository.RESPONSE_SUCCESS;
 
 class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
 

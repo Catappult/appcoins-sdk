@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+
 import com.appcoins.billing.sdk.BuildConfig;
+import com.appcoins.sdk.billing.usecases.GetAppInstalledVersion;
 
 public class WalletInstallationIntentBuilder {
 
@@ -39,7 +41,7 @@ public class WalletInstallationIntentBuilder {
 
   private Intent buildStoreViewIntent(String storeUrl) {
     final Intent appStoreIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(storeUrl));
-    if (WalletUtils.getAppInstalledVersion(BuildConfig.APTOIDE_PACKAGE_NAME) >= MINIMUM_APTOIDE_VERSION) {
+    if (GetAppInstalledVersion.Companion.invoke(BuildConfig.APTOIDE_PACKAGE_NAME, context) >= MINIMUM_APTOIDE_VERSION) {
       appStoreIntent.setPackage(BuildConfig.APTOIDE_PACKAGE_NAME);
     }
     return appStoreIntent;

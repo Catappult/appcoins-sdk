@@ -1,48 +1,51 @@
-package com.appcoins.sdk.billing.payflow
+package com.appcoins.sdk.billing.webpayment
 
+import com.appcoins.sdk.billing.BillingFlowParams
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.service.ServiceResponseListener
 import com.appcoins.sdk.billing.utils.ServiceUtils
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-class PayflowRepository(private val bdsService: BdsService) {
+class WebPaymentRepository(private val bdsService: BdsService) {
 
-    fun getPayflowPriority(
+    fun getWebPaymentUrl(
         packageName: String,
         packageVersionCode: Int,
         sdkVersionCode: Int,
-        walletVersionCode: Int?,
-        gamesHubVersionCode: Int?,
-        vanillaVersionCode: Int?,
         locale: String?,
-    ): List<PaymentFlowMethod>? {
+        oemId: String?,
+        guestWalletId: String?,
+        billingFlowParams: BillingFlowParams?,
+    ): String? {
         val countDownLatch = CountDownLatch(1)
-        var paymentFlowMethodList: List<PaymentFlowMethod>? = null
+        var webPaymentUrl: String? = null
 
         val queries: MutableMap<String, String> = LinkedHashMap()
         queries["package"] = packageName
         queries["package_vercode"] = packageVersionCode.toString()
         queries["sdk_vercode"] = sdkVersionCode.toString()
-        walletVersionCode?.let { queries["wallet_vercode"] = it.toString() }
-        gamesHubVersionCode?.let { queries["gh_vercode"] = it.toString() }
-        vanillaVersionCode?.let { queries["vanilla_vercode"] = it.toString() }
         locale?.let { queries["locale"] = it }
+        oemId?.let { queries["oemid"] = it }
+        guestWalletId?.let { queries["guest_id"] = it }
+        billingFlowParams?.apply {
+            sku?.let { queries["sku"] = it }
+            developerPayload?.let { queries["metadata"] = it }
+            orderReference?.let { queries["order_id"] = it }
+        }
 
         val serviceResponseListener =
             ServiceResponseListener { requestResponse ->
-                val payflowMethodResponse = PayflowResponseMapper().map(requestResponse)
-                payflowMethodResponse.responseCode?.let { responseCode ->
+                val webPaymentUrlResponse = WebPaymentResponseMapper().map(requestResponse)
+                webPaymentUrlResponse.responseCode?.let { responseCode ->
                     if (ServiceUtils.isSuccess(responseCode)) {
-                        val sortedMethods =
-                            payflowMethodResponse.paymentFlowList?.sortedBy { it.priority }
-                        paymentFlowMethodList = sortedMethods
+                        webPaymentUrl = webPaymentUrlResponse.webPaymentUrl
                     }
                 }
                 countDownLatch.countDown()
             }
         bdsService.makeRequest(
-            "/payment_flow",
+            "/payment_url",
             "GET",
             emptyList(),
             queries,
@@ -52,7 +55,7 @@ class PayflowRepository(private val bdsService: BdsService) {
         )
 
         waitForCountDown(countDownLatch)
-        return paymentFlowMethodList
+        return webPaymentUrl
     }
 
     private fun waitForCountDown(countDownLatch: CountDownLatch) {

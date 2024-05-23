@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import org.jetbrains.annotations.Nullable;
+
 public class SharedPreferencesRepository {
 
   public static final int TTL_IN_SECONDS = 86400 * 30; //86400 = 24h
@@ -19,6 +21,7 @@ public class SharedPreferencesRepository {
     this.ttlValueInSeconds = ttlValueInSeconds;
   }
 
+  @Nullable
   public String getWalletId() {
     return sharedPreferences.getString(WALLET_ID_KEY, null);
   }
