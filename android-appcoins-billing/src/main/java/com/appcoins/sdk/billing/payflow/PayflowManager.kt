@@ -4,15 +4,16 @@ import android.content.Context
 import android.content.Intent
 import com.appcoins.sdk.billing.service.PayflowSSEService
 
-class PayflowManager {
-    companion object {
-        fun initializePayflowPrioritySSEClient(context: Context) {
-            val intent = Intent(context, PayflowSSEService::class.java)
-            context.startService(intent)
-        }
+object PayflowManager {
 
-        fun stopPayflowPrioritySSEClient(context: Context) {
-            context.stopService(Intent(context, PayflowSSEService::class.java))
-        }
+    @JvmStatic
+    fun initializePayflowPrioritySSEClient(context: Context) {
+        val intent = Intent(context, PayflowSSEService::class.java)
+        context.startService(intent)
+    }
+
+    @JvmStatic
+    fun stopPayflowPrioritySSEClient(context: Context) {
+        context.stopService(Intent(context, PayflowSSEService::class.java))
     }
 }

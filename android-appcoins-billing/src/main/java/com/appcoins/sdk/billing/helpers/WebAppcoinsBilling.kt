@@ -269,9 +269,8 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         return list
     }
 
-    private fun hasRequiredFields(type: String, sku: String?): Boolean {
-        return type.equals("inapp", ignoreCase = true) && !sku.isNullOrEmpty()
-    }
+    private fun hasRequiredFields(type: String, sku: String?): Boolean =
+        type.equals("inapp", ignoreCase = true) && !sku.isNullOrEmpty()
 
     private val walletId: String?
         get() {
@@ -287,11 +286,11 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         type.equals("inapp", ignoreCase = true) && apiVersion == SUPPORTED_API_VERSION
 
     companion object {
-        private val TAG: String = WebAppcoinsBilling::class.java.simpleName
+        private val TAG = WebAppcoinsBilling::class.java.simpleName
 
-        private const val INAPP_PURCHASE_ITEM_LIST: String = "INAPP_PURCHASE_ITEM_LIST"
-        private const val INAPP_PURCHASE_DATA_LIST: String = "INAPP_PURCHASE_DATA_LIST"
-        private const val INAPP_DATA_SIGNATURE_LIST: String = "INAPP_DATA_SIGNATURE_LIST"
+        private const val INAPP_PURCHASE_ITEM_LIST = "INAPP_PURCHASE_ITEM_LIST"
+        private const val INAPP_PURCHASE_DATA_LIST = "INAPP_PURCHASE_DATA_LIST"
+        private const val INAPP_DATA_SIGNATURE_LIST = "INAPP_DATA_SIGNATURE_LIST"
 
         private const val SUPPORTED_API_VERSION = 3
         private const val MAX_SKUS_SEND_WS = 49 // 0 to 49

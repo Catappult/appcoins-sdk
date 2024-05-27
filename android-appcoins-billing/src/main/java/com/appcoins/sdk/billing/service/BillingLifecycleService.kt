@@ -4,8 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.IBinder
-import com.appcoins.sdk.billing.payflow.PayflowManager.Companion.initializePayflowPrioritySSEClient
-import com.appcoins.sdk.billing.payflow.PayflowManager.Companion.stopPayflowPrioritySSEClient
+import com.appcoins.sdk.billing.payflow.PayflowManager
 import com.appcoins.sdk.billing.receivers.AppInstallationReceiver
 
 class BillingLifecycleService : Service() {
@@ -14,8 +13,8 @@ class BillingLifecycleService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        stopPayflowPrioritySSEClient(applicationContext)
-        initializePayflowPrioritySSEClient(applicationContext)
+        PayflowManager.stopPayflowPrioritySSEClient(applicationContext)
+        PayflowManager.initializePayflowPrioritySSEClient(applicationContext)
 
         val receiverIntentFilter = IntentFilter()
         receiverIntentFilter.addAction(Intent.ACTION_PACKAGE_ADDED)
@@ -26,7 +25,7 @@ class BillingLifecycleService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        stopPayflowPrioritySSEClient(applicationContext)
+        PayflowManager.stopPayflowPrioritySSEClient(applicationContext)
         try {
             applicationContext.unregisterReceiver(appInstallationReceiver)
         } catch (e: RuntimeException) {
