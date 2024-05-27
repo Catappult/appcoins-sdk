@@ -49,18 +49,6 @@ public class WalletUtils {
   private static SdkAnalytics sdkAnalytics;
 
   public static boolean hasBillingServiceInstalled() {
-    if (billingPackageName == null) {
-      setBillingServiceInfoToBind();
-    }
-    return billingPackageName != null;
-  }
-  // Workaround for a quick fix, to be used in the installation flow since we know the wallet is
-  // installed and there is not the need to check the backend.
-  // As a longer term solution, the installation flow should wait for the response
-  public static boolean hasWalletInstalled() {
-    if (billingPackageName == null && isAppAvailableToBind(BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION)) {
-      setWalletBillingInfo();
-    }
     return billingPackageName != null;
   }
 
@@ -214,20 +202,15 @@ public class WalletUtils {
   }
 
   public static String getBillingServicePackageName() {
-    if (billingPackageName == null) {
-      setBillingServiceInfoToBind();
-    }
     return billingPackageName;
   }
 
   public static String getBillingServiceIabAction() {
-    if (billingIabAction == null) {
-      setBillingServiceInfoToBind();
-    }
     return billingIabAction;
   }
 
   public static void setBillingServiceInfoToBind() {
+    clearBillingServiceInfo();
     if (paymentFlowMethods == null) {
       setDefaultBillingServiceInfoToBind();
     } else if (paymentFlowMethods.isEmpty()) {
@@ -235,9 +218,14 @@ public class WalletUtils {
     } else {
       for (PaymentFlowMethod method : paymentFlowMethods) {
         if (method instanceof PaymentFlowMethod.Wallet) {
-          setWalletBillingInfo();
+          if (isAppAvailableToBind(BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION)) {
+            setWalletBillingInfo();
+          }
         } else if (method instanceof PaymentFlowMethod.GamesHub) {
-          setGamesHubBillingInfo();
+          if (isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION)
+                  || isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE)) {
+            setGamesHubBillingInfo();
+          }
         } else {
           clearBillingServiceInfo();
         }
