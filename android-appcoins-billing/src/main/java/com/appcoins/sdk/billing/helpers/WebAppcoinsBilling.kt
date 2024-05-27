@@ -17,7 +17,7 @@ import com.appcoins.sdk.billing.SkuDetailsResult
 import com.appcoins.sdk.billing.WSServiceController
 import com.appcoins.sdk.billing.payasguest.BillingRepository
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.PayAsAGuest
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.WebFirstPayment
+import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.WebPayment
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.webpayment.WebPaymentManager
 import java.io.Serializable
@@ -84,7 +84,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
                         developerPayload
                     )
                     bundle = WalletUtils.startPayAsGuest(buyItemProperties)
-                } else if (method is WebFirstPayment) {
+                } else if (method is WebPayment) {
                     Log.d(
                         TAG,
                         "Service is NOT installed and should make WebFirstPayment with buyItemProperties = [$buyItemProperties]"

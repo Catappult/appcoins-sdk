@@ -16,10 +16,10 @@ class AppInstallationReceiver : BroadcastReceiver() {
             val packageName = intent.data!!.schemeSpecificPart
             if (BILLING_APPS_PACKAGES.contains(packageName)) {
                 if (Intent.ACTION_PACKAGE_ADDED == intent.action) {
-                    notifyBillingAppChanged(context)
+                    notifyBillingAppChanged()
                     Log.i(TAG, "Package installed: $packageName")
                 } else if (Intent.ACTION_PACKAGE_REMOVED == intent.action) {
-                    notifyBillingAppChanged(context)
+                    notifyBillingAppChanged()
                     Log.i(TAG, "Package removed: $packageName")
                 } else {
                     Log.i(TAG, "Package changed: $packageName -> ${intent.action}")
@@ -28,9 +28,8 @@ class AppInstallationReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun notifyBillingAppChanged(context: Context) {
-        PayflowManager.stopPayflowPrioritySSEClient(context)
-        PayflowManager.initializePayflowPrioritySSEClient(context)
+    private fun notifyBillingAppChanged() {
+        PayflowManager.getPayflowPriorityAsync()
     }
 
     private companion object {

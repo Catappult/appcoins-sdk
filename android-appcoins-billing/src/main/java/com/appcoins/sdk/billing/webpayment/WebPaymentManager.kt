@@ -14,23 +14,18 @@ import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.service.address.OemIdExtractorService
 import com.appcoins.sdk.billing.service.wallet.WalletGenerationMapper
 import com.appcoins.sdk.billing.service.wallet.WalletRepository
-import com.appcoins.sdk.billing.usecases.GetAppInstalledVersion
 
 class WebPaymentManager(val packageName: String) {
     private val webPaymentRepository =
         WebPaymentRepository(BdsService(BuildConfig.PAYFLOW_HOST, 30000))
 
     fun getWebPaymentUrl(billingFlowParams: BillingFlowParams?) {
-        val integratedGameVersionCode =
-            GetAppInstalledVersion.invoke(packageName, WalletUtils.context)
         val oemid = getOemIdForPackage(packageName)
         val guestWalletId = getGuestWalletId()
 
         val paymentFlowMethodList =
             webPaymentRepository.getWebPaymentUrl(
                 packageName,
-                integratedGameVersionCode,
-                BuildConfig.VERSION_CODE,
                 getUserCountry(WalletUtils.context),
                 oemid,
                 guestWalletId,

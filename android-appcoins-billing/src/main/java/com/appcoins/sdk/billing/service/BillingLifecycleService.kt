@@ -9,13 +9,15 @@ import com.appcoins.sdk.billing.receivers.AppInstallationReceiver
 
 class BillingLifecycleService : Service() {
 
-    private val appInstallationReceiver = AppInstallationReceiver()
+    private val appInstallationReceiver by lazy { AppInstallationReceiver() }
 
     override fun onCreate() {
         super.onCreate()
-        PayflowManager.stopPayflowPrioritySSEClient(applicationContext)
-        PayflowManager.initializePayflowPrioritySSEClient(applicationContext)
+        PayflowManager.getPayflowPriorityAsync()
+        registerAppInstallationReceiver()
+    }
 
+    private fun registerAppInstallationReceiver() {
         val receiverIntentFilter = IntentFilter()
         receiverIntentFilter.addAction(Intent.ACTION_PACKAGE_ADDED)
         receiverIntentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED)
@@ -25,7 +27,6 @@ class BillingLifecycleService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        PayflowManager.stopPayflowPrioritySSEClient(applicationContext)
         try {
             applicationContext.unregisterReceiver(appInstallationReceiver)
         } catch (e: RuntimeException) {

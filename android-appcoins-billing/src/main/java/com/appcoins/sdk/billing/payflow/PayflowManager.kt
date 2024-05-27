@@ -1,19 +1,32 @@
 package com.appcoins.sdk.billing.payflow
 
-import android.content.Context
-import android.content.Intent
-import com.appcoins.sdk.billing.service.PayflowSSEService
+import com.appcoins.billing.sdk.BuildConfig
+import com.appcoins.sdk.billing.listeners.PayflowPriorityStream
+import com.appcoins.sdk.billing.service.BdsService
+import com.appcoins.sdk.billing.utils.ServiceUtils
 
 object PayflowManager {
 
-    @JvmStatic
-    fun initializePayflowPrioritySSEClient(context: Context) {
-        val intent = Intent(context, PayflowSSEService::class.java)
-        context.startService(intent)
+    private val payflowRepository by lazy {
+        PayflowRepository(BdsService(BuildConfig.PAYFLOW_HOST, 30000))
     }
 
     @JvmStatic
-    fun stopPayflowPrioritySSEClient(context: Context) {
-        context.stopService(Intent(context, PayflowSSEService::class.java))
+    fun getPayflowPriorityAsync() {
+        val payflowListener = object : PayflowListener {
+            override fun onResponse(payflowMethodResponse: PayflowMethodResponse) {
+                payflowMethodResponse.responseCode?.let { responseCode ->
+                    if (ServiceUtils.isSuccess(responseCode)) {
+                        val sortedMethods =
+                            payflowMethodResponse.paymentFlowList?.sortedBy { it.priority }
+                        PayflowPriorityStream.getInstance().emit(sortedMethods)
+                    } else {
+                        PayflowPriorityStream.getInstance().emit(null)
+                    }
+                }
+            }
+        }
+
+        payflowRepository.getPayflowPriorityAsync(payflowListener)
     }
 }

@@ -11,7 +11,6 @@ import com.appcoins.sdk.billing.helpers.BindType
 import com.appcoins.sdk.billing.helpers.IBinderWalletNotInstalled
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.helpers.WebAppcoinsBilling
-import com.appcoins.sdk.billing.payflow.PayflowMethodResponse
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
 
 object WalletBinderUtil {
@@ -26,9 +25,9 @@ object WalletBinderUtil {
     fun initializeBillingRepository(
         context: Context,
         connection: ServiceConnection,
-        payflowMethodResponse: PayflowMethodResponse?,
+        paymentFlowMethods: List<PaymentFlowMethod>?,
     ) {
-        payflowMethodResponse?.paymentFlowList?.forEach { paymentFlowMethod ->
+        paymentFlowMethods?.forEach { paymentFlowMethod ->
             when (paymentFlowMethod) {
                 is PaymentFlowMethod.Wallet, is PaymentFlowMethod.GamesHub -> {
                     if (WalletUtils.hasBillingServiceInstalled()) {
@@ -37,7 +36,7 @@ object WalletBinderUtil {
                     }
                 }
 
-                is PaymentFlowMethod.WebFirstPayment, is PaymentFlowMethod.PayAsAGuest -> {
+                is PaymentFlowMethod.WebPayment, is PaymentFlowMethod.PayAsAGuest -> {
                     bindType = BindType.BILLING_SERVICE_NOT_INSTALLED
                     connection.onServiceConnected(
                         ComponentName("", WebAppcoinsBilling::class.java.simpleName),

@@ -1,19 +1,21 @@
 package com.appcoins.sdk.billing.listeners;
 
 import com.appcoins.sdk.billing.helpers.WalletUtils;
-import com.appcoins.sdk.billing.payflow.PayflowMethodResponse;
+import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class PayflowPriorityStream {
 
     private static PayflowPriorityStream instance;
 
     @Nullable
-    private PayflowMethodResponse value = null;
+    private List<PaymentFlowMethod> value = null;
 
     @Nullable
-    private Consumer<PayflowMethodResponse> collector = null;
+    private Consumer<List<PaymentFlowMethod>> collector = null;
 
     private PayflowPriorityStream() {
     }
@@ -25,35 +27,31 @@ public class PayflowPriorityStream {
         return instance;
     }
 
-    public PayflowMethodResponse value() {
+    public List<PaymentFlowMethod> value() {
         return value;
     }
 
-    public void emit(@Nullable PayflowMethodResponse value) {
-        if (value != null) {
-            WalletUtils.setPayflowMethodsList(value.getPaymentFlowList());
-        } else {
-            WalletUtils.setPayflowMethodsList(null);
-        }
+    public void emit(@Nullable List<PaymentFlowMethod> value) {
+        WalletUtils.setPayflowMethodsList(value);
         notifyCollectors(value);
     }
 
-    public void collect(Consumer<PayflowMethodResponse> collector) {
+    public void collect(Consumer<List<PaymentFlowMethod>> collector) {
         this.collector = collector;
     }
 
-    public void stopCollecting(Consumer<PayflowMethodResponse> collector) {
+    public void stopCollecting() {
         this.collector = null;
     }
 
-    private void notifyCollectors(@Nullable PayflowMethodResponse value) {
+    private void notifyCollectors(@Nullable List<PaymentFlowMethod> value) {
         this.value = value;
         if (collector != null) {
             collector.accept(value);
         }
     }
 
-    public interface Consumer<PayflowMethodResponse> {
-        void accept(@Nullable PayflowMethodResponse value);
+    public interface Consumer<Any> {
+        void accept(@Nullable Any value);
     }
 }

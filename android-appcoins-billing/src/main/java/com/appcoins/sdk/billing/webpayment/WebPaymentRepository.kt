@@ -1,6 +1,8 @@
 package com.appcoins.sdk.billing.webpayment
 
 import com.appcoins.sdk.billing.BillingFlowParams
+import com.appcoins.sdk.billing.helpers.WalletUtils
+import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.service.ServiceResponseListener
 import com.appcoins.sdk.billing.utils.ServiceUtils
@@ -11,8 +13,6 @@ class WebPaymentRepository(private val bdsService: BdsService) {
 
     fun getWebPaymentUrl(
         packageName: String,
-        packageVersionCode: Int,
-        sdkVersionCode: Int,
         locale: String?,
         oemId: String?,
         guestWalletId: String?,
@@ -23,8 +23,6 @@ class WebPaymentRepository(private val bdsService: BdsService) {
 
         val queries: MutableMap<String, String> = LinkedHashMap()
         queries["package"] = packageName
-        queries["package_vercode"] = packageVersionCode.toString()
-        queries["sdk_vercode"] = sdkVersionCode.toString()
         locale?.let { queries["locale"] = it }
         oemId?.let { queries["oemid"] = it }
         guestWalletId?.let { queries["guest_id"] = it }
@@ -33,6 +31,10 @@ class WebPaymentRepository(private val bdsService: BdsService) {
             developerPayload?.let { queries["metadata"] = it }
             orderReference?.let { queries["order_id"] = it }
         }
+
+        val paymentUrlVersion =
+            WalletUtils.getPaymentUrlVersionFromPayflowMethod()
+                ?: PaymentFlowMethod.DEFAULT_WEB_PAYMENT_URL_VERSION
 
         val serviceResponseListener =
             ServiceResponseListener { requestResponse ->
@@ -45,7 +47,7 @@ class WebPaymentRepository(private val bdsService: BdsService) {
                 countDownLatch.countDown()
             }
         bdsService.makeRequest(
-            "/payment_url",
+            "/payment_url/$paymentUrlVersion",
             "GET",
             emptyList(),
             queries,

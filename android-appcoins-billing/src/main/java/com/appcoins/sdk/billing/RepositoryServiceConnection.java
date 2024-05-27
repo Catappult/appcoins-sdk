@@ -10,11 +10,13 @@ import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.listeners.PayflowPriorityStream;
 import com.appcoins.sdk.billing.managers.BillingLifecycleManager;
-import com.appcoins.sdk.billing.payflow.PayflowMethodResponse;
+import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 
 import org.jetbrains.annotations.Nullable;
 
-public class RepositoryServiceConnection implements ServiceConnection, RepositoryConnection, PayflowPriorityStream.Consumer<PayflowMethodResponse> {
+import java.util.List;
+
+public class RepositoryServiceConnection implements ServiceConnection, RepositoryConnection, PayflowPriorityStream.Consumer<List<PaymentFlowMethod>> {
     private static final String TAG = RepositoryServiceConnection.class.getSimpleName();
     private final Context context;
     private final ConnectionLifeCycle connectionLifeCycle;
@@ -66,14 +68,14 @@ public class RepositoryServiceConnection implements ServiceConnection, Repositor
     @Override
     public void endConnection() {
         BillingLifecycleManager.stopBillingLifecycleService(context);
-        PayflowPriorityStream.getInstance().stopCollecting(this);
+        PayflowPriorityStream.getInstance().stopCollecting();
         WalletBinderUtil.finishBillingRepository(context, this);
     }
 
     @Override
-    public void accept(@Nullable PayflowMethodResponse payflowMethodResponse) {
-        Log.i(TAG, "accept: received new payflowMethodResponse" + payflowMethodResponse);
+    public void accept(@Nullable List<PaymentFlowMethod> paymentFlowMethods) {
+        Log.i(TAG, "accept: received new payflowMethodResponse" + paymentFlowMethods);
         WalletBinderUtil.finishBillingRepository(context, this);
-        WalletBinderUtil.initializeBillingRepository(context, this, payflowMethodResponse);
+        WalletBinderUtil.initializeBillingRepository(context, this, paymentFlowMethods);
     }
 }
