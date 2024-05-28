@@ -47,7 +47,7 @@ class WebPaymentRepository(private val bdsService: BdsService) {
                 countDownLatch.countDown()
             }
         bdsService.makeRequest(
-            "/payment_url/$paymentUrlVersion",
+            "/$paymentUrlVersion/payment_url",
             "GET",
             emptyList(),
             queries,

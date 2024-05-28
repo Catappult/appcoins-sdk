@@ -12,7 +12,7 @@ class PayflowRepository(private val bdsService: BdsService) {
                 payflowListener.onResponse(PayflowResponseMapper().map(requestResponse))
             }
         bdsService.makeRequest(
-            "/payment_flow",
+            "/$PAYFLOW_VERSION/payment_flow",
             "GET",
             emptyList(),
             GetQueriesListForPayflowPriority.invoke(),
@@ -20,5 +20,9 @@ class PayflowRepository(private val bdsService: BdsService) {
             emptyMap(),
             serviceResponseListener
         )
+    }
+
+    private companion object {
+        const val PAYFLOW_VERSION: String = "v1"
     }
 }
