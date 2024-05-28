@@ -65,8 +65,11 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
     }
 
     override fun getBuyIntent(
-        apiVersion: Int, packageName: String, sku: String,
-        type: String, developerPayload: String
+        apiVersion: Int,
+        packageName: String,
+        sku: String,
+        type: String,
+        developerPayload: String
     ): Bundle {
         var bundle: Bundle? = null
         if (hasRequiredFields(type, sku) && WalletUtils.getPayflowMethodsList().isNotEmpty()) {
@@ -117,8 +120,11 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
     }
 
     private fun setBuyItemPropertiesForPayflow(
-        packageName: String, apiVersion: Int, sku: String,
-        type: String, developerPayload: String
+        packageName: String,
+        apiVersion: Int,
+        sku: String,
+        type: String,
+        developerPayload: String
     ) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             Handler(Looper.getMainLooper()).post {
@@ -200,10 +206,12 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
     }
 
     private fun getSkuDetailsFromService(
-        packageName: String, type: String, skusBundle: Bundle,
+        packageName: String,
+        type: String,
+        skusBundle: Bundle,
         responseWs: Bundle
     ) {
-        val sku: List<String>? = skusBundle.getStringArrayList(Utils.GET_SKU_DETAILS_ITEM_LIST)
+        val sku = skusBundle.getStringArrayList(Utils.GET_SKU_DETAILS_ITEM_LIST)
         val skuDetailsList = requestSkuDetails(sku, packageName, type)
         val skuDetailsResult = SkuDetailsResult(skuDetailsList, 0)
         responseWs.putInt(Utils.RESPONSE_CODE, 0)
@@ -212,15 +220,17 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
     }
 
     private fun getSingleSkuDetailsFromService(
-        packageName: String, type: String,
+        packageName: String,
+        type: String,
         skusBundle: Bundle
     ): SkuDetails {
-        val sku: List<String>? = skusBundle.getStringArrayList(Utils.GET_SKU_DETAILS_ITEM_LIST)
+        val sku = skusBundle.getStringArrayList(Utils.GET_SKU_DETAILS_ITEM_LIST)
         return requestSingleSkuDetails(sku, packageName, type)
     }
 
     private fun requestSkuDetails(
-        sku: List<String>?, packageName: String,
+        sku: List<String>?,
+        packageName: String,
         type: String
     ): ArrayList<SkuDetails> {
         val skuSendList: MutableList<String> = ArrayList()
@@ -255,19 +265,15 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
     }
 
     private fun getMappedSkuDetails(sku: String, packageName: String, type: String): SkuDetails {
-        val skuList: MutableList<String> = ArrayList()
-        skuList.add(sku)
+        val skuList = arrayListOf(sku)
         val skuBundle = AndroidBillingMapper.mapArrayListToBundleSkuDetails(skuList)
         return getSingleSkuDetailsFromService(packageName, type, skuBundle)
     }
 
-    private fun buildResponse(skuDetailsResult: SkuDetailsResult): ArrayList<String> {
-        val list = ArrayList<String>()
-        for (skuDetails in skuDetailsResult.skuDetailsList) {
-            list.add(AndroidBillingMapper.mapSkuDetailsResponse(skuDetails))
-        }
-        return list
-    }
+    private fun buildResponse(skuDetailsResult: SkuDetailsResult): ArrayList<String> =
+        ArrayList(
+            skuDetailsResult.skuDetailsList.map { AndroidBillingMapper.mapSkuDetailsResponse(it) }
+        )
 
     private fun hasRequiredFields(type: String, sku: String?): Boolean =
         type.equals("inapp", ignoreCase = true) && !sku.isNullOrEmpty()

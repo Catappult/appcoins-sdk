@@ -30,10 +30,8 @@ object WalletBinderUtil {
         paymentFlowMethods?.forEach { paymentFlowMethod ->
             when (paymentFlowMethod) {
                 is PaymentFlowMethod.Wallet, is PaymentFlowMethod.GamesHub -> {
-                    if (WalletUtils.hasBillingServiceInstalled()) {
-                        val successfullyBound = bindBillingService(context, connection)
-                        if (successfullyBound) return
-                    }
+                    val successfullyBound = bindBillingService(context, connection)
+                    if (successfullyBound) return
                 }
 
                 is PaymentFlowMethod.WebPayment, is PaymentFlowMethod.PayAsAGuest -> {

@@ -156,11 +156,71 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
   public void accept(@Nullable Pair<Activity, BuyItemProperties> value) {
     Runnable runnable = () -> {
       Looper.prepare();
-      launchBillingFlow(value.component1(), value.component2().toBillingFlowParams());
+      resumeBillingFlow(value.component1(), value.component2().toBillingFlowParams());
       Looper.loop();
     };
     new Thread(runnable).start();
   }
+
+    private void resumeBillingFlow(Activity activity, BillingFlowParams billingFlowParams) {
+        int responseCode;
+        try {
+            String payload =
+                    PayloadHelper.buildIntentPayload(
+                            billingFlowParams.getOrderReference(),
+                            billingFlowParams.getDeveloperPayload(),
+                            billingFlowParams.getOrigin()
+                    );
+
+            Log.d("Message: ", payload);
+
+            Thread eventLoggerThread =
+                    new Thread(
+                            new EventLogger(
+                                    billingFlowParams.getSku(),
+                                    activity.getApplicationContext().getPackageName()
+                            )
+                    );
+            eventLoggerThread.start();
+
+            LaunchBillingFlowResult launchBillingFlowResult =
+                    billing.launchBillingFlow(billingFlowParams, payload);
+
+            responseCode = launchBillingFlowResult.getResponseCode();
+
+            if (responseCode != ResponseCode.OK.getValue()) {
+                ApplicationUtils.handleWebBasedResult(
+                        new SDKWebResponse(ResponseCode.ERROR.getValue(), null, null),
+                        billingFlowParams,
+                        billingFlowParams.getDeveloperPayload(),
+                        purchaseFinishedListener
+                );
+                return;
+            }
+
+            PendingIntent buyIntent = launchBillingFlowResult.getBuyIntent();
+            Intent webBuyIntent = launchBillingFlowResult.getWebBuyIntent();
+
+            if (buyIntent != null) {
+                AppCoinsPendingIntentCaller.startPendingAppCoinsIntent(activity,
+                        buyIntent.getIntentSender(), REQUEST_CODE, null, 0, 0, 0);
+            } else if (webBuyIntent != null) {
+                PaymentsResultsManager.getInstance()
+                        .collectPaymentResult(
+                                billingFlowParams,
+                                payload,
+                                this
+                        );
+                activity.startActivity(webBuyIntent);
+            }
+        } catch (NullPointerException e) {
+            handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
+        } catch (IntentSender.SendIntentException e) {
+            handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
+        } catch (ServiceConnectionException e) {
+            handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e, billingFlowParams);
+        }
+    }
 }
 
 

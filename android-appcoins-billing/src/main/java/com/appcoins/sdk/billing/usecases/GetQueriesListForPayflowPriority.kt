@@ -23,9 +23,9 @@ class GetQueriesListForPayflowPriority {
             queries["package"] = WalletUtils.context.packageName
             queries["package_vercode"] = integratedGameVersionCode.toString()
             queries["sdk_vercode"] = BuildConfig.VERSION_CODE.toString()
-            walletVersionCode.let { queries["wallet_vercode"] = it.toString() }
-            gamesHubVersionCode.let { queries["gh_vercode"] = it.toString() }
-            vanillaVersionCode.let { queries["vanilla_vercode"] = it.toString() }
+            walletVersionCode.let { if (it != -1) queries["wallet_vercode"] = it.toString() }
+            gamesHubVersionCode.let { if (it != -1) queries["gh_vercode"] = it.toString() }
+            vanillaVersionCode.let { if (it != -1) queries["vanilla_vercode"] = it.toString() }
             UserCountryUtils.getUserCountry(WalletUtils.context)?.let { queries["locale"] = it }
 
             return queries

@@ -59,5 +59,10 @@ sealed class PaymentFlowMethod(
 
   companion object {
     const val DEFAULT_WEB_PAYMENT_URL_VERSION = "v1"
+
+    fun getPaymentUrlVersionFromPayflowMethod(
+        payflowMethodsList: MutableList<PaymentFlowMethod>
+    ): String? =
+      payflowMethodsList.firstOrNull { it is WebPayment }?.version
   }
 }

@@ -34,13 +34,13 @@ class WebPaymentManager(val packageName: String) {
         setWebPaymentUrl(paymentFlowMethodList)
     }
 
-    private fun getOemIdForPackage(packageName: String?): String =
+    private fun getOemIdForPackage(packageName: String?): String? =
         OemIdExtractorService(
             OemIdExtractorV1(WalletUtils.context),
             OemIdExtractorV2(WalletUtils.context)
         ).extractOemId(packageName)
 
-    private fun getGuestWalletId(): String {
+    private fun getGuestWalletId(): String? {
         val backendService =
             BdsService(BuildConfig.BACKEND_BASE, BdsService.TIME_OUT_IN_MILLIS)
         val walletAddressProvider =

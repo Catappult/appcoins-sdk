@@ -34,7 +34,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
 public class WalletUtils {
@@ -176,20 +175,6 @@ public class WalletUtils {
       return Collections.emptyList();
     } else {
       return paymentFlowMethods;
-    }
-  }
-
-
-  public static @Nullable String getPaymentUrlVersionFromPayflowMethod() {
-    Optional<PaymentFlowMethod> paymentFlowMethodOptional =
-            getPayflowMethodsList()
-                    .stream()
-                    .filter(paymentFlowMethod -> paymentFlowMethod instanceof PaymentFlowMethod.WebPayment)
-                    .findFirst();
-    if (paymentFlowMethodOptional.isPresent()) {
-      return paymentFlowMethodOptional.get().getVersion();
-    } else {
-      return PaymentFlowMethod.DEFAULT_WEB_PAYMENT_URL_VERSION;
     }
   }
 

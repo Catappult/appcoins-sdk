@@ -33,8 +33,8 @@ class WebPaymentRepository(private val bdsService: BdsService) {
         }
 
         val paymentUrlVersion =
-            WalletUtils.getPaymentUrlVersionFromPayflowMethod()
-                ?: PaymentFlowMethod.DEFAULT_WEB_PAYMENT_URL_VERSION
+            PaymentFlowMethod
+                .getPaymentUrlVersionFromPayflowMethod(WalletUtils.getPayflowMethodsList())
 
         val serviceResponseListener =
             ServiceResponseListener { requestResponse ->
