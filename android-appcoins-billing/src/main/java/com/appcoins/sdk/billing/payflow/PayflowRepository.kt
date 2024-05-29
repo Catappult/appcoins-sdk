@@ -23,6 +23,6 @@ class PayflowRepository(private val bdsService: BdsService) {
     }
 
     private companion object {
-        const val PAYFLOW_VERSION: String = "v1"
+        const val PAYFLOW_VERSION: String = "v2"
     }
 }

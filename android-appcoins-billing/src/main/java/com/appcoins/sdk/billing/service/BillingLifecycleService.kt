@@ -14,9 +14,11 @@ class BillingLifecycleService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        AttributionManager.getAttributionForUser()
-        PayflowManager.getPayflowPriorityAsync()
-        registerAppInstallationReceiver()
+        Thread {
+            AttributionManager.getAttributionForUser()
+            PayflowManager.getPayflowPriorityAsync()
+            registerAppInstallationReceiver()
+        }.start()
     }
 
     private fun registerAppInstallationReceiver() {
