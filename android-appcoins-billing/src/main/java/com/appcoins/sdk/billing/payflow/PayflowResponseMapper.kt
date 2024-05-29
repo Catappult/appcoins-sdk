@@ -25,9 +25,11 @@ class PayflowResponseMapper {
               "pay_as_a_guest" -> PaymentFlowMethod.PayAsAGuest(methodName, priority)
               "games_hub_checkout" -> PaymentFlowMethod.GamesHub(methodName, priority)
               "web_payment" -> {
-                  val version = paymentMethodsObject.optJSONObject(methodName)
-                      ?.optString("version") ?: DEFAULT_WEB_PAYMENT_URL_VERSION
-                  PaymentFlowMethod.WebPayment(methodName, priority, version)
+                val paymentMethodsJsonObject = paymentMethodsObject.optJSONObject(methodName)
+                val version = paymentMethodsJsonObject
+                  ?.optString("version") ?: DEFAULT_WEB_PAYMENT_URL_VERSION
+                val paymentFlow = paymentMethodsJsonObject?.optString("payment_flow")
+                PaymentFlowMethod.WebPayment(methodName, priority, version, paymentFlow)
               }
               else -> null
             }
@@ -49,20 +51,26 @@ data class PayflowMethodResponse(
 sealed class PaymentFlowMethod(
     val name: String,
     val priority: Int,
-    val version: String? = null
+    val version: String? = null,
+    val paymentFlow: String? = null,
 ) {
   class Wallet(name: String, priority: Int) : PaymentFlowMethod(name, priority)
   class PayAsAGuest(name: String, priority: Int) : PaymentFlowMethod(name, priority)
   class GamesHub(name: String, priority: Int) : PaymentFlowMethod(name, priority)
-  class WebPayment(name: String, priority: Int, version: String?) :
-      PaymentFlowMethod(name, priority, version)
+  class WebPayment(name: String, priority: Int, version: String?, paymentFlow: String?) :
+      PaymentFlowMethod(name, priority, version, paymentFlow)
 
   companion object {
     const val DEFAULT_WEB_PAYMENT_URL_VERSION = "v1"
 
     fun getPaymentUrlVersionFromPayflowMethod(
-        payflowMethodsList: MutableList<PaymentFlowMethod>
+      payflowMethodsList: MutableList<PaymentFlowMethod>
     ): String? =
       payflowMethodsList.firstOrNull { it is WebPayment }?.version
+
+    fun getPaymentFlowFromPayflowMethod(
+      payflowMethodsList: MutableList<PaymentFlowMethod>
+    ): String? =
+      payflowMethodsList.firstOrNull { it is WebPayment }?.paymentFlow
   }
 }

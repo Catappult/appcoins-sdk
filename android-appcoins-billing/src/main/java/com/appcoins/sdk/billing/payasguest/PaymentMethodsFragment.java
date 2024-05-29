@@ -1,8 +1,18 @@
 package com.appcoins.sdk.billing.payasguest;
 
+import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_pay_with_wallet_reward_no_connection_body;
+import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_pay_with_wallet_reward_title;
+import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_purchase_support_1;
+import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_purchase_support_2_link;
+import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.install_button;
+import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.next_button;
+import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.purchase_error_item_owned;
+import static com.appcoins.sdk.billing.payasguest.IabActivity.CREDIT_CARD;
+import static com.appcoins.sdk.billing.payasguest.IabActivity.INSTALL_WALLET;
+import static com.appcoins.sdk.billing.payasguest.IabActivity.PAYPAL;
+
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -19,21 +29,19 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.TextView;
+
 import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.sdk.billing.BuyItemProperties;
-import com.appcoins.sdk.billing.SharedPreferencesRepository;
 import com.appcoins.sdk.billing.WalletInteract;
 import com.appcoins.sdk.billing.analytics.AnalyticsManagerProvider;
 import com.appcoins.sdk.billing.analytics.BillingAnalytics;
 import com.appcoins.sdk.billing.analytics.WalletAddressProvider;
 import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager;
-import com.appcoins.sdk.billing.helpers.AppcoinsBillingStubHelper;
 import com.appcoins.sdk.billing.helpers.WalletInstallationIntentBuilder;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.helpers.translations.TranslationsRepository;
 import com.appcoins.sdk.billing.layouts.PaymentMethodsFragmentLayout;
 import com.appcoins.sdk.billing.listeners.PendingPurchaseStream;
-import com.appcoins.sdk.billing.listeners.StartPurchaseAfterBindListener;
 import com.appcoins.sdk.billing.mappers.BillingMapper;
 import com.appcoins.sdk.billing.mappers.GamificationMapper;
 import com.appcoins.sdk.billing.models.billing.SkuDetailsModel;
@@ -42,20 +50,11 @@ import com.appcoins.sdk.billing.models.payasguest.WalletGenerationModel;
 import com.appcoins.sdk.billing.service.BdsService;
 import com.appcoins.sdk.billing.service.wallet.WalletGenerationMapper;
 import com.appcoins.sdk.billing.service.wallet.WalletRepository;
+import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
+import com.appcoins.sdk.billing.sharedpreferences.BonusSharedPreferences;
+
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-
-import static com.appcoins.sdk.billing.helpers.InstallDialogActivity.KEY_BUY_INTENT;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_pay_with_wallet_reward_no_connection_body;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_pay_with_wallet_reward_title;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_purchase_support_1;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_purchase_support_2_link;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.install_button;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.next_button;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.purchase_error_item_owned;
-import static com.appcoins.sdk.billing.payasguest.IabActivity.CREDIT_CARD;
-import static com.appcoins.sdk.billing.payasguest.IabActivity.INSTALL_WALLET;
-import static com.appcoins.sdk.billing.payasguest.IabActivity.PAYPAL;
 
 import kotlin.Pair;
 
@@ -105,8 +104,8 @@ public class PaymentMethodsFragment extends Fragment implements PaymentMethodsVi
         new BdsService(BuildConfig.BACKEND_BASE, BdsService.TIME_OUT_IN_MILLIS);
     BdsService apiService = new BdsService(BuildConfig.HOST_WS, BdsService.TIME_OUT_IN_MILLIS);
 
-    SharedPreferencesRepository sharedPreferencesRepository =
-        new SharedPreferencesRepository(getActivity(), SharedPreferencesRepository.TTL_IN_SECONDS);
+    BonusSharedPreferences bonusSharedPreferences = new BonusSharedPreferences(context);
+    AttributionSharedPreferences attributionSharedPreferences = new AttributionSharedPreferences(context);
     WalletAddressProvider walletAddressProvider =
         WalletAddressProvider.provideWalletAddressProvider();
     WalletRepository walletRepository =
@@ -117,9 +116,9 @@ public class PaymentMethodsFragment extends Fragment implements PaymentMethodsVi
     billingAnalytics = new BillingAnalytics(analyticsManager);
 
     WalletInteract walletInteract =
-        new WalletInteract(sharedPreferencesRepository, walletRepository);
+        new WalletInteract(attributionSharedPreferences, walletRepository);
     GamificationInteract gamificationInteract =
-        new GamificationInteract(sharedPreferencesRepository, new GamificationMapper(),
+        new GamificationInteract(bonusSharedPreferences, new GamificationMapper(),
             backendService);
     PaymentMethodsInteract paymentMethodsInteract =
         new PaymentMethodsInteract(walletInteract, gamificationInteract, paymentMethodsRepository,

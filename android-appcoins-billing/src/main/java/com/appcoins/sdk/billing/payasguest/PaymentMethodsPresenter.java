@@ -1,7 +1,11 @@
 package com.appcoins.sdk.billing.payasguest;
 
+import static com.appcoins.sdk.billing.payasguest.IabActivity.CREDIT_CARD;
+import static com.appcoins.sdk.billing.payasguest.IabActivity.PAYPAL;
+
 import android.content.Intent;
 import android.os.Build;
+
 import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.sdk.billing.BuyItemProperties;
 import com.appcoins.sdk.billing.SkuDetails;
@@ -11,7 +15,6 @@ import com.appcoins.sdk.billing.helpers.WalletInstallationIntentBuilder;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.PurchasesListener;
 import com.appcoins.sdk.billing.listeners.PurchasesModel;
-import com.appcoins.sdk.billing.listeners.SingleSkuDetailsListener;
 import com.appcoins.sdk.billing.listeners.payasguest.PaymentMethodsListener;
 import com.appcoins.sdk.billing.models.GamificationModel;
 import com.appcoins.sdk.billing.models.Transaction;
@@ -23,10 +26,8 @@ import com.appcoins.sdk.billing.models.billing.TransactionModel;
 import com.appcoins.sdk.billing.models.payasguest.PaymentMethod;
 import com.appcoins.sdk.billing.models.payasguest.PaymentMethodsModel;
 import com.appcoins.sdk.billing.models.payasguest.WalletGenerationModel;
-import java.util.List;
 
-import static com.appcoins.sdk.billing.payasguest.IabActivity.CREDIT_CARD;
-import static com.appcoins.sdk.billing.payasguest.IabActivity.PAYPAL;
+import java.util.List;
 
 class PaymentMethodsPresenter {
 

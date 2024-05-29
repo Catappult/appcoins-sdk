@@ -7,10 +7,10 @@ import com.appcoins.billing.AppcoinsBilling;
 import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.communication.SyncIpcMessageRequester;
 import com.appcoins.communication.requester.MessageRequesterFactory;
-import com.appcoins.sdk.billing.SharedPreferencesRepository;
 import com.appcoins.sdk.billing.UriCommunicationAppcoinsBilling;
 import com.appcoins.sdk.billing.WalletBinderUtil;
 import com.appcoins.sdk.billing.service.BdsService;
+import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
 
 import java.io.Serializable;
 
@@ -36,9 +36,8 @@ public final class AppcoinsBillingStubHelper implements Serializable {
             if (WalletBinderUtil.getBindType() == BindType.BILLING_SERVICE_NOT_INSTALLED) {
                 return WebAppcoinsBilling.Companion.getInstance();
             } else {
-                SharedPreferencesRepository sharedPreferencesRepository =
-                        new SharedPreferencesRepository(WalletUtils.getContext(),
-                                SharedPreferencesRepository.TTL_IN_SECONDS);
+                AttributionSharedPreferences attributionSharedPreferences =
+                        new AttributionSharedPreferences(WalletUtils.getContext());
                 AppcoinsBilling appcoinsBilling;
                 if (WalletBinderUtil.getBindType() == BindType.URI_CONNECTION) {
                     SyncIpcMessageRequester messageRequester =
@@ -51,7 +50,7 @@ public final class AppcoinsBillingStubHelper implements Serializable {
                     appcoinsBilling = AppcoinsBilling.Stub.asInterface(service);
                 }
                 return new AppcoinsBillingWrapper(appcoinsBilling,
-                        AppCoinsPendingIntentCaller.getInstance(), sharedPreferencesRepository.getWalletId(),
+                        AppCoinsPendingIntentCaller.getInstance(), attributionSharedPreferences.getWalletId(),
                         BdsService.TIME_OUT_IN_MILLIS);
             }
         }

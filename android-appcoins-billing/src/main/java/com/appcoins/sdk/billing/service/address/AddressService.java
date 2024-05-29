@@ -3,6 +3,7 @@ package com.appcoins.sdk.billing.service.address;
 import android.content.Context;
 import com.appcoins.sdk.billing.models.AddressModel;
 import com.appcoins.sdk.billing.payasguest.AdyenPaymentInteract.AddressListener;
+import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
 
 public class AddressService {
 
@@ -30,7 +31,7 @@ public class AddressService {
           new AddressModel(walletAddressService.getDefaultStoreAddress(), true));
     } else {
       String installerPackageName = getInstallerPackageName(packageName);
-      String oemId = oemIdExtractorService.extractOemId(packageName);
+      String oemId = getOemId(packageName);
       walletAddressService.getStoreAddressForPackage(installerPackageName, deviceManufacturer,
           deviceInfo, oemId, addressListener);
     }
@@ -42,7 +43,7 @@ public class AddressService {
           new AddressModel(walletAddressService.getDefaultOemAddress(), true));
     } else {
       String installerPackageName = getInstallerPackageName(packageName);
-      String oemId = oemIdExtractorService.extractOemId(packageName);
+      String oemId = getOemId(packageName);
       walletAddressService.getOemAddressForPackage(installerPackageName, deviceManufacturer,
           deviceInfo, oemId, addressListener);
     }
@@ -59,5 +60,14 @@ public class AddressService {
   private String getInstallerPackageName(String packageName) {
     return context.getPackageManager()
         .getInstallerPackageName(packageName);
+  }
+
+  private String getOemId(String packageName){
+      AttributionSharedPreferences attributionSharedPreferences = new AttributionSharedPreferences(context);
+      String oemId = attributionSharedPreferences.getOemId();
+      if (oemId != null && !oemId.isEmpty()) {
+          return oemId;
+      }
+      return oemIdExtractorService.extractOemId(packageName);
   }
 }

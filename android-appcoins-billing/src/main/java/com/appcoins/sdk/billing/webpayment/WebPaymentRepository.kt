@@ -15,26 +15,29 @@ class WebPaymentRepository(private val bdsService: BdsService) {
         packageName: String,
         locale: String?,
         oemId: String?,
-        guestWalletId: String?,
+        walletId: String?,
         billingFlowParams: BillingFlowParams?,
     ): String? {
         val countDownLatch = CountDownLatch(1)
         var webPaymentUrl: String? = null
 
+        val paymentFlow =
+            PaymentFlowMethod.getPaymentFlowFromPayflowMethod(WalletUtils.getPayflowMethodsList())
+
         val queries: MutableMap<String, String> = LinkedHashMap()
         queries["package"] = packageName
         locale?.let { queries["locale"] = it }
         oemId?.let { queries["oemid"] = it }
-        guestWalletId?.let { queries["guest_id"] = it }
+        walletId?.let { queries["guest_id"] = it }
         billingFlowParams?.apply {
             sku?.let { queries["sku"] = it }
             developerPayload?.let { queries["metadata"] = it }
             orderReference?.let { queries["order_id"] = it }
         }
+        paymentFlow?.let { queries["payment_flow"] = it }
 
         val paymentUrlVersion =
-            PaymentFlowMethod
-                .getPaymentUrlVersionFromPayflowMethod(WalletUtils.getPayflowMethodsList())
+            PaymentFlowMethod.getPaymentUrlVersionFromPayflowMethod(WalletUtils.getPayflowMethodsList())
 
         val serviceResponseListener =
             ServiceResponseListener { requestResponse ->

@@ -11,14 +11,15 @@ import com.appcoins.sdk.billing.BillingFlowParams
 import com.appcoins.sdk.billing.BuyItemProperties
 import com.appcoins.sdk.billing.DeveloperPayload
 import com.appcoins.sdk.billing.ResponseCode
-import com.appcoins.sdk.billing.SharedPreferencesRepository
 import com.appcoins.sdk.billing.SkuDetails
 import com.appcoins.sdk.billing.SkuDetailsResult
 import com.appcoins.sdk.billing.WSServiceController
 import com.appcoins.sdk.billing.payasguest.BillingRepository
+import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.getPaymentFlowFromPayflowMethod
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.PayAsAGuest
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.WebPayment
 import com.appcoins.sdk.billing.service.BdsService
+import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
 import com.appcoins.sdk.billing.webpayment.WebPaymentManager
 import java.io.Serializable
 import java.util.concurrent.CountDownLatch
@@ -242,7 +243,8 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
                 val response =
                     WSServiceController.getSkuDetailsService(
                         BuildConfig.HOST_WS, packageName, skuSendList,
-                        WalletUtils.getUserAgent()
+                        WalletUtils.getUserAgent(),
+                        getPaymentFlowFromPayflowMethod(WalletUtils.getPayflowMethodsList())
                     )
                 skuDetailsList.addAll(AndroidBillingMapper.mapSkuDetailsFromWS(type, response))
                 skuSendList.clear()
@@ -259,7 +261,8 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         val response =
             WSServiceController.getSkuDetailsService(
                 BuildConfig.HOST_WS, packageName, sku,
-                WalletUtils.getUserAgent()
+                WalletUtils.getUserAgent(),
+                getPaymentFlowFromPayflowMethod(WalletUtils.getPayflowMethodsList())
             )
         return AndroidBillingMapper.mapSingleSkuDetails(type, response)
     }
@@ -280,12 +283,9 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
 
     private val walletId: String?
         get() {
-            val sharedPreferencesRepository =
-                SharedPreferencesRepository(
-                    WalletUtils.getContext(),
-                    SharedPreferencesRepository.TTL_IN_SECONDS
-                )
-            return sharedPreferencesRepository.walletId
+            val attributionSharedPreferences =
+                AttributionSharedPreferences(WalletUtils.getContext())
+            return attributionSharedPreferences.getWalletId()
         }
 
     private fun isTypeSupported(type: String, apiVersion: Int): Boolean =

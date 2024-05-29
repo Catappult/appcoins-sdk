@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.IBinder
+import com.appcoins.sdk.billing.managers.AttributionManager
 import com.appcoins.sdk.billing.payflow.PayflowManager
 import com.appcoins.sdk.billing.receivers.AppInstallationReceiver
 
@@ -13,6 +14,7 @@ class BillingLifecycleService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        AttributionManager.getAttributionForUser()
         PayflowManager.getPayflowPriorityAsync()
         registerAppInstallationReceiver()
     }

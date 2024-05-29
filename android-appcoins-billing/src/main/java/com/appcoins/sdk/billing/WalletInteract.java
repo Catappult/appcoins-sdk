@@ -1,27 +1,29 @@
 package com.appcoins.sdk.billing;
 
 import com.appcoins.sdk.billing.service.wallet.WalletRepository;
+import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
+
 import java.util.Random;
 
 public class WalletInteract {
 
   private static int ID_LENGTH = 40;
   private WalletRepository walletRepository;
-  private SharedPreferencesRepository sharedPreferencesRepository;
+  private AttributionSharedPreferences attributionSharedPreferences;
 
-  public WalletInteract(SharedPreferencesRepository sharedPreferencesRepository,
+  public WalletInteract(AttributionSharedPreferences attributionSharedPreferences,
       WalletRepository walletRepository) {
-    this.sharedPreferencesRepository = sharedPreferencesRepository;
+    this.attributionSharedPreferences = attributionSharedPreferences;
     this.walletRepository = walletRepository;
   }
 
   public String retrieveWalletId() {
-    String savedId = sharedPreferencesRepository.getWalletId();
+    String savedId = attributionSharedPreferences.getWalletId();
     if (savedId != null) {
       return savedId;
     } else {
       String generatedId = generateId();
-      sharedPreferencesRepository.setWalletId(generatedId);
+      attributionSharedPreferences.setWalletId(generatedId);
       return generatedId;
     }
   }
