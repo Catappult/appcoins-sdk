@@ -24,7 +24,7 @@ class PayflowResponseMapper {
               "wallet" -> PaymentFlowMethod.Wallet(methodName, priority)
               "pay_as_a_guest" -> PaymentFlowMethod.PayAsAGuest(methodName, priority)
               "games_hub_checkout" -> PaymentFlowMethod.GamesHub(methodName, priority)
-              "payment_via_web" -> {
+              "web_payment" -> {
                   val version = paymentMethodsObject.optJSONObject(methodName)
                       ?.optString("version") ?: DEFAULT_WEB_PAYMENT_URL_VERSION
                   PaymentFlowMethod.WebPayment(methodName, priority, version)
