@@ -37,7 +37,8 @@ class AppInstallationReceiver : BroadcastReceiver() {
         val BILLING_APPS_PACKAGES: List<String> =
             listOf(
                 BuildConfig.APPCOINS_WALLET_PACKAGE_NAME,
-                BuildConfig.GAMESHUB_PACKAGE_NAME
+                BuildConfig.GAMESHUB_PACKAGE_NAME,
+                BuildConfig.GAMESHUB_PACKAGE_NAME_ALTERNATIVE,
             )
     }
 }
