@@ -43,6 +43,5 @@
       </intent-filter>
     </activity>
     <service android:name="com.appcoins.sdk.billing.service.WebPaymentWebSocketService"/>
-    <service android:name="com.appcoins.sdk.billing.service.BillingLifecycleService" />
   </application>
 </manifest>
