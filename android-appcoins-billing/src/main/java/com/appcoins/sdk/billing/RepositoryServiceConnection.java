@@ -55,8 +55,7 @@ public class RepositoryServiceConnection implements ServiceConnection, Repositor
         this.listener = listener;
         WalletUtils.startIndicative(context.getPackageName());
 
-        BillingLifecycleManager.stopBillingLifecycleService(context);
-        BillingLifecycleManager.initializeBillingLifecycleService(context);
+        BillingLifecycleManager.setupBillingService(context);
 
         initializeObservableForPayflowPriorityChanges();
     }
@@ -67,7 +66,7 @@ public class RepositoryServiceConnection implements ServiceConnection, Repositor
 
     @Override
     public void endConnection() {
-        BillingLifecycleManager.stopBillingLifecycleService(context);
+        BillingLifecycleManager.finishBillingService(context);
         PayflowPriorityStream.getInstance().stopCollecting();
         WalletBinderUtil.finishBillingRepository(context, this);
     }

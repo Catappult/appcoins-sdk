@@ -105,16 +105,19 @@ public class WalletUtils {
     return createIntentBundle(intent);
   }
 
-    public static Bundle startWebFirstPayment() {
-        if (isMainThread()) {
-            return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
-        }
-        int port = WebPaymentSocketManager.getInstance().startService(context);
-        String paymentUrl = generatePaymentUrlWithPort(port);
-
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl));
-        return createWebIntentBundle(intent);
+  public static Bundle startWebFirstPayment() {
+    if (isMainThread()) {
+      return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
     }
+    if (WalletUtils.getWebPaymentUrl() == null) {
+      return createBundleWithResponseCode(ResponseCode.ERROR.getValue());
+    }
+    int port = WebPaymentSocketManager.getInstance().startService(context);
+    String paymentUrl = generatePaymentUrlWithPort(port);
+
+    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl));
+    return createWebIntentBundle(intent);
+  }
 
   public static Bundle startInstallFlow(BuyItemProperties buyItemProperties) {
     if (!WalletUtils.deviceSupportsWallet(Build.VERSION.SDK_INT)) {
