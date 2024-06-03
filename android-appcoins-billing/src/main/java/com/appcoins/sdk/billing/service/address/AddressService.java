@@ -3,7 +3,7 @@ package com.appcoins.sdk.billing.service.address;
 import android.content.Context;
 import com.appcoins.sdk.billing.models.AddressModel;
 import com.appcoins.sdk.billing.payasguest.AdyenPaymentInteract.AddressListener;
-import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
+import com.appcoins.sdk.billing.usecases.GetOemIdForPackage;
 
 public class AddressService {
 
@@ -63,8 +63,7 @@ public class AddressService {
   }
 
   private String getOemId(String packageName){
-      AttributionSharedPreferences attributionSharedPreferences = new AttributionSharedPreferences(context);
-      String oemId = attributionSharedPreferences.getOemId();
+      String oemId = GetOemIdForPackage.Companion.invoke(packageName, context);
       if (oemId != null && !oemId.isEmpty()) {
           return oemId;
       }

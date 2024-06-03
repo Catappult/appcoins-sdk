@@ -5,14 +5,12 @@ import com.appcoins.sdk.billing.WalletInteract
 import com.appcoins.sdk.billing.analytics.WalletAddressProvider
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.mappers.AttributionResponse
-import com.appcoins.sdk.billing.payasguest.oemid.OemIdExtractorV1
-import com.appcoins.sdk.billing.payasguest.oemid.OemIdExtractorV2
 import com.appcoins.sdk.billing.repositories.AttributionRepository
 import com.appcoins.sdk.billing.service.BdsService
-import com.appcoins.sdk.billing.service.address.OemIdExtractorService
 import com.appcoins.sdk.billing.service.wallet.WalletGenerationMapper
 import com.appcoins.sdk.billing.service.wallet.WalletRepository
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
+import com.appcoins.sdk.billing.usecases.GetOemIdForPackage
 
 object AttributionManager {
 
@@ -25,7 +23,7 @@ object AttributionManager {
     }
 
     fun getAttributionForUser() {
-        val oemid = getOemIdForPackage(packageName)
+        val oemid = GetOemIdForPackage.invoke(packageName, WalletUtils.context)
         val guestWalletId = getWalletId()
 
         val attributionResponse =
@@ -37,12 +35,6 @@ object AttributionManager {
         attributionResponse?.oemId?.let { attributionSharedPreferences.setOemId(it) }
         attributionResponse?.walletId?.let { attributionSharedPreferences.setWalletId(it) }
     }
-
-    private fun getOemIdForPackage(packageName: String?): String? =
-        attributionSharedPreferences.getOemId() ?: OemIdExtractorService(
-            OemIdExtractorV1(WalletUtils.context),
-            OemIdExtractorV2(WalletUtils.context)
-        ).extractOemId(packageName)
 
     private fun getWalletId(): String? {
         val backendService =

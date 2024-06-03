@@ -21,7 +21,8 @@ class GetQueriesListForPayflowPriority {
                 GetAppInstalledVersion.invoke(BuildConfig.APTOIDE_PACKAGE_NAME, WalletUtils.context)
 
             val attributionSharedPreferences = AttributionSharedPreferences(WalletUtils.context)
-            val oemId = attributionSharedPreferences.getOemId()
+            val oemId =
+                GetOemIdForPackage.invoke(WalletUtils.context.packageName, WalletUtils.context)
             val walletId = attributionSharedPreferences.getWalletId()
 
             val queries: MutableMap<String, String> = LinkedHashMap()
