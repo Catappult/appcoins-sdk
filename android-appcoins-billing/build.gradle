@@ -74,6 +74,7 @@ android {
           "\"" + project.ROPSTEN_NETWORK_BACKEND_BASE_HOST + "\""
       buildConfigField 'String', 'BDS_BASE_HOST', project.BDS_BASE_HOST_DEV
       buildConfigField 'String', 'PAYFLOW_HOST', project.PAYFLOW_NETWORK_BASE_HOST_DEV
+      buildConfigField 'String', 'MMP_BASE_HOST', project.MMP_BASE_HOST_DEV
 
       buildConfigField 'String', 'WALLET_APP_BROWSER_URL', project.WALLET_APP_BROWSER_URL
 
@@ -119,6 +120,7 @@ android {
           "\"" + project.MAIN_NETWORK_BACKEND_BASE_HOST + "\""
       buildConfigField 'String', 'BDS_BASE_HOST', project.BDS_BASE_HOST_PROD
       buildConfigField 'String', 'PAYFLOW_HOST', project.PAYFLOW_NETWORK_BASE_HOST
+      buildConfigField 'String', 'MMP_BASE_HOST', project.MMP_BASE_HOST_PROD
 
       buildConfigField 'String', 'WALLET_APP_BROWSER_URL', project.WALLET_APP_BROWSER_URL
 

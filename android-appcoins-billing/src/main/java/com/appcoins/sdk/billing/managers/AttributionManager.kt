@@ -16,7 +16,7 @@ object AttributionManager {
 
     private val packageName by lazy { WalletUtils.context.packageName }
     private val attributionRepository by lazy {
-        AttributionRepository(BdsService(BuildConfig.BACKEND_BASE, 30000))
+        AttributionRepository(BdsService(BuildConfig.MMP_BASE_HOST, 30000))
     }
     private val attributionSharedPreferences by lazy {
         AttributionSharedPreferences(WalletUtils.context)
