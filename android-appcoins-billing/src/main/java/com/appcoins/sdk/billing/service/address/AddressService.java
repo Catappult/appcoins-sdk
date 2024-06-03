@@ -10,19 +10,16 @@ public class AddressService {
   private final WalletAddressService walletAddressService;
   private final String deviceInfo;
   private final String deviceManufacturer;
-  private final OemIdExtractorService oemIdExtractorService;
   private Context context;
   private DeveloperAddressService developerAddressService;
 
   public AddressService(Context context, WalletAddressService walletAddressService,
-      DeveloperAddressService developerAddressService, String deviceInfo, String deviceManufacturer,
-      OemIdExtractorService oemIdExtractorService) {
+      DeveloperAddressService developerAddressService, String deviceInfo, String deviceManufacturer) {
     this.context = context;
     this.walletAddressService = walletAddressService;
     this.developerAddressService = developerAddressService;
     this.deviceInfo = deviceInfo;
     this.deviceManufacturer = deviceManufacturer;
-    this.oemIdExtractorService = oemIdExtractorService;
   }
 
   public void getStoreAddressForPackage(String packageName, AddressListener addressListener) {
@@ -31,7 +28,7 @@ public class AddressService {
           new AddressModel(walletAddressService.getDefaultStoreAddress(), true));
     } else {
       String installerPackageName = getInstallerPackageName(packageName);
-      String oemId = getOemId(packageName);
+      String oemId = GetOemIdForPackage.Companion.invoke(packageName, context);;
       walletAddressService.getStoreAddressForPackage(installerPackageName, deviceManufacturer,
           deviceInfo, oemId, addressListener);
     }
@@ -43,7 +40,7 @@ public class AddressService {
           new AddressModel(walletAddressService.getDefaultOemAddress(), true));
     } else {
       String installerPackageName = getInstallerPackageName(packageName);
-      String oemId = getOemId(packageName);
+      String oemId = GetOemIdForPackage.Companion.invoke(packageName, context);;
       walletAddressService.getOemAddressForPackage(installerPackageName, deviceManufacturer,
           deviceInfo, oemId, addressListener);
     }
@@ -60,13 +57,5 @@ public class AddressService {
   private String getInstallerPackageName(String packageName) {
     return context.getPackageManager()
         .getInstallerPackageName(packageName);
-  }
-
-  private String getOemId(String packageName){
-      String oemId = GetOemIdForPackage.Companion.invoke(packageName, context);
-      if (oemId != null && !oemId.isEmpty()) {
-          return oemId;
-      }
-      return oemIdExtractorService.extractOemId(packageName);
   }
 }
