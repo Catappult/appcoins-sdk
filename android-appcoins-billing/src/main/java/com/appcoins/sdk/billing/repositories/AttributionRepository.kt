@@ -19,9 +19,9 @@ class AttributionRepository(private val bdsService: BdsService) {
         var attributionResponse: AttributionResponse? = null
 
         val queries: MutableMap<String, String> = LinkedHashMap()
-        queries["package"] = packageName
+        queries["package_name"] = packageName
         oemId?.let { queries["oemid"] = it }
-        guestWalletId?.let { queries["guest_id"] = it }
+        guestWalletId?.let { queries["guest_uid"] = it }
 
         val serviceResponseListener =
             ServiceResponseListener { requestResponse ->
