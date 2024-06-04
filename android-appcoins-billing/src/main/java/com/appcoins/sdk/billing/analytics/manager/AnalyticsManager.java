@@ -105,7 +105,7 @@ public class AnalyticsManager implements Serializable {
   /**
    * <p>Possible actions, that were performed by the user, to log</p>
    */
-  public enum Action {CLICK, SCROLL, INPUT, AUTO, ROOT, VIEW, INSTALL, OPEN, IMPRESSION, PULL_REFRESH, DISMISS, ENDLESS_SCROLL}
+  public enum Action {CLICK, SCROLL, INPUT, AUTO, ROOT, VIEW, INSTALL, OPEN, IMPRESSION, PULL_REFRESH, DISMISS, ENDLESS_SCROLL, FAILURE}
 
   /**
    * <p>Builds an AnalyticsManager with a list of EventLoggers, an HttpKnockEventLogger

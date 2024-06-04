@@ -32,8 +32,11 @@ object AttributionManager {
     }
 
     private fun saveAttributionResult(attributionResponse: AttributionResponse?) {
-        attributionResponse?.oemId?.let { attributionSharedPreferences.setOemId(it) }
-        attributionResponse?.walletId?.let { attributionSharedPreferences.setWalletId(it) }
+        if (attributionResponse?.packageName == packageName) {
+            attributionResponse?.oemId?.let { attributionSharedPreferences.setOemId(it) }
+            attributionResponse?.walletId?.let { attributionSharedPreferences.setWalletId(it) }
+                ?: WalletUtils.getSdkAnalytics().sendBackendGuestUidGenerationFailedEvent()
+        }
     }
 
     private fun getWalletId(): String? {

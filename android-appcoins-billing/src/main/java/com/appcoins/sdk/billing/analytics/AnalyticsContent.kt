@@ -46,5 +46,10 @@ object SdkBackendPayflowEvents {
   const val SDK_CALL_BINDSERVICE_FAIL = "sdk_call_bindservice_fail"
 }
 
+object SdkAnalyticsFailureEvents {
+  const val SDK_WEB_PAYMENT_URL_GENERATION_FAILED = "sdk_web_payment_url_generation_failed"
+  const val SDK_BACKEND_GUEST_UID_GENERATION_FAILED = "sdk_backend_guest_uid_generation_failed"
+}
+
 object PayAsAGuestEvents {
 }

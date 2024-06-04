@@ -110,6 +110,7 @@ public class WalletUtils {
       return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
     }
     if (WalletUtils.getWebPaymentUrl() == null) {
+      sdkAnalytics.sendWebPaymentUrlNotGeneratedEvent();
       return createBundleWithResponseCode(ResponseCode.ERROR.getValue());
     }
     int port = WebPaymentSocketManager.getInstance().startService(context);

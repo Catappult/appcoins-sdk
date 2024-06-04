@@ -15,9 +15,10 @@ class AttributionResponseMapper {
 
         runCatching {
             val responseJSONObject = JSONObject(response.response)
-            val oemId = responseJSONObject.optString("oemId")
-            val guestId = responseJSONObject.optString("guestId")
-            return AttributionResponse(response.responseCode, oemId, guestId)
+            val packageName = responseJSONObject.optString("package_name")
+            val oemId = responseJSONObject.optString("oemid")
+            val guestId = responseJSONObject.optString("guest_uid")
+            return AttributionResponse(response.responseCode, packageName, oemId, guestId)
         }.getOrElse {
             it.printStackTrace()
             return AttributionResponse(response.responseCode)
@@ -27,6 +28,7 @@ class AttributionResponseMapper {
 
 data class AttributionResponse(
     val responseCode: Int?,
+    val packageName: String? = null,
     val oemId: String? = null,
     val walletId: String? = null
 )
