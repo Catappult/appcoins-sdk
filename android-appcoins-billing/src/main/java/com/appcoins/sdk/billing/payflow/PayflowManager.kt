@@ -17,8 +17,8 @@ object PayflowManager {
             override fun onResponse(payflowMethodResponse: PayflowMethodResponse) {
                 payflowMethodResponse.responseCode?.let { responseCode ->
                     if (ServiceUtils.isSuccess(responseCode)) {
-                        val sortedMethods =
-                            payflowMethodResponse.paymentFlowList?.sortedBy { it.priority }
+                        val sortedMethods = payflowMethodResponse.paymentFlowList
+                        sortedMethods?.sortBy { it.priority }
                         PayflowPriorityStream.getInstance().emit(sortedMethods)
                     } else {
                         PayflowPriorityStream.getInstance().emit(null)

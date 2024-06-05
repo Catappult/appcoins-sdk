@@ -146,8 +146,7 @@ dependencies {
 
   api 'com.indicative.client.android:Indicative-Android:1.1.0'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  implementation 'org.java-websocket:Java-WebSocket:1.5.3'
-
+  api 'org.java-websocket:Java-WebSocket:1.5.3'
 
   api project(':appcoins-billing')
   api project(':appcoins-adyen')

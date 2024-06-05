@@ -28,9 +28,8 @@ class AppInstallationReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun notifyBillingAppChanged() {
-        PayflowManager.getPayflowPriorityAsync()
-    }
+    private fun notifyBillingAppChanged() =
+        Thread { PayflowManager.getPayflowPriorityAsync() }.start()
 
     private companion object {
         const val TAG = "PackageChangeReceiver"

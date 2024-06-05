@@ -5,17 +5,19 @@ import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class PayflowPriorityStream {
 
     private static PayflowPriorityStream instance;
 
-    @Nullable
-    private List<PaymentFlowMethod> value = null;
+    private boolean isFirstValue = true;
 
     @Nullable
-    private Consumer<List<PaymentFlowMethod>> collector = null;
+    private ArrayList<PaymentFlowMethod> value = null;
+
+    @Nullable
+    private Consumer<ArrayList<PaymentFlowMethod>> collector = null;
 
     private PayflowPriorityStream() {
     }
@@ -27,16 +29,27 @@ public class PayflowPriorityStream {
         return instance;
     }
 
-    public List<PaymentFlowMethod> value() {
+    public ArrayList<PaymentFlowMethod> value() {
         return value;
     }
 
-    public void emit(@Nullable List<PaymentFlowMethod> value) {
-        WalletUtils.setPayflowMethodsList(value);
-        notifyCollectors(value);
+    public void emit(@Nullable ArrayList<PaymentFlowMethod> value) {
+        if (valueHasChanged(value) || isFirstValue) {
+            WalletUtils.setPayflowMethodsList(value);
+            notifyCollectors(value);
+        }
     }
 
-    public void collect(Consumer<List<PaymentFlowMethod>> collector) {
+    private boolean valueHasChanged(@Nullable ArrayList<PaymentFlowMethod> newValue) {
+        if (value != null) {
+            return value.equals(newValue);
+        } else {
+            return newValue != null;
+        }
+    }
+
+    public void collect(Consumer<ArrayList<PaymentFlowMethod>> collector) {
+        prepareStream();
         this.collector = collector;
     }
 
@@ -44,7 +57,11 @@ public class PayflowPriorityStream {
         this.collector = null;
     }
 
-    private void notifyCollectors(@Nullable List<PaymentFlowMethod> value) {
+    private void prepareStream() {
+        isFirstValue = true;
+    }
+
+    private void notifyCollectors(@Nullable ArrayList<PaymentFlowMethod> value) {
         this.value = value;
         if (collector != null) {
             collector.accept(value);

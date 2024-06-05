@@ -14,9 +14,9 @@ import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.util.ArrayList;
 
-public class RepositoryServiceConnection implements ServiceConnection, RepositoryConnection, PayflowPriorityStream.Consumer<List<PaymentFlowMethod>> {
+public class RepositoryServiceConnection implements ServiceConnection, RepositoryConnection, PayflowPriorityStream.Consumer<ArrayList<PaymentFlowMethod>> {
     private static final String TAG = RepositoryServiceConnection.class.getSimpleName();
     private final Context context;
     private final ConnectionLifeCycle connectionLifeCycle;
@@ -72,7 +72,7 @@ public class RepositoryServiceConnection implements ServiceConnection, Repositor
     }
 
     @Override
-    public void accept(@Nullable List<PaymentFlowMethod> paymentFlowMethods) {
+    public void accept(@Nullable ArrayList<PaymentFlowMethod> paymentFlowMethods) {
         Log.i(TAG, "accept: received new payflowMethodResponse" + paymentFlowMethods);
         WalletBinderUtil.finishBillingRepository(context, this);
         WalletBinderUtil.initializeBillingRepository(context, this, paymentFlowMethods);

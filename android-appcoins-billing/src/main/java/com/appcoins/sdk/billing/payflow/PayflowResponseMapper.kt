@@ -5,6 +5,7 @@ import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.DEFAULT_WEB_
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import org.json.JSONObject
+import java.util.ArrayList
 
 class PayflowResponseMapper {
   fun map(response: RequestResponse): PayflowMethodResponse {
@@ -12,7 +13,7 @@ class PayflowResponseMapper {
       .sendCallBackendPayflowEvent(response.responseCode, response.response)
 
     if (!isSuccess(response.responseCode) || response.response == null) {
-      return PayflowMethodResponse(response.responseCode, emptyList())
+      return PayflowMethodResponse(response.responseCode, arrayListOf())
     }
 
     val paymentFlowList = runCatching {
@@ -33,11 +34,11 @@ class PayflowResponseMapper {
               }
               else -> null
             }
-          }.toList()
-        } ?: emptyList()
+          }.toCollection(arrayListOf())
+        } ?: arrayListOf()
     }.getOrElse {
       it.printStackTrace()
-      emptyList()
+      arrayListOf()
     }
     return PayflowMethodResponse(response.responseCode, paymentFlowList)
   }
@@ -45,7 +46,7 @@ class PayflowResponseMapper {
 
 data class PayflowMethodResponse(
   val responseCode: Int?,
-  val paymentFlowList: List<PaymentFlowMethod>?
+  val paymentFlowList: ArrayList<PaymentFlowMethod>?
 )
 
 sealed class PaymentFlowMethod(
@@ -59,6 +60,19 @@ sealed class PaymentFlowMethod(
   class GamesHub(name: String, priority: Int) : PaymentFlowMethod(name, priority)
   class WebPayment(name: String, priority: Int, version: String?, paymentFlow: String?) :
       PaymentFlowMethod(name, priority, version, paymentFlow)
+
+    override fun equals(other: Any?): Boolean {
+        if (other != null) {
+            if (other::class.java == this::class.java) {
+                other as PaymentFlowMethod
+                return other.paymentFlow == paymentFlow
+                        && other.name == name
+                        && other.priority == priority
+                        && other.version == version
+            }
+        }
+        return false
+    }
 
   companion object {
     const val DEFAULT_WEB_PAYMENT_URL_VERSION = "v1"
