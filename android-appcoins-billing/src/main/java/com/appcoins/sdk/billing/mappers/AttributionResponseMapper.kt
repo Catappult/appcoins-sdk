@@ -6,6 +6,7 @@ import org.json.JSONObject
 
 class AttributionResponseMapper {
     fun map(response: RequestResponse): AttributionResponse {
+        // TODO Add event for Attribution request
         /*WalletUtils.getSdkAnalytics()
             .sendCallBackendPayflowEvent(response.responseCode, response.response)*/
 
