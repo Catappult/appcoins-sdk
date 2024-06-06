@@ -1,13 +1,14 @@
 package com.appcoins.sdk.billing.mappers
 
+import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import org.json.JSONObject
 
 class AttributionResponseMapper {
     fun map(response: RequestResponse): AttributionResponse {
-        /*WalletUtils.getSdkAnalytics()
-            .sendCallBackendPayflowEvent(response.responseCode, response.response)*/
+        WalletUtils.getSdkAnalytics()
+            .sendCallBackendAttributionEvent(response.responseCode, response.response)
 
         if (!isSuccess(response.responseCode) || response.response == null) {
             return AttributionResponse(response.responseCode)
