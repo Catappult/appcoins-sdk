@@ -20,7 +20,6 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.sdk.billing.BuyItemProperties;
-import com.appcoins.sdk.billing.SharedPreferencesRepository;
 import com.appcoins.sdk.billing.WalletInteract;
 import com.appcoins.sdk.billing.analytics.AnalyticsManagerProvider;
 import com.appcoins.sdk.billing.analytics.BillingAnalytics;
@@ -40,6 +39,9 @@ import com.appcoins.sdk.billing.models.payasguest.WalletGenerationModel;
 import com.appcoins.sdk.billing.service.BdsService;
 import com.appcoins.sdk.billing.service.wallet.WalletGenerationMapper;
 import com.appcoins.sdk.billing.service.wallet.WalletRepository;
+import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
+import com.appcoins.sdk.billing.sharedpreferences.BonusSharedPreferences;
+
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
@@ -100,8 +102,8 @@ public class PaymentMethodsFragment extends Fragment implements PaymentMethodsVi
         new BdsService(BuildConfig.BACKEND_BASE, BdsService.TIME_OUT_IN_MILLIS);
     BdsService apiService = new BdsService(BuildConfig.HOST_WS, BdsService.TIME_OUT_IN_MILLIS);
 
-    SharedPreferencesRepository sharedPreferencesRepository =
-        new SharedPreferencesRepository(getActivity(), SharedPreferencesRepository.TTL_IN_SECONDS);
+    BonusSharedPreferences bonusSharedPreferences = new BonusSharedPreferences(context);
+    AttributionSharedPreferences attributionSharedPreferences = new AttributionSharedPreferences(context);
     WalletAddressProvider walletAddressProvider =
         WalletAddressProvider.provideWalletAddressProvider();
     WalletRepository walletRepository =
@@ -112,9 +114,9 @@ public class PaymentMethodsFragment extends Fragment implements PaymentMethodsVi
     billingAnalytics = new BillingAnalytics(analyticsManager);
 
     WalletInteract walletInteract =
-        new WalletInteract(sharedPreferencesRepository, walletRepository);
+        new WalletInteract(attributionSharedPreferences, walletRepository);
     GamificationInteract gamificationInteract =
-        new GamificationInteract(sharedPreferencesRepository, new GamificationMapper(),
+        new GamificationInteract(bonusSharedPreferences, new GamificationMapper(),
             backendService);
     PaymentMethodsInteract paymentMethodsInteract =
         new PaymentMethodsInteract(walletInteract, gamificationInteract, paymentMethodsRepository,

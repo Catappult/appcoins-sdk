@@ -5,10 +5,10 @@ import com.appcoins.sdk.billing.BillingFlowParams
 import com.appcoins.sdk.billing.helpers.UserCountryUtils.getUserCountry
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.helpers.WalletUtils.getAppInstalledVersion
-import com.appcoins.sdk.billing.helpers.WalletUtils.getGuestWalletId
-import com.appcoins.sdk.billing.helpers.WalletUtils.getOemIdForPackage
 import com.appcoins.sdk.billing.helpers.WalletUtils.setPayflowMethodsList
 import com.appcoins.sdk.billing.service.BdsService
+import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
+import com.appcoins.sdk.billing.usecases.GetOemIdForPackage
 import com.appcoins.sdk.billing.utils.ServiceUtils
 
 class PayflowManager(val packageName: String) {
@@ -19,8 +19,11 @@ class PayflowManager(val packageName: String) {
     val walletVersionCode = getAppInstalledVersion(BuildConfig.APPCOINS_WALLET_PACKAGE_NAME)
     val gamesHubVersionCode = handleGamesHubPackage()
     val vanillaVersionCode = getAppInstalledVersion(BuildConfig.APTOIDE_PACKAGE_NAME)
-    val oemid = getOemIdForPackage(packageName)
-    val guestWalletId = getGuestWalletId()
+
+    val attributionSharedPreferences = AttributionSharedPreferences(WalletUtils.context)
+    val oemId =
+      GetOemIdForPackage.invoke(WalletUtils.context.packageName, WalletUtils.context)
+    val walletId = attributionSharedPreferences.getWalletId()
 
     val paymentFlowMethodList =
       payflowRepository.getPayflowPriority(
@@ -31,8 +34,8 @@ class PayflowManager(val packageName: String) {
         if (gamesHubVersionCode == -1) null else gamesHubVersionCode,
         if (vanillaVersionCode == -1) null else vanillaVersionCode,
         getUserCountry(WalletUtils.context),
-        oemid,
-        guestWalletId,
+        oemId,
+        walletId,
         billingFlowParams
       )
     setPayflowMethodsList(paymentFlowMethodList)
@@ -56,8 +59,11 @@ class PayflowManager(val packageName: String) {
     val walletVersionCode = getAppInstalledVersion(BuildConfig.APPCOINS_WALLET_PACKAGE_NAME)
     val gamesHubVersionCode = handleGamesHubPackage()
     val vanillaVersionCode = getAppInstalledVersion(BuildConfig.APTOIDE_PACKAGE_NAME)
-    val oemid = getOemIdForPackage(packageName)
-    val guestWalletId = getGuestWalletId()
+
+    val attributionSharedPreferences = AttributionSharedPreferences(WalletUtils.context)
+    val oemId =
+      GetOemIdForPackage.invoke(WalletUtils.context.packageName, WalletUtils.context)
+    val walletId = attributionSharedPreferences.getWalletId()
 
     payflowRepository.getPayflowPriorityAsync(
       payflowListener,
@@ -68,8 +74,8 @@ class PayflowManager(val packageName: String) {
       if (gamesHubVersionCode == -1) null else gamesHubVersionCode,
       if (vanillaVersionCode == -1) null else vanillaVersionCode,
       getUserCountry(WalletUtils.context),
-      oemid,
-      guestWalletId,
+      oemId,
+      walletId,
       billingFlowParams
     )
   }

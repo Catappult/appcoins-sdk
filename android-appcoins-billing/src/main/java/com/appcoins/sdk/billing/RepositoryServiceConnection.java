@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.util.Log;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
+import com.appcoins.sdk.billing.managers.AttributionManager;
 import com.appcoins.sdk.billing.payflow.PayflowManager;
 
 public class RepositoryServiceConnection implements ServiceConnection, RepositoryConnection {
@@ -45,6 +46,7 @@ public class RepositoryServiceConnection implements ServiceConnection, Repositor
     this.listener = listener;
     WalletUtils.startIndicative(context.getPackageName());
 
+    AttributionManager.INSTANCE.getAttributionForUser();
     new PayflowManager(context.getPackageName()).getPayflowPriorityAsync(null);
     hasBillingServiceInstalled = WalletUtils.hasBillingServiceInstalled();
 

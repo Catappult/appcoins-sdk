@@ -148,6 +148,28 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
       EVENT_CONTEXT
     )
   }
+
+  fun sendWebPaymentUrlNotGeneratedEvent() {
+    val eventData: MutableMap<String, Any> = HashMap()
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkAnalyticsFailureEvents.SDK_WEB_PAYMENT_URL_GENERATION_FAILED,
+      AnalyticsManager.Action.FAILURE,
+      EVENT_CONTEXT
+    )
+  }
+
+  fun sendBackendGuestUidGenerationFailedEvent() {
+    val eventData: MutableMap<String, Any> = HashMap()
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkAnalyticsFailureEvents.SDK_BACKEND_GUEST_UID_GENERATION_FAILED,
+      AnalyticsManager.Action.FAILURE,
+      EVENT_CONTEXT
+    )
+  }
 }
 
 class PayAsAGuestAnalytics(private val analyticsManager: AnalyticsManager) {

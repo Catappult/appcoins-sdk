@@ -32,14 +32,10 @@ import com.appcoins.sdk.billing.listeners.payasguest.ActivityResultListener;
 import com.appcoins.sdk.billing.mappers.TransactionMapper;
 import com.appcoins.sdk.billing.models.billing.AdyenPaymentInfo;
 import com.appcoins.sdk.billing.models.payasguest.StoredMethodDetails;
-import com.appcoins.sdk.billing.payasguest.oemid.OemIdExtractor;
-import com.appcoins.sdk.billing.payasguest.oemid.OemIdExtractorV1;
-import com.appcoins.sdk.billing.payasguest.oemid.OemIdExtractorV2;
 import com.appcoins.sdk.billing.service.BdsService;
 import com.appcoins.sdk.billing.service.Service;
 import com.appcoins.sdk.billing.service.address.AddressService;
 import com.appcoins.sdk.billing.service.address.DeveloperAddressService;
-import com.appcoins.sdk.billing.service.address.OemIdExtractorService;
 import com.appcoins.sdk.billing.service.address.WalletAddressService;
 import com.appcoins.sdk.billing.service.adyen.AdyenListenerProvider;
 import com.appcoins.sdk.billing.service.adyen.AdyenMapper;
@@ -138,13 +134,11 @@ public class AdyenPaymentFragment extends Fragment implements AdyenPaymentView {
         new AdyenListenerProvider(new AdyenMapper(new TransactionMapper(new EnumMapper()))));
     Service apiService = new BdsService(BuildConfig.HOST_WS, BdsService.TIME_OUT_IN_MILLIS);
     Service ws75Service = new BdsService(BuildConfig.BDS_BASE_HOST, BdsService.TIME_OUT_IN_MILLIS);
-    OemIdExtractor extractorV1 = new OemIdExtractorV1(getActivity().getApplicationContext());
-    OemIdExtractor extractorV2 = new OemIdExtractorV2(getActivity().getApplicationContext());
 
     AddressService addressService = new AddressService(getActivity().getApplicationContext(),
         new WalletAddressService(apiService, BuildConfig.DEFAULT_STORE_ADDRESS,
             BuildConfig.DEFAULT_OEM_ADDRESS), new DeveloperAddressService(ws75Service),
-        Build.MANUFACTURER, Build.MODEL, new OemIdExtractorService(extractorV1, extractorV2));
+        Build.MANUFACTURER, Build.MODEL);
     BillingRepository billingRepository = new BillingRepository(apiService);
 
     BillingAnalytics billingAnalytics =
