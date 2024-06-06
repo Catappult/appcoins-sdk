@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
@@ -46,7 +47,8 @@ public class RepositoryServiceConnection implements ServiceConnection, Repositor
     this.listener = listener;
     WalletUtils.startIndicative(context.getPackageName());
 
-    AttributionManager.INSTANCE.getAttributionForUser();
+    requestAttributionForUser();
+
     new PayflowManager(context.getPackageName()).getPayflowPriorityAsync(null);
     hasBillingServiceInstalled = WalletUtils.hasBillingServiceInstalled();
 
@@ -55,6 +57,15 @@ public class RepositoryServiceConnection implements ServiceConnection, Repositor
     Intent serviceIntent = new Intent(iabAction);
     serviceIntent.setPackage(packageName);
     WalletBinderUtil.bindService(context, serviceIntent, this, Context.BIND_AUTO_CREATE);
+  }
+
+  private void requestAttributionForUser() {
+    Runnable attributionRunnable = () -> {
+      Looper.prepare();
+      AttributionManager.INSTANCE.getAttributionForUser();
+      Looper.loop();
+    };
+    new Thread(attributionRunnable).start();
   }
 
   @Override public void endConnection() {
