@@ -45,12 +45,25 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
 
   fun sendCallBackendPayflowEvent(responseCode: Int?, responseMessage: String?) {
     val eventData: MutableMap<String, Any> = HashMap()
-    eventData[AnalyticsLabels.PAYFLOW_RESPONSE_CODE] = responseCode?.toString() ?: ""
-    eventData[AnalyticsLabels.PAYFLOW_RESPONSE_MESSAGE] = responseMessage ?: ""
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
 
     analyticsManager.logEvent(
       eventData,
       SdkBackendPayflowEvents.SDK_CALL_BACKEND_PAYFLOW,
+      AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
+  fun sendCallBackendAttributionEvent(responseCode: Int?, responseMessage: String?) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkBackendPayflowEvents.SDK_CALL_BACKEND_ATTRIBUTION,
       AnalyticsManager.Action.IMPRESSION,
       EVENT_CONTEXT
     )
@@ -149,24 +162,20 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
     )
   }
 
-  fun sendWebPaymentUrlNotGeneratedEvent() {
+  fun sendWebPaymentUrlNotGeneratedEvent() =
+    sendUnexpectedFailureEvent(SdkAnalyticsFailureLabels.SDK_WEB_PAYMENT_URL_GENERATION_FAILED)
+
+  fun sendBackendGuestUidGenerationFailedEvent() =
+    sendUnexpectedFailureEvent(SdkAnalyticsFailureLabels.SDK_BACKEND_GUEST_UID_GENERATION_FAILED)
+
+  private fun sendUnexpectedFailureEvent(failureType: String) {
     val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.FAILURE_TYPE] = failureType
 
     analyticsManager.logEvent(
       eventData,
-      SdkAnalyticsFailureEvents.SDK_WEB_PAYMENT_URL_GENERATION_FAILED,
-      AnalyticsManager.Action.FAILURE,
-      EVENT_CONTEXT
-    )
-  }
-
-  fun sendBackendGuestUidGenerationFailedEvent() {
-    val eventData: MutableMap<String, Any> = HashMap()
-
-    analyticsManager.logEvent(
-      eventData,
-      SdkAnalyticsFailureEvents.SDK_BACKEND_GUEST_UID_GENERATION_FAILED,
-      AnalyticsManager.Action.FAILURE,
+      SdkAnalyticsEvents.SDK_UNEXPECTED_FAILURE,
+      AnalyticsManager.Action.ERROR,
       EVENT_CONTEXT
     )
   }
