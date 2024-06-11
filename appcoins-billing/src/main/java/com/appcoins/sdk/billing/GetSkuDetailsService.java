@@ -71,9 +71,10 @@ public class GetSkuDetailsService {
     for (String skuName : sku) {
       url += skuName + ",";
     }
+    url = url.substring(0, url.length() - 1);
     if (paymentFlow!=null && !paymentFlow.isEmpty()){
       url += "&discount_policy=" + paymentFlow;
     }
-    return url.substring(0, url.length() - 1);
+    return url;
   }
 }
