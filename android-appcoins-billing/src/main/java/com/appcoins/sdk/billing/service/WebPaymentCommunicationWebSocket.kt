@@ -54,7 +54,7 @@ class WebPaymentCommunicationWebSocket(port: Int) : WebSocketServer(InetSocketAd
     }
 
     fun start(context: Context?) {
-        this.context = context
+        this.context = context?.applicationContext
         if (!isStarted) {
             connectionLostTimeout = 0
             super.start()

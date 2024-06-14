@@ -19,7 +19,6 @@ import com.appcoins.sdk.billing.BillingFlowParams;
 import com.appcoins.sdk.billing.BuyItemProperties;
 import com.appcoins.sdk.billing.DeveloperPayload;
 import com.appcoins.sdk.billing.ResponseCode;
-import com.appcoins.sdk.billing.SharedPreferencesRepository;
 import com.appcoins.sdk.billing.SkuDetails;
 import com.appcoins.sdk.billing.SkuDetailsResult;
 import com.appcoins.sdk.billing.UriCommunicationAppcoinsBilling;
@@ -30,6 +29,7 @@ import com.appcoins.sdk.billing.payasguest.BillingRepository;
 import com.appcoins.sdk.billing.payflow.PayflowManager;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 import com.appcoins.sdk.billing.service.BdsService;
+import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
 import com.indicative.client.android.Indicative;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -329,10 +329,9 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
   }
 
   private String getWalletId() {
-    SharedPreferencesRepository sharedPreferencesRepository =
-        new SharedPreferencesRepository(WalletUtils.getContext(),
-            SharedPreferencesRepository.TTL_IN_SECONDS);
-    return sharedPreferencesRepository.getWalletId();
+    AttributionSharedPreferences attributionSharedPreferences =
+        new AttributionSharedPreferences(WalletUtils.getContext());
+    return attributionSharedPreferences.getWalletId();
   }
 
   private boolean isTypeSupported(String type, int apiVersion) {
@@ -350,9 +349,8 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
       if (WalletBinderUtil.getBindType() == BindType.BILLING_SERVICE_NOT_INSTALLED) {
         return AppcoinsBillingStubHelper.getInstance();
       } else {
-        SharedPreferencesRepository sharedPreferencesRepository =
-            new SharedPreferencesRepository(WalletUtils.getContext(),
-                SharedPreferencesRepository.TTL_IN_SECONDS);
+        AttributionSharedPreferences attributionSharedPreferences =
+            new AttributionSharedPreferences(WalletUtils.getContext());
         AppcoinsBilling appcoinsBilling;
         if (WalletBinderUtil.getBindType() == BindType.URI_CONNECTION) {
             SyncIpcMessageRequester messageRequester =
@@ -365,7 +363,7 @@ public final class AppcoinsBillingStubHelper implements AppcoinsBilling, Seriali
           appcoinsBilling = AppcoinsBilling.Stub.asInterface(service);
         }
         return new AppcoinsBillingWrapper(appcoinsBilling,
-            AppCoinsPendingIntentCaller.getInstance(), sharedPreferencesRepository.getWalletId(),
+            AppCoinsPendingIntentCaller.getInstance(), attributionSharedPreferences.getWalletId(),
             BdsService.TIME_OUT_IN_MILLIS);
       }
     }
