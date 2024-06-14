@@ -25,6 +25,7 @@ class PayflowResponseMapper {
               "wallet" -> PaymentFlowMethod.Wallet(methodName, priority)
               "pay_as_a_guest" -> PaymentFlowMethod.PayAsAGuest(methodName, priority)
               "games_hub_checkout" -> PaymentFlowMethod.GamesHub(methodName, priority)
+              "aptoide_games" -> PaymentFlowMethod.AptoideGames(methodName, priority)
               "web_payment" -> {
                 val paymentMethodsJsonObject = paymentMethodsObject.optJSONObject(methodName)
                 val version = paymentMethodsJsonObject
@@ -58,6 +59,7 @@ sealed class PaymentFlowMethod(
   class Wallet(name: String, priority: Int) : PaymentFlowMethod(name, priority)
   class PayAsAGuest(name: String, priority: Int) : PaymentFlowMethod(name, priority)
   class GamesHub(name: String, priority: Int) : PaymentFlowMethod(name, priority)
+  class AptoideGames(name: String, priority: Int) : PaymentFlowMethod(name, priority)
   class WebPayment(name: String, priority: Int, version: String?, paymentFlow: String?) :
       PaymentFlowMethod(name, priority, version, paymentFlow)
 

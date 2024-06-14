@@ -29,7 +29,9 @@ object WalletBinderUtil {
     ) {
         paymentFlowMethods?.forEach { paymentFlowMethod ->
             when (paymentFlowMethod) {
-                is PaymentFlowMethod.Wallet, is PaymentFlowMethod.GamesHub -> {
+                is PaymentFlowMethod.Wallet,
+                is PaymentFlowMethod.GamesHub,
+                is PaymentFlowMethod.AptoideGames -> {
                     val successfullyBound = bindBillingService(context, connection)
                     if (successfullyBound) return
                 }

@@ -57,14 +57,17 @@ public class WalletUtils {
       // temporary workaround for the possibility of the endpoint failing, with two hardcoded options
       // but the logic should be reused instead of this hardcoded solution
       if (paymentFlowMethods == null) {
-        if (Objects.equals(billingPackageName, BuildConfig.APPCOINS_WALLET_PACKAGE_NAME) || Objects.equals(billingPackageName, BuildConfig.GAMESHUB_PACKAGE_NAME)) {
+        if (Objects.equals(billingPackageName, BuildConfig.APPCOINS_WALLET_PACKAGE_NAME)
+                || Objects.equals(billingPackageName, BuildConfig.GAMESHUB_PACKAGE_NAME)
+                || Objects.equals(billingPackageName, BuildConfig.APTOIDE_GAMES_PACKAGE_NAME)) {
           return handleBindServiceAttempt(serviceAppcoinsBilling, packageToMethodName(), 1, apiVersion, sku,
               type, developerPayload);
         }
       } else {
         for (PaymentFlowMethod method : paymentFlowMethods) {
           if (method instanceof PaymentFlowMethod.Wallet
-              || method instanceof PaymentFlowMethod.GamesHub) {
+                  || method instanceof PaymentFlowMethod.GamesHub
+                  || method instanceof PaymentFlowMethod.AptoideGames) {
             Bundle bundle = handleBindServiceAttempt(serviceAppcoinsBilling, method.getName(),
                 method.getPriority(), apiVersion, sku, type, developerPayload);
             if (bundle != null) {
@@ -211,10 +214,14 @@ public class WalletUtils {
             setWalletBillingInfo();
           }
         } else if (method instanceof PaymentFlowMethod.GamesHub) {
-          if (isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION)
-                  || isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE)) {
-            setGamesHubBillingInfo();
-          }
+            if (isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION)
+                    || isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE)) {
+                setGamesHubBillingInfo();
+            }
+        } else if (method instanceof PaymentFlowMethod.AptoideGames) {
+            if (isAppAvailableToBind(BuildConfig.APTOIDE_GAMES_IAB_BIND_ACTION)) {
+                setAptoideGamesBillingInfo();
+            }
         } else {
           clearBillingServiceInfo();
         }
@@ -230,8 +237,11 @@ public class WalletUtils {
       Log.i("TAG", "setDefaultBillingServiceInfoToBind: APPCOINS_WALLET_IAB_BIND_ACTION");
       setWalletBillingInfo();
     } else if (isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION)) {
-      Log.i("TAG", "setDefaultBillingServiceInfoToBind: GAMESHUB_IAB_BIND_ACTION");
-      setGamesHubBillingInfo();
+        Log.i("TAG", "setDefaultBillingServiceInfoToBind: GAMESHUB_IAB_BIND_ACTION");
+        setGamesHubBillingInfo();
+    } else if (isAppAvailableToBind(BuildConfig.APTOIDE_GAMES_IAB_BIND_ACTION)) {
+        Log.i("TAG", "setDefaultBillingServiceInfoToBind: APTOIDE_GAMES_IAB_BIND_ACTION");
+        setAptoideGamesBillingInfo();
     } else {
       Log.i("TAG", "setDefaultBillingServiceInfoToBind: clearBillingServiceInfo");
       clearBillingServiceInfo();
@@ -252,6 +262,11 @@ public class WalletUtils {
         : BuildConfig.GAMESHUB_IAB_BIND_ACTION;
   }
 
+  private static void setAptoideGamesBillingInfo() {
+      billingPackageName = BuildConfig.APTOIDE_GAMES_PACKAGE_NAME;
+      billingIabAction = BuildConfig.APTOIDE_GAMES_IAB_BIND_ACTION;
+  }
+
   private static void clearBillingServiceInfo() {
     billingPackageName = null;
     billingIabAction = null;
@@ -267,11 +282,13 @@ public class WalletUtils {
       return "unknown";
     } else {
       if (billingPackageName.equalsIgnoreCase(BuildConfig.APPCOINS_WALLET_PACKAGE_NAME)) {
-       return "wallet";
+          return "wallet";
       } else if (billingPackageName.equalsIgnoreCase(gamesHub)){
-        return "games_hub_checkout";
+          return "games_hub_checkout";
+      } else if (billingPackageName.equalsIgnoreCase(BuildConfig.APTOIDE_GAMES_PACKAGE_NAME)){
+          return "aptoide_games"; // TODO Add correct method name.
       } else {
-        return "unknown";
+          return "unknown";
       }
     }
   }
