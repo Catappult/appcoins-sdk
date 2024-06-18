@@ -17,7 +17,7 @@ class StoreDeepLinkRepository(private val bdsService: BdsService) {
         var storeDeepLink: String? = null
 
         val queries: MutableMap<String, String> = LinkedHashMap()
-        queries["store"] = appInstallerPackageName
+        queries["store-package"] = appInstallerPackageName
 
         val serviceResponseListener =
             ServiceResponseListener { requestResponse ->
