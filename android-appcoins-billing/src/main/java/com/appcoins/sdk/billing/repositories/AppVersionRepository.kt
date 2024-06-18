@@ -1,11 +1,10 @@
-package com.appcoins.sdk.ingameupdates.repositories
+package com.appcoins.sdk.billing.repositories
 
-import com.appcoins.sdk.ingameupdates.mappers.AppVersionResponseMapper
-import com.appcoins.sdk.ingameupdates.mappers.Version
-import com.appcoins.sdk.ingameupdates.services.BdsService
-import com.appcoins.sdk.ingameupdates.services.RequestResponse
-import com.appcoins.sdk.ingameupdates.services.ServiceResponseListener
-import com.appcoins.sdk.ingameupdates.utils.ServiceUtils
+import com.appcoins.sdk.billing.mappers.AppVersionResponseMapper
+import com.appcoins.sdk.billing.mappers.Version
+import com.appcoins.sdk.billing.service.BdsService
+import com.appcoins.sdk.billing.service.ServiceResponseListener
+import com.appcoins.sdk.billing.utils.ServiceUtils
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -18,18 +17,16 @@ class AppVersionRepository(private val bdsService: BdsService) {
         var appVersions: List<Version>? = null
 
         val serviceResponseListener =
-            object : ServiceResponseListener {
-                override fun onResponseReceived(requestResponse: RequestResponse?) {
-                    requestResponse?.let {
-                        val appVersionResponse = AppVersionResponseMapper().map(requestResponse)
-                        appVersionResponse.responseCode?.let { responseCode ->
-                            if (ServiceUtils.isSuccess(responseCode)) {
-                                appVersions = appVersionResponse.versions
-                            }
+            ServiceResponseListener { requestResponse ->
+                requestResponse?.let {
+                    val appVersionResponse = AppVersionResponseMapper().map(requestResponse)
+                    appVersionResponse.responseCode?.let { responseCode ->
+                        if (ServiceUtils.isSuccess(responseCode)) {
+                            appVersions = appVersionResponse.versions
                         }
                     }
-                    countDownLatch.countDown()
                 }
+                countDownLatch.countDown()
             }
 
         bdsService.makeRequest(

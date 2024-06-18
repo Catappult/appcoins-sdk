@@ -1,10 +1,9 @@
-package com.appcoins.sdk.ingameupdates.repositories
+package com.appcoins.sdk.billing.repositories
 
-import com.appcoins.sdk.ingameupdates.mappers.StoreLinkResponseMapper
-import com.appcoins.sdk.ingameupdates.services.BdsService
-import com.appcoins.sdk.ingameupdates.services.RequestResponse
-import com.appcoins.sdk.ingameupdates.services.ServiceResponseListener
-import com.appcoins.sdk.ingameupdates.utils.ServiceUtils
+import com.appcoins.sdk.billing.mappers.StoreLinkResponseMapper
+import com.appcoins.sdk.billing.service.BdsService
+import com.appcoins.sdk.billing.service.ServiceResponseListener
+import com.appcoins.sdk.billing.utils.ServiceUtils
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -21,18 +20,16 @@ class StoreDeepLinkRepository(private val bdsService: BdsService) {
         queries["store-package"] = appInstallerPackageName
 
         val serviceResponseListener =
-            object : ServiceResponseListener {
-                override fun onResponseReceived(requestResponse: RequestResponse?) {
-                    requestResponse?.let {
-                        val webPaymentUrlResponse = StoreLinkResponseMapper().map(requestResponse)
-                        webPaymentUrlResponse.responseCode?.let { responseCode ->
-                            if (ServiceUtils.isSuccess(responseCode)) {
-                                storeDeepLink = webPaymentUrlResponse.deeplink
-                            }
+            ServiceResponseListener { requestResponse ->
+                requestResponse?.let {
+                    val webPaymentUrlResponse = StoreLinkResponseMapper().map(requestResponse)
+                    webPaymentUrlResponse.responseCode?.let { responseCode ->
+                        if (ServiceUtils.isSuccess(responseCode)) {
+                            storeDeepLink = webPaymentUrlResponse.deeplink
                         }
                     }
-                    countDownLatch.countDown()
                 }
+                countDownLatch.countDown()
             }
 
         bdsService.makeRequest(

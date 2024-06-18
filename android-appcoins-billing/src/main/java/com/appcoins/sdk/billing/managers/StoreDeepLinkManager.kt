@@ -1,14 +1,14 @@
-package com.appcoins.sdk.ingameupdates.managers
+package com.appcoins.sdk.billing.managers
 
 import android.content.Context
-import com.appcoins.sdk.ingameupdates.BuildConfig
-import com.appcoins.sdk.ingameupdates.repositories.StoreDeepLinkRepository
-import com.appcoins.sdk.ingameupdates.services.BdsService
-import com.appcoins.sdk.ingameupdates.usecases.GetInstallerAppPackage
+import com.appcoins.billing.sdk.BuildConfig
+import com.appcoins.sdk.billing.repositories.StoreDeepLinkRepository
+import com.appcoins.sdk.billing.service.BdsService
+import com.appcoins.sdk.billing.usecases.ingameupdates.GetInstallerAppPackage
 
 class StoreDeepLinkManager(private val context: Context) {
     private val storeDeepLinkRepository =
-        StoreDeepLinkRepository(BdsService(context, BuildConfig.STORE_LINK_BASE_HOST, 3000))
+        StoreDeepLinkRepository(BdsService(BuildConfig.STORE_LINK_BASE_HOST, 3000))
 
     fun getStoreDeepLink(): String? {
         val installerAppPackage =

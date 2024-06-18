@@ -1,9 +1,10 @@
-package com.appcoins.sdk.ingameupdates.usecases
+package com.appcoins.sdk.billing.usecases.ingameupdates
 
 import android.content.Context
 import android.os.Build
-import com.appcoins.sdk.ingameupdates.managers.AppVersionManager
-import com.appcoins.sdk.ingameupdates.mappers.Version
+import com.appcoins.sdk.billing.managers.AppVersionManager
+import com.appcoins.sdk.billing.mappers.Version
+import com.appcoins.sdk.billing.usecases.GetAppInstalledVersion
 
 object IsUpdateAvailable {
 

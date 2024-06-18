@@ -1,4 +1,4 @@
-package com.appcoins.sdk.ingameupdates.usecases
+package com.appcoins.sdk.billing.usecases.ingameupdates
 
 import android.content.Context
 import android.content.pm.PackageManager

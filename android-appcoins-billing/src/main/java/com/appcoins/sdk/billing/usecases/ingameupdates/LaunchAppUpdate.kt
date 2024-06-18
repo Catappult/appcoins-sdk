@@ -1,11 +1,11 @@
-package com.appcoins.sdk.ingameupdates.usecases
+package com.appcoins.sdk.billing.usecases.ingameupdates
 
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import com.appcoins.sdk.ingameupdates.BuildConfig
-import com.appcoins.sdk.ingameupdates.managers.StoreDeepLinkManager
+import com.appcoins.billing.sdk.BuildConfig
+import com.appcoins.sdk.billing.managers.StoreDeepLinkManager
 
 object LaunchAppUpdate {
 

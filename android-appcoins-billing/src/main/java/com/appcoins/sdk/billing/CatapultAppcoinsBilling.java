@@ -17,6 +17,8 @@ import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
 import com.appcoins.sdk.billing.listeners.PendingPurchaseStream;
 import com.appcoins.sdk.billing.listeners.SDKWebResponse;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
+import com.appcoins.sdk.billing.usecases.ingameupdates.IsUpdateAvailable;
+import com.appcoins.sdk.billing.usecases.ingameupdates.LaunchAppUpdate;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -135,6 +137,25 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
   @Override public boolean isReady() {
     return billing.isReady();
   }
+
+    @Override
+    public boolean isAppUpdateAvailable() {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            return false;
+        } else {
+            return IsUpdateAvailable.INSTANCE.invoke(WalletUtils.context);
+        }
+    }
+
+    @Override
+    public void launchAppUpdateFlow() {
+        Runnable runnable = () -> {
+            if (isAppUpdateAvailable()) {
+                LaunchAppUpdate.INSTANCE.invoke(WalletUtils.context);
+            }
+        };
+        new Thread(runnable).start();
+    }
 
   @Override public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == REQUEST_CODE) {

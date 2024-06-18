@@ -1,4 +1,4 @@
-package com.appcoins.sdk.ingameupdates.usecases
+package com.appcoins.sdk.billing.usecases.ingameupdates
 
 object GetDefaultMarketDeepLink {
     fun invoke(packageName: String): String =

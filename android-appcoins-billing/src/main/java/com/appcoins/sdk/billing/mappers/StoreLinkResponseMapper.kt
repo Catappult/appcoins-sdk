@@ -1,7 +1,7 @@
-package com.appcoins.sdk.ingameupdates.mappers
+package com.appcoins.sdk.billing.mappers
 
-import com.appcoins.sdk.ingameupdates.services.RequestResponse
-import com.appcoins.sdk.ingameupdates.utils.ServiceUtils.isSuccess
+import com.appcoins.sdk.billing.service.RequestResponse
+import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import org.json.JSONObject
 
 class StoreLinkResponseMapper {
