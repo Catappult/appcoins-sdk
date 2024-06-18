@@ -73,7 +73,6 @@ public class RepositoryServiceConnection implements ServiceConnection, Repositor
 
     @Override
     public void accept(@Nullable ArrayList<PaymentFlowMethod> paymentFlowMethods) {
-        Log.i(TAG, "accept: received new payflowMethodResponse" + paymentFlowMethods);
         WalletBinderUtil.finishBillingRepository(context, this);
         WalletBinderUtil.initializeBillingRepository(context, this, paymentFlowMethods);
     }

@@ -1,6 +1,11 @@
 package com.appcoins.sdk.billing.helpers;
 
-import android.app.PendingIntent;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.GET_SKU_DETAILS_ITEM_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ID_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
+
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -20,13 +25,13 @@ public class AndroidBillingMapper {
   private static final String APPC = "APPC";
 
   public static PurchasesResult mapPurchases(Bundle bundle, String skuType) {
-    int responseCode = bundle.getInt("RESPONSE_CODE");
+    int responseCode = bundle.getInt(RESPONSE_CODE);
     List<Purchase> list = new ArrayList<>();
     ArrayList<String> purchaseDataList =
-        bundle.getStringArrayList(Utils.RESPONSE_INAPP_PURCHASE_DATA_LIST);
+        bundle.getStringArrayList(INAPP_PURCHASE_DATA_LIST);
     ArrayList<String> signatureList =
-        bundle.getStringArrayList(Utils.RESPONSE_INAPP_SIGNATURE_LIST);
-    ArrayList<String> idsList = bundle.getStringArrayList(Utils.RESPONSE_INAPP_PURCHASE_ID_LIST);
+        bundle.getStringArrayList(INAPP_DATA_SIGNATURE_LIST);
+    ArrayList<String> idsList = bundle.getStringArrayList(INAPP_PURCHASE_ID_LIST);
 
     if (purchaseDataList != null && signatureList != null && idsList != null) {
       for (int i = 0; i < purchaseDataList.size(); ++i) {
@@ -87,7 +92,7 @@ public class AndroidBillingMapper {
 
   public static Bundle mapArrayListToBundleSkuDetails(List<String> skus) {
     Bundle bundle = new Bundle();
-    bundle.putStringArrayList(Utils.GET_SKU_DETAILS_ITEM_LIST, (ArrayList<String>) skus);
+    bundle.putStringArrayList(GET_SKU_DETAILS_ITEM_LIST, (ArrayList<String>) skus);
     return bundle;
   }
 
@@ -102,7 +107,7 @@ public class AndroidBillingMapper {
         arrayList.add(skuDetails);
       }
     }
-    int responseCode = (int) bundle.get("RESPONSE_CODE");
+    int responseCode = (int) bundle.get(RESPONSE_CODE);
     SkuDetailsResult skuDetailsResult = new SkuDetailsResult(arrayList, responseCode);
 
     return skuDetailsResult;
@@ -138,7 +143,7 @@ public class AndroidBillingMapper {
 
   public static LaunchBillingFlowResult mapBundleToHashMapGetIntent(Bundle bundle) {
 
-    return new LaunchBillingFlowResult(bundle.getInt("RESPONSE_CODE"),
+    return new LaunchBillingFlowResult(bundle.getInt(RESPONSE_CODE),
         bundle.getParcelable("BUY_INTENT"), bundle.getParcelable("WEB_BUY_INTENT"));
   }
 
