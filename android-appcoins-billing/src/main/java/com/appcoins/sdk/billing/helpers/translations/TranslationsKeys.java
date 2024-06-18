@@ -18,5 +18,7 @@ public enum TranslationsKeys {
   purchase_card_error_general_2, purchase_card_error_no_funds, purchase_card_error_expired,
   purchase_card_error_invalid_details, purchase_card_error_not_supported,
   purchase_card_error_security, purchase_card_error_wrong_CVV, purchase_card_error_CVV,
-  error_contac_us_body
+  error_contac_us_body, igu_app_new_version_available_popup_body,
+  igu_app_new_version_available_popup_update_button,
+  igu_app_new_version_available_popup_close_button
 }

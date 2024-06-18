@@ -1,6 +1,7 @@
 package com.appcoins.sdk.billing;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
@@ -29,5 +30,7 @@ public interface AppcoinsBillingClient {
 
   boolean isAppUpdateAvailable();
 
-  void launchAppUpdateFlow();
+  void launchAppUpdateStore(Context context);
+
+  void launchAppUpdateDialog(Context context);
 }

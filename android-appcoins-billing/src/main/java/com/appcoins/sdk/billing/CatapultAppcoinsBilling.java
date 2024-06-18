@@ -2,6 +2,7 @@ package com.appcoins.sdk.billing;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Looper;
@@ -11,6 +12,7 @@ import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.helpers.AppCoinsPendingIntentCaller;
 import com.appcoins.sdk.billing.helpers.EventLogger;
 import com.appcoins.sdk.billing.helpers.PayloadHelper;
+import com.appcoins.sdk.billing.helpers.UpdateDialogActivity;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
@@ -148,10 +150,23 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
     }
 
     @Override
-    public void launchAppUpdateFlow() {
+    public void launchAppUpdateStore(Context context) {
         Runnable runnable = () -> {
             if (isAppUpdateAvailable()) {
-                LaunchAppUpdate.INSTANCE.invoke(WalletUtils.context);
+                LaunchAppUpdate.INSTANCE.invoke(context);
+            }
+        };
+        new Thread(runnable).start();
+    }
+
+    @Override
+    public void launchAppUpdateDialog(Context context) {
+        Runnable runnable = () -> {
+            if (isAppUpdateAvailable()) {
+                Intent updateDialogActivityIntent =
+                        new Intent(context.getApplicationContext(), UpdateDialogActivity.class);
+                updateDialogActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.getApplicationContext().startActivity(updateDialogActivityIntent);
             }
         };
         new Thread(runnable).start();
