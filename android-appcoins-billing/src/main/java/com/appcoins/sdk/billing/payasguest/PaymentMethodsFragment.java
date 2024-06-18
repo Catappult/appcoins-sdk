@@ -127,7 +127,6 @@ public class PaymentMethodsFragment extends Fragment implements PaymentMethodsVi
         new WalletInstallationIntentBuilder(context.getPackageManager(), context.getPackageName(),
             context.getApplicationContext());
     buyItemProperties = (BuyItemProperties) getArguments().getSerializable(BUY_ITEM_PROPERTIES);
-    Log.i("PaymentMethodsFragment", "after getting arguments: " + buyItemProperties);
 
     paymentMethodsPresenter =
         new PaymentMethodsPresenter(this, paymentMethodsInteract, walletInstallationIntentBuilder,
@@ -470,23 +469,6 @@ public class PaymentMethodsFragment extends Fragment implements PaymentMethodsVi
     this.context = context;
     iabView = (IabView) context;
   }
-
-  /*private void makeTheStoredPurchase() {
-    Bundle intent = appcoinsBillingStubHelper.getBuyIntent(buyItemProperties.getApiVersion(),
-        buyItemProperties.getPackageName(), buyItemProperties.getSku(), buyItemProperties.getType(),
-        buyItemProperties.getDeveloperPayload()
-            .getRawPayload());
-
-    PendingIntent pendingIntent = intent.getParcelable(KEY_BUY_INTENT);
-    layout.getIntentLoadingView()
-        .setVisibility(View.INVISIBLE);
-    if (pendingIntent != null) {
-      iabView.startIntentSenderForResult(pendingIntent.getIntentSender(),
-          IabActivity.LAUNCH_INSTALL_BILLING_FLOW_REQUEST_CODE);
-    } else {
-      iabView.finishWithError();
-    }
-  }*/
 
   private boolean isVisible(View view) {
     return view.getVisibility() == View.VISIBLE;
