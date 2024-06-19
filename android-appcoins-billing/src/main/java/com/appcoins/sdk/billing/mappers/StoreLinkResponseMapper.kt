@@ -1,13 +1,14 @@
 package com.appcoins.sdk.billing.mappers
 
+import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import org.json.JSONObject
 
 class StoreLinkResponseMapper {
     fun map(response: RequestResponse): StoreLinkResponse {
-        /*WalletUtils.getSdkAnalytics()
-            .sendCallBackendWebPaymentUrlEvent(response.responseCode, response.response)*/
+        WalletUtils.getSdkAnalytics()
+            .sendCallBackendStoreLinkEvent(response.responseCode, response.response)
 
         if (!isSuccess(response.responseCode) || response.response == null) {
             return StoreLinkResponse(response.responseCode)

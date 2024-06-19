@@ -11,18 +11,12 @@ class StoreDeepLinkManager(private val context: Context) {
         StoreDeepLinkRepository(BdsService(BuildConfig.STORE_LINK_BASE_HOST, 3000))
 
     fun getStoreDeepLink(): String? {
-        val installerAppPackage =
-            GetInstallerAppPackage.invoke(context)?.let { installerAppPackage ->
-                val storeDeepLink =
-                    storeDeepLinkRepository.getStoreDeepLink(
-                        context.packageName,
-                        installerAppPackage
-                    )
+        val installerAppPackage = GetInstallerAppPackage.invoke(context)
 
-                storeDeepLink
-            }
+        val storeDeepLink =
+            storeDeepLinkRepository.getStoreDeepLink(context.packageName, installerAppPackage)
 
-        return installerAppPackage
+        return storeDeepLink
     }
 
 }

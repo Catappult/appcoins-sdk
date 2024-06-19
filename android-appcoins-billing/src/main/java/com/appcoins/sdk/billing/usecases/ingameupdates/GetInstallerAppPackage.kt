@@ -17,7 +17,6 @@ object GetInstallerAppPackage {
                 } else {
                     getInstallerPackageName(packageName)
                 }
-
             installerPackageName?.takeIf { isAppInstalled(it) }
         } catch (e: Exception) {
             e.printStackTrace()

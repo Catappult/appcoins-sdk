@@ -1,15 +1,15 @@
 package com.appcoins.sdk.billing.mappers
 
+import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import org.json.JSONObject
 
 class AppVersionResponseMapper {
     fun map(response: RequestResponse): AppVersionResponse {
-        /*WalletUtils.getSdkAnalytics()
-            .sendCallBackendWebPaymentUrlEvent(response.responseCode, response.response)*/
-
         if (!isSuccess(response.responseCode) || response.response == null) {
+            WalletUtils.getSdkAnalytics()
+                .sendCallBackendAppVersionEvent(response.responseCode, null)
             return AppVersionResponse(response.responseCode)
         }
 
@@ -41,6 +41,10 @@ class AppVersionResponseMapper {
             it.printStackTrace()
             AppVersionResponse(response.responseCode)
         }
+
+        WalletUtils.getSdkAnalytics()
+            .sendCallBackendAppVersionEvent(response.responseCode, appVersionResponse.toString())
+
         return appVersionResponse
     }
 }

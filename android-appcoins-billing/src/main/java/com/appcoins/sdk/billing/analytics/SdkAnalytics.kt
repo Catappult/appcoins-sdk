@@ -82,6 +82,32 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
     )
   }
 
+  fun sendCallBackendAppVersionEvent(responseCode: Int?, responseMessage: String?) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkBackendPayflowEvents.SDK_CALL_BACKEND_APP_VERSION,
+      AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
+  fun sendCallBackendStoreLinkEvent(responseCode: Int?, responseMessage: String?) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkBackendPayflowEvents.SDK_CALL_BACKEND_STORE_LINK,
+      AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
   fun sendCallBindServiceAttemptEvent(payflowMethod: String, priority: Int) {
     val eventData: MutableMap<String, Any> = HashMap()
     eventData[AnalyticsLabels.BIND_SERVICE_METHOD] = payflowMethod
