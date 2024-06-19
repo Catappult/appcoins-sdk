@@ -37,9 +37,6 @@ import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_close_install;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iap_wallet_and_appstore_not_installed_popup_body;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iap_wallet_and_appstore_not_installed_popup_button;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.igu_app_new_version_available_popup_body;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.igu_app_new_version_available_popup_close_button;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.igu_app_new_version_available_popup_update_button;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.install_button;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.next_button;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.poa_wallet_not_installed_notification_body;
@@ -139,9 +136,6 @@ public class TranslationsModel {
         put(error_contac_us_body, "If the problem persists please contact us.");
         put(iab_purchase_support_1, "Need help?");
         put(iab_purchase_support_2_link, "Contact Support.");
-        put(igu_app_new_version_available_popup_body, "There is new version for this application.\nPlease update to a new version.");
-        put(igu_app_new_version_available_popup_update_button, "UPDATE APP");
-        put(igu_app_new_version_available_popup_close_button, "CLOSE");
       }
     };
   }
