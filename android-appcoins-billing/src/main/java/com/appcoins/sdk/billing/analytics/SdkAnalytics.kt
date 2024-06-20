@@ -188,6 +188,40 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
     )
   }
 
+  fun appUpdateDeeplinkImpression(deeplink: String) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.APP_UPDATE_DEEPLINK] = deeplink
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkUpdateFlowEvents.SDK_APP_UPDATE_DEEPLINK_IMPRESSION,
+      AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
+  fun appUpdateImpression() {
+    val eventData: Map<String, Any> = emptyMap()
+    analyticsManager.logEvent(
+      eventData,
+      SdkUpdateFlowEvents.SDK_APP_UPDATE_IMPRESSION,
+      AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
+  fun appUpdateClick(updateAction: String) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.APP_UPDATE_ACTION] = updateAction
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkUpdateFlowEvents.SDK_APP_UPDATE_CLICK,
+      AnalyticsManager.Action.CLICK,
+      EVENT_CONTEXT
+    )
+  }
+
   fun sendPurchaseStatusEvent(paymentStatus: String, responseMessage: String) {
     val eventData: MutableMap<String, Any> = HashMap()
     eventData[AnalyticsLabels.PAYMENT_STATUS] = paymentStatus

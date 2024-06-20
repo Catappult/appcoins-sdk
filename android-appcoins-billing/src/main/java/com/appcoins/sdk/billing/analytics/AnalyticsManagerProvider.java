@@ -36,6 +36,9 @@ public class AnalyticsManagerProvider {
     list.add(SdkInstallFlowEvents.SDK_INSTALL_WALLET_FEEDBACK);
     list.add(SdkInstallFlowEvents.SDK_DOWNLOAD_WALLET_VANILLA_IMPRESSION);
     list.add(SdkInstallFlowEvents.SDK_DOWNLOAD_WALLET_FALLBACK_IMPRESSION);
+    list.add(SdkUpdateFlowEvents.SDK_APP_UPDATE_DEEPLINK_IMPRESSION);
+    list.add(SdkUpdateFlowEvents.SDK_APP_UPDATE_IMPRESSION);
+    list.add(SdkUpdateFlowEvents.SDK_APP_UPDATE_CLICK);
     list.add(SdkBackendPayflowEvents.SDK_CALL_BACKEND_PAYFLOW);
     list.add(SdkBackendPayflowEvents.SDK_CALL_BACKEND_ATTRIBUTION);
     list.add(SdkBackendPayflowEvents.SDK_CALL_BACKEND_APP_VERSION);
