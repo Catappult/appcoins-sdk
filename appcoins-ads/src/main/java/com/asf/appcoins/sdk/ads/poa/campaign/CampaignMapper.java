@@ -1,6 +1,7 @@
 package com.asf.appcoins.sdk.ads.poa.campaign;
 
-import android.content.Intent;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
+
 import android.os.Bundle;
 import android.util.Log;
 import com.asf.appcoins.sdk.ads.network.responses.AppCoinsClientResponse;
@@ -61,7 +62,7 @@ public class CampaignMapper {
   public static Campaign mapCampaignFromBundle(Bundle response) {
 
     try {
-      int responseCode = response.getInt("RESPONSE_CODE");
+      int responseCode = response.getInt(RESPONSE_CODE);
       if (responseCode == ResponseCode.OK.getValue()) {
         return new Campaign(new BigInteger(response.getString("CAMPAIGN_ID")), "");
       }

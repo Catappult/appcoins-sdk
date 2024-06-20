@@ -1,6 +1,7 @@
 package com.appcoins.sdk.billing.helpers;
 
 import static com.appcoins.sdk.billing.helpers.DeviceInformationHelperKt.getDeviceInfo;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -12,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -138,7 +138,7 @@ public class WalletUtils {
   private static Bundle createWebIntentBundle(Intent intent) {
     Bundle bundle = new Bundle();
     bundle.putParcelable("WEB_BUY_INTENT", intent);
-    bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.OK.getValue());
+    bundle.putInt(RESPONSE_CODE, ResponseCode.OK.getValue());
     return bundle;
   }
 
@@ -148,7 +148,7 @@ public class WalletUtils {
 
     Bundle bundle = new Bundle();
     bundle.putParcelable("BUY_INTENT", pendingIntent);
-    bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.OK.getValue());
+    bundle.putInt(RESPONSE_CODE, ResponseCode.OK.getValue());
     return bundle;
   }
 
@@ -168,7 +168,7 @@ public class WalletUtils {
 
   private static Bundle createBundleWithResponseCode(int responseCode) {
     Bundle bundle = new Bundle();
-    bundle.putInt(Utils.RESPONSE_CODE, responseCode);
+    bundle.putInt(RESPONSE_CODE, responseCode);
     return bundle;
   }
 
@@ -234,17 +234,13 @@ public class WalletUtils {
 
   private static void setDefaultBillingServiceInfoToBind() {
     if (isAppAvailableToBind(BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION)) {
-      Log.i("TAG", "setDefaultBillingServiceInfoToBind: APPCOINS_WALLET_IAB_BIND_ACTION");
-      setWalletBillingInfo();
+        setWalletBillingInfo();
     } else if (isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION)) {
-        Log.i("TAG", "setDefaultBillingServiceInfoToBind: GAMESHUB_IAB_BIND_ACTION");
         setGamesHubBillingInfo();
     } else if (isAppAvailableToBind(BuildConfig.APTOIDE_GAMES_IAB_BIND_ACTION)) {
-        Log.i("TAG", "setDefaultBillingServiceInfoToBind: APTOIDE_GAMES_IAB_BIND_ACTION");
         setAptoideGamesBillingInfo();
     } else {
-      Log.i("TAG", "setDefaultBillingServiceInfoToBind: clearBillingServiceInfo");
-      clearBillingServiceInfo();
+        clearBillingServiceInfo();
     }
   }
 

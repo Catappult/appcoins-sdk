@@ -20,6 +20,11 @@ import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.PayAsAGuest
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.WebPayment
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.GET_SKU_DETAILS_ITEM_LIST
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE_LIST
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ITEM_LIST
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
 import com.appcoins.sdk.billing.webpayment.WebPaymentManager
 import java.io.Serializable
 import java.util.concurrent.CountDownLatch
@@ -57,7 +62,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
                 latch.await()
             } catch (e: InterruptedException) {
                 e.printStackTrace()
-                responseWs.putInt(Utils.RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.value)
+                responseWs.putInt(RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.value)
             }
         } else {
             getSkuDetailsFromService(packageName, type, skusBundle, responseWs)
@@ -199,7 +204,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
 
     private fun buildEmptyBundle(): Bundle {
         val bundleResponse = Bundle()
-        bundleResponse.putInt(Utils.RESPONSE_CODE, ResponseCode.OK.value)
+        bundleResponse.putInt(RESPONSE_CODE, ResponseCode.OK.value)
         bundleResponse.putStringArrayList(INAPP_PURCHASE_ITEM_LIST, ArrayList())
         bundleResponse.putStringArrayList(INAPP_PURCHASE_DATA_LIST, ArrayList())
         bundleResponse.putStringArrayList(INAPP_DATA_SIGNATURE_LIST, ArrayList())
@@ -212,10 +217,10 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         skusBundle: Bundle,
         responseWs: Bundle
     ) {
-        val sku = skusBundle.getStringArrayList(Utils.GET_SKU_DETAILS_ITEM_LIST)
+        val sku = skusBundle.getStringArrayList(GET_SKU_DETAILS_ITEM_LIST)
         val skuDetailsList = requestSkuDetails(sku, packageName, type)
         val skuDetailsResult = SkuDetailsResult(skuDetailsList, 0)
-        responseWs.putInt(Utils.RESPONSE_CODE, 0)
+        responseWs.putInt(RESPONSE_CODE, 0)
         val skuDetails = buildResponse(skuDetailsResult)
         responseWs.putStringArrayList("DETAILS_LIST", skuDetails)
     }
@@ -225,7 +230,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         type: String,
         skusBundle: Bundle
     ): SkuDetails {
-        val sku = skusBundle.getStringArrayList(Utils.GET_SKU_DETAILS_ITEM_LIST)
+        val sku = skusBundle.getStringArrayList(GET_SKU_DETAILS_ITEM_LIST)
         return requestSingleSkuDetails(sku, packageName, type)
     }
 
@@ -293,10 +298,6 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
 
     companion object {
         private val TAG = WebAppcoinsBilling::class.java.simpleName
-
-        private const val INAPP_PURCHASE_ITEM_LIST = "INAPP_PURCHASE_ITEM_LIST"
-        private const val INAPP_PURCHASE_DATA_LIST = "INAPP_PURCHASE_DATA_LIST"
-        private const val INAPP_DATA_SIGNATURE_LIST = "INAPP_DATA_SIGNATURE_LIST"
 
         private const val SUPPORTED_API_VERSION = 3
         private const val MAX_SKUS_SEND_WS = 49 // 0 to 49

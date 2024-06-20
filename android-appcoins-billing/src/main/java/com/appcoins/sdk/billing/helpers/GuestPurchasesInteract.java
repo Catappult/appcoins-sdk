@@ -4,6 +4,7 @@ import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ID_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ITEM_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
 
 import android.os.Bundle;
 import com.appcoins.billing.sdk.BuildConfig;
@@ -68,7 +69,7 @@ class GuestPurchasesInteract {
       skuList.add(skuPurchase.getProduct()
           .getName());
     }
-    bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.OK.getValue());
+    bundle.putInt(RESPONSE_CODE, ResponseCode.OK.getValue());
     bundle.putStringArrayList(INAPP_PURCHASE_ID_LIST, idsList);
     bundle.putStringArrayList(INAPP_PURCHASE_ITEM_LIST, skuList);
     bundle.putStringArrayList(INAPP_PURCHASE_DATA_LIST, dataList);
