@@ -1,12 +1,11 @@
 package com.appcoins.sdk.billing.helpers;
 
 import static com.appcoins.sdk.billing.helpers.DeviceInformationHelperKt.getDeviceInfo;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
 
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
@@ -30,6 +29,8 @@ import com.appcoins.sdk.billing.payasguest.IabActivity;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 import com.indicative.client.android.Indicative;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -43,21 +44,10 @@ public class WalletUtils {
   private static Long payAsGuestSessionId;
   private static LifecycleActivityProvider lifecycleActivityProvider;
   private static List<PaymentFlowMethod> paymentFlowMethods;
+  private static String webPaymentUrl;
   private static SdkAnalytics sdkAnalytics;
 
   public static boolean hasBillingServiceInstalled() {
-    if (billingPackageName == null) {
-      setBillingServiceInfoToBind();
-    }
-    return billingPackageName != null;
-  }
-  // Workaround for a quick fix, to be used in the installation flow since we know the wallet is
-  // installed and there is not the need to check the backend.
-  // As a longer term solution, the installation flow should wait for the response
-  public static boolean hasWalletInstalled() {
-    if (billingPackageName == null && isAppAvailableToBind(BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION)) {
-      setWalletBillingInfo();
-    }
     return billingPackageName != null;
   }
 
@@ -115,16 +105,16 @@ public class WalletUtils {
     return createIntentBundle(intent);
   }
 
-  public static Bundle startWebFirstPayment(PaymentFlowMethod method) {
+  public static Bundle startWebFirstPayment() {
     if (isMainThread()) {
       return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
     }
-    if (method.getPaymentUrl() == null) {
+    if (WalletUtils.getWebPaymentUrl() == null) {
       sdkAnalytics.sendWebPaymentUrlNotGeneratedEvent();
       return createBundleWithResponseCode(ResponseCode.ERROR.getValue());
     }
     int port = WebPaymentSocketManager.getInstance().startService(context);
-    String paymentUrl = generatePaymentUrlWithPort(method, port);
+    String paymentUrl = generatePaymentUrlWithPort(port);
 
     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl));
     return createWebIntentBundle(intent);
@@ -138,14 +128,14 @@ public class WalletUtils {
     return createIntentBundle(intent);
   }
 
-  private static String generatePaymentUrlWithPort(PaymentFlowMethod method, int port) {
-    return method.getPaymentUrl() + "&wsPort=" + port;
+  private static String generatePaymentUrlWithPort(int port) {
+    return WalletUtils.getWebPaymentUrl() + "&wsPort=" + port;
   }
 
   private static Bundle createWebIntentBundle(Intent intent) {
     Bundle bundle = new Bundle();
     bundle.putParcelable("WEB_BUY_INTENT", intent);
-    bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.OK.getValue());
+    bundle.putInt(RESPONSE_CODE, ResponseCode.OK.getValue());
     return bundle;
   }
 
@@ -155,7 +145,7 @@ public class WalletUtils {
 
     Bundle bundle = new Bundle();
     bundle.putParcelable("BUY_INTENT", pendingIntent);
-    bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.OK.getValue());
+    bundle.putInt(RESPONSE_CODE, ResponseCode.OK.getValue());
     return bundle;
   }
 
@@ -175,14 +165,13 @@ public class WalletUtils {
 
   private static Bundle createBundleWithResponseCode(int responseCode) {
     Bundle bundle = new Bundle();
-    bundle.putInt(Utils.RESPONSE_CODE, responseCode);
+    bundle.putInt(RESPONSE_CODE, responseCode);
     return bundle;
   }
 
-  public static void setPayflowMethodsList(List<PaymentFlowMethod> paymentFlowMethodsList) {
-    if (paymentFlowMethodsList != null) {
-      paymentFlowMethods = paymentFlowMethodsList;
-    }
+  public static void setPayflowMethodsList(@Nullable List<PaymentFlowMethod> paymentFlowMethodsList) {
+    paymentFlowMethods = paymentFlowMethodsList;
+    setBillingServiceInfoToBind();
   }
 
   public static List<PaymentFlowMethod> getPayflowMethodsList() {
@@ -193,21 +182,24 @@ public class WalletUtils {
     }
   }
 
+  public static void setWebPaymentUrl(String webPaymentUrlToSet) {
+    webPaymentUrl = webPaymentUrlToSet;
+  }
+
+  public static String getWebPaymentUrl() {
+    return webPaymentUrl;
+  }
+
   public static String getBillingServicePackageName() {
-    if (billingPackageName == null) {
-      setBillingServiceInfoToBind();
-    }
     return billingPackageName;
   }
 
   public static String getBillingServiceIabAction() {
-    if (billingIabAction == null) {
-      setBillingServiceInfoToBind();
-    }
     return billingIabAction;
   }
 
   public static void setBillingServiceInfoToBind() {
+    clearBillingServiceInfo();
     if (paymentFlowMethods == null) {
       setDefaultBillingServiceInfoToBind();
     } else if (paymentFlowMethods.isEmpty()) {
@@ -215,9 +207,14 @@ public class WalletUtils {
     } else {
       for (PaymentFlowMethod method : paymentFlowMethods) {
         if (method instanceof PaymentFlowMethod.Wallet) {
-          setWalletBillingInfo();
+          if (isAppAvailableToBind(BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION)) {
+            setWalletBillingInfo();
+          }
         } else if (method instanceof PaymentFlowMethod.GamesHub) {
-          setGamesHubBillingInfo();
+          if (isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION)
+                  || isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE)) {
+            setGamesHubBillingInfo();
+          }
         } else {
           clearBillingServiceInfo();
         }
@@ -281,23 +278,6 @@ public class WalletUtils {
     List<ResolveInfo> resolveInfoList = context.getPackageManager()
         .queryIntentServices(intent, 0);
     return !resolveInfoList.isEmpty();
-  }
-
-  public static int getAppInstalledVersion(String packageName) {
-    try {
-      PackageInfo packageInfo = context.getPackageManager()
-          .getPackageInfo(packageName, 0);
-      //VersionCode is deprecated for api 28
-      if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        return (int) packageInfo.getLongVersionCode();
-      } else {
-        //noinspection deprecation
-        return packageInfo.versionCode;
-      }
-    } catch (PackageManager.NameNotFoundException e) {
-      e.printStackTrace();
-      return -1;
-    }
   }
 
   public static void initIap(Context context) {

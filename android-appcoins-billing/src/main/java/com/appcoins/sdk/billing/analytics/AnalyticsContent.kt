@@ -44,6 +44,7 @@ object SdkInstallFlowEvents {
 
 object SdkBackendPayflowEvents {
   const val SDK_CALL_BACKEND_PAYFLOW = "sdk_call_backend_payflow_response"
+  const val SDK_CALL_BACKEND_WEB_PAYMENT_URL = "sdk_call_backend_web_payment_url"
   const val SDK_CALL_BACKEND_ATTRIBUTION = "sdk_call_backend_attribution_response"
   const val SDK_CALL_BINDSERVICE_ATTEMPT = "sdk_call_bindservice_attempt"
   const val SDK_CALL_BINDSERVICE_FAIL = "sdk_call_bindservice_fail"

@@ -16,20 +16,22 @@ public class GetSkuDetailsService {
   private String packageName;
   private List<String> sku;
   private String userAgent;
+  private String paymentFlow;
 
   public GetSkuDetailsService(final String serviceUrl, final String packageName,
-      final List<String> sku, String userAgent) {
+      final List<String> sku, String userAgent, String paymentFlow) {
     this.serviceUrl = serviceUrl;
     this.packageName = packageName;
     this.sku = sku;
     this.userAgent = userAgent;
+    this.paymentFlow = paymentFlow;
   }
 
   public String getSkuDetailsForPackageName() {
     String response = "";
     URL url;
     try {
-      String urlBuilt = buildURL(packageName, sku);
+      String urlBuilt = buildURL(packageName, sku, paymentFlow);
       url = new URL(urlBuilt);
 
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -64,11 +66,15 @@ public class GetSkuDetailsService {
     return response;
   }
 
-  private String buildURL(String packageName, List<String> sku) {
+  private String buildURL(String packageName, List<String> sku, String paymentFlow) {
     String url = serviceUrl + URL_PATH.replaceFirst("packageName", packageName);
     for (String skuName : sku) {
       url += skuName + ",";
     }
-    return url.substring(0, url.length() - 1);
+    url = url.substring(0, url.length() - 1);
+    if (paymentFlow!=null && !paymentFlow.isEmpty()){
+      url += "&discount_policy=" + paymentFlow;
+    }
+    return url;
   }
 }
