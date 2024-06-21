@@ -50,6 +50,8 @@ android {
           project.GAMESHUB_PACKAGE_NAME_STG
       buildConfigField 'String', 'GAMESHUB_PACKAGE_NAME_ALTERNATIVE',
           project.GAMESHUB_PACKAGE_NAME_DEV
+      buildConfigField 'String', 'APTOIDE_GAMES_PACKAGE_NAME',
+              project.APTOIDE_GAMES_PACKAGE_NAME_DEV
 
       buildConfigField 'String', 'APPCOINS_WALLET_IAB_BIND_ACTION',
           project.APPCOINS_WALLET_IAB_BIND_ACTION_DEV
@@ -57,6 +59,8 @@ android {
           project.GAMESHUB_IAB_BIND_ACTION_STG
       buildConfigField 'String', 'GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE',
           project.GAMESHUB_IAB_BIND_ACTION_DEV
+      buildConfigField 'String', 'APTOIDE_GAMES_IAB_BIND_ACTION',
+              project.APTOIDE_GAMES_IAB_BIND_ACTION_DEV
 
       buildConfigField 'String', 'SERVICE_BIND_LIST',
           "\"" + project.APTOIDE_PACKAGE_NAME_DEV.replace('\"', '') +
@@ -66,6 +70,8 @@ android {
               project.GAMESHUB_PACKAGE_NAME_STG.replace('\"', '') +
               "," +
               project.GAMESHUB_PACKAGE_NAME_DEV.replace('\"', '') +
+              "," +
+              project.APTOIDE_GAMES_PACKAGE_NAME_DEV.replace('\"', '') +
               "\""
 
       buildConfigField 'String', 'HOST_WS',
@@ -100,6 +106,8 @@ android {
           project.GAMESHUB_PACKAGE_NAME
       buildConfigField 'String', 'GAMESHUB_PACKAGE_NAME_ALTERNATIVE',
           project.GAMESHUB_PACKAGE_NAME
+      buildConfigField 'String', 'APTOIDE_GAMES_PACKAGE_NAME',
+              project.APTOIDE_GAMES_PACKAGE_NAME
 
       buildConfigField 'String', 'APPCOINS_WALLET_IAB_BIND_ACTION',
           project.APPCOINS_WALLET_IAB_BIND_ACTION
@@ -107,6 +115,8 @@ android {
           project.GAMESHUB_IAB_BIND_ACTION
       buildConfigField 'String', 'GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE',
           project.GAMESHUB_IAB_BIND_ACTION
+      buildConfigField 'String', 'APTOIDE_GAMES_IAB_BIND_ACTION',
+              project.APTOIDE_GAMES_IAB_BIND_ACTION
 
       buildConfigField 'String', 'SERVICE_BIND_LIST',
           "\"" + project.APTOIDE_PACKAGE_NAME.replace('\"', '') +
@@ -114,6 +124,8 @@ android {
               project.APPCOINS_WALLET_PACKAGE_NAME.replace('\"', '') +
               "," +
               project.GAMESHUB_PACKAGE_NAME.replace('\"', '') +
+              "," +
+              project.APTOIDE_GAMES_PACKAGE_NAME.replace('\"', '') +
               "\""
 
       buildConfigField 'String', 'HOST_WS',
