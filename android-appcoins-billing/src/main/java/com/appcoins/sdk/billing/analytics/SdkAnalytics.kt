@@ -82,6 +82,32 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
     )
   }
 
+  fun sendCallBackendAppVersionEvent(responseCode: Int?, responseMessage: String?) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkBackendPayflowEvents.SDK_CALL_BACKEND_APP_VERSION,
+      AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
+  fun sendCallBackendStoreLinkEvent(responseCode: Int?, responseMessage: String?) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkBackendPayflowEvents.SDK_CALL_BACKEND_STORE_LINK,
+      AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
   fun sendCallBindServiceAttemptEvent(payflowMethod: String, priority: Int) {
     val eventData: MutableMap<String, Any> = HashMap()
     eventData[AnalyticsLabels.BIND_SERVICE_METHOD] = payflowMethod
@@ -158,6 +184,40 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
       eventData,
       SdkInstallFlowEvents.SDK_INSTALL_WALLET_FEEDBACK,
       AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
+  fun appUpdateDeeplinkImpression(deeplink: String) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.APP_UPDATE_DEEPLINK] = deeplink
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkUpdateFlowEvents.SDK_APP_UPDATE_DEEPLINK_IMPRESSION,
+      AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
+  fun appUpdateImpression() {
+    val eventData: Map<String, Any> = emptyMap()
+    analyticsManager.logEvent(
+      eventData,
+      SdkUpdateFlowEvents.SDK_APP_UPDATE_IMPRESSION,
+      AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
+  fun appUpdateClick(updateAction: String) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.APP_UPDATE_ACTION] = updateAction
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkUpdateFlowEvents.SDK_APP_UPDATE_CLICK,
+      AnalyticsManager.Action.CLICK,
       EVENT_CONTEXT
     )
   }
