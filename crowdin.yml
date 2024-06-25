@@ -1,0 +1,3 @@
+files:
+  - source: /android-appcoins-billing/src/main/res/values/strings.xml
+    translation: /android-appcoins-billing/src/main/res/values-%android_code%/%original_file_name%
