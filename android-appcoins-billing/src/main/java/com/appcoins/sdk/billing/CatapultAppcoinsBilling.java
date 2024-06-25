@@ -2,6 +2,7 @@ package com.appcoins.sdk.billing;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -104,6 +105,8 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
     } catch (NullPointerException e) {
       return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
     } catch (IntentSender.SendIntentException e) {
+      return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
+    } catch (ActivityNotFoundException e) {
       return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
     } catch (ServiceConnectionException e) {
       return handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e, billingFlowParams);
