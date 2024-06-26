@@ -28,6 +28,11 @@ android {
     buildConfigField "int", "MIN_SDK_VERSION", "$minSdkVersion.apiLevel"
     buildConfigField 'int', 'VERSION_CODE', "${defaultConfig.versionCode}"
     buildConfigField 'String', 'VERSION_NAME', "\"${defaultConfig.versionName}\""
+      externalNativeBuild {
+          cmake {
+              cppFlags ''
+          }
+      }
   }
 
   compileOptions {
@@ -149,6 +154,12 @@ android {
           "\"" + project.DEFAULT_STORE_ADDRESS + "\""
     }
   }
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.22.1'
+        }
+    }
 }
 
 dependencies {

@@ -1,2 +1,3 @@
 /build
-** /.cxx
+**/.cxx
+**/INDICATIVE_API_KEY_FILE.txt

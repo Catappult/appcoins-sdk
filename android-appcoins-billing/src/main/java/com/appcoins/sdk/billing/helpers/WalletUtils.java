@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -24,6 +25,7 @@ import com.appcoins.sdk.billing.analytics.AnalyticsManagerProvider;
 import com.appcoins.sdk.billing.analytics.IndicativeAnalytics;
 import com.appcoins.sdk.billing.analytics.IndicativeLaunchCallback;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
+import com.appcoins.sdk.billing.managers.ApiKeysManager;
 import com.appcoins.sdk.billing.managers.WebPaymentSocketManager;
 import com.appcoins.sdk.billing.payasguest.IabActivity;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
@@ -334,7 +336,8 @@ public class WalletUtils {
   }
   private static void launchIndicative(final IndicativeLaunchCallback callback) {
     new Handler(Looper.getMainLooper()).post(() -> {
-      Indicative.launch(context, BuildConfig.INDICATIVE_API_KEY);
+      Log.i("WalletUtils", "launchIndicative: " + ApiKeysManager.INSTANCE.getIndicativeApiKey());
+      Indicative.launch(context, ApiKeysManager.INSTANCE.getIndicativeApiKey());
       if (callback != null) {
         callback.onLaunchComplete();
       }
