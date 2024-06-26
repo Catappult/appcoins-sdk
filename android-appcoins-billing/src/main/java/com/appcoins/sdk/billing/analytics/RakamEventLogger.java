@@ -9,6 +9,7 @@ import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager;
 import com.appcoins.sdk.billing.analytics.manager.EventLogger;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
+import com.appcoins.sdk.billing.managers.ApiKeysManager;
 import com.appcoins.sdk.billing.service.BdsService;
 import java.util.Collections;
 import java.util.HashMap;
@@ -99,7 +100,7 @@ class RakamEventLogger implements EventLogger {
     library.put("name", "appcoins-guest-sdk");
     library.put("version", "2.7.14");
 
-    api.put("api_key", BuildConfig.RAKAM_API_KEY);
+    api.put("api_key", ApiKeysManager.INSTANCE.getRakamApiKey());
     api.put("library", library);
     api.put("upload_time", System.currentTimeMillis());
     return api;

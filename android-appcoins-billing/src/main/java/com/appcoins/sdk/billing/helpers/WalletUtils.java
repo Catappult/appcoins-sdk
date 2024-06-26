@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -336,7 +335,6 @@ public class WalletUtils {
   }
   private static void launchIndicative(final IndicativeLaunchCallback callback) {
     new Handler(Looper.getMainLooper()).post(() -> {
-      Log.i("WalletUtils", "launchIndicative: " + ApiKeysManager.INSTANCE.getIndicativeApiKey());
       Indicative.launch(context, ApiKeysManager.INSTANCE.getIndicativeApiKey());
       if (callback != null) {
         callback.onLaunchComplete();

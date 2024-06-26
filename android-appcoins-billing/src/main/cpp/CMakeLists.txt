@@ -1,17 +1,35 @@
 # Sets the minimum CMake version required for this project.
 cmake_minimum_required(VERSION 3.22.1)
 
-# Define the path to the API key file
-set(INDICATIVE_API_KEY_FILE "${CMAKE_CURRENT_SOURCE_DIR}/INDICATIVE_API_KEY_FILE.txt")
+# Set the path to your configuration file
+set(API_KEYS_FILE "${CMAKE_SOURCE_DIR}/API_KEYS.txt")
 
-# Read the API key from the file
-file(READ ${INDICATIVE_API_KEY_FILE} INDICATIVE_API_KEY)
+# Function to read the key-value pairs from the config file
+function(read_config_file filepath)
+    file(READ "${filepath}" content)
+    string(REPLACE "\n" ";" lines "${content}")
 
-# Trim any trailing whitespace
-string(STRIP ${INDICATIVE_API_KEY} INDICATIVE_API_KEY)
+    foreach (line IN LISTS lines)
+        string(FIND "${line}" "=" delimiter_pos)
+        if (NOT delimiter_pos EQUAL -1)
+            string(SUBSTRING "${line}" 0 ${delimiter_pos} key)
+            math(EXPR value_start "${delimiter_pos} + 1")
+            string(SUBSTRING "${line}" ${value_start} -1 value)
+            set(${key} "${value}" PARENT_SCOPE)
+        endif ()
+    endforeach ()
+endfunction()
 
-# Define the API key as a macro
+# Call the function to read the config file
+read_config_file(${API_KEYS_FILE})
+
+# Define the values as preprocessor definitions
 add_definitions(-DINDICATIVE_API_KEY="${INDICATIVE_API_KEY}")
+add_definitions(-DINDICATIVE_API_KEY_DEV="${INDICATIVE_API_KEY_DEV}")
+add_definitions(-DRAKAM_API_KEY="${RAKAM_API_KEY}")
+add_definitions(-DRAKAM_API_KEY_DEV="${RAKAM_API_KEY_DEV}")
+add_definitions(-DADYEN_API_KEY="${ADYEN_API_KEY}")
+add_definitions(-DADYEN_API_KEY_DEV="${ADYEN_API_KEY_DEV}")
 
 # Declares the project name. The project name can be accessed via ${ PROJECT_NAME},
 # Since this is the top level CMakeLists.txt, the project name is also accessible
@@ -32,14 +50,4 @@ project("native-keys-storer")
 # System.loadLibrary() and pass the name of the library defined here;
 # for GameActivity/NativeActivity derived applications, the same library name must be
 # used in the AndroidManifest.xml file.
-add_library(${CMAKE_PROJECT_NAME} SHARED
-    # List C/C++ source files with relative paths to this CMakeLists.txt.
-    native-keys-storer.cpp)
-
-# Specifies libraries CMake should link to your target library. You
-# can link libraries from various origins, such as libraries defined in this
-# build script, prebuilt third-party libraries, or Android system libraries.
-target_link_libraries(${CMAKE_PROJECT_NAME}
-    # List libraries link to the target library
-    android
-    log)
+add_library(${CMAKE_PROJECT_NAME} SHARED native-keys-storer.cpp)

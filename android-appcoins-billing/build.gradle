@@ -24,15 +24,16 @@ android {
     versionCode VERSION_CODE
     versionName VERSION_NAME
     buildConfigField "boolean", "URI_COMMUNICATION", "true"
-    buildConfigField 'String', 'RAKAM_API_KEY', project.RAKAM_API_KEY
     buildConfigField "int", "MIN_SDK_VERSION", "$minSdkVersion.apiLevel"
     buildConfigField 'int', 'VERSION_CODE', "${defaultConfig.versionCode}"
     buildConfigField 'String', 'VERSION_NAME', "\"${defaultConfig.versionName}\""
-      externalNativeBuild {
-          cmake {
-              cppFlags ''
-          }
-      }
+  }
+
+  externalNativeBuild {
+    cmake {
+      path file('src/main/cpp/CMakeLists.txt')
+      version '3.22.1'
+    }
   }
 
   compileOptions {
@@ -91,10 +92,6 @@ android {
 
       buildConfigField 'String', 'WALLET_APP_BROWSER_URL', project.WALLET_APP_BROWSER_URL
 
-      buildConfigField 'String', 'ADYEN_PUBLIC_KEY', project.ADYEN_PUBLIC_KEY_DEV
-      buildConfigField 'String', 'INDICATIVE_API_KEY',
-          project.INDICATIVE_API_KEY_DEV
-
       buildConfigField 'String', 'DEFAULT_OEM_ADDRESS', "\"" + project.DEFAULT_OEM_ADDRESS + "\""
       buildConfigField 'String', 'DEFAULT_STORE_ADDRESS',
           "\"" + project.DEFAULT_STORE_ADDRESS + "\""
@@ -145,21 +142,11 @@ android {
 
       buildConfigField 'String', 'WALLET_APP_BROWSER_URL', project.WALLET_APP_BROWSER_URL
 
-      buildConfigField 'String', 'ADYEN_PUBLIC_KEY', project.ADYEN_PUBLIC_KEY
-      buildConfigField 'String', 'INDICATIVE_API_KEY',
-          project.INDICATIVE_API_KEY
-
       buildConfigField 'String', 'DEFAULT_OEM_ADDRESS', "\"" + project.DEFAULT_OEM_ADDRESS + "\""
       buildConfigField 'String', 'DEFAULT_STORE_ADDRESS',
           "\"" + project.DEFAULT_STORE_ADDRESS + "\""
     }
   }
-    externalNativeBuild {
-        cmake {
-            path file('src/main/cpp/CMakeLists.txt')
-            version '3.22.1'
-        }
-    }
 }
 
 dependencies {

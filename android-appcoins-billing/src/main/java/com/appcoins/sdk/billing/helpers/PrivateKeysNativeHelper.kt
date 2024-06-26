@@ -1,11 +1,17 @@
 package com.appcoins.sdk.billing.helpers
 
 internal class PrivateKeysNativeHelper {
-    external fun getIndicativeApiKey(): String
+    external fun getApiKey(buildType: String, key: String): String
 
-    companion object{
+    companion object {
         init {
             System.loadLibrary("native-keys-storer")
         }
+    }
+
+    enum class ApiKeys {
+        INDICATIVE_API_KEY,
+        RAKAM_API_KEY,
+        ADYEN_API_KEY,
     }
 }
