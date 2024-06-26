@@ -73,6 +73,8 @@ interface AppcoinsBilling {
         * @param type of the in-app item being purchased ("inapp" for one-time purchases
         *        and "subs" for subscriptions)
         * @param developerPayload optional argument to be sent back with the purchase information
+        * @param oemid oemid of the App generated from the Attribution Request or via OEMIDExtractor
+        * @param guestWalletId guestWalletId to track user engagment on Campaigns
         * @return Bundle containing the following key-value pairs
         *         "RESPONSE_CODE" with int value, RESULT_OK(0) if success, appropriate response codes
         *                         on failures.
@@ -93,7 +95,7 @@ interface AppcoinsBilling {
         *         "INAPP_DATA_SIGNATURE" - String containing the signature of the purchase data that
         *                                  was signed with the private key of the developer
         */
-       Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type, String developerPayload);
+       Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type, String developerPayload, String oemid, String guestWalletId);
 
        /**
         * Returns the current SKUs owned by the user of the type and package name specified along with
