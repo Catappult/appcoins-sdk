@@ -91,14 +91,14 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
   }
 
   @Override
-  public LaunchBillingFlowResult launchBillingFlow(String skuType, String sku, String payload)
+  public LaunchBillingFlowResult launchBillingFlow(String skuType, String sku, String payload, String oemid, String guestWalletId)
       throws ServiceConnectionException {
 
     if (!isReady()) {
       throw new ServiceConnectionException();
     }
     try {
-      Bundle response = service.getBuyIntent(apiVersion, packageName, sku, skuType, payload);
+      Bundle response = service.getBuyIntent(apiVersion, packageName, sku, skuType, payload, oemid, guestWalletId);
 
       return AndroidBillingMapper.mapBundleToHashMapGetIntent(response);
     } catch (RemoteException e) {

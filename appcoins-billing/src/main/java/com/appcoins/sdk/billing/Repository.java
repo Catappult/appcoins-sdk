@@ -12,7 +12,7 @@ public interface Repository {
 
   int consumeAsync(String purchaseToken) throws ServiceConnectionException;
 
-  LaunchBillingFlowResult launchBillingFlow(String skuType,String sku, String payload)
+  LaunchBillingFlowResult launchBillingFlow(String skuType,String sku, String payload, String oemid, String guestWalletId)
       throws ServiceConnectionException;
 
   boolean isReady();

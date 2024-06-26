@@ -18,6 +18,7 @@ import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
 import com.appcoins.sdk.billing.listeners.PendingPurchaseStream;
 import com.appcoins.sdk.billing.listeners.SDKWebResponse;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
+import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -59,6 +60,10 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
       WalletUtils.getSdkAnalytics().sendPurchaseIntentEvent(billingFlowParams.getSku());
       String payload = PayloadHelper.buildIntentPayload(billingFlowParams.getOrderReference(),
           billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin());
+      AttributionSharedPreferences attributionSharedPreferences =
+          new AttributionSharedPreferences(activity);
+      String oemid = attributionSharedPreferences.getOemId();
+      String guestWalletId = attributionSharedPreferences.getWalletId();
 
       Log.d("Message: ", payload);
 
@@ -68,7 +73,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
       eventLoggerThread.start();
 
       LaunchBillingFlowResult launchBillingFlowResult =
-          billing.launchBillingFlow(billingFlowParams, payload);
+          billing.launchBillingFlow(billingFlowParams, payload, oemid, guestWalletId);
 
       responseCode = launchBillingFlowResult.getResponseCode();
 
@@ -174,6 +179,10 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
                             billingFlowParams.getDeveloperPayload(),
                             billingFlowParams.getOrigin()
                     );
+            AttributionSharedPreferences attributionSharedPreferences =
+                    new AttributionSharedPreferences(activity);
+            String oemid = attributionSharedPreferences.getOemId();
+            String guestWalletId = attributionSharedPreferences.getWalletId();
 
             Log.d("Message: ", payload);
 
@@ -187,7 +196,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
             eventLoggerThread.start();
 
             LaunchBillingFlowResult launchBillingFlowResult =
-                    billing.launchBillingFlow(billingFlowParams, payload);
+                    billing.launchBillingFlow(billingFlowParams, payload, oemid, guestWalletId);
 
             responseCode = launchBillingFlowResult.getResponseCode();
 

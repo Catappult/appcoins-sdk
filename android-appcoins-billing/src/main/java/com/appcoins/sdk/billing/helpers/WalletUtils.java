@@ -52,21 +52,21 @@ public class WalletUtils {
   }
 
   public static Bundle startServiceBind(AppcoinsBilling serviceAppcoinsBilling, int apiVersion,
-      String sku, String type, String developerPayload) {
+      String sku, String type, String developerPayload, String oemid, String guestWalletId) {
     try {
       // temporary workaround for the possibility of the endpoint failing, with two hardcoded options
       // but the logic should be reused instead of this hardcoded solution
       if (paymentFlowMethods == null) {
         if (Objects.equals(billingPackageName, BuildConfig.APPCOINS_WALLET_PACKAGE_NAME) || Objects.equals(billingPackageName, BuildConfig.GAMESHUB_PACKAGE_NAME)) {
           return handleBindServiceAttempt(serviceAppcoinsBilling, packageToMethodName(), 1, apiVersion, sku,
-              type, developerPayload);
+              type, developerPayload, oemid, guestWalletId);
         }
       } else {
         for (PaymentFlowMethod method : paymentFlowMethods) {
           if (method instanceof PaymentFlowMethod.Wallet
               || method instanceof PaymentFlowMethod.GamesHub) {
             Bundle bundle = handleBindServiceAttempt(serviceAppcoinsBilling, method.getName(),
-                method.getPriority(), apiVersion, sku, type, developerPayload);
+                method.getPriority(), apiVersion, sku, type, developerPayload, oemid, guestWalletId);
             if (bundle != null) {
               return bundle;
             }
@@ -81,11 +81,11 @@ public class WalletUtils {
 
   private static Bundle handleBindServiceAttempt(AppcoinsBilling serviceAppcoinsBilling,
       String methodName, int methodPriority, int apiVersion, String sku, String type,
-      String developerPayload) {
+      String developerPayload, String oemid, String guestWalletId) {
     try {
       sdkAnalytics.sendCallBindServiceAttemptEvent(methodName, methodPriority);
       return serviceAppcoinsBilling.getBuyIntent(apiVersion, context.getPackageName(), sku, type,
-          developerPayload);
+          developerPayload, oemid, guestWalletId);
     } catch (Exception e) {
       return handleBindServiceFail(e, methodName, methodPriority);
     }
