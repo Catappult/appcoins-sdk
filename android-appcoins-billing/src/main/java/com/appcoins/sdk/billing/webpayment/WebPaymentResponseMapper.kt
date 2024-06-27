@@ -15,7 +15,7 @@ class WebPaymentResponseMapper {
         }
 
         val webPaymentUrl = runCatching {
-            JSONObject(response.response).optString("payment_url")
+            JSONObject(response.response).optString("payment_url").takeIf { it.isNotEmpty() }
         }.getOrElse {
             it.printStackTrace()
             null
