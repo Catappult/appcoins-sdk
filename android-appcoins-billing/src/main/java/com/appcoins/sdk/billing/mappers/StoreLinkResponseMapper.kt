@@ -15,7 +15,7 @@ class StoreLinkResponseMapper {
         }
 
         val deeplink = runCatching {
-            JSONObject(response.response).optString("deeplink")
+            JSONObject(response.response).optString("deeplink").takeIf { it.isNotEmpty() }
         }.getOrElse {
             it.printStackTrace()
             null

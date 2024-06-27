@@ -11,7 +11,7 @@ import com.appcoins.sdk.billing.usecases.GetOemIdForPackage
 
 class WebPaymentManager(val packageName: String) {
     private val webPaymentRepository =
-        WebPaymentRepository(BdsService(BuildConfig.PAYFLOW_HOST, 30000))
+        WebPaymentRepository(BdsService(BuildConfig.PAYFLOW_HOST, 3000))
 
     fun getWebPaymentUrl(billingFlowParams: BillingFlowParams?) {
         val attributionSharedPreferences = AttributionSharedPreferences(WalletUtils.context)
