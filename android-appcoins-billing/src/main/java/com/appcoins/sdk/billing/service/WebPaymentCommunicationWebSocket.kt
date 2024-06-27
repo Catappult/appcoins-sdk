@@ -15,20 +15,33 @@ class WebPaymentCommunicationWebSocket(port: Int) : WebSocketServer(InetSocketAd
 
     private var isStarted = false
     private var context: Context? = null
+    private var lastConnectionRemoteSocketAddress: String? = null
+    private var isResponsePending = false
 
     override fun onOpen(conn: WebSocket, handshake: ClientHandshake) {
         Log.i(TAG, "New connection established.")
         Log.d(TAG, "New connection: " + conn.remoteSocketAddress)
+        lastConnectionRemoteSocketAddress = conn.remoteSocketAddress.toString()
+        isResponsePending = true
     }
 
     override fun onClose(conn: WebSocket, code: Int, reason: String, remote: Boolean) {
         Log.i(TAG, "Connection closed.")
         Log.d(TAG, "Closed connection to: " + conn.remoteSocketAddress + " with reason: $reason")
+        if (conn.remoteSocketAddress.toString() == lastConnectionRemoteSocketAddress) {
+            lastConnectionRemoteSocketAddress = null
+            if (isResponsePending) {
+                isResponsePending = false
+                SDKWebResponseStream.getInstance()
+                    .emit(SDKWebResponse(ResponseCode.USER_CANCELED.value))
+            }
+        }
     }
 
     override fun onMessage(conn: WebSocket, message: String) {
         Log.i(TAG, "Received new message.")
         Log.d(TAG, "Received message from " + conn.remoteSocketAddress + ": " + message)
+        isResponsePending = false
         try {
             val jsonObject = JSONObject(message)
             SDKWebResponseStream.getInstance().emit(SDKWebResponse(jsonObject))
