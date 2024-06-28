@@ -81,6 +81,8 @@ android {
       buildConfigField 'String', 'BDS_BASE_HOST', project.BDS_BASE_HOST_DEV
       buildConfigField 'String', 'PAYFLOW_HOST', project.PAYFLOW_NETWORK_BASE_HOST_DEV
       buildConfigField 'String', 'MMP_BASE_HOST', project.MMP_BASE_HOST_DEV
+      buildConfigField 'String', 'STORE_LINK_BASE_HOST', project.STORE_LINK_BASE_HOST_DEV
+      buildConfigField 'String', 'WS75_BASE_HOST', project.WS75_BASE_HOST_DEV
 
       buildConfigField 'String', 'WALLET_APP_BROWSER_URL', project.WALLET_APP_BROWSER_URL
 
@@ -133,6 +135,8 @@ android {
       buildConfigField 'String', 'BDS_BASE_HOST', project.BDS_BASE_HOST_PROD
       buildConfigField 'String', 'PAYFLOW_HOST', project.PAYFLOW_NETWORK_BASE_HOST
       buildConfigField 'String', 'MMP_BASE_HOST', project.MMP_BASE_HOST_PROD
+      buildConfigField 'String', 'STORE_LINK_BASE_HOST', project.STORE_LINK_BASE_HOST_PROD
+      buildConfigField 'String', 'WS75_BASE_HOST', project.WS75_BASE_HOST_PROD
 
       buildConfigField 'String', 'WALLET_APP_BROWSER_URL', project.WALLET_APP_BROWSER_URL
 

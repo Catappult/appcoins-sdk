@@ -76,7 +76,9 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         packageName: String,
         sku: String,
         type: String,
-        developerPayload: String
+        developerPayload: String,
+        oemid: String?,
+        guestWalletId: String?,
     ): Bundle {
         var bundle: Bundle? = null
         if (hasRequiredFields(type, sku) && WalletUtils.getPayflowMethodsList().isNotEmpty()) {

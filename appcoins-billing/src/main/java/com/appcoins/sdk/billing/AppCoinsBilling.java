@@ -64,12 +64,12 @@ public class AppCoinsBilling implements Billing {
   }
 
   @Override
-  public LaunchBillingFlowResult launchBillingFlow(BillingFlowParams params, String payload)
+  public LaunchBillingFlowResult launchBillingFlow(BillingFlowParams params, String payload, String oemid, String guestWalletId)
       throws ServiceConnectionException {
     try {
 
       LaunchBillingFlowResult result =
-          repository.launchBillingFlow(params.getSkuType(), params.getSku(), payload);
+          repository.launchBillingFlow(params.getSkuType(), params.getSku(), payload, oemid, guestWalletId);
 
       return result;
     } catch (ServiceConnectionException e) {
