@@ -12,7 +12,8 @@ import com.appcoins.sdk.billing.BuyItemProperties
 import com.appcoins.sdk.billing.DeveloperPayload
 import com.appcoins.sdk.billing.ResponseCode
 import com.appcoins.sdk.billing.SkuDetails
-import com.appcoins.sdk.billing.SkuDetailsResult
+import com.appcoins.sdk.billing.SkuDetailsResultV2
+import com.appcoins.sdk.billing.SkuDetailsV2
 import com.appcoins.sdk.billing.WSServiceController
 import com.appcoins.sdk.billing.payasguest.BillingRepository
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.getPaymentFlowFromPayflowMethod
@@ -55,7 +56,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         val responseWs = Bundle()
         if (Looper.myLooper() == Looper.getMainLooper()) {
             Thread {
-                getSkuDetailsFromService(packageName, type, skusBundle, responseWs)
+                getSkuDetailsFromService(packageName, skusBundle, responseWs)
                 latch.countDown()
             }.start()
             try {
@@ -65,7 +66,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
                 responseWs.putInt(RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.value)
             }
         } else {
-            getSkuDetailsFromService(packageName, type, skusBundle, responseWs)
+            getSkuDetailsFromService(packageName, skusBundle, responseWs)
         }
         return responseWs
     }
@@ -213,13 +214,12 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
 
     private fun getSkuDetailsFromService(
         packageName: String,
-        type: String,
         skusBundle: Bundle,
         responseWs: Bundle
     ) {
         val sku = skusBundle.getStringArrayList(GET_SKU_DETAILS_ITEM_LIST)
-        val skuDetailsList = requestSkuDetails(sku, packageName, type)
-        val skuDetailsResult = SkuDetailsResult(skuDetailsList, 0)
+        val skuDetailsList = requestSkuDetails(sku, packageName)
+        val skuDetailsResult = SkuDetailsResultV2(skuDetailsList, 0)
         responseWs.putInt(RESPONSE_CODE, 0)
         val skuDetails = buildResponse(skuDetailsResult)
         responseWs.putStringArrayList("DETAILS_LIST", skuDetails)
@@ -236,25 +236,25 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
 
     private fun requestSkuDetails(
         sku: List<String>?,
-        packageName: String,
-        type: String
-    ): ArrayList<SkuDetails> {
+        packageName: String
+    ): ArrayList<SkuDetailsV2> {
         val skuSendList: MutableList<String> = ArrayList()
-        val skuDetailsList = ArrayList<SkuDetails>()
+        val skuDetailsList = ArrayList<SkuDetailsV2>()
 
-        for (i in 1..sku!!.size) {
-            skuSendList.add(sku[i - 1])
-            if (i % MAX_SKUS_SEND_WS == 0 || i == sku.size) {
-                val response =
-                    WSServiceController.getSkuDetailsService(
-                        BuildConfig.HOST_WS, packageName, skuSendList,
-                        WalletUtils.getUserAgent(),
-                        getPaymentFlowFromPayflowMethod(WalletUtils.getPayflowMethodsList())
-                    )
-                skuDetailsList.addAll(AndroidBillingMapper.mapSkuDetailsFromWS(type, response))
-                skuSendList.clear()
+        if (sku != null)
+            for (i in 1..sku.size) {
+                skuSendList.add(sku[i - 1])
+                if (i % MAX_SKUS_SEND_WS == 0 || i == sku.size) {
+                    val response =
+                        WSServiceController.getSkuDetailsService(
+                            BuildConfig.HOST_WS, packageName, skuSendList,
+                            WalletUtils.getUserAgent(),
+                            getPaymentFlowFromPayflowMethod(WalletUtils.getPayflowMethodsList())
+                        )
+                    skuDetailsList.addAll(AndroidBillingMapper.mapSkuDetailsFromWS(response))
+                    skuSendList.clear()
+                }
             }
-        }
         return skuDetailsList
     }
 
@@ -278,9 +278,9 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         return getSingleSkuDetailsFromService(packageName, type, skuBundle)
     }
 
-    private fun buildResponse(skuDetailsResult: SkuDetailsResult): ArrayList<String> =
+    private fun buildResponse(skuDetailsResultV2: SkuDetailsResultV2): ArrayList<String> =
         ArrayList(
-            skuDetailsResult.skuDetailsList.map { AndroidBillingMapper.mapSkuDetailsResponse(it) }
+            skuDetailsResultV2.skuDetailsList.map { AndroidBillingMapper.mapSkuDetailsResponse(it) }
         )
 
     private fun hasRequiredFields(type: String, sku: String?): Boolean =

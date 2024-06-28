@@ -1,11 +1,11 @@
 package com.appcoins.sdk.billing.payflow
 
 import com.appcoins.sdk.billing.helpers.WalletUtils
+import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.DEFAULT_PAYMENT_FLOW
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.DEFAULT_WEB_PAYMENT_URL_VERSION
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import org.json.JSONObject
-import java.util.ArrayList
 
 class PayflowResponseMapper {
   fun map(response: RequestResponse): PayflowMethodResponse {
@@ -28,10 +28,16 @@ class PayflowResponseMapper {
               "aptoide_games" -> PaymentFlowMethod.AptoideGames(methodName, priority)
               "web_payment" -> {
                 val paymentMethodsJsonObject = paymentMethodsObject.optJSONObject(methodName)
-                val version = paymentMethodsJsonObject
-                  ?.optString("version") ?: DEFAULT_WEB_PAYMENT_URL_VERSION
-                val paymentFlow = paymentMethodsJsonObject?.optString("payment_flow")
-                PaymentFlowMethod.WebPayment(methodName, priority, version, paymentFlow)
+                val version =
+                    paymentMethodsJsonObject
+                        ?.optString("version")
+                        ?.takeIf { it.isNotEmpty() }
+                        ?: DEFAULT_WEB_PAYMENT_URL_VERSION
+                val paymentFlow =
+                    paymentMethodsJsonObject
+                        ?.optString("payment_flow")
+                        ?.takeIf { it.isNotEmpty() && it != DEFAULT_PAYMENT_FLOW }
+                  PaymentFlowMethod.WebPayment(methodName, priority, version, paymentFlow)
               }
               else -> null
             }
@@ -78,6 +84,7 @@ sealed class PaymentFlowMethod(
 
   companion object {
     const val DEFAULT_WEB_PAYMENT_URL_VERSION = "v1"
+    const val DEFAULT_PAYMENT_FLOW = "default"
 
     fun getPaymentUrlVersionFromPayflowMethod(
       payflowMethodsList: MutableList<PaymentFlowMethod>

@@ -14,6 +14,8 @@ import com.appcoins.sdk.billing.Purchase;
 import com.appcoins.sdk.billing.PurchasesResult;
 import com.appcoins.sdk.billing.SkuDetails;
 import com.appcoins.sdk.billing.SkuDetailsResult;
+import com.appcoins.sdk.billing.SkuDetailsV2;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -147,9 +149,8 @@ public class AndroidBillingMapper {
         bundle.getParcelable("BUY_INTENT"), bundle.getParcelable("WEB_BUY_INTENT"));
   }
 
-  public static ArrayList<SkuDetails> mapSkuDetailsFromWS(String skuType,
-      String skuDetailsResponse) {
-    ArrayList<SkuDetails> skuDetailsList = new ArrayList<SkuDetails>();
+  public static ArrayList<SkuDetailsV2> mapSkuDetailsFromWS(String skuDetailsResponse) {
+    ArrayList<SkuDetailsV2> skuDetailsList = new ArrayList<>();
 
     if (!skuDetailsResponse.equals("")) {
       try {
@@ -157,41 +158,8 @@ public class AndroidBillingMapper {
         JSONArray items = jsonElement.getJSONArray("items");
         for (int i = 0; i < items.length(); i++) {
           JSONObject obj = items.getJSONObject(i);
-
-          String sku = obj.getString("name");
-
-          JSONObject priceObj = obj.getJSONObject("price");
-
-          String price = getFiatPrice(priceObj.getJSONObject("fiat"));
-          long priceAmountMicros = getFiatAmountInMicros(priceObj.getJSONObject("fiat"));
-          String priceCurrencyCode = getFiatCurrencyCode(priceObj.getJSONObject("fiat"));
-          if (priceObj.has("base") && priceObj.getString("base")
-              .equalsIgnoreCase(APPC)) {
-            price = getAppcPrice(priceObj);
-            priceAmountMicros = getAppcAmountInMicros(priceObj);
-            priceCurrencyCode = APPC;
-          }
-
-          String appcPrice = getAppcPrice(priceObj);
-          long appcPriceAmountMicros = getAppcAmountInMicros(priceObj);
-          String appcPriceCurrencyCode = APPC;
-
-          String fiatPrice = getFiatPrice(priceObj.getJSONObject("fiat"));
-          long fiatPriceAmountMicros = getFiatAmountInMicros(priceObj.getJSONObject("fiat"));
-          String fiatPriceCurrencyCode = getFiatCurrencyCode(priceObj.getJSONObject("fiat"));
-
-          String type = skuType;
-
-          String title = escapeString(obj.getString("label"));
-
-          String description = escapeString(obj.getString("description"));
-
-          SkuDetails skuDetails =
-              new SkuDetails(skuType, sku, type, price, priceAmountMicros, priceCurrencyCode,
-                  appcPrice, appcPriceAmountMicros, appcPriceCurrencyCode, fiatPrice,
-                  fiatPriceAmountMicros, fiatPriceCurrencyCode, title, description);
-
-          skuDetailsList.add(skuDetails);
+          SkuDetailsV2 skuDetailsV2 = SkuDetailsV2.Companion.fromJsonObject(obj);
+          skuDetailsList.add(skuDetailsV2);
         }
       } catch (JSONException e) {
         e.printStackTrace();
@@ -311,29 +279,29 @@ public class AndroidBillingMapper {
         .getString("code");
   }
 
-  public static String mapSkuDetailsResponse(SkuDetails skuDetails) {
+  public static String mapSkuDetailsResponse(SkuDetailsV2 skuDetails) {
     return "{\"productId\":\""
         + skuDetails.getSku()
         + "\",\"type\" : \""
-        + skuDetails.getType()
+        + "INAPP"
         + "\",\"price\" : \""
-        + skuDetails.getPrice()
+        + skuDetails.getPrice().getValue()
         + "\",\"price_currency_code\": \""
-        + skuDetails.getPriceCurrencyCode()
+        + skuDetails.getPrice().getCurrency()
         + "\",\"price_amount_micros\": "
-        + skuDetails.getPriceAmountMicros()
+        + skuDetails.getPrice().getMicros()
         + ",\"appc_price\" : \""
-        + skuDetails.getAppcPrice()
+        + skuDetails.getPrice().getAppc().getValue()
         + "\",\"appc_price_currency_code\": \""
-        + skuDetails.getAppcPriceCurrencyCode()
+        + "APPC"
         + "\",\"appc_price_amount_micros\": "
-        + skuDetails.getAppcPriceAmountMicros()
+        + skuDetails.getPrice().getAppc().getMicros()
         + ",\"fiat_price\" : \""
-        + skuDetails.getFiatPrice()
+        + skuDetails.getPrice()
         + "\",\"fiat_price_currency_code\": \""
-        + skuDetails.getFiatPriceCurrencyCode()
+        + skuDetails.getPrice().getCurrency()
         + "\",\"fiat_price_amount_micros\": "
-        + skuDetails.getFiatPriceAmountMicros()
+        + skuDetails.getPrice().getMicros()
         + ",\"title\" : \""
         + skuDetails.getTitle()
         + "\",\"description\" : \""
