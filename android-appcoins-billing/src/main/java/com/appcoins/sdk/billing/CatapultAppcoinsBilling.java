@@ -2,6 +2,8 @@ package com.appcoins.sdk.billing;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Looper;
@@ -11,12 +13,15 @@ import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.helpers.AppCoinsPendingIntentCaller;
 import com.appcoins.sdk.billing.helpers.EventLogger;
 import com.appcoins.sdk.billing.helpers.PayloadHelper;
+import com.appcoins.sdk.billing.helpers.UpdateDialogActivity;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
 import com.appcoins.sdk.billing.listeners.PendingPurchaseStream;
 import com.appcoins.sdk.billing.listeners.SDKWebResponse;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
+import com.appcoins.sdk.billing.usecases.ingameupdates.IsUpdateAvailable;
+import com.appcoins.sdk.billing.usecases.ingameupdates.LaunchAppUpdate;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -101,6 +106,8 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
       return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
     } catch (IntentSender.SendIntentException e) {
       return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
+    } catch (ActivityNotFoundException e) {
+      return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
     } catch (ServiceConnectionException e) {
       return handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e, billingFlowParams);
     }
@@ -135,6 +142,38 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
   @Override public boolean isReady() {
     return billing.isReady();
   }
+
+    @Override
+    public boolean isAppUpdateAvailable() {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            return false;
+        } else {
+            return IsUpdateAvailable.INSTANCE.invoke(WalletUtils.context);
+        }
+    }
+
+    @Override
+    public void launchAppUpdateStore(Context context) {
+        Runnable runnable = () -> {
+            if (isAppUpdateAvailable()) {
+                LaunchAppUpdate.INSTANCE.invoke(context);
+            }
+        };
+        new Thread(runnable).start();
+    }
+
+    @Override
+    public void launchAppUpdateDialog(Context context) {
+        Runnable runnable = () -> {
+            if (isAppUpdateAvailable()) {
+                Intent updateDialogActivityIntent =
+                        new Intent(context.getApplicationContext(), UpdateDialogActivity.class);
+                updateDialogActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.getApplicationContext().startActivity(updateDialogActivityIntent);
+            }
+        };
+        new Thread(runnable).start();
+    }
 
   @Override public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == REQUEST_CODE) {

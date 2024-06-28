@@ -242,19 +242,20 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         val skuSendList: MutableList<String> = ArrayList()
         val skuDetailsList = ArrayList<SkuDetails>()
 
-        for (i in 1..sku!!.size) {
-            skuSendList.add(sku[i - 1])
-            if (i % MAX_SKUS_SEND_WS == 0 || i == sku.size) {
-                val response =
-                    WSServiceController.getSkuDetailsService(
-                        BuildConfig.HOST_WS, packageName, skuSendList,
-                        WalletUtils.getUserAgent(),
-                        getPaymentFlowFromPayflowMethod(WalletUtils.getPayflowMethodsList())
-                    )
-                skuDetailsList.addAll(AndroidBillingMapper.mapSkuDetailsFromWS(type, response))
-                skuSendList.clear()
+        if (sku != null)
+            for (i in 1..sku.size) {
+                skuSendList.add(sku[i - 1])
+                if (i % MAX_SKUS_SEND_WS == 0 || i == sku.size) {
+                    val response =
+                        WSServiceController.getSkuDetailsService(
+                            BuildConfig.HOST_WS, packageName, skuSendList,
+                            WalletUtils.getUserAgent(),
+                            getPaymentFlowFromPayflowMethod(WalletUtils.getPayflowMethodsList())
+                        )
+                    skuDetailsList.addAll(AndroidBillingMapper.mapSkuDetailsFromWS(type, response))
+                    skuSendList.clear()
+                }
             }
-        }
         return skuDetailsList
     }
 
