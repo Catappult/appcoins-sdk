@@ -17,6 +17,11 @@ class GetQueriesListForPayflowPriority {
                     WalletUtils.context
                 )
             val gamesHubVersionCode = handleGamesHubPackage()
+            val aptoideGamesVersionCode =
+                GetAppInstalledVersion.invoke(
+                    BuildConfig.APTOIDE_GAMES_PACKAGE_NAME,
+                    WalletUtils.context
+                )
             val vanillaVersionCode =
                 GetAppInstalledVersion.invoke(BuildConfig.APTOIDE_PACKAGE_NAME, WalletUtils.context)
 
@@ -32,6 +37,9 @@ class GetQueriesListForPayflowPriority {
             queries["sdk_vercode"] = BuildConfig.VERSION_CODE.toString()
             walletVersionCode.let { if (it != -1) queries["wallet_vercode"] = it.toString() }
             gamesHubVersionCode.let { if (it != -1) queries["gh_vercode"] = it.toString() }
+            aptoideGamesVersionCode.let {
+                if (it != -1) queries["aptoide_games_vercode"] = it.toString()
+            }
             vanillaVersionCode.let { if (it != -1) queries["vanilla_vercode"] = it.toString() }
             UserCountryUtils.getUserCountry(WalletUtils.context)?.let { queries["locale"] = it }
             oemId?.let { queries["oemid"] = it }

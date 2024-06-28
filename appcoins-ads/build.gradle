@@ -47,6 +47,8 @@ android {
               project.GAMESHUB_PACKAGE_NAME_STG.replace('\"', '') +
               "," +
               project.GAMESHUB_PACKAGE_NAME_DEV.replace('\"', '') +
+              "," +
+              project.APTOIDE_GAMES_PACKAGE_NAME_DEV.replace('\"', '') +
               "\""
     }
     release {
@@ -64,6 +66,8 @@ android {
               project.APPCOINS_WALLET_PACKAGE_NAME.replace('\"', '') +
               "," +
               project.GAMESHUB_PACKAGE_NAME.replace('\"', '') +
+              "," +
+              project.APTOIDE_GAMES_PACKAGE_NAME.replace('\"', '') +
               "\""
       minifyEnabled false
     }

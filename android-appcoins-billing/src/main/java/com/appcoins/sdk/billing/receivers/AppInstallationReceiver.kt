@@ -38,6 +38,7 @@ class AppInstallationReceiver : BroadcastReceiver() {
                 BuildConfig.APPCOINS_WALLET_PACKAGE_NAME,
                 BuildConfig.GAMESHUB_PACKAGE_NAME,
                 BuildConfig.GAMESHUB_PACKAGE_NAME_ALTERNATIVE,
+                BuildConfig.APTOIDE_GAMES_PACKAGE_NAME,
             )
     }
 }
