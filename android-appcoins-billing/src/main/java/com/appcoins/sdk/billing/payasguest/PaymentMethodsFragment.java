@@ -22,7 +22,6 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,9 +79,7 @@ public class PaymentMethodsFragment extends Fragment implements PaymentMethodsVi
     PaymentMethodsFragment paymentMethodsFragment = new PaymentMethodsFragment();
     Bundle bundle = new Bundle();
     bundle.putSerializable(BUY_ITEM_PROPERTIES, buyItemProperties);
-    Log.i("PaymentMethodsFragment", "putting argument: " + buyItemProperties);
     paymentMethodsFragment.setArguments(bundle);
-    Log.i("PaymentMethodsFragment", "after set arguments: " + paymentMethodsFragment.getArguments().getSerializable(BUY_ITEM_PROPERTIES));
     return paymentMethodsFragment;
   }
 

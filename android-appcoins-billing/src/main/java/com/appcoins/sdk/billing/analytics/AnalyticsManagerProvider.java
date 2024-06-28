@@ -40,6 +40,7 @@ public class AnalyticsManagerProvider {
     list.add(SdkUpdateFlowEvents.SDK_APP_UPDATE_IMPRESSION);
     list.add(SdkUpdateFlowEvents.SDK_APP_UPDATE_CLICK);
     list.add(SdkBackendPayflowEvents.SDK_CALL_BACKEND_PAYFLOW);
+    list.add(SdkBackendPayflowEvents.SDK_CALL_BACKEND_WEB_PAYMENT_URL);
     list.add(SdkBackendPayflowEvents.SDK_CALL_BACKEND_ATTRIBUTION);
     list.add(SdkBackendPayflowEvents.SDK_CALL_BACKEND_APP_VERSION);
     list.add(SdkBackendPayflowEvents.SDK_CALL_BACKEND_STORE_LINK);
