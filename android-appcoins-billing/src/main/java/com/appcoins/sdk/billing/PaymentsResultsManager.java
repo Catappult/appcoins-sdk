@@ -31,6 +31,11 @@ class PaymentsResultsManager {
             sdkWebResponse -> {
                 ApplicationUtils.handleWebBasedResult(
                         sdkWebResponse,
+                        // TODO Inject correct data for associated purchase
+                            // 1 - Web send full data from Purchase
+                                // Dependency on Wallet
+                            // 2 - Request data from an endpoint via PurchaseToken/OrderId
+                                // Adds delay to the response
                         billingFlowParams,
                         developerPayload,
                         catapultAppcoinsBilling.getPurchaseFinishedListener());
