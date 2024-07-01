@@ -282,7 +282,7 @@ public class WalletUtils {
       } else if (billingPackageName.equalsIgnoreCase(gamesHub)){
           return "games_hub_checkout";
       } else if (billingPackageName.equalsIgnoreCase(BuildConfig.APTOIDE_GAMES_PACKAGE_NAME)){
-          return "aptoide_games"; // TODO Add correct method name.
+          return "aptoide_games";
       } else {
           return "unknown";
       }
