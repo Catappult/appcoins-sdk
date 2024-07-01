@@ -9,7 +9,10 @@ import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_C
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+
+import com.appcoins.sdk.billing.Appc;
 import com.appcoins.sdk.billing.LaunchBillingFlowResult;
+import com.appcoins.sdk.billing.Price;
 import com.appcoins.sdk.billing.Purchase;
 import com.appcoins.sdk.billing.PurchasesResult;
 import com.appcoins.sdk.billing.SkuDetails;
@@ -157,9 +160,34 @@ public class AndroidBillingMapper {
         JSONObject jsonElement = new JSONObject(skuDetailsResponse);
         JSONArray items = jsonElement.getJSONArray("items");
         for (int i = 0; i < items.length(); i++) {
-          JSONObject obj = items.getJSONObject(i);
-          SkuDetailsV2 skuDetailsV2 = SkuDetailsV2.Companion.fromJsonObject(obj);
-          skuDetailsList.add(skuDetailsV2);
+          try {
+            JSONObject obj = items.getJSONObject(i);
+
+            String sku = obj.getString("sku");
+            String title = obj.getString("title");
+            String description = null;
+            if (obj.has("description")){
+              description = obj.optString("description");
+            }
+
+            JSONObject priceObj = obj.getJSONObject("price");
+
+            JSONObject appcObj = priceObj.getJSONObject("appc");
+            String appcValue = appcObj.getString("value");
+            int appcMicros = appcObj.getInt("micros");
+            Appc appc = new Appc(appcValue, appcMicros);
+
+            String currency = priceObj.getString("currency");
+            String value = priceObj.getString("value");
+            int micros = priceObj.getInt("micros");
+            Price price = new Price(currency, value, micros, appc);
+
+            SkuDetailsV2 skuDetailsV2 = new SkuDetailsV2(sku, title, description, price);
+
+            skuDetailsList.add(skuDetailsV2);
+          } catch (JSONException e) {
+            e.printStackTrace();
+          }
         }
       } catch (JSONException e) {
         e.printStackTrace();
