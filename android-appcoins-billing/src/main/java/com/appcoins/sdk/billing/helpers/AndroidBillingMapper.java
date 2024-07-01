@@ -173,14 +173,14 @@ public class AndroidBillingMapper {
             JSONObject priceObj = obj.getJSONObject("price");
 
             JSONObject appcObj = priceObj.getJSONObject("appc");
-            String appcValue = appcObj.getString("value");
+            String appcLabel = appcObj.getString("label");
             int appcMicros = appcObj.getInt("micros");
-            Appc appc = new Appc(appcValue, appcMicros);
+            Appc appc = new Appc(appcLabel, appcMicros);
 
             String currency = priceObj.getString("currency");
-            String value = priceObj.getString("value");
+            String label = priceObj.getString("label");
             int micros = priceObj.getInt("micros");
-            Price price = new Price(currency, value, micros, appc);
+            Price price = new Price(currency, label, micros, appc);
 
             SkuDetailsV2 skuDetailsV2 = new SkuDetailsV2(sku, title, description, price);
 
@@ -313,19 +313,19 @@ public class AndroidBillingMapper {
         + "\",\"type\" : \""
         + "INAPP"
         + "\",\"price\" : \""
-        + skuDetails.getPrice().getValue()
+        + skuDetails.getPrice().getLabel()
         + "\",\"price_currency_code\": \""
         + skuDetails.getPrice().getCurrency()
         + "\",\"price_amount_micros\": "
         + skuDetails.getPrice().getMicros()
         + ",\"appc_price\" : \""
-        + skuDetails.getPrice().getAppc().getValue()
+        + skuDetails.getPrice().getAppc().getLabel()
         + "\",\"appc_price_currency_code\": \""
         + "APPC"
         + "\",\"appc_price_amount_micros\": "
         + skuDetails.getPrice().getAppc().getMicros()
         + ",\"fiat_price\" : \""
-        + skuDetails.getPrice()
+        + skuDetails.getPrice().getLabel()
         + "\",\"fiat_price_currency_code\": \""
         + skuDetails.getPrice().getCurrency()
         + "\",\"fiat_price_amount_micros\": "

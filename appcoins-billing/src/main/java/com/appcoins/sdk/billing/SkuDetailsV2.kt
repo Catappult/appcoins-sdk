@@ -2,13 +2,13 @@ package com.appcoins.sdk.billing
 
 data class Price(
     val currency: String,
-    val value: String,
+    val label: String,
     val micros: Int,
     val appc: Appc,
 )
 
 data class Appc(
-    val value: String,
+    val label: String,
     val micros: Int,
 )
 
