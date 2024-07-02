@@ -23,16 +23,19 @@ object AttributionManager {
     }
 
     fun getAttributionForUser() {
-        val oemid = GetOemIdForPackage.invoke(packageName, WalletUtils.context)
-        val guestWalletId = getWalletId()
+        if (!attributionSharedPreferences.isAttributionComplete()) {
+            val oemid = GetOemIdForPackage.invoke(packageName, WalletUtils.context)
+            val guestWalletId = getWalletId()
 
-        val attributionResponse =
-            attributionRepository.getAttributionForUser(packageName, oemid, guestWalletId)
-        saveAttributionResult(attributionResponse)
+            val attributionResponse =
+                attributionRepository.getAttributionForUser(packageName, oemid, guestWalletId)
+            saveAttributionResult(attributionResponse)
+        }
     }
 
     private fun saveAttributionResult(attributionResponse: AttributionResponse?) {
         if (attributionResponse?.packageName == packageName) {
+            attributionSharedPreferences.completeAttribution()
             attributionResponse?.oemId?.let {
                 if (it.isNotEmpty()) attributionSharedPreferences.setOemId(it)
             }
