@@ -56,6 +56,19 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
     )
   }
 
+  fun sendCallBackendWebPaymentUrlEvent(responseCode: Int?, responseMessage: String?) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkBackendPayflowEvents.SDK_CALL_BACKEND_WEB_PAYMENT_URL,
+      AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
   fun sendCallBackendAttributionEvent(responseCode: Int?, responseMessage: String?) {
     val eventData: MutableMap<String, Any> = HashMap()
     eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""

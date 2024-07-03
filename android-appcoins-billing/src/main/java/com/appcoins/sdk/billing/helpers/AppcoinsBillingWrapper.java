@@ -6,6 +6,7 @@ import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ID_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ITEM_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
 
 import android.os.Bundle;
 import android.os.IBinder;
@@ -57,7 +58,7 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
         apiVersion, sku, type, developerPayload);
     if (bundle == null) {
       bundle = new Bundle();
-      bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.getValue());
+      bundle.putInt(RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.getValue());
     }
     pendingIntentCaller.saveIntent(bundle);
     return bundle;

@@ -1,12 +1,22 @@
 package com.appcoins.sdk.billing.helpers;
 
+import static android.graphics.Typeface.BOLD;
+import static com.appcoins.sdk.billing.helpers.WalletUtils.context;
+import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.appcoins_wallet;
+import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_body;
+import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_close_button;
+import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_close_install;
+import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iap_wallet_and_appstore_not_installed_popup_body;
+import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iap_wallet_and_appstore_not_installed_popup_button;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
+import static com.appcoins.sdk.billing.utils.LayoutUtils.generateRandomId;
+import static com.appcoins.sdk.billing.utils.LayoutUtils.setBackground;
+
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -29,28 +39,19 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.sdk.billing.BuyItemProperties;
 import com.appcoins.sdk.billing.analytics.AnalyticsManagerProvider;
 import com.appcoins.sdk.billing.analytics.BillingAnalytics;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.helpers.translations.TranslationsRepository;
-import com.appcoins.sdk.billing.listeners.StartPurchaseAfterBindListener;
-import com.appcoins.sdk.billing.payflow.PayflowManager;
+import com.appcoins.sdk.billing.listeners.PendingPurchaseStream;
+import com.appcoins.sdk.billing.usecases.GetAppInstalledVersion;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-
-import static android.graphics.Typeface.BOLD;
-import static com.appcoins.sdk.billing.helpers.WalletUtils.context;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.appcoins_wallet;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_body;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_close_button;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_close_install;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iap_wallet_and_appstore_not_installed_popup_body;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iap_wallet_and_appstore_not_installed_popup_button;
-import static com.appcoins.sdk.billing.utils.LayoutUtils.generateRandomId;
-import static com.appcoins.sdk.billing.utils.LayoutUtils.setBackground;
 
 import kotlin.Pair;
 
@@ -71,7 +72,7 @@ public class InstallDialogActivity extends Activity {
   private final static String BUY_ITEM_PROPERTIES = "buy_item_properties";
   private final static String SDK_ANALYTICS = "sdk_analytics";
   private final String appBannerResourcePath = "appcoins-wallet/resources/app-banner";
-  public AppcoinsBillingStubHelper appcoinsBillingStubHelper;
+
   public BuyItemProperties buyItemProperties;
   public SdkAnalytics sdkAnalytics;
   private TranslationsRepository translations;
@@ -89,7 +90,6 @@ public class InstallDialogActivity extends Activity {
     super.onCreate(savedInstanceState);
     BillingAnalytics billingAnalytics =
         new BillingAnalytics(AnalyticsManagerProvider.provideAnalyticsManager());
-    appcoinsBillingStubHelper = AppcoinsBillingStubHelper.getInstance();
     buyItemProperties = (BuyItemProperties) getIntent().getSerializableExtra(BUY_ITEM_PROPERTIES);
     sdkAnalytics = (SdkAnalytics) getIntent().getSerializableExtra(SDK_ANALYTICS);
     translations = TranslationsRepository.getInstance(this);
@@ -113,14 +113,14 @@ public class InstallDialogActivity extends Activity {
     sdkAnalytics.walletInstallImpression();
   }
 
-  @Override protected void onResume() {
-    super.onResume();
-    new PayflowManager(context.getPackageName()).getPayflowPriorityAsync(null);
-    if (WalletUtils.hasWalletInstalled()) {
-      showLoadingDialog();
-      sdkAnalytics.installWalletAptoideSuccess();
-      appcoinsBillingStubHelper.createRepository(this::makeTheStoredPurchase);
-    }
+  @Override
+  protected void onResume() {
+      super.onResume();
+      if (WalletUtils.hasBillingServiceInstalled()) {
+          showLoadingDialog();
+          sdkAnalytics.installWalletAptoideSuccess();
+          PendingPurchaseStream.getInstance().emit(new Pair<>(this, buyItemProperties));
+      }
   }
 
   @Override protected void onSaveInstanceState(Bundle outState) {
@@ -131,7 +131,7 @@ public class InstallDialogActivity extends Activity {
   @Override public void onBackPressed() {
     sdkAnalytics.walletInstallClick("back_button");
     Bundle response = new Bundle();
-    response.putInt(Utils.RESPONSE_CODE, RESULT_USER_CANCELED);
+    response.putInt(RESPONSE_CODE, RESULT_USER_CANCELED);
     Intent intent = new Intent();
     intent.putExtras(response);
     setResult(Activity.RESULT_CANCELED, intent);
@@ -142,18 +142,6 @@ public class InstallDialogActivity extends Activity {
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     Log.d("InstallDialogActivity", "onActivityResult: resultCode "+ resultCode);
     finishActivity(resultCode, data);
-  }
-
-  private void handleServiceInstalled(){
-    Log.d("InstallDialogActivity", "onResume: hasBillingServiceInstalled ");
-    showLoadingDialog();
-    sdkAnalytics.installWalletAptoideSuccess();
-    appcoinsBillingStubHelper.createRepository(new StartPurchaseAfterBindListener() {
-      @Override public void startPurchaseAfterBind() {
-        Log.d("InstallDialogActivity", "onResume: hasBillingServiceInstalled - startPurchaseAfterBind");
-        makeTheStoredPurchase();
-      }
-    });
   }
 
   private void handlePurchaseStartEvent(BillingAnalytics billingAnalytics) {
@@ -182,31 +170,6 @@ public class InstallDialogActivity extends Activity {
     progressBar.setLayoutParams(layoutParams);
     dialogLayout.addView(progressBar);
     showInstallationDialog(backgroundLayout);
-  }
-
-  private void makeTheStoredPurchase() {
-    Bundle intent = appcoinsBillingStubHelper.getBuyIntent(buyItemProperties.getApiVersion(),
-        buyItemProperties.getPackageName(), buyItemProperties.getSku(), buyItemProperties.getType(),
-        buyItemProperties.getDeveloperPayload()
-            .getRawPayload());
-
-    PendingIntent pendingIntent = intent.getParcelable(KEY_BUY_INTENT);
-    try {
-      if (pendingIntent != null) {
-        startIntentSenderForResult(pendingIntent.getIntentSender(), REQUEST_CODE, new Intent(), 0,
-            0, 0);
-      } else {
-        finishActivityWithError();
-      }
-    } catch (IntentSender.SendIntentException e) {
-      finishActivityWithError();
-    }
-  }
-
-  private void finishActivityWithError() {
-    Intent response = new Intent();
-    response.putExtra("RESPONSE_CODE", ERROR_RESULT_CODE);
-    finishActivity(ERROR_RESULT_CODE, response);
   }
 
   private void finishActivity(int resultCode, Intent data) {
@@ -273,7 +236,7 @@ public class InstallDialogActivity extends Activity {
       @Override public void onClick(View v) {
         sdkAnalytics.walletInstallClick("cancel");
         Bundle response = new Bundle();
-        response.putInt(Utils.RESPONSE_CODE, RESULT_USER_CANCELED);
+        response.putInt(RESPONSE_CODE, RESULT_USER_CANCELED);
 
         Intent intent = new Intent();
         intent.putExtras(response);
@@ -439,7 +402,7 @@ public class InstallDialogActivity extends Activity {
 
   private Pair<Intent, Boolean> buildStoreViewIntent(String storeUrl) {
     final Intent appStoreIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(storeUrl));
-    if (WalletUtils.getAppInstalledVersion(BuildConfig.APTOIDE_PACKAGE_NAME) >= MINIMUM_APTOIDE_VERSION) {
+    if (GetAppInstalledVersion.Companion.invoke(BuildConfig.APTOIDE_PACKAGE_NAME, context) >= MINIMUM_APTOIDE_VERSION) {
       appStoreIntent.setPackage(BuildConfig.APTOIDE_PACKAGE_NAME);
       return new Pair<>(appStoreIntent, true);
     }
@@ -525,7 +488,7 @@ public class InstallDialogActivity extends Activity {
     alert.setPositiveButton(dismissValue, new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int id) {
         Bundle response = new Bundle();
-        response.putInt(Utils.RESPONSE_CODE, RESULT_USER_CANCELED);
+        response.putInt(RESPONSE_CODE, RESULT_USER_CANCELED);
         Intent intent = new Intent();
         intent.putExtras(response);
         setResult(Activity.RESULT_CANCELED, intent);

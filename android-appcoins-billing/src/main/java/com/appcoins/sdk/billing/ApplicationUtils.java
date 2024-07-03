@@ -1,11 +1,12 @@
 package com.appcoins.sdk.billing;
 
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Base64;
 import android.util.Log;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
-import com.appcoins.sdk.billing.helpers.Utils;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.SDKWebResponse;
 import java.util.ArrayList;
@@ -165,7 +166,7 @@ class ApplicationUtils {
 
   private static int getResponseCodeFromIntent(Intent i) {
     Object o = i.getExtras()
-        .get(Utils.RESPONSE_CODE);
+        .get(RESPONSE_CODE);
     if (o == null) {
       logError("Intent with no response code, assuming OK (known issue)");
       return ResponseCode.OK.getValue();

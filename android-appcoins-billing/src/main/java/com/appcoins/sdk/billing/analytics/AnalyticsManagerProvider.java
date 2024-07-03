@@ -37,6 +37,7 @@ public class AnalyticsManagerProvider {
     list.add(SdkInstallFlowEvents.SDK_DOWNLOAD_WALLET_VANILLA_IMPRESSION);
     list.add(SdkInstallFlowEvents.SDK_DOWNLOAD_WALLET_FALLBACK_IMPRESSION);
     list.add(SdkBackendPayflowEvents.SDK_CALL_BACKEND_PAYFLOW);
+    list.add(SdkBackendPayflowEvents.SDK_CALL_BACKEND_WEB_PAYMENT_URL);
     list.add(SdkBackendPayflowEvents.SDK_CALL_BACKEND_ATTRIBUTION);
     list.add(SdkBackendPayflowEvents.SDK_CALL_BINDSERVICE_ATTEMPT);
     list.add(SdkBackendPayflowEvents.SDK_CALL_BINDSERVICE_FAIL);
