@@ -52,7 +52,7 @@ public class WalletUtils {
   }
 
   public static Bundle startServiceBind(AppcoinsBilling serviceAppcoinsBilling, int apiVersion,
-      String sku, String type, String developerPayload) {
+      String sku, String type, String developerPayload, String oemid, String guestWalletId) {
     try {
       // temporary workaround for the possibility of the endpoint failing, with two hardcoded options
       // but the logic should be reused instead of this hardcoded solution
@@ -61,7 +61,7 @@ public class WalletUtils {
                 || Objects.equals(billingPackageName, BuildConfig.GAMESHUB_PACKAGE_NAME)
                 || Objects.equals(billingPackageName, BuildConfig.APTOIDE_GAMES_PACKAGE_NAME)) {
           return handleBindServiceAttempt(serviceAppcoinsBilling, packageToMethodName(), 1, apiVersion, sku,
-              type, developerPayload);
+              type, developerPayload, oemid, guestWalletId);
         }
       } else {
         for (PaymentFlowMethod method : paymentFlowMethods) {
@@ -69,7 +69,7 @@ public class WalletUtils {
                   || method instanceof PaymentFlowMethod.GamesHub
                   || method instanceof PaymentFlowMethod.AptoideGames) {
             Bundle bundle = handleBindServiceAttempt(serviceAppcoinsBilling, method.getName(),
-                method.getPriority(), apiVersion, sku, type, developerPayload);
+                method.getPriority(), apiVersion, sku, type, developerPayload, oemid, guestWalletId);
             if (bundle != null) {
               return bundle;
             }
@@ -84,11 +84,11 @@ public class WalletUtils {
 
   private static Bundle handleBindServiceAttempt(AppcoinsBilling serviceAppcoinsBilling,
       String methodName, int methodPriority, int apiVersion, String sku, String type,
-      String developerPayload) {
+      String developerPayload, String oemid, String guestWalletId) {
     try {
       sdkAnalytics.sendCallBindServiceAttemptEvent(methodName, methodPriority);
       return serviceAppcoinsBilling.getBuyIntent(apiVersion, context.getPackageName(), sku, type,
-          developerPayload);
+          developerPayload, oemid, guestWalletId);
     } catch (Exception e) {
       return handleBindServiceFail(e, methodName, methodPriority);
     }

@@ -37,13 +37,15 @@ public class UriCommunicationAppcoinsBilling implements AppcoinsBilling, Seriali
   }
 
   @Override public Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type,
-      String developerPayload) throws RemoteException {
+      String developerPayload, String oemid, String guestWalletId) throws RemoteException {
     Bundle arguments = new Bundle();
     arguments.putInt("API_VERSION", apiVersion);
     arguments.putString("PACKAGE_NAME", packageName);
     arguments.putString("BILLING_SKU", sku);
     arguments.putString("BILLING_TYPE", type);
     arguments.putString("DEVELOPER_PAYLOAD", developerPayload);
+    arguments.putString("OEMID", oemid);
+    arguments.putString("GUEST_WALLET_ID", guestWalletId);
     return callMethod(3, arguments).getBundle("RESULT_VALUE");
   }
 
