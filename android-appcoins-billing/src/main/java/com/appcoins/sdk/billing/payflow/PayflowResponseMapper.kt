@@ -27,10 +27,16 @@ class PayflowResponseMapper {
               "games_hub_checkout" -> PaymentFlowMethod.GamesHub(methodName, priority)
               "web_payment" -> {
                 val paymentMethodsJsonObject = paymentMethodsObject.optJSONObject(methodName)
-                val version = paymentMethodsJsonObject
-                  ?.optString("version") ?: DEFAULT_WEB_PAYMENT_URL_VERSION
-                val paymentFlow = paymentMethodsJsonObject?.optString("payment_flow")
-                PaymentFlowMethod.WebPayment(methodName, priority, version, paymentFlow)
+                val version =
+                    paymentMethodsJsonObject
+                        ?.optString("version")
+                        ?.takeIf { it.isNotEmpty() }
+                        ?: DEFAULT_WEB_PAYMENT_URL_VERSION
+                val paymentFlow =
+                    paymentMethodsJsonObject
+                        ?.optString("payment_flow")
+                        ?.takeIf { it.isNotEmpty() }
+                  PaymentFlowMethod.WebPayment(methodName, priority, version, paymentFlow)
               }
               else -> null
             }
