@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing;
 
+import android.util.Log;
+
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
@@ -7,8 +9,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class AppCoinsBilling implements Billing {
+  private static final String TAG = "AppCoinsBilling";
   private final Repository repository;
   private final byte[] base64DecodedPublicKey;
+
+  private Thread querySkuDetailsThread = null;
 
   public AppCoinsBilling(Repository repository, byte[] base64DecodedPublicKey) {
     this.repository = repository;
@@ -51,10 +56,19 @@ public class AppCoinsBilling implements Billing {
 
   @Override public void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
       SkuDetailsResponseListener onSkuDetailsResponseListener) {
+    stopPreviousSkuDetailsRequests();
     SkuDetailsAsync skuDetailsAsync =
         new SkuDetailsAsync(skuDetailsParams, onSkuDetailsResponseListener, repository);
-    Thread t = new Thread(skuDetailsAsync);
-    t.start();
+    querySkuDetailsThread = new Thread(skuDetailsAsync);
+    querySkuDetailsThread.start();
+  }
+
+  private void stopPreviousSkuDetailsRequests() {
+    try {
+      querySkuDetailsThread.stop();
+    } catch (Exception e){
+      Log.d(TAG, "Failed to stop previous SkuDetails Request Thread: " + e.getMessage());
+    }
   }
 
   @Override public void consumeAsync(String purchaseToken, ConsumeResponseListener listener) {
