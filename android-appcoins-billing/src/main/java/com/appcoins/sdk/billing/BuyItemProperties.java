@@ -44,4 +44,14 @@ public class BuyItemProperties implements Serializable {
   public SkuDetails getSkuDetails() {
     return skuDetails;
   }
+
+  public BillingFlowParams toBillingFlowParams(){
+    return new BillingFlowParams(
+            sku,
+            type,
+            developerPayload.getOrderReference(),
+            developerPayload.getDeveloperPayload(),
+            developerPayload.getOrigin()
+    );
+  }
 }

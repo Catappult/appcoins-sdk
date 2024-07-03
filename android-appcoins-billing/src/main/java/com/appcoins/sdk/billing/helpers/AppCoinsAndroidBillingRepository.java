@@ -4,6 +4,8 @@ import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
+
 import com.appcoins.billing.AppcoinsBilling;
 import com.appcoins.sdk.billing.ConnectionLifeCycle;
 import com.appcoins.sdk.billing.LaunchBillingFlowResult;
@@ -66,12 +68,21 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
 
     Bundle bundle = AndroidBillingMapper.mapArrayListToBundleSkuDetails(sku);
 
-    Bundle response;
+    SkuDetailsResult skuDetailsResult;
 
     try {
-      response = service.getSkuDetails(apiVersion, packageName, skuType, bundle);
-      return AndroidBillingMapper.mapBundleToHashMapSkuDetails(skuType, response);
-    } catch (RemoteException e) {
+      do {
+        Bundle response = service.getSkuDetails(apiVersion, packageName, skuType, bundle);
+        skuDetailsResult = AndroidBillingMapper.mapBundleToHashMapSkuDetails(skuType, response);
+
+        if (skuDetailsResult.getResponseCode() == ResponseCode.SERVICE_UNAVAILABLE.getValue()) {
+            Log.e("AppCoinsBillingRepo", "Failed to get SkuDetails request: " + skuDetailsResult.getResponseCode());
+            Thread.sleep(5000);
+        }
+      } while (skuDetailsResult.getResponseCode() == ResponseCode.SERVICE_UNAVAILABLE.getValue());
+
+      return skuDetailsResult;
+    } catch (Exception e) {
       e.printStackTrace();
       throw new ServiceConnectionException(e.getMessage());
     }
@@ -91,14 +102,14 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
   }
 
   @Override
-  public LaunchBillingFlowResult launchBillingFlow(String skuType, String sku, String payload)
+  public LaunchBillingFlowResult launchBillingFlow(String skuType, String sku, String payload, String oemid, String guestWalletId)
       throws ServiceConnectionException {
 
     if (!isReady()) {
       throw new ServiceConnectionException();
     }
     try {
-      Bundle response = service.getBuyIntent(apiVersion, packageName, sku, skuType, payload);
+      Bundle response = service.getBuyIntent(apiVersion, packageName, sku, skuType, payload, oemid, guestWalletId);
 
       return AndroidBillingMapper.mapBundleToHashMapGetIntent(response);
     } catch (RemoteException e) {

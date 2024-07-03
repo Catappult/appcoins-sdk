@@ -1,5 +1,11 @@
 package com.appcoins.sdk.billing.helpers;
 
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ID_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ITEM_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
+
 import android.os.Bundle;
 import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.sdk.billing.ResponseCode;
@@ -12,11 +18,6 @@ import com.appcoins.sdk.billing.service.BdsService;
 import com.appcoins.sdk.billing.service.wallet.WalletGenerationMapper;
 import com.appcoins.sdk.billing.service.wallet.WalletRepository;
 import java.util.ArrayList;
-
-import static com.appcoins.sdk.billing.helpers.AppcoinsBillingStubHelper.INAPP_DATA_SIGNATURE_LIST;
-import static com.appcoins.sdk.billing.helpers.AppcoinsBillingStubHelper.INAPP_PURCHASE_DATA_LIST;
-import static com.appcoins.sdk.billing.helpers.AppcoinsBillingStubHelper.INAPP_PURCHASE_ID_LIST;
-import static com.appcoins.sdk.billing.helpers.AppcoinsBillingStubHelper.INAPP_PURCHASE_ITEM_LIST;
 
 class GuestPurchasesInteract {
 
@@ -68,7 +69,7 @@ class GuestPurchasesInteract {
       skuList.add(skuPurchase.getProduct()
           .getName());
     }
-    bundle.putInt(Utils.RESPONSE_CODE, ResponseCode.OK.getValue());
+    bundle.putInt(RESPONSE_CODE, ResponseCode.OK.getValue());
     bundle.putStringArrayList(INAPP_PURCHASE_ID_LIST, idsList);
     bundle.putStringArrayList(INAPP_PURCHASE_ITEM_LIST, skuList);
     bundle.putStringArrayList(INAPP_PURCHASE_DATA_LIST, dataList);

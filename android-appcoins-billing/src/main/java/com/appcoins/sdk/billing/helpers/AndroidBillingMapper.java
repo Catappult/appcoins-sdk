@@ -1,14 +1,24 @@
 package com.appcoins.sdk.billing.helpers;
 
-import android.app.PendingIntent;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.GET_SKU_DETAILS_ITEM_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ID_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
+
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+
+import com.appcoins.sdk.billing.Appc;
 import com.appcoins.sdk.billing.LaunchBillingFlowResult;
+import com.appcoins.sdk.billing.Price;
 import com.appcoins.sdk.billing.Purchase;
 import com.appcoins.sdk.billing.PurchasesResult;
 import com.appcoins.sdk.billing.SkuDetails;
 import com.appcoins.sdk.billing.SkuDetailsResult;
+import com.appcoins.sdk.billing.SkuDetailsV2;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,13 +30,13 @@ public class AndroidBillingMapper {
   private static final String APPC = "APPC";
 
   public static PurchasesResult mapPurchases(Bundle bundle, String skuType) {
-    int responseCode = bundle.getInt("RESPONSE_CODE");
+    int responseCode = bundle.getInt(RESPONSE_CODE);
     List<Purchase> list = new ArrayList<>();
     ArrayList<String> purchaseDataList =
-        bundle.getStringArrayList(Utils.RESPONSE_INAPP_PURCHASE_DATA_LIST);
+        bundle.getStringArrayList(INAPP_PURCHASE_DATA_LIST);
     ArrayList<String> signatureList =
-        bundle.getStringArrayList(Utils.RESPONSE_INAPP_SIGNATURE_LIST);
-    ArrayList<String> idsList = bundle.getStringArrayList(Utils.RESPONSE_INAPP_PURCHASE_ID_LIST);
+        bundle.getStringArrayList(INAPP_DATA_SIGNATURE_LIST);
+    ArrayList<String> idsList = bundle.getStringArrayList(INAPP_PURCHASE_ID_LIST);
 
     if (purchaseDataList != null && signatureList != null && idsList != null) {
       for (int i = 0; i < purchaseDataList.size(); ++i) {
@@ -87,7 +97,7 @@ public class AndroidBillingMapper {
 
   public static Bundle mapArrayListToBundleSkuDetails(List<String> skus) {
     Bundle bundle = new Bundle();
-    bundle.putStringArrayList(Utils.GET_SKU_DETAILS_ITEM_LIST, (ArrayList<String>) skus);
+    bundle.putStringArrayList(GET_SKU_DETAILS_ITEM_LIST, (ArrayList<String>) skus);
     return bundle;
   }
 
@@ -102,7 +112,7 @@ public class AndroidBillingMapper {
         arrayList.add(skuDetails);
       }
     }
-    int responseCode = (int) bundle.get("RESPONSE_CODE");
+    int responseCode = (int) bundle.get(RESPONSE_CODE);
     SkuDetailsResult skuDetailsResult = new SkuDetailsResult(arrayList, responseCode);
 
     return skuDetailsResult;
@@ -138,55 +148,46 @@ public class AndroidBillingMapper {
 
   public static LaunchBillingFlowResult mapBundleToHashMapGetIntent(Bundle bundle) {
 
-    return new LaunchBillingFlowResult(bundle.getInt("RESPONSE_CODE"),
-        (PendingIntent) bundle.getParcelable("BUY_INTENT"));
+    return new LaunchBillingFlowResult(bundle.getInt(RESPONSE_CODE),
+        bundle.getParcelable("BUY_INTENT"), bundle.getParcelable("WEB_BUY_INTENT"));
   }
 
-  public static ArrayList<SkuDetails> mapSkuDetailsFromWS(String skuType,
-      String skuDetailsResponse) {
-    ArrayList<SkuDetails> skuDetailsList = new ArrayList<SkuDetails>();
+  public static ArrayList<SkuDetailsV2> mapSkuDetailsFromWS(String skuDetailsResponse) {
+    ArrayList<SkuDetailsV2> skuDetailsList = new ArrayList<>();
 
     if (!skuDetailsResponse.equals("")) {
       try {
         JSONObject jsonElement = new JSONObject(skuDetailsResponse);
         JSONArray items = jsonElement.getJSONArray("items");
         for (int i = 0; i < items.length(); i++) {
-          JSONObject obj = items.getJSONObject(i);
+          try {
+            JSONObject obj = items.getJSONObject(i);
 
-          String sku = obj.getString("name");
+            String sku = obj.getString("sku");
+            String title = obj.getString("title");
+            String description = null;
+            if (obj.has("description")){
+              description = obj.optString("description");
+            }
 
-          JSONObject priceObj = obj.getJSONObject("price");
+            JSONObject priceObj = obj.getJSONObject("price");
 
-          String price = getFiatPrice(priceObj.getJSONObject("fiat"));
-          long priceAmountMicros = getFiatAmountInMicros(priceObj.getJSONObject("fiat"));
-          String priceCurrencyCode = getFiatCurrencyCode(priceObj.getJSONObject("fiat"));
-          if (priceObj.has("base") && priceObj.getString("base")
-              .equalsIgnoreCase(APPC)) {
-            price = getAppcPrice(priceObj);
-            priceAmountMicros = getAppcAmountInMicros(priceObj);
-            priceCurrencyCode = APPC;
+            JSONObject appcObj = priceObj.getJSONObject("appc");
+            String appcLabel = appcObj.getString("label");
+            int appcMicros = appcObj.getInt("micros");
+            Appc appc = new Appc(appcLabel, appcMicros);
+
+            String currency = priceObj.getString("currency");
+            String label = priceObj.getString("label");
+            int micros = priceObj.getInt("micros");
+            Price price = new Price(currency, label, micros, appc);
+
+            SkuDetailsV2 skuDetailsV2 = new SkuDetailsV2(sku, title, description, price);
+
+            skuDetailsList.add(skuDetailsV2);
+          } catch (JSONException e) {
+            e.printStackTrace();
           }
-
-          String appcPrice = getAppcPrice(priceObj);
-          long appcPriceAmountMicros = getAppcAmountInMicros(priceObj);
-          String appcPriceCurrencyCode = APPC;
-
-          String fiatPrice = getFiatPrice(priceObj.getJSONObject("fiat"));
-          long fiatPriceAmountMicros = getFiatAmountInMicros(priceObj.getJSONObject("fiat"));
-          String fiatPriceCurrencyCode = getFiatCurrencyCode(priceObj.getJSONObject("fiat"));
-
-          String type = skuType;
-
-          String title = escapeString(obj.getString("label"));
-
-          String description = escapeString(obj.getString("description"));
-
-          SkuDetails skuDetails =
-              new SkuDetails(skuType, sku, type, price, priceAmountMicros, priceCurrencyCode,
-                  appcPrice, appcPriceAmountMicros, appcPriceCurrencyCode, fiatPrice,
-                  fiatPriceAmountMicros, fiatPriceCurrencyCode, title, description);
-
-          skuDetailsList.add(skuDetails);
         }
       } catch (JSONException e) {
         e.printStackTrace();
@@ -306,29 +307,29 @@ public class AndroidBillingMapper {
         .getString("code");
   }
 
-  public static String mapSkuDetailsResponse(SkuDetails skuDetails) {
+  public static String mapSkuDetailsResponse(SkuDetailsV2 skuDetails) {
     return "{\"productId\":\""
         + skuDetails.getSku()
         + "\",\"type\" : \""
-        + skuDetails.getType()
+        + "INAPP"
         + "\",\"price\" : \""
-        + skuDetails.getPrice()
+        + skuDetails.getPrice().getLabel()
         + "\",\"price_currency_code\": \""
-        + skuDetails.getPriceCurrencyCode()
+        + skuDetails.getPrice().getCurrency()
         + "\",\"price_amount_micros\": "
-        + skuDetails.getPriceAmountMicros()
+        + skuDetails.getPrice().getMicros()
         + ",\"appc_price\" : \""
-        + skuDetails.getAppcPrice()
+        + skuDetails.getPrice().getAppc().getLabel()
         + "\",\"appc_price_currency_code\": \""
-        + skuDetails.getAppcPriceCurrencyCode()
+        + "APPC"
         + "\",\"appc_price_amount_micros\": "
-        + skuDetails.getAppcPriceAmountMicros()
+        + skuDetails.getPrice().getAppc().getMicros()
         + ",\"fiat_price\" : \""
-        + skuDetails.getFiatPrice()
+        + skuDetails.getPrice().getLabel()
         + "\",\"fiat_price_currency_code\": \""
-        + skuDetails.getFiatPriceCurrencyCode()
+        + skuDetails.getPrice().getCurrency()
         + "\",\"fiat_price_amount_micros\": "
-        + skuDetails.getFiatPriceAmountMicros()
+        + skuDetails.getPrice().getMicros()
         + ",\"title\" : \""
         + skuDetails.getTitle()
         + "\",\"description\" : \""

@@ -31,14 +31,78 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
     )
   }
 
+  fun sendPurchaseViaWebEvent(skuDetails: String) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.SKU_NAME] = skuDetails
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkAnalyticsEvents.SDK_WEB_PAYMENT_IMPRESSION,
+      AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
   fun sendCallBackendPayflowEvent(responseCode: Int?, responseMessage: String?) {
     val eventData: MutableMap<String, Any> = HashMap()
-    eventData[AnalyticsLabels.PAYFLOW_RESPONSE_CODE] = responseCode?.toString() ?: ""
-    eventData[AnalyticsLabels.PAYFLOW_RESPONSE_MESSAGE] = responseMessage ?: ""
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
 
     analyticsManager.logEvent(
       eventData,
       SdkBackendPayflowEvents.SDK_CALL_BACKEND_PAYFLOW,
+      AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
+  fun sendCallBackendWebPaymentUrlEvent(responseCode: Int?, responseMessage: String?) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkBackendPayflowEvents.SDK_CALL_BACKEND_WEB_PAYMENT_URL,
+      AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
+  fun sendCallBackendAttributionEvent(responseCode: Int?, responseMessage: String?) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkBackendPayflowEvents.SDK_CALL_BACKEND_ATTRIBUTION,
+      AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
+  fun sendCallBackendAppVersionEvent(responseCode: Int?, responseMessage: String?) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkBackendPayflowEvents.SDK_CALL_BACKEND_APP_VERSION,
+      AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
+  fun sendCallBackendStoreLinkEvent(responseCode: Int?, responseMessage: String?) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
+    eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkBackendPayflowEvents.SDK_CALL_BACKEND_STORE_LINK,
       AnalyticsManager.Action.IMPRESSION,
       EVENT_CONTEXT
     )
@@ -102,8 +166,10 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
     )
   }
 
-  fun downloadWalletFallbackImpression() {
-    val eventData: Map<String, Any> = emptyMap()
+  fun downloadWalletFallbackImpression(storeType: String) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.STORE_TYPE] = storeType
+
     analyticsManager.logEvent(
       eventData,
       SdkInstallFlowEvents.SDK_DOWNLOAD_WALLET_FALLBACK_IMPRESSION,
@@ -122,6 +188,40 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
     )
   }
 
+  fun appUpdateDeeplinkImpression(deeplink: String) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.APP_UPDATE_DEEPLINK] = deeplink
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkUpdateFlowEvents.SDK_APP_UPDATE_DEEPLINK_IMPRESSION,
+      AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
+  fun appUpdateImpression() {
+    val eventData: Map<String, Any> = emptyMap()
+    analyticsManager.logEvent(
+      eventData,
+      SdkUpdateFlowEvents.SDK_APP_UPDATE_IMPRESSION,
+      AnalyticsManager.Action.IMPRESSION,
+      EVENT_CONTEXT
+    )
+  }
+
+  fun appUpdateClick(updateAction: String) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.APP_UPDATE_ACTION] = updateAction
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkUpdateFlowEvents.SDK_APP_UPDATE_CLICK,
+      AnalyticsManager.Action.CLICK,
+      EVENT_CONTEXT
+    )
+  }
+
   fun sendPurchaseStatusEvent(paymentStatus: String, responseMessage: String) {
     val eventData: MutableMap<String, Any> = HashMap()
     eventData[AnalyticsLabels.PAYMENT_STATUS] = paymentStatus
@@ -131,6 +231,24 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
       eventData,
       SdkAnalyticsEvents.SDK_IAP_PAYMENT_STATUS_FEEDBACK,
       AnalyticsManager.Action.CLICK,
+      EVENT_CONTEXT
+    )
+  }
+
+  fun sendWebPaymentUrlNotGeneratedEvent() =
+    sendUnexpectedFailureEvent(SdkAnalyticsFailureLabels.SDK_WEB_PAYMENT_URL_GENERATION_FAILED)
+
+  fun sendBackendGuestUidGenerationFailedEvent() =
+    sendUnexpectedFailureEvent(SdkAnalyticsFailureLabels.SDK_BACKEND_GUEST_UID_GENERATION_FAILED)
+
+  private fun sendUnexpectedFailureEvent(failureType: String) {
+    val eventData: MutableMap<String, Any> = HashMap()
+    eventData[AnalyticsLabels.FAILURE_TYPE] = failureType
+
+    analyticsManager.logEvent(
+      eventData,
+      SdkAnalyticsEvents.SDK_UNEXPECTED_FAILURE,
+      AnalyticsManager.Action.ERROR,
       EVENT_CONTEXT
     )
   }

@@ -50,6 +50,8 @@ android {
           project.GAMESHUB_PACKAGE_NAME_STG
       buildConfigField 'String', 'GAMESHUB_PACKAGE_NAME_ALTERNATIVE',
           project.GAMESHUB_PACKAGE_NAME_DEV
+      buildConfigField 'String', 'APTOIDE_GAMES_PACKAGE_NAME',
+              project.APTOIDE_GAMES_PACKAGE_NAME_DEV
 
       buildConfigField 'String', 'APPCOINS_WALLET_IAB_BIND_ACTION',
           project.APPCOINS_WALLET_IAB_BIND_ACTION_DEV
@@ -57,6 +59,8 @@ android {
           project.GAMESHUB_IAB_BIND_ACTION_STG
       buildConfigField 'String', 'GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE',
           project.GAMESHUB_IAB_BIND_ACTION_DEV
+      buildConfigField 'String', 'APTOIDE_GAMES_IAB_BIND_ACTION',
+              project.APTOIDE_GAMES_IAB_BIND_ACTION_DEV
 
       buildConfigField 'String', 'SERVICE_BIND_LIST',
           "\"" + project.APTOIDE_PACKAGE_NAME_DEV.replace('\"', '') +
@@ -66,6 +70,8 @@ android {
               project.GAMESHUB_PACKAGE_NAME_STG.replace('\"', '') +
               "," +
               project.GAMESHUB_PACKAGE_NAME_DEV.replace('\"', '') +
+              "," +
+              project.APTOIDE_GAMES_PACKAGE_NAME_DEV.replace('\"', '') +
               "\""
 
       buildConfigField 'String', 'HOST_WS',
@@ -74,6 +80,11 @@ android {
           "\"" + project.ROPSTEN_NETWORK_BACKEND_BASE_HOST + "\""
       buildConfigField 'String', 'BDS_BASE_HOST', project.BDS_BASE_HOST_DEV
       buildConfigField 'String', 'PAYFLOW_HOST', project.PAYFLOW_NETWORK_BASE_HOST_DEV
+      buildConfigField 'String', 'MMP_BASE_HOST', project.MMP_BASE_HOST_DEV
+      buildConfigField 'String', 'STORE_LINK_BASE_HOST', project.STORE_LINK_BASE_HOST_DEV
+      buildConfigField 'String', 'WS75_BASE_HOST', project.WS75_BASE_HOST_DEV
+
+      buildConfigField 'String', 'WALLET_APP_BROWSER_URL', project.WALLET_APP_BROWSER_URL
 
       buildConfigField 'String', 'ADYEN_PUBLIC_KEY', project.ADYEN_PUBLIC_KEY_DEV
       buildConfigField 'String', 'INDICATIVE_API_KEY',
@@ -95,6 +106,8 @@ android {
           project.GAMESHUB_PACKAGE_NAME
       buildConfigField 'String', 'GAMESHUB_PACKAGE_NAME_ALTERNATIVE',
           project.GAMESHUB_PACKAGE_NAME
+      buildConfigField 'String', 'APTOIDE_GAMES_PACKAGE_NAME',
+              project.APTOIDE_GAMES_PACKAGE_NAME
 
       buildConfigField 'String', 'APPCOINS_WALLET_IAB_BIND_ACTION',
           project.APPCOINS_WALLET_IAB_BIND_ACTION
@@ -102,6 +115,8 @@ android {
           project.GAMESHUB_IAB_BIND_ACTION
       buildConfigField 'String', 'GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE',
           project.GAMESHUB_IAB_BIND_ACTION
+      buildConfigField 'String', 'APTOIDE_GAMES_IAB_BIND_ACTION',
+              project.APTOIDE_GAMES_IAB_BIND_ACTION
 
       buildConfigField 'String', 'SERVICE_BIND_LIST',
           "\"" + project.APTOIDE_PACKAGE_NAME.replace('\"', '') +
@@ -109,6 +124,8 @@ android {
               project.APPCOINS_WALLET_PACKAGE_NAME.replace('\"', '') +
               "," +
               project.GAMESHUB_PACKAGE_NAME.replace('\"', '') +
+              "," +
+              project.APTOIDE_GAMES_PACKAGE_NAME.replace('\"', '') +
               "\""
 
       buildConfigField 'String', 'HOST_WS',
@@ -117,6 +134,11 @@ android {
           "\"" + project.MAIN_NETWORK_BACKEND_BASE_HOST + "\""
       buildConfigField 'String', 'BDS_BASE_HOST', project.BDS_BASE_HOST_PROD
       buildConfigField 'String', 'PAYFLOW_HOST', project.PAYFLOW_NETWORK_BASE_HOST
+      buildConfigField 'String', 'MMP_BASE_HOST', project.MMP_BASE_HOST_PROD
+      buildConfigField 'String', 'STORE_LINK_BASE_HOST', project.STORE_LINK_BASE_HOST_PROD
+      buildConfigField 'String', 'WS75_BASE_HOST', project.WS75_BASE_HOST_PROD
+
+      buildConfigField 'String', 'WALLET_APP_BROWSER_URL', project.WALLET_APP_BROWSER_URL
 
       buildConfigField 'String', 'ADYEN_PUBLIC_KEY', project.ADYEN_PUBLIC_KEY
       buildConfigField 'String', 'INDICATIVE_API_KEY',
@@ -140,6 +162,7 @@ dependencies {
 
   api 'com.indicative.client.android:Indicative-Android:1.1.0'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  api 'org.java-websocket:Java-WebSocket:1.5.3'
 
   api project(':appcoins-billing')
   api project(':appcoins-adyen')
@@ -217,10 +240,12 @@ publishing {
           def dependenciesNode = asNode().appendNode('dependencies')
 
           project.configurations.implementation.allDependencies.each {
-            def dependencyNode = dependenciesNode.appendNode('dependency')
-            dependencyNode.appendNode('groupId', it.group)
-            dependencyNode.appendNode('artifactId', it.name)
-            dependencyNode.appendNode('version', it.version)
+            if (it.name != "unspecified"){
+              def dependencyNode = dependenciesNode.appendNode('dependency')
+              dependencyNode.appendNode('groupId', it.group)
+              dependencyNode.appendNode('artifactId', it.name)
+              dependencyNode.appendNode('version', it.version)
+            }
           }
         }
       }

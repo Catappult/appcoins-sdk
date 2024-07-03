@@ -14,11 +14,19 @@
     <package android:name="com.appcoins.wallet" />
     <package android:name="com.dti.folderlauncher" />
     <package android:name="cm.aptoide.pt" />
+    <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <category android:name="android.intent.category.BROWSABLE" />
+      <data android:scheme="https" />
+    </intent>
   </queries>
 
   <application>
     <activity
         android:name="com.appcoins.sdk.billing.helpers.InstallDialogActivity"
+        android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
+    <activity
+        android:name="com.appcoins.sdk.billing.helpers.UpdateDialogActivity"
         android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
     <activity
         android:name="com.appcoins.sdk.billing.payasguest.IabActivity"
@@ -37,5 +45,6 @@
         <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>
     </activity>
+    <service android:name="com.appcoins.sdk.billing.service.WebPaymentWebSocketService"/>
   </application>
 </manifest>
