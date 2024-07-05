@@ -13,7 +13,7 @@ public interface Billing {
 
   void consumeAsync(String purchaseToken, ConsumeResponseListener listener);
 
-  LaunchBillingFlowResult launchBillingFlow(BillingFlowParams params, String payload)
+  LaunchBillingFlowResult launchBillingFlow(BillingFlowParams params, String payload, String oemid, String guestWalletId)
       throws ServiceConnectionException;
 
   boolean isReady();

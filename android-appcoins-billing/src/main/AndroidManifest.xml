@@ -11,8 +11,12 @@
     <intent>
       <action android:name="com.dti.folderlauncher.iab.action.BIND"/>
     </intent>
+    <intent>
+      <action android:name="com.aptoide.android.aptoidegames.iab.action.BIND"/>
+    </intent>
     <package android:name="com.appcoins.wallet" />
     <package android:name="com.dti.folderlauncher" />
+    <package android:name="com.aptoide.android.aptoidegames" />
     <package android:name="cm.aptoide.pt" />
     <intent>
       <action android:name="android.intent.action.VIEW" />
