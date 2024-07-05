@@ -68,18 +68,6 @@ android {
       buildConfigField 'String', 'APTOIDE_GAMES_IAB_BIND_ACTION',
               project.APTOIDE_GAMES_IAB_BIND_ACTION_DEV
 
-      buildConfigField 'String', 'SERVICE_BIND_LIST',
-          "\"" + project.APTOIDE_PACKAGE_NAME_DEV.replace('\"', '') +
-              "," +
-              project.APPCOINS_WALLET_PACKAGE_NAME_DEV.replace('\"', '') +
-              "," +
-              project.GAMESHUB_PACKAGE_NAME_STG.replace('\"', '') +
-              "," +
-              project.GAMESHUB_PACKAGE_NAME_DEV.replace('\"', '') +
-              "," +
-              project.APTOIDE_GAMES_PACKAGE_NAME_DEV.replace('\"', '') +
-              "\""
-
       buildConfigField 'String', 'HOST_WS',
           "\"" + project.ROPSTEN_NETWORK_BACKEND_BASE_HOST_WS + "\""
       buildConfigField 'String', 'BACKEND_BASE',
@@ -119,16 +107,6 @@ android {
           project.GAMESHUB_IAB_BIND_ACTION
       buildConfigField 'String', 'APTOIDE_GAMES_IAB_BIND_ACTION',
               project.APTOIDE_GAMES_IAB_BIND_ACTION
-
-      buildConfigField 'String', 'SERVICE_BIND_LIST',
-          "\"" + project.APTOIDE_PACKAGE_NAME.replace('\"', '') +
-              "," +
-              project.APPCOINS_WALLET_PACKAGE_NAME.replace('\"', '') +
-              "," +
-              project.GAMESHUB_PACKAGE_NAME.replace('\"', '') +
-              "," +
-              project.APTOIDE_GAMES_PACKAGE_NAME.replace('\"', '') +
-              "\""
 
       buildConfigField 'String', 'HOST_WS',
           "\"" + project.MAIN_NETWORK_BACKEND_BASE_HOST_WS + "\""
