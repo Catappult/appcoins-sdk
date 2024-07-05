@@ -1,10 +1,10 @@
-# Sets the minimum CMake version required for this project.
+# Minimum CMake version required for this project.
 cmake_minimum_required(VERSION 3.22.1)
 
-# Set the path to your configuration file
+# Path to the API Keys file.
 set(API_KEYS_FILE "${CMAKE_SOURCE_DIR}/API_KEYS.txt")
 
-# Function to read the key-value pairs from the config file
+# Function to read the key-value pairs from the API Keys file
 function(read_config_file filepath)
     file(READ "${filepath}" content)
     string(REPLACE "\n" ";" lines "${content}")
@@ -20,10 +20,9 @@ function(read_config_file filepath)
     endforeach ()
 endfunction()
 
-# Call the function to read the config file
 read_config_file(${API_KEYS_FILE})
 
-# Define the values as preprocessor definitions
+# Definition of the values for the API Keys
 add_definitions(-DINDICATIVE_API_KEY="${INDICATIVE_API_KEY}")
 add_definitions(-DINDICATIVE_API_KEY_DEV="${INDICATIVE_API_KEY_DEV}")
 add_definitions(-DRAKAM_API_KEY="${RAKAM_API_KEY}")
@@ -31,23 +30,8 @@ add_definitions(-DRAKAM_API_KEY_DEV="${RAKAM_API_KEY_DEV}")
 add_definitions(-DADYEN_API_KEY="${ADYEN_API_KEY}")
 add_definitions(-DADYEN_API_KEY_DEV="${ADYEN_API_KEY_DEV}")
 
-# Declares the project name. The project name can be accessed via ${ PROJECT_NAME},
-# Since this is the top level CMakeLists.txt, the project name is also accessible
-# with ${CMAKE_PROJECT_NAME} (both CMake variables are in-sync within the top level
-# build script scope).
+# Declaration of the project name.
 project("native-keys-storer")
 
-# Creates and names a library, sets it as either STATIC
-# or SHARED, and provides the relative paths to its source code.
-# You can define multiple libraries, and CMake builds them for you.
-# Gradle automatically packages shared libraries with your APK.
-#
-# In this top level CMakeLists.txt, ${CMAKE_PROJECT_NAME} is used to define
-# the target library name; in the sub-module's CMakeLists.txt, ${PROJECT_NAME}
-# is preferred for the same purpose.
-#
-# In order to load a library into your app from Java/Kotlin, you must call
-# System.loadLibrary() and pass the name of the library defined here;
-# for GameActivity/NativeActivity derived applications, the same library name must be
-# used in the AndroidManifest.xml file.
+# Adding library to the project for visibility to the Java code.
 add_library(${CMAKE_PROJECT_NAME} SHARED native-keys-storer.cpp)

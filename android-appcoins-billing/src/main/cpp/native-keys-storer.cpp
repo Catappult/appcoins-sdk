@@ -37,7 +37,7 @@ Java_com_appcoins_sdk_billing_helpers_PrivateKeysNativeHelper_getApiKey(JNIEnv *
                 stringToBeReturned = INDICATIVE_API_KEY;
                 break;
             default:
-                stringToBeReturned = E_INVALID_KEY;
+                stringToBeReturned = "";
         }
     } else if (strcmp(env->GetStringUTFChars(buildType, 0), "debug") == 0) {
         switch (apiKeyCode) {
@@ -51,10 +51,10 @@ Java_com_appcoins_sdk_billing_helpers_PrivateKeysNativeHelper_getApiKey(JNIEnv *
                 stringToBeReturned = INDICATIVE_API_KEY_DEV;
                 break;
             default:
-                stringToBeReturned = E_INVALID_KEY;
+                stringToBeReturned = "";
         }
     } else {
-        stringToBeReturned = E_INVALID_KEY;
+        stringToBeReturned = "";
     }
     return env->NewStringUTF(stringToBeReturned.c_str());
 }
