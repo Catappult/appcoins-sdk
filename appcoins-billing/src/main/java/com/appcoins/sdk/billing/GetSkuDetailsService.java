@@ -10,8 +10,7 @@ import java.net.URL;
 import java.util.List;
 
 public class GetSkuDetailsService {
-
-  private final static String URL_PATH = "/inapp/8.20180518/packages/packageName/products?names=";
+  private final static String URL_PATH = "/product/8.20240201/applications/packageName/inapp/consumables?skus=";
   private final String serviceUrl;
   private String packageName;
   private List<String> sku;
