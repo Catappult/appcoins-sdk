@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="igu_app_new_version_available_popup_body">There is a new version for this application.\nPlease update to the new version.</string>
-    <string name="igu_app_new_version_available_popup_update_button">UPDATE</string>
-    <string name="igu_app_new_version_available_popup_close_button">CLOSE</string>
+    <string name="igu_app_new_version_available_popup_body">Υπάρχει μία νέα έκδοση αυτής της εφαρμογής.\nΠαρακαλούμε ενημερώστε στη νέα έκδοση.</string>
+    <string name="igu_app_new_version_available_popup_update_button">ΕΝΗΜΕΡΩΣΗ</string>
+    <string name="igu_app_new_version_available_popup_close_button">ΚΛΕΙΣΙΜΟ</string>
 </resources>
