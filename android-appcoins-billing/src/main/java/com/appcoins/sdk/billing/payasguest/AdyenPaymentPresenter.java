@@ -14,6 +14,7 @@ import com.appcoins.sdk.billing.listeners.billing.GetTransactionListener;
 import com.appcoins.sdk.billing.listeners.billing.LoadPaymentInfoListener;
 import com.appcoins.sdk.billing.listeners.billing.MakePaymentListener;
 import com.appcoins.sdk.billing.listeners.billing.PurchaseListener;
+import com.appcoins.sdk.billing.managers.ApiKeysManager;
 import com.appcoins.sdk.billing.mappers.BillingMapper;
 import com.appcoins.sdk.billing.models.Transaction.Status;
 import com.appcoins.sdk.billing.models.billing.AdyenPaymentInfo;
@@ -87,7 +88,7 @@ class AdyenPaymentPresenter {
     fragmentView.lockRotation();
     fragmentView.showLoading();
     fragmentView.disableBack();
-    CardEncryptorImpl cardEncryptor = new CardEncryptorImpl(BuildConfig.ADYEN_PUBLIC_KEY);
+    CardEncryptorImpl cardEncryptor = new CardEncryptorImpl(ApiKeysManager.INSTANCE.getAdyenApiKey());
     ExpiryDate mExpiryDate = CardValidationUtils.getDate(expiryDate);
     String encryptedCard;
     if (storedPaymentId.equals("")) {
