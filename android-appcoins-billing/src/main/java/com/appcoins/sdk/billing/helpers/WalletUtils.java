@@ -117,7 +117,7 @@ public class WalletUtils {
       sdkAnalytics.sendWebPaymentUrlNotGeneratedEvent();
       return createBundleWithResponseCode(ResponseCode.ERROR.getValue());
     }
-    int port = WebPaymentSocketManager.getInstance().startService(context);
+    int port = WebPaymentSocketManager.getInstance().startServiceForPayment(context);
     String paymentUrl = generatePaymentUrlWithPort(port);
 
     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl));

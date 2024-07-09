@@ -25,13 +25,14 @@ public class WebPaymentSocketManager {
         return instance;
     }
 
-    public int startService(Context context) {
+    public int startServiceForPayment(Context context) {
         try {
             Intent intent = new Intent(context.getApplicationContext(), WebPaymentWebSocketService.class);
             context.getApplicationContext().startService(intent);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        webPaymentCommunicationWebSocket.prepareForNewPaymentResponse();
         return webPaymentCommunicationWebSocket.getPort();
     }
 
