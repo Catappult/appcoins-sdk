@@ -24,10 +24,16 @@ android {
     versionCode VERSION_CODE
     versionName VERSION_NAME
     buildConfigField "boolean", "URI_COMMUNICATION", "true"
-    buildConfigField 'String', 'RAKAM_API_KEY', project.RAKAM_API_KEY
     buildConfigField "int", "MIN_SDK_VERSION", "$minSdkVersion.apiLevel"
     buildConfigField 'int', 'VERSION_CODE', "${defaultConfig.versionCode}"
     buildConfigField 'String', 'VERSION_NAME', "\"${defaultConfig.versionName}\""
+  }
+
+  externalNativeBuild {
+    cmake {
+      path file('src/main/cpp/CMakeLists.txt')
+      version '3.22.1'
+    }
   }
 
   compileOptions {
@@ -62,18 +68,6 @@ android {
       buildConfigField 'String', 'APTOIDE_GAMES_IAB_BIND_ACTION',
               project.APTOIDE_GAMES_IAB_BIND_ACTION_DEV
 
-      buildConfigField 'String', 'SERVICE_BIND_LIST',
-          "\"" + project.APTOIDE_PACKAGE_NAME_DEV.replace('\"', '') +
-              "," +
-              project.APPCOINS_WALLET_PACKAGE_NAME_DEV.replace('\"', '') +
-              "," +
-              project.GAMESHUB_PACKAGE_NAME_STG.replace('\"', '') +
-              "," +
-              project.GAMESHUB_PACKAGE_NAME_DEV.replace('\"', '') +
-              "," +
-              project.APTOIDE_GAMES_PACKAGE_NAME_DEV.replace('\"', '') +
-              "\""
-
       buildConfigField 'String', 'HOST_WS',
           "\"" + project.ROPSTEN_NETWORK_BACKEND_BASE_HOST_WS + "\""
       buildConfigField 'String', 'BACKEND_BASE',
@@ -85,10 +79,6 @@ android {
       buildConfigField 'String', 'WS75_BASE_HOST', project.WS75_BASE_HOST_DEV
 
       buildConfigField 'String', 'WALLET_APP_BROWSER_URL', project.WALLET_APP_BROWSER_URL
-
-      buildConfigField 'String', 'ADYEN_PUBLIC_KEY', project.ADYEN_PUBLIC_KEY_DEV
-      buildConfigField 'String', 'INDICATIVE_API_KEY',
-          project.INDICATIVE_API_KEY_DEV
 
       buildConfigField 'String', 'DEFAULT_OEM_ADDRESS', "\"" + project.DEFAULT_OEM_ADDRESS + "\""
       buildConfigField 'String', 'DEFAULT_STORE_ADDRESS',
@@ -118,16 +108,6 @@ android {
       buildConfigField 'String', 'APTOIDE_GAMES_IAB_BIND_ACTION',
               project.APTOIDE_GAMES_IAB_BIND_ACTION
 
-      buildConfigField 'String', 'SERVICE_BIND_LIST',
-          "\"" + project.APTOIDE_PACKAGE_NAME.replace('\"', '') +
-              "," +
-              project.APPCOINS_WALLET_PACKAGE_NAME.replace('\"', '') +
-              "," +
-              project.GAMESHUB_PACKAGE_NAME.replace('\"', '') +
-              "," +
-              project.APTOIDE_GAMES_PACKAGE_NAME.replace('\"', '') +
-              "\""
-
       buildConfigField 'String', 'HOST_WS',
           "\"" + project.MAIN_NETWORK_BACKEND_BASE_HOST_WS + "\""
       buildConfigField 'String', 'BACKEND_BASE',
@@ -139,10 +119,6 @@ android {
       buildConfigField 'String', 'WS75_BASE_HOST', project.WS75_BASE_HOST_PROD
 
       buildConfigField 'String', 'WALLET_APP_BROWSER_URL', project.WALLET_APP_BROWSER_URL
-
-      buildConfigField 'String', 'ADYEN_PUBLIC_KEY', project.ADYEN_PUBLIC_KEY
-      buildConfigField 'String', 'INDICATIVE_API_KEY',
-          project.INDICATIVE_API_KEY
 
       buildConfigField 'String', 'DEFAULT_OEM_ADDRESS', "\"" + project.DEFAULT_OEM_ADDRESS + "\""
       buildConfigField 'String', 'DEFAULT_STORE_ADDRESS',

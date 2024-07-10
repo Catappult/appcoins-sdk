@@ -38,18 +38,6 @@ android {
           project.APPCOINS_WALLET_ADVERTISEMENT_BIND_ACTION_DEV
       buildConfigField 'String', 'APTOIDE_PACKAGE_NAME',
           project.APTOIDE_PACKAGE_NAME_DEV
-
-      buildConfigField 'String', 'SERVICE_BIND_LIST',
-          "\"" + project.APTOIDE_PACKAGE_NAME_DEV.replace('\"', '') +
-              "," +
-              project.APPCOINS_WALLET_PACKAGE_NAME_DEV.replace('\"', '') +
-              "," +
-              project.GAMESHUB_PACKAGE_NAME_STG.replace('\"', '') +
-              "," +
-              project.GAMESHUB_PACKAGE_NAME_DEV.replace('\"', '') +
-              "," +
-              project.APTOIDE_GAMES_PACKAGE_NAME_DEV.replace('\"', '') +
-              "\""
     }
     release {
       minifyEnabled false
@@ -59,16 +47,6 @@ android {
           project.APPCOINS_WALLET_ADVERTISEMENT_BIND_ACTION
       buildConfigField 'String', 'APTOIDE_PACKAGE_NAME',
           project.APTOIDE_PACKAGE_NAME
-
-      buildConfigField 'String', 'SERVICE_BIND_LIST',
-          "\"" + project.APTOIDE_PACKAGE_NAME.replace('\"', '') +
-              "," +
-              project.APPCOINS_WALLET_PACKAGE_NAME.replace('\"', '') +
-              "," +
-              project.GAMESHUB_PACKAGE_NAME.replace('\"', '') +
-              "," +
-              project.APTOIDE_GAMES_PACKAGE_NAME.replace('\"', '') +
-              "\""
       minifyEnabled false
     }
   }

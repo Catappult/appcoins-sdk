@@ -24,6 +24,7 @@ import com.appcoins.sdk.billing.analytics.AnalyticsManagerProvider;
 import com.appcoins.sdk.billing.analytics.IndicativeAnalytics;
 import com.appcoins.sdk.billing.analytics.IndicativeLaunchCallback;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
+import com.appcoins.sdk.billing.managers.ApiKeysManager;
 import com.appcoins.sdk.billing.managers.WebPaymentSocketManager;
 import com.appcoins.sdk.billing.payasguest.IabActivity;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
@@ -116,7 +117,7 @@ public class WalletUtils {
       sdkAnalytics.sendWebPaymentUrlNotGeneratedEvent();
       return createBundleWithResponseCode(ResponseCode.ERROR.getValue());
     }
-    int port = WebPaymentSocketManager.getInstance().startService(context);
+    int port = WebPaymentSocketManager.getInstance().startServiceForPayment(context);
     String paymentUrl = generatePaymentUrlWithPort(port);
 
     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl));
@@ -334,7 +335,7 @@ public class WalletUtils {
   }
   private static void launchIndicative(final IndicativeLaunchCallback callback) {
     new Handler(Looper.getMainLooper()).post(() -> {
-      Indicative.launch(context, BuildConfig.INDICATIVE_API_KEY);
+      Indicative.launch(context, ApiKeysManager.INSTANCE.getIndicativeApiKey());
       if (callback != null) {
         callback.onLaunchComplete();
       }
