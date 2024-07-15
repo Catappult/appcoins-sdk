@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="igu_app_new_version_available_popup_body">ह्या अॅप्लीकेशनसाठी ही नविन आवृत्ती आहे.\nकृपया ह्यासह अद्यतनित करा.</string>
+    <string name="igu_app_new_version_available_popup_update_button">अद्यतन</string>
+    <string name="igu_app_new_version_available_popup_close_button">बंद करा</string>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="igu_app_new_version_available_popup_body">Il y a une nouvelle version pour cette application.\nVeuillez mettre à jour la nouvelle version.</string>
+    <string name="igu_app_new_version_available_popup_update_button">MISE À JOUR</string>
+    <string name="igu_app_new_version_available_popup_close_button">FERMER</string>
+</resources>

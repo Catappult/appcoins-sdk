@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="igu_app_new_version_available_popup_body">Postoji nova verzija ove aplikacije.\nAžurirajte na najnoviju verziju.</string>
+    <string name="igu_app_new_version_available_popup_update_button">AŽURIRAJ</string>
+    <string name="igu_app_new_version_available_popup_close_button">ZATVORI</string>
+</resources>
