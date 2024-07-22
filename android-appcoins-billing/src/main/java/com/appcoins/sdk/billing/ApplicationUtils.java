@@ -9,6 +9,7 @@ import android.util.Log;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.SDKWebResponse;
+import com.appcoins.sdk.billing.usecases.mmp.SendSuccessfulPurchaseResponseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -71,6 +72,7 @@ class ApplicationUtils {
                   Boolean.parseBoolean(getObjectFromJson(purchaseDataJSON, "isAutoRenewing")));
           List<Purchase> purchases = new ArrayList<>();
           purchases.add(purchase);
+          SendSuccessfulPurchaseResponseEvent.Companion.invoke(purchase);
           purchaseFinishedListener.onPurchasesUpdated(responseCode, purchases);
         } catch (Exception e) {
           e.printStackTrace();
