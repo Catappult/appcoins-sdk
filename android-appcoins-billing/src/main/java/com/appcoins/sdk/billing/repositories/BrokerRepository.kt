@@ -1,6 +1,6 @@
 package com.appcoins.sdk.billing.repositories
 
-import com.appcoins.sdk.billing.mappers.TransactionMapper
+import com.appcoins.sdk.billing.mappers.TransactionResponseMapper
 import com.appcoins.sdk.billing.mappers.TransactionResponse
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.service.ServiceResponseListener
@@ -17,7 +17,7 @@ class BrokerRepository(private val bdsService: BdsService) {
         val serviceResponseListener =
             ServiceResponseListener { requestResponse ->
                 requestResponse?.let {
-                    val transactionResponse = TransactionMapper().map(requestResponse)
+                    val transactionResponse = TransactionResponseMapper().map(requestResponse)
                     transactionResponse.responseCode?.let { responseCode ->
                         if (ServiceUtils.isSuccess(responseCode)) {
                             transaction = transactionResponse

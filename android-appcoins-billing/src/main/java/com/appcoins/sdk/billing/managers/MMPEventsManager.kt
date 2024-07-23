@@ -18,19 +18,18 @@ object MMPEventsManager {
     }
 
     fun sendSuccessfulPurchaseResultEvent(purchase: Purchase, purchaseValue: String?) {
-        mmpEventsRepository
-            .sendSuccessfulPurchaseResultEvent(
-                packageName,
-                attributionSharedPreferences.getOemId(),
-                attributionSharedPreferences.getWalletId(),
-                purchase.sku,
-                purchase.orderId,
-                purchaseValue,
-                attributionSharedPreferences.getUtmSource(),
-                attributionSharedPreferences.getUtmMedium(),
-                attributionSharedPreferences.getUtmCampaign(),
-                attributionSharedPreferences.getUtmTerm(),
-                attributionSharedPreferences.getUtmContent()
-            )
+        mmpEventsRepository.sendSuccessfulPurchaseResultEvent(
+            packageName,
+            attributionSharedPreferences.getOemId(),
+            attributionSharedPreferences.getWalletId(),
+            purchase.sku,
+            purchase.orderId,
+            purchaseValue,
+            attributionSharedPreferences.getUtmSource(),
+            attributionSharedPreferences.getUtmMedium(),
+            attributionSharedPreferences.getUtmCampaign(),
+            attributionSharedPreferences.getUtmTerm(),
+            attributionSharedPreferences.getUtmContent()
+        )
     }
 }

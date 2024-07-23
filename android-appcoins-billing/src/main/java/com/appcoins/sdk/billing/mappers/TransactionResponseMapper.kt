@@ -5,7 +5,7 @@ import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import org.json.JSONObject
 
-class TransactionMapper {
+class TransactionResponseMapper {
     fun map(response: RequestResponse): TransactionResponse {
         WalletUtils.getSdkAnalytics()
             .sendCallBackendAttributionEvent(response.responseCode, response.response)

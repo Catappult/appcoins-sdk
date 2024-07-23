@@ -31,7 +31,7 @@ class MMPEventsRepository(private val bdsService: BdsService) {
         utmContent?.let { queries["utm_content"] = it }
 
         bdsService.makeRequest(
-            "/attribution",
+            "/payment_result",
             "GET",
             emptyList(),
             queries,
