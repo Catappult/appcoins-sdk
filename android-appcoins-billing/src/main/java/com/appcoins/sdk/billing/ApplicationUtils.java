@@ -146,6 +146,7 @@ class ApplicationUtils {
           List<Purchase> purchases = new ArrayList<>();
           purchases.add(purchase);
 
+          SendSuccessfulPurchaseResponseEvent.Companion.invoke(purchase);
           purchaseFinishedListener.onPurchasesUpdated(sdkWebResponse.getResponseCode(), purchases);
         } catch (Exception e) {
           e.printStackTrace();
