@@ -72,7 +72,7 @@ class RakamEventLogger implements EventLogger {
     properties.put("_os_name", "android");
     properties.put("_os_version", Build.VERSION.RELEASE);
     properties.put("_platform", "Android");
-    properties.put("_session_id", WalletUtils.getPayAsGuestSessionId());
+    properties.put("_session_id", WalletUtils.getWalletIdForUserSession());
     putIfNotNull(properties, "_user", walletAddressProvider.getWalletAddress());
     putIfNotNull(properties, "_version_name", getVersionName());
     properties.put("version_code", getVersionCode());
