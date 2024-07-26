@@ -17,13 +17,17 @@ object MMPEventsManager {
         AttributionSharedPreferences(WalletUtils.context)
     }
 
-    fun sendSuccessfulPurchaseResultEvent(purchase: Purchase, purchaseValue: String?) {
+    fun sendSuccessfulPurchaseResultEvent(
+        purchase: Purchase,
+        orderId: String?,
+        purchaseValue: String?
+    ) {
         mmpEventsRepository.sendSuccessfulPurchaseResultEvent(
             packageName,
             attributionSharedPreferences.getOemId(),
             attributionSharedPreferences.getWalletId(),
             purchase.sku,
-            purchase.orderId,
+            orderId,
             purchaseValue,
             attributionSharedPreferences.getUtmSource(),
             attributionSharedPreferences.getUtmMedium(),

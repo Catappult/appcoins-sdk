@@ -8,9 +8,6 @@ import com.appcoins.sdk.billing.service.BdsService
 object BrokerManager {
     private val brokerRepository = BrokerRepository(BdsService(BuildConfig.HOST_WS, 3000))
 
-    fun getTransaction(orderId: String): TransactionResponse? {
-        val transaction = brokerRepository.getTransaction(orderId)
-
-        return transaction
-    }
+    fun getTransaction(orderId: String): TransactionResponse? =
+        brokerRepository.getTransaction(orderId)
 }
