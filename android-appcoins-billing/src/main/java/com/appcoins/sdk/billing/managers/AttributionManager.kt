@@ -36,7 +36,7 @@ object AttributionManager {
     }
 
     private fun updateIndicativeUserId(walletId: String?) =
-        walletId?.let { IndicativeAnalytics.instanceId = it }
+        walletId?.let { IndicativeAnalytics.updateInstanceId(it) }
 
     private fun saveAttributionResult(attributionResponse: AttributionResponse?) {
         if (attributionResponse?.packageName == packageName) {
