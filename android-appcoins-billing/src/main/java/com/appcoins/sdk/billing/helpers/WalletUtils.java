@@ -28,6 +28,7 @@ import com.appcoins.sdk.billing.managers.ApiKeysManager;
 import com.appcoins.sdk.billing.managers.WebPaymentSocketManager;
 import com.appcoins.sdk.billing.payasguest.IabActivity;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
+import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
 import com.indicative.client.android.Indicative;
 
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +43,6 @@ public class WalletUtils {
   private static String billingPackageName;
   private static String billingIabAction;
   private static String userAgent = null;
-  private static Long payAsGuestSessionId;
   private static LifecycleActivityProvider lifecycleActivityProvider;
   private static List<PaymentFlowMethod> paymentFlowMethods;
   private static String webPaymentUrl;
@@ -318,16 +318,14 @@ public class WalletUtils {
     initIap(context);
   }
 
-  public static long getPayAsGuestSessionId() {
-    if (payAsGuestSessionId == null) {
-      payAsGuestSessionId = System.currentTimeMillis();
-    }
-    return payAsGuestSessionId;
+  public static String getWalletIdForUserSession() {
+    String walletId = new AttributionSharedPreferences(context).getWalletId();
+    return walletId != null ? walletId : String.valueOf(System.currentTimeMillis());
   }
 
   public static void startIndicative(final String packageName) {
     launchIndicative(() -> new Thread(() -> {
-      IndicativeAnalytics.INSTANCE.setInstanceId(String.valueOf(getPayAsGuestSessionId()));
+      IndicativeAnalytics.INSTANCE.setInstanceId(getWalletIdForUserSession());
       IndicativeAnalytics.INSTANCE.setIndicativeSuperProperties(packageName, BuildConfig.VERSION_CODE, getDeviceInfo());
       SdkAnalytics sdkAnalytics = new SdkAnalytics(AnalyticsManagerProvider.provideAnalyticsManager());
       sdkAnalytics.sendStartConnetionEvent();
