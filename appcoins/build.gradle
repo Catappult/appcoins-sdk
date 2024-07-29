@@ -25,10 +25,6 @@ android {
   }
 }
 
-dependencies {
-  api project(':appcoins-ads')
-}
-
 // Publish configuration
 task androidSourcesJar(type: Jar) {
   archiveClassifier.set('sources')
