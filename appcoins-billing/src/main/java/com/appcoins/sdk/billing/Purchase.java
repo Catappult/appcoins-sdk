@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Represents an in-app billing purchase.
  */
@@ -60,6 +62,7 @@ public class Purchase {
     return developerPayload;
   }
 
+  @Nullable
   public String getToken() {
     return token;
   }
