@@ -9,10 +9,15 @@ class SendSuccessfulPurchaseResponseEvent {
     companion object {
         fun invoke(purchase: Purchase) =
             Thread {
-                val purchaseResponse = purchase.token?.let { ProductV2Manager.getPurchase(it) }
-                val transactionResponse =
-                    purchaseResponse?.order?.reference?.let { getTransaction(it) }
-                sendSuccessfulPurchaseResultEvent(purchase, purchaseResponse?.order?.reference, transactionResponse?.price?.appc)
+                val purchaseToken = purchase.token ?: return@Thread
+                val purchaseResponse = ProductV2Manager.getPurchase(purchaseToken)
+
+                val orderId = purchaseResponse?.order?.reference ?: return@Thread
+                val transactionResponse = getTransaction(orderId)
+
+                val price = transactionResponse?.price?.appc ?: return@Thread
+
+                sendSuccessfulPurchaseResultEvent(purchase, orderId, price)
             }.start()
     }
 }

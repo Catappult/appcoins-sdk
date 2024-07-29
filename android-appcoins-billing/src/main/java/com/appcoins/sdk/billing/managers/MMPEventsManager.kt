@@ -19,13 +19,14 @@ object MMPEventsManager {
 
     fun sendSuccessfulPurchaseResultEvent(
         purchase: Purchase,
-        orderId: String?,
-        purchaseValue: String?
+        orderId: String,
+        purchaseValue: String
     ) {
+        val walletId = attributionSharedPreferences.getWalletId() ?: return
         mmpEventsRepository.sendSuccessfulPurchaseResultEvent(
             packageName,
             attributionSharedPreferences.getOemId(),
-            attributionSharedPreferences.getWalletId(),
+            walletId,
             purchase.sku,
             orderId,
             purchaseValue,
