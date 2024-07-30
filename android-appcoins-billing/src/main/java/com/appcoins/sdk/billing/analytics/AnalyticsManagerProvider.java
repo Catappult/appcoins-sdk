@@ -10,8 +10,7 @@ public class AnalyticsManagerProvider {
 
   public static AnalyticsManager provideAnalyticsManager() {
     if (analyticsManagerInstance == null) {
-      IndicativeEventLogger indicativeEventLogger =
-          new IndicativeEventLogger(IndicativeAnalytics.INSTANCE);
+      IndicativeEventLogger indicativeEventLogger = new IndicativeEventLogger();
 
       analyticsManagerInstance =
           new AnalyticsManager.Builder()
