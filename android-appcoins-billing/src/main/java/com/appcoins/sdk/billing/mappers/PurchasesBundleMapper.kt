@@ -54,19 +54,9 @@ internal class PurchasesBundleMapper(private val brokerRepository: BrokerReposit
     ) {
         for (skuPurchase in purchasesModel.skuPurchases) {
             idsList.add(skuPurchase.uid)
-            dataList.add(
-                skuPurchase.signature
-                    .message
-                    .toString()
-            )
-            signatureDataList.add(
-                skuPurchase.signature
-                    .value
-            )
-            skuList.add(
-                skuPurchase.product
-                    .name
-            )
+            dataList.add(skuPurchase.signature.message.toString())
+            signatureDataList.add(skuPurchase.signature.value)
+            skuList.add(skuPurchase.product.name)
         }
         bundle.putInt(RESPONSE_CODE, ResponseCode.OK.value)
         bundle.putStringArrayList(INAPP_PURCHASE_ID_LIST, idsList)
