@@ -20,6 +20,7 @@ public class MessageRequesterFactory {
       int timeout) {
     return new IntentSyncIpcMessageSender(
         new MessageRequesterSender(activityProvider, processorPackage, processorActivityUri,
-            requesterActivityUri), new MessageRequesterSynchronizer(), new IdGenerator(), timeout);
+            requesterActivityUri), new MessageRequesterSynchronizer(), new IdGenerator(),
+            new MessageSenderSynchronizer(timeout), timeout);
   }
 }
