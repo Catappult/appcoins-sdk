@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.util.Log
 import com.appcoins.billing.AppcoinsBilling
 import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.BillingFlowParams
@@ -28,6 +27,7 @@ import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DA
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ITEM_LIST
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
 import com.appcoins.sdk.billing.webpayment.WebPaymentManager
+import com.appcoins.sdk.core.logger.Logger.logDebug
 import java.io.Serializable
 import java.util.concurrent.CountDownLatch
 
@@ -85,8 +85,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         if (hasRequiredFields(type, sku) && WalletUtils.getPayflowMethodsList().isNotEmpty()) {
             for (method in WalletUtils.getPayflowMethodsList()) {
                 if (method is WebPayment) {
-                    Log.d(
-                        TAG,
+                    logDebug(
                         "Service is NOT installed and should make WebFirstPayment with buyItemProperties = [$buyItemProperties]"
                     )
                     WebPaymentManager(packageName)
@@ -108,8 +107,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         }
 
         //Fallback to WalletInstallation Activity if something fails
-        Log.d(
-            TAG,
+        logDebug(
             "Service is NOT installed and should start install flow with buyItemProperties = [$buyItemProperties]"
         )
         setBuyItemPropertiesForPayflow(packageName, apiVersion, sku, type, developerPayload)
@@ -282,8 +280,6 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         type.equals("inapp", ignoreCase = true) && apiVersion == SUPPORTED_API_VERSION
 
     companion object {
-        private val TAG = WebAppcoinsBilling::class.java.simpleName
-
         private const val SUPPORTED_API_VERSION = 3
         private const val MAX_SKUS_SEND_WS = 49 // 0 to 49
 

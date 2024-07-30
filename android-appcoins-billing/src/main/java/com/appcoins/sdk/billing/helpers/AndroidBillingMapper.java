@@ -5,10 +5,10 @@ import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ID_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
 
 import android.os.Bundle;
 import android.util.Base64;
-import android.util.Log;
 
 import com.appcoins.sdk.billing.Appc;
 import com.appcoins.sdk.billing.LaunchBillingFlowResult;
@@ -19,12 +19,13 @@ import com.appcoins.sdk.billing.SkuDetails;
 import com.appcoins.sdk.billing.SkuDetailsResult;
 import com.appcoins.sdk.billing.SkuDetailsV2;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class AndroidBillingMapper {
   private static final String APPC = "APPC";
@@ -59,7 +60,7 @@ public class AndroidBillingMapper {
               developerPayload = jsonElement.getString("developerPayload");
             }
           } catch (org.json.JSONException e) {
-            Log.d("JSON:", " Field error" + e.getLocalizedMessage());
+            logDebug("Field error" + e.getLocalizedMessage());
           }
 
           String token = null;
@@ -68,7 +69,7 @@ public class AndroidBillingMapper {
               token = jsonElement.getString("token");
             }
           } catch (org.json.JSONException e) {
-            Log.d("JSON:", " Field error " + e.getLocalizedMessage());
+            logDebug("Field error " + e.getLocalizedMessage());
           }
 
           if (token == null) {
@@ -80,7 +81,7 @@ public class AndroidBillingMapper {
               isAutoRenewing = jsonElement.getBoolean("autoRenewing");
             }
           } catch (org.json.JSONException e) {
-            Log.d("JSON:", " Field error " + e.getLocalizedMessage());
+            logDebug("Field error " + e.getLocalizedMessage());
           }
           //Base64 decoded string
           byte[] decodedSignature = Base64.decode(signature, Base64.DEFAULT);

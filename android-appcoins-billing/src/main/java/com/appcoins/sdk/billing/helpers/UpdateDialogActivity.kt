@@ -2,11 +2,11 @@ package com.appcoins.sdk.billing.helpers
 
 import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import com.appcoins.billing.sdk.R
 import com.appcoins.sdk.billing.analytics.SdkUpdateFlowActions
 import com.appcoins.sdk.billing.usecases.ingameupdates.LaunchAppUpdate
+import com.appcoins.sdk.core.logger.Logger.logDebug
 
 class UpdateDialogActivity : Activity() {
 
@@ -18,10 +18,7 @@ class UpdateDialogActivity : Activity() {
         setContentView(R.layout.update_dialog_activity)
 
         //This log is necessary for the automatic test that validates the wallet installation dialog
-        Log.d(
-            "UpdateDialogActivity",
-            "com.appcoins.sdk.billing.helpers.UpdateDialogActivity started"
-        )
+        logDebug("started")
 
         sdkAnalytics.appUpdateImpression()
         setActionsForButtons()

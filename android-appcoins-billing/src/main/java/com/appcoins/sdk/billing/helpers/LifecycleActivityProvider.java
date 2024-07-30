@@ -1,12 +1,13 @@
 package com.appcoins.sdk.billing.helpers;
 
+import static com.appcoins.sdk.core.logger.Logger.logWarning;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import com.appcoins.communication.requester.ActivityProvider;
 
 public class LifecycleActivityProvider
@@ -54,8 +55,7 @@ public class LifecycleActivityProvider
 
   @Override public Activity getActivity() {
     if (activity == null) {
-      Log.w(LifecycleActivityProvider.class.getSimpleName(), "getInstance: ",
-          new IllegalStateException("activity reference is null"));
+      logWarning("Activity reference is null");
     }
     return activity;
   }

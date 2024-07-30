@@ -1,6 +1,6 @@
 package com.appcoins.sdk.billing;
 
-import android.util.Log;
+import static com.appcoins.sdk.core.logger.Logger.logError;
 
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class AppCoinsBilling implements Billing {
-  private static final String TAG = "AppCoinsBilling";
   private final Repository repository;
   private final byte[] base64DecodedPublicKey;
 
@@ -67,7 +66,7 @@ public class AppCoinsBilling implements Billing {
     try {
       querySkuDetailsThread.stop();
     } catch (Exception e){
-      Log.d(TAG, "Failed to stop previous SkuDetails Request Thread: " + e.getMessage());
+      logError("Failed to stop previous SkuDetails Request Thread: " + e.getMessage());
     }
   }
 

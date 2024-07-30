@@ -7,11 +7,14 @@ import com.appcoins.sdk.billing.AppcoinsBillingClient;
 import com.appcoins.sdk.billing.CatapultAppcoinsBilling;
 import com.appcoins.sdk.billing.PurchasesUpdatedListener;
 import com.appcoins.sdk.billing.RepositoryServiceConnection;
+import com.appcoins.sdk.core.logger.Logger;
 
 public class CatapultBillingAppCoinsFactory {
 
   public static AppcoinsBillingClient BuildAppcoinsBilling(Context context, String base64PublicKey,
       PurchasesUpdatedListener purchaseFinishedListener) {
+
+    Logger.setupLogger(context);
 
     AppCoinsAndroidBillingRepository repository =
         new AppCoinsAndroidBillingRepository(3, context.getPackageName());

@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing.service;
 
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
+
 import android.os.AsyncTask;
 
 import com.appcoins.sdk.billing.helpers.WalletUtils;
@@ -34,6 +36,7 @@ public class BdsService implements Service {
     HttpURLConnection urlConnection = null;
     try {
       String urlBuilder = RequestBuilderUtils.buildUrl(baseUrl, endPoint, paths, queries);
+      logDebug("Url -> " + urlBuilder);
       URL url = new URL(urlBuilder);
       urlConnection = openUrlConnection(url, httpMethod);
 
