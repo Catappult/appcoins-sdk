@@ -36,7 +36,7 @@ object WalletBinderUtil {
                     if (successfullyBound) return
                 }
 
-                is PaymentFlowMethod.WebPayment, is PaymentFlowMethod.PayAsAGuest -> {
+                is PaymentFlowMethod.WebPayment -> {
                     bindType = BindType.BILLING_SERVICE_NOT_INSTALLED
                     connection.onServiceConnected(
                         ComponentName("", WebAppcoinsBilling::class.java.simpleName),

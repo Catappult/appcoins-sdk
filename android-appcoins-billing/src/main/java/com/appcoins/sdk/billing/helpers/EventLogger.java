@@ -14,8 +14,6 @@ import org.json.JSONObject;
 
 public class EventLogger implements Runnable {
 
-  public static String ENTITY_NAME = "SDK";
-
   private final String BASE_URL = "https://ws75.aptoide.com/api/7/";
   private final String SERVICE_PATH = "user/addEvent/action=CLICK/context=BILLING_SDK/name=";
   private final String purchaseEventName = "PURCHASE_INTENT";

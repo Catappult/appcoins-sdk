@@ -4,6 +4,6 @@ cd ..
 export BUILD_NAME_SUFFIX=".staging-SNAPSHOT"
 export BUILD_TYPE_NAME="release"
 
-./gradlew :appcoins:clean :android-appcoins-billing:clean :appcoins-billing:clean :appcoins-adyen:clean :communication:clean :appcoins-lifecycle:clean :appcoins-core:clean
-./gradlew :appcoins:assemble :android-appcoins-billing:assemble :appcoins-billing:assemble :appcoins-adyen:assemble :communication:assemble :appcoins-lifecycle:assemble  :appcoins-core:assemble
+./gradlew :appcoins:clean :android-appcoins-billing:clean :appcoins-billing:clean :communication:clean :appcoins-lifecycle:clean :appcoins-core:clean
+./gradlew :appcoins:assemble :android-appcoins-billing:assemble :appcoins-billing:assemble :communication:assemble :appcoins-lifecycle:assemble  :appcoins-core:assemble
 ./gradlew publish
