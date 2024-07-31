@@ -79,9 +79,7 @@ object WalletBinderUtil {
     }
 
     private fun bindFailedBehaviour(connection: ServiceConnection): Boolean {
-        if (BuildConfig.URI_COMMUNICATION
-            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH
-        ) {
+        if (BuildConfig.URI_COMMUNICATION) {
             Log.i(
                 TAG,
                 "BindFailedBehaviour: establishing URI Communication Protocol with Wallet."

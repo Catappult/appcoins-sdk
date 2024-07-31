@@ -146,7 +146,7 @@ class ClassesInfoCache {
     return info;
   }
 
-  @SuppressWarnings("WeakerAccess") static class CallbackInfo {
+  static class CallbackInfo {
     final Map<Lifecycle.Event, List<MethodReference>> mEventToHandlers;
     final Map<MethodReference, Lifecycle.Event> mHandlerToEvent;
 
@@ -174,14 +174,13 @@ class ClassesInfoCache {
       }
     }
 
-    @SuppressWarnings("ConstantConditions") void invokeCallbacks(LifecycleOwner source,
-        Lifecycle.Event event, Object target) {
+    void invokeCallbacks(LifecycleOwner source, Lifecycle.Event event, Object target) {
       invokeMethodsForEvent(mEventToHandlers.get(event), source, event, target);
       invokeMethodsForEvent(mEventToHandlers.get(Lifecycle.Event.ON_ANY), source, event, target);
     }
   }
 
-  @SuppressWarnings("WeakerAccess") static class MethodReference {
+  static class MethodReference {
     final int mCallType;
     final Method mMethod;
 
@@ -192,7 +191,6 @@ class ClassesInfoCache {
     }
 
     void invokeCallback(LifecycleOwner source, Lifecycle.Event event, Object target) {
-      //noinspection TryWithIdenticalCatches
       try {
         switch (mCallType) {
           case CALL_TYPE_NO_ARG:

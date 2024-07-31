@@ -6,10 +6,10 @@ import com.appcoins.billing.AppcoinsBilling;
 /**
  * Intent payload helper class that provide a way to send the developers wallet address together
  * with an already existent developers payload when using {@link AppcoinsBilling#getBuyIntent}.
- *
+ * <p>
  * The use of this helper is mandatory even if there is no  existing payload, because it allows for
  * a payment to be delivered to the developers ethereum address.
- *
+ * <p>
  * This class must be imported to your project and used without any changes to be compatible with
  * the Appcoins billing process.
  */

@@ -16,7 +16,7 @@ import java.util.WeakHashMap;
 
 public class SafeIterableMap<K, V> implements Iterable<Map.Entry<K, V>> {
 
-  @SuppressWarnings("WeakerAccess") /* synthetic access */ Entry<K, V> mStart;
+  /* synthetic access */ Entry<K, V> mStart;
   private Entry<K, V> mEnd;
   // using WeakHashMap over List<WeakReference>, so we don't have to manually remove
   // WeakReferences that have null in them.
@@ -136,7 +136,7 @@ public class SafeIterableMap<K, V> implements Iterable<Map.Entry<K, V>> {
    * return an iterator with additions.
    */
   public IteratorWithAdditions iteratorWithAdditions() {
-    @SuppressWarnings("unchecked") IteratorWithAdditions iterator = new IteratorWithAdditions();
+    IteratorWithAdditions iterator = new IteratorWithAdditions();
     mIterators.put(iterator, false);
     return iterator;
   }
@@ -227,7 +227,7 @@ public class SafeIterableMap<K, V> implements Iterable<Map.Entry<K, V>> {
       return result;
     }
 
-    @SuppressWarnings("ReferenceEquality") @Override public void supportRemove(Entry<K, V> entry) {
+    @Override public void supportRemove(Entry<K, V> entry) {
       if (mExpectedEnd == entry && entry == mNext) {
         mNext = null;
         mExpectedEnd = null;
@@ -242,7 +242,7 @@ public class SafeIterableMap<K, V> implements Iterable<Map.Entry<K, V>> {
       }
     }
 
-    @SuppressWarnings("ReferenceEquality") private Entry<K, V> nextNode() {
+    private Entry<K, V> nextNode() {
       if (mNext == mExpectedEnd || mExpectedEnd == null) {
         return null;
       }
@@ -310,7 +310,7 @@ public class SafeIterableMap<K, V> implements Iterable<Map.Entry<K, V>> {
       return mKey.hashCode() ^ mValue.hashCode();
     }
 
-    @SuppressWarnings("ReferenceEquality") @Override public boolean equals(Object obj) {
+    @Override public boolean equals(Object obj) {
       if (obj == this) {
         return true;
       }
@@ -333,7 +333,7 @@ public class SafeIterableMap<K, V> implements Iterable<Map.Entry<K, V>> {
     IteratorWithAdditions() {
     }
 
-    @SuppressWarnings("ReferenceEquality") @Override public void supportRemove(Entry<K, V> entry) {
+    @Override public void supportRemove(Entry<K, V> entry) {
       if (entry == mCurrent) {
         mCurrent = mCurrent.mPrevious;
         mBeforeStart = mCurrent == null;

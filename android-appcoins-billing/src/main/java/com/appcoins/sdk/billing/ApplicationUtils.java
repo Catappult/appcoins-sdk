@@ -23,16 +23,16 @@ class ApplicationUtils {
 
   private final static String TAG = ApplicationUtils.class.getSimpleName();
 
-  static boolean handleActivityResult(Billing billing, int resultCode, Intent data,
-      PurchasesUpdatedListener purchaseFinishedListener) {
+  static void handleActivityResult(Billing billing, int resultCode, Intent data,
+                                   PurchasesUpdatedListener purchaseFinishedListener) {
 
     SdkAnalytics sdkAnalytics = WalletUtils.getSdkAnalytics();
 
     if (data == null) {
       logError("Null data in IAB activity result.");
       purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.getValue(),
-          Collections.<Purchase>emptyList());
-      return false;
+          Collections.emptyList());
+      return;
     }
 
     int responseCode = getResponseCodeFromIntent(data);
@@ -48,12 +48,11 @@ class ApplicationUtils {
 
       if (purchaseData == null || dataSignature == null) {
         logError("BUG: either purchaseData or dataSignature is null.");
-        logDebug("Extras: " + data.getExtras()
-            .toString());
+        logDebug("Extras: " + data.getExtras());
         purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.getValue(),
-            Collections.<Purchase>emptyList());
+            Collections.emptyList());
 
-        return false;
+        return;
       }
 
       if (billing.verifyPurchase(purchaseData, Base64.decode(dataSignature, Base64.DEFAULT))) {
@@ -77,16 +76,13 @@ class ApplicationUtils {
         } catch (Exception e) {
           e.printStackTrace();
           purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.getValue(),
-              Collections.<Purchase>emptyList());
+              Collections.emptyList());
           logError("Failed to parse purchase data.");
-          return false;
         }
-        return true;
       } else {
         logError("Signature verification failed for sku:");
         purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.getValue(),
-            Collections.<Purchase>emptyList());
-        return false;
+            Collections.emptyList());
       }
     } else if (resultCode == Activity.RESULT_OK) {
       // result code was OK, but in-app billing response was not OK.
@@ -98,15 +94,14 @@ class ApplicationUtils {
       logDebug("Purchase canceled - Response: " + getResponseDesc(responseCode));
       sdkAnalytics.sendPurchaseStatusEvent("user_canceled", getResponseDesc(responseCode));
       purchaseFinishedListener.onPurchasesUpdated(ResponseCode.USER_CANCELED.getValue(),
-          Collections.<Purchase>emptyList());
+          Collections.emptyList());
     } else {
       logError("Purchase failed. Result code: " + resultCode + ". Response: " + getResponseDesc(
           responseCode));
       sdkAnalytics.sendPurchaseStatusEvent("error", getResponseDesc(responseCode));
       purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.getValue(),
-          Collections.<Purchase>emptyList());
+          Collections.emptyList());
     }
-    return true;
   }
 
   static void handleWebBasedResult(
@@ -168,8 +163,7 @@ class ApplicationUtils {
   }
 
   private static int getResponseCodeFromIntent(Intent i) {
-    Object o = i.getExtras()
-        .get(RESPONSE_CODE);
+    Object o = i.getExtras().get(RESPONSE_CODE);
     if (o == null) {
       logError("Intent with no response code, assuming OK (known issue)");
       return ResponseCode.OK.getValue();

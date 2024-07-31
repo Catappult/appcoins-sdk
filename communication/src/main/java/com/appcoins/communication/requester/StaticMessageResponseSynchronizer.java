@@ -16,18 +16,15 @@ class StaticMessageResponseSynchronizer {
   }
 
   static void init() {
-    messageReceivedListener = new MessageRequesterListener() {
-      @Override public void onMessageReceived(long requestCode, Parcelable returnValue) {
-        responses.put(requestCode, returnValue);
-        Object blockingObject = blockingObjects.get(requestCode);
-        if (blockingObject == null) {
-          Log.w(TAG, "there is no request for message id: " + requestCode);
-          return;
-        }
-        //noinspection SynchronizationOnLocalVariableOrMethodParameter
-        synchronized (blockingObject) {
-          blockingObject.notifyAll();
-        }
+    messageReceivedListener = (requestCode, returnValue) -> {
+      responses.put(requestCode, returnValue);
+      Object blockingObject = blockingObjects.get(requestCode);
+      if (blockingObject == null) {
+        Log.w(TAG, "there is no request for message id: " + requestCode);
+        return;
+      }
+      synchronized (blockingObject) {
+        blockingObject.notifyAll();
       }
     };
   }
@@ -53,7 +50,6 @@ class StaticMessageResponseSynchronizer {
     if (!responses.containsKey(requestCode)) {
       Object blockingObject = new Object();
       blockingObjects.put(requestCode, blockingObject);
-      //noinspection SynchronizationOnLocalVariableOrMethodParameter
       synchronized (blockingObject) {
         blockingObject.wait(timeout);
       }

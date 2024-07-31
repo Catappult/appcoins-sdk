@@ -39,7 +39,7 @@ public class AppCoinsBilling implements Billing {
         }
       }
 
-      if (invalidPurchase.size() > 0) {
+      if (!invalidPurchase.isEmpty()) {
         purchasesResult.getPurchases()
             .removeAll(invalidPurchase);
       }
@@ -82,10 +82,7 @@ public class AppCoinsBilling implements Billing {
       throws ServiceConnectionException {
     try {
 
-      LaunchBillingFlowResult result =
-          repository.launchBillingFlow(params.getSkuType(), params.getSku(), payload, oemid, guestWalletId);
-
-      return result;
+      return repository.launchBillingFlow(params.getSkuType(), params.getSku(), payload, oemid, guestWalletId);
     } catch (ServiceConnectionException e) {
       e.printStackTrace();
       throw new ServiceConnectionException(e.getMessage());

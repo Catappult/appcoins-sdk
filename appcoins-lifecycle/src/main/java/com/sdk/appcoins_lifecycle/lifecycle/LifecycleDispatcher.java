@@ -25,10 +25,8 @@ public class LifecycleDispatcher {
     if (sInitialized.getAndSet(true)) {
       return;
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
       ((Application) context.getApplicationContext()).registerActivityLifecycleCallbacks(
-          new DispatcherActivityCallback());
-    }
+              new DispatcherActivityCallback());
   }
 
   static class DispatcherActivityCallback extends EmptyActivityLifecycleCallbacks {

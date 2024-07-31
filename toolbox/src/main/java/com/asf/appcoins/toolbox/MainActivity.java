@@ -50,7 +50,7 @@ public class MainActivity extends Activity {
 
     listener = new AppCoinsBillingStateListener() {
       @Override public void onBillingSetupFinished(int responseCode) {
-        Log.d(TAG, "Is Billing Setup Finished:  Connected-" + responseCode + "");
+        Log.d(TAG, "Is Billing Setup Finished:  Connected-" + responseCode);
       }
 
       @Override public void onBillingServiceDisconnected() {
@@ -58,10 +58,6 @@ public class MainActivity extends Activity {
       }
     };
     cab.startConnection(listener);
-  }
-
-  @Override protected void onDestroy() {
-    super.onDestroy();
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -75,7 +71,7 @@ public class MainActivity extends Activity {
           Object value = bundle.get(key);
           if (value != null) {
             Log.d(TAG, "Message Key: " + key);
-            Log.d(TAG, "Message value: " + value.toString());
+            Log.d(TAG, "Message value: " + value);
           }
         }
       }
@@ -98,8 +94,7 @@ public class MainActivity extends Activity {
 
     Thread t = new Thread(() -> {
       PurchasesResult pr = cab.queryPurchases(SkuType.inapp.toString());
-      if (pr.getPurchases()
-          .size() > 0) {
+      if (!pr.getPurchases().isEmpty()) {
         for (Purchase p : pr.getPurchases()) {
           Log.d(TAG, "Purchase result token: " + p.getToken());
           Log.d(TAG, "Purchase result sku: " + p.getSku());
@@ -125,7 +120,7 @@ public class MainActivity extends Activity {
 
     Thread t = new Thread(
         () -> cab.querySkuDetailsAsync(skuDetailsParams, (responseCode, skuDetailsList) -> {
-          Log.d(TAG, "responseCode: " + responseCode + "");
+          Log.d(TAG, "responseCode: " + responseCode);
           for (SkuDetails sd : skuDetailsList) {
             Log.d(TAG, sd.toString());
           }

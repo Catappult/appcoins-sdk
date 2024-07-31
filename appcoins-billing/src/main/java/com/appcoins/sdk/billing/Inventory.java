@@ -63,8 +63,7 @@ public class Inventory {
     }
 
     public List<SkuDetails> getAllSkuDetails() {
-        List<SkuDetails> list = new ArrayList<SkuDetails>(mSkuMap.values());
-        return list;
+        return new ArrayList<>(mSkuMap.values());
     }
 
     /** Returns a list of all purchases. */

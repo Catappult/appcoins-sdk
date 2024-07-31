@@ -27,7 +27,7 @@ public class GetSkuDetailsService {
   }
 
   public String getSkuDetailsForPackageName() {
-    String response = "";
+    StringBuilder response = new StringBuilder();
     URL url;
     try {
       String urlBuilt = buildURL(packageName, sku, paymentFlow);
@@ -41,7 +41,7 @@ public class GetSkuDetailsService {
       String inputLine;
 
       while ((inputLine = in.readLine()) != null) {
-        response += inputLine;
+        response.append(inputLine);
       }
 
       if (in != null) {
@@ -52,28 +52,28 @@ public class GetSkuDetailsService {
         connection.disconnect();
       }
     } catch (MalformedURLException e) {
-      response = "";
+      response = new StringBuilder();
       e.printStackTrace();
     } catch (ProtocolException e) {
-      response = "";
+      response = new StringBuilder();
       e.printStackTrace();
     } catch (IOException e) {
-      response = "";
+      response = new StringBuilder();
       e.printStackTrace();
     }
 
-    return response;
+    return response.toString();
   }
 
   private String buildURL(String packageName, List<String> sku, String paymentFlow) {
-    String url = serviceUrl + URL_PATH.replaceFirst("packageName", packageName);
+    StringBuilder url = new StringBuilder(serviceUrl + URL_PATH.replaceFirst("packageName", packageName));
     for (String skuName : sku) {
-      url += skuName + ",";
+      url.append(skuName).append(",");
     }
-    url = url.substring(0, url.length() - 1);
+    url = new StringBuilder(url.substring(0, url.length() - 1));
     if (paymentFlow!=null && !paymentFlow.isEmpty()){
-      url += "&discount_policy=" + paymentFlow;
+      url.append("&discount_policy=").append(paymentFlow);
     }
-    return url;
+    return url.toString();
   }
 }

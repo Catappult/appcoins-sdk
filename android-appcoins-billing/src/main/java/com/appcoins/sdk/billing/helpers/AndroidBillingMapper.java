@@ -55,7 +55,7 @@ public class AndroidBillingMapper {
 
           String developerPayload = null;
           try {
-            if (jsonElement.getString("developerPayload") != null) {
+            if (jsonElement.has("developerPayload")) {
               developerPayload = jsonElement.getString("developerPayload");
             }
           } catch (org.json.JSONException e) {
@@ -64,7 +64,7 @@ public class AndroidBillingMapper {
 
           String token = null;
           try {
-            if (jsonElement.getString("token") != null) {
+            if (jsonElement.has("token")) {
               token = jsonElement.getString("token");
             }
           } catch (org.json.JSONException e) {
@@ -76,7 +76,7 @@ public class AndroidBillingMapper {
           }
           boolean isAutoRenewing = false;
           try {
-            if (jsonElement.getString("autoRenewing") != null) {
+            if (jsonElement.has("autoRenewing")) {
               isAutoRenewing = jsonElement.getBoolean("autoRenewing");
             }
           } catch (org.json.JSONException e) {
@@ -113,9 +113,8 @@ public class AndroidBillingMapper {
       }
     }
     int responseCode = (int) bundle.get(RESPONSE_CODE);
-    SkuDetailsResult skuDetailsResult = new SkuDetailsResult(arrayList, responseCode);
 
-    return skuDetailsResult;
+    return new SkuDetailsResult(arrayList, responseCode);
   }
 
   public static SkuDetails parseSkuDetails(String skuType, String skuDetailsData) {
@@ -125,13 +124,13 @@ public class AndroidBillingMapper {
       String sku = jsonElement.getString("productId");
       String type = jsonElement.getString("type");
       String price = jsonElement.getString("price");
-      Long priceAmountMicros = jsonElement.getLong("price_amount_micros");
+      long priceAmountMicros = jsonElement.getLong("price_amount_micros");
       String priceCurrencyCode = jsonElement.getString("price_currency_code");
       String appcPrice = jsonElement.getString("appc_price");
-      Long appcPriceAmountMicros = jsonElement.getLong("appc_price_amount_micros");
+      long appcPriceAmountMicros = jsonElement.getLong("appc_price_amount_micros");
       String appcPriceCurrencyCode = jsonElement.getString("appc_price_currency_code");
       String fiatPrice = jsonElement.getString("fiat_price");
-      Long fiatPriceAmountMicros = jsonElement.getLong("fiat_price_amount_micros");
+      long fiatPriceAmountMicros = jsonElement.getLong("fiat_price_amount_micros");
       String fiatPriceCurrencyCode = jsonElement.getString("fiat_price_currency_code");
       String title = jsonElement.getString("title");
       String description = jsonElement.getString("description");
@@ -155,7 +154,7 @@ public class AndroidBillingMapper {
   public static ArrayList<SkuDetailsV2> mapSkuDetailsFromWS(String skuDetailsResponse) {
     ArrayList<SkuDetailsV2> skuDetailsList = new ArrayList<>();
 
-    if (!skuDetailsResponse.equals("")) {
+    if (!skuDetailsResponse.isEmpty()) {
       try {
         JSONObject jsonElement = new JSONObject(skuDetailsResponse);
         JSONArray items = jsonElement.getJSONArray("items");
@@ -200,7 +199,7 @@ public class AndroidBillingMapper {
   public static SkuDetails mapSingleSkuDetails(String skuType, String skuDetailsResponse) {
     SkuDetails skuDetails =
         new SkuDetails(skuType, "", "", "", 0, "", "", 0, "", "", 0, "", "", "");
-    if (!skuDetailsResponse.equals("")) {
+    if (!skuDetailsResponse.isEmpty()) {
       try {
         JSONObject jsonElement = new JSONObject(skuDetailsResponse);
         JSONArray items = jsonElement.getJSONArray("items");

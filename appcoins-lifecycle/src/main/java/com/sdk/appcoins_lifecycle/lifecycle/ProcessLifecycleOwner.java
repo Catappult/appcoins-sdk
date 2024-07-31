@@ -124,22 +124,23 @@ import android.os.Handler;
     mHandler = new Handler();
     mRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE);
     Application app = (Application) context.getApplicationContext();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-      app.registerActivityLifecycleCallbacks(new EmptyActivityLifecycleCallbacks() {
-        @Override public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-          ReportFragment.get(activity)
-              .setProcessListener(mInitializationListener);
-        }
+    app.registerActivityLifecycleCallbacks(new EmptyActivityLifecycleCallbacks() {
+      @Override
+      public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+        ReportFragment.get(activity)
+                .setProcessListener(mInitializationListener);
+      }
 
-        @Override public void onActivityPaused(Activity activity) {
-          activityPaused();
-        }
+      @Override
+      public void onActivityPaused(Activity activity) {
+        activityPaused();
+      }
 
-        @Override public void onActivityStopped(Activity activity) {
-          activityStopped();
-        }
-      });
-    }
+      @Override
+      public void onActivityStopped(Activity activity) {
+        activityStopped();
+      }
+    });
   }
 
   @Override public Lifecycle getLifecycle() {

@@ -21,9 +21,7 @@ public class SkuDetailsAsync implements Runnable {
     try {
       SkuDetailsResult response = getSkuDetails();
 
-      if (response.getSkuDetailsList() == null
-          || response.getSkuDetailsList()
-          .size() == 0) {
+      if (response.getSkuDetailsList() == null || response.getSkuDetailsList().isEmpty()) {
         skuDetailsResponseListener.onSkuDetailsResponse(response.getResponseCode(),
             new ArrayList<SkuDetails>());
       } else {

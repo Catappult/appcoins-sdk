@@ -49,10 +49,6 @@
 # EthereumJ
 -keep class ethereumj.** { *; }
 
-# DeepEquals
--keep class cedarsoftware.util.DeepEquals
--keep class cedarsoftware.util.ReflectionUtils
-
 # Okio
 -dontwarn okio.DeflaterSink
 -dontwarn okio.Okio

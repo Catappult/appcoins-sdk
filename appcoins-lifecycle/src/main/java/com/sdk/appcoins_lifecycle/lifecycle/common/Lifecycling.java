@@ -132,8 +132,7 @@ public class Lifecycling {
 
     Constructor<? extends GeneratedAdapter> constructor = generatedConstructor(klass);
     if (constructor != null) {
-      sClassToAdapters.put(klass,
-          Collections.<Constructor<? extends GeneratedAdapter>>singletonList(constructor));
+      sClassToAdapters.put(klass, Collections.singletonList(constructor));
       return GENERATED_CALLBACK;
     }
 
