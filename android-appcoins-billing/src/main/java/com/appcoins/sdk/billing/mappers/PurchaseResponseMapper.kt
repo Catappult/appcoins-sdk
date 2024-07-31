@@ -6,8 +6,6 @@ import org.json.JSONObject
 
 class PurchaseResponseMapper {
     fun map(response: RequestResponse): PurchaseResponse {
-        //WalletUtils.getSdkAnalytics()
-        //.sendCallBackendAttributionEvent(response.responseCode, response.response)
 
         if (!isSuccess(response.responseCode) || response.response == null) {
             return PurchaseResponse(response.responseCode)

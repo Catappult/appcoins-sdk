@@ -28,7 +28,7 @@ class ProductV2Repository(private val bdsService: BdsService) {
             }
 
         bdsService.makeRequest(
-            "/productv2/8.20200301/inapp/purchases/$purchaseToken",
+            "/productv2/8.20240722/inapp/purchases/$purchaseToken",
             "GET",
             emptyList(),
             emptyMap(),
