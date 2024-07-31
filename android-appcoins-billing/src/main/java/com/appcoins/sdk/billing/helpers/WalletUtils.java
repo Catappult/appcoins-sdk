@@ -25,10 +25,10 @@ import com.appcoins.sdk.billing.analytics.IndicativeAnalytics;
 import com.appcoins.sdk.billing.analytics.IndicativeLaunchCallback;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.managers.ApiKeysManager;
-import com.appcoins.sdk.billing.managers.WebPaymentSocketManager;
 import com.appcoins.sdk.billing.payasguest.IabActivity;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
+import com.appcoins.sdk.billing.webpayment.WebPaymentActivity;
 import com.indicative.client.android.Indicative;
 
 import org.jetbrains.annotations.Nullable;
@@ -117,10 +117,15 @@ public class WalletUtils {
       sdkAnalytics.sendWebPaymentUrlNotGeneratedEvent();
       return createBundleWithResponseCode(ResponseCode.ERROR.getValue());
     }
-    int port = WebPaymentSocketManager.getInstance().startServiceForPayment(context);
-    String paymentUrl = generatePaymentUrlWithPort(port);
+    /*try {
+            val jsonObject = JSONObject(message)
+            SDKWebResponseStream.getInstance().emit(SDKWebResponse(jsonObject))
+        } catch (exception: Exception) {
+            SDKWebResponseStream.getInstance().emit(SDKWebResponse(ResponseCode.ERROR.value))
+            exception.printStackTrace()
+        }*/
 
-    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl));
+    Intent intent = WebPaymentActivity.newIntent(context, getWebPaymentUrl());
     return createWebIntentBundle(intent);
   }
 
@@ -130,10 +135,6 @@ public class WalletUtils {
     }
     Intent intent = InstallDialogActivity.newIntent(context, buyItemProperties, sdkAnalytics);
     return createIntentBundle(intent);
-  }
-
-  private static String generatePaymentUrlWithPort(int port) {
-    return WalletUtils.getWebPaymentUrl() + "&wsPort=" + port;
   }
 
   private static Bundle createWebIntentBundle(Intent intent) {
