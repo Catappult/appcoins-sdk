@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.webkit.CookieManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.appcoins.billing.sdk.R
@@ -27,7 +28,16 @@ class WebPaymentActivity : Activity() {
         setContentView(R.layout.web_payment_activity)
 
         val webView = findViewById<WebView>(R.id.web_view)
+
         webView.settings.javaScriptEnabled = true
+        webView.settings.domStorageEnabled = true
+        webView.settings.databaseEnabled = true
+
+        if (android.os.Build.VERSION.SDK_INT >= 21) {
+            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true)
+        } else {
+            CookieManager.getInstance().setAcceptCookie(true)
+        }
 
         webView.addJavascriptInterface(WebPaymentSDKInterface(), "WebPaymentSDKInterface")
         webView.webViewClient = WebViewClient()
