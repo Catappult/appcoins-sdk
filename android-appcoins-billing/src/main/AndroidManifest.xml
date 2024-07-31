@@ -40,7 +40,7 @@
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
     <activity
         android:name="com.appcoins.sdk.billing.webpayment.WebPaymentActivity"
-        android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
+        android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
     <activity android:name="com.appcoins.sdk.billing.UriCommunicationActivity"
         android:exported="true">
       <intent-filter>
