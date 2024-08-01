@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="igu_app_new_version_available_popup_body">Ada versi baru untuk aplikasi ini.\nSila kemas kini ke versi baru.</string>
+    <string name="igu_app_new_version_available_popup_update_button">KEMAS KINI</string>
+    <string name="igu_app_new_version_available_popup_close_button">TUTUP</string>
+</resources>

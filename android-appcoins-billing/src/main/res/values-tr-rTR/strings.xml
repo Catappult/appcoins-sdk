@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="igu_app_new_version_available_popup_body">Bu uygulamanın yeni bir sürümü mevcut.\nLütfen yeni sürüme güncelle.</string>
+    <string name="igu_app_new_version_available_popup_update_button">GÜNCELLE</string>
+    <string name="igu_app_new_version_available_popup_close_button">KAPAT</string>
+</resources>

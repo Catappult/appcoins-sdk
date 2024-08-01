@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="igu_app_new_version_available_popup_body">Már elérhető az alkalmazás újabb verziója\nKérjük, töltsd le az új verziót.</string>
+    <string name="igu_app_new_version_available_popup_update_button">FRISSÍTÉS</string>
+    <string name="igu_app_new_version_available_popup_close_button">BEZÁRÁS</string>
+</resources>

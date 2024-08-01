@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="igu_app_new_version_available_popup_body">มีเวอร์ชันใหม่สำหรับแอปพลิเคชันนี้\nโปรดอัปเดตเป็นเวอร์ชันใหม่</string>
+    <string name="igu_app_new_version_available_popup_update_button">อัพเดต</string>
+    <string name="igu_app_new_version_available_popup_close_button">ปิด</string>
+</resources>
