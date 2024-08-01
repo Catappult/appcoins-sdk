@@ -11,6 +11,7 @@ import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iap
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
 import static com.appcoins.sdk.billing.utils.LayoutUtils.generateRandomId;
 import static com.appcoins.sdk.billing.utils.LayoutUtils.setBackground;
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -30,7 +31,6 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.StyleSpan;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -102,8 +102,7 @@ public class InstallDialogActivity extends Activity {
         + this.getPackageName();
 
     //This log is necessary for the automatic test that validates the wallet installation dialog
-    Log.d("InstallDialogActivity",
-        "com.appcoins.sdk.billing.helpers.InstallDialogActivity started");
+    logDebug("started");
 
     RelativeLayout installationDialog = setupInstallationDialog(storeUrl);
 
@@ -140,7 +139,7 @@ public class InstallDialogActivity extends Activity {
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    Log.d("InstallDialogActivity", "onActivityResult: resultCode "+ resultCode);
+    logDebug("resultCode "+ resultCode);
     finishActivity(resultCode, data);
   }
 

@@ -1,10 +1,11 @@
 package com.asf.appcoins.toolbox;
 
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import com.appcoins.sdk.billing.AppcoinsBillingClient;
@@ -23,7 +24,6 @@ import java.util.Locale;
 
 public class MainActivity extends Activity {
 
-  private static final String TAG = MainActivity.class.getSimpleName();
   private AppcoinsBillingClient cab;
   private String token;
   private AppCoinsBillingStateListener listener;
@@ -50,11 +50,11 @@ public class MainActivity extends Activity {
 
     listener = new AppCoinsBillingStateListener() {
       @Override public void onBillingSetupFinished(int responseCode) {
-        Log.d(TAG, "Is Billing Setup Finished:  Connected-" + responseCode + "");
+        logDebug("Is Billing Setup Finished:  Connected-" + responseCode + "");
       }
 
       @Override public void onBillingServiceDisconnected() {
-        Log.d(TAG, "Message: Disconnected");
+        logDebug("Message: Disconnected");
       }
     };
     cab.startConnection(listener);
@@ -65,8 +65,7 @@ public class MainActivity extends Activity {
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    Log.d(TAG,
-        "Activity Result: onActivityResult(" + requestCode + "," + resultCode + "," + data + ")");
+    logDebug("(" + requestCode + "," + resultCode + "," + data + ")");
     cab.onActivityResult(requestCode, resultCode, data);
     if (data != null && data.getExtras() != null) {
       Bundle bundle = data.getExtras();
@@ -74,8 +73,8 @@ public class MainActivity extends Activity {
         for (String key : bundle.keySet()) {
           Object value = bundle.get(key);
           if (value != null) {
-            Log.d(TAG, "Message Key: " + key);
-            Log.d(TAG, "Message value: " + value.toString());
+            logDebug("Message Key: " + key);
+            logDebug("Message value: " + value.toString());
           }
         }
       }
@@ -89,7 +88,7 @@ public class MainActivity extends Activity {
     Activity act = this;
     Thread t = new Thread(() -> {
       int launchBillingFlowResponse = cab.launchBillingFlow(act, billingFlowParams);
-      Log.d(TAG, "BillingFlowResponse: " + launchBillingFlowResponse);
+      logDebug("BillingFlowResponse: " + launchBillingFlowResponse);
     });
     t.start();
   }
@@ -101,14 +100,14 @@ public class MainActivity extends Activity {
       if (pr.getPurchases()
           .size() > 0) {
         for (Purchase p : pr.getPurchases()) {
-          Log.d(TAG, "Purchase result token: " + p.getToken());
-          Log.d(TAG, "Purchase result sku: " + p.getSku());
+          logDebug("Purchase result token: " + p.getToken());
+          logDebug("Purchase result sku: " + p.getSku());
         }
         token = pr.getPurchases()
             .get(0)
             .getToken();
       } else {
-        Log.d(TAG, "Message: No Available Purchases");
+        logDebug("Message: No Available Purchases");
       }
     });
     t.start();
@@ -125,9 +124,9 @@ public class MainActivity extends Activity {
 
     Thread t = new Thread(
         () -> cab.querySkuDetailsAsync(skuDetailsParams, (responseCode, skuDetailsList) -> {
-          Log.d(TAG, "responseCode: " + responseCode + "");
+          logDebug("responseCode: " + responseCode);
           for (SkuDetails sd : skuDetailsList) {
-            Log.d(TAG, sd.toString());
+            logDebug(sd.toString());
           }
         }));
 
@@ -139,7 +138,7 @@ public class MainActivity extends Activity {
     Thread t = new Thread(() -> {
       if (token != null) {
         cab.consumeAsync(token, (responseCode, purchaseToken) -> {
-          Log.d(TAG, "consume response: "
+          logDebug("consume response: "
               + responseCode
               + " "
               + "Consumed purchase with token: "
@@ -147,7 +146,7 @@ public class MainActivity extends Activity {
           token = null;
         });
       } else {
-        Log.d(TAG, "Message: No purchase tokens available");
+        logDebug("Message: No purchase tokens available");
       }
     });
     t.start();

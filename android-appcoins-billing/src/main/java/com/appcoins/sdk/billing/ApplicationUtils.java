@@ -1,11 +1,12 @@
 package com.appcoins.sdk.billing;
 
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
+import static com.appcoins.sdk.core.logger.Logger.logError;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Base64;
-import android.util.Log;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.SDKWebResponse;
@@ -20,8 +21,6 @@ class ApplicationUtils {
   private static final String RESPONSE_INAPP_PURCHASE_DATA = "INAPP_PURCHASE_DATA";
   private static final String RESPONSE_INAPP_SIGNATURE = "INAPP_DATA_SIGNATURE";
   private static final String RESPONSE_INAPP_PURCHASE_ID = "INAPP_PURCHASE_ID";
-
-  private final static String TAG = ApplicationUtils.class.getSimpleName();
 
   static boolean handleActivityResult(Billing billing, int resultCode, Intent data,
       PurchasesUpdatedListener purchaseFinishedListener) {
@@ -184,14 +183,6 @@ class ApplicationUtils {
       throw new RuntimeException("Unexpected type for intent response code: " + o.getClass()
           .getName());
     }
-  }
-
-  private static void logDebug(String msg) {
-    Log.d(TAG, msg);
-  }
-
-  private static void logError(String msg) {
-    Log.e(TAG, "In-app billing error: " + msg);
   }
 
   private static String getObjectFromJson(JSONObject data, String objectId) {

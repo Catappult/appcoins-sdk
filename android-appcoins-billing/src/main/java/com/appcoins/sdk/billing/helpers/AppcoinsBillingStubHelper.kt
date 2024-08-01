@@ -1,7 +1,6 @@
 package com.appcoins.sdk.billing.helpers
 
 import android.os.IBinder
-import android.util.Log
 import com.appcoins.billing.AppcoinsBilling
 import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.communication.requester.MessageRequesterFactory
@@ -9,14 +8,14 @@ import com.appcoins.sdk.billing.UriCommunicationAppcoinsBilling
 import com.appcoins.sdk.billing.WalletBinderUtil.bindType
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
+import com.appcoins.sdk.core.logger.Logger.logInfo
 
 object AppcoinsBillingStubHelper {
-    private val TAG = AppcoinsBillingStubHelper::class.java.simpleName
 
     object Stub {
         @JvmStatic
         fun asInterface(service: IBinder): AppcoinsBilling? {
-            Log.i(TAG, "Stub: BindType $bindType, service $service")
+            logInfo("Stub: BindType $bindType, service $service")
 
             if (bindType == BindType.BILLING_SERVICE_NOT_INSTALLED) {
                 return WebAppcoinsBilling.instance

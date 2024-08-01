@@ -19,8 +19,6 @@ import java.security.spec.X509EncodedKeySpec;
  * purchases as verified.
  */
 public class Security {
-  private static final String TAG = "IABUtil/Security";
-
   private static final String KEY_FACTORY_ALGORITHM = "RSA";
   private static final String SIGNATURE_ALGORITHM = "SHA1withRSA";
 
@@ -90,16 +88,16 @@ public class Security {
       sig.initVerify(publicKey);
       sig.update(signedData.getBytes());
       if (!sig.verify(decodedSignature)) {
-        //Log.e(TAG, "Signature verification failed.");
+        //logError("Signature verification failed.");
         return false;
       }
       return true;
     } catch (NoSuchAlgorithmException e) {
-      //Log.e(TAG, "NoSuchAlgorithmException.");
+      //logError("NoSuchAlgorithmException.");
     } catch (InvalidKeyException e) {
-      //Log.e(TAG, "Invalid key specification.");
+      //logError("Invalid key specification.");
     } catch (SignatureException e) {
-      //Log.e(TAG, "Signature exception.");
+      //logError("Signature exception.");
     }
     return false;
   }
