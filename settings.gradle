@@ -6,3 +6,5 @@ include ':appcoins-core'
 include ':appcoins-lifecycle'
 include ':communication'
 include ':toolbox'
+
+enableFeaturePreview("VERSION_CATALOGS")

@@ -130,15 +130,15 @@ android {
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 
-  testImplementation 'junit:junit:4.13.2'
-  testImplementation 'org.mockito:mockito-core:4.8.0'
-  testImplementation 'org.json:json:20220924'
-  androidTestImplementation 'com.android.support.test:runner:1.0.2'
-  androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+  testImplementation libs.junit
+  testImplementation libs.mockito.core
+  testImplementation libs.json
+  androidTestImplementation libs.android.support.test.runner
+  androidTestImplementation libs.android.support.test.espresso.core
 
-  api 'com.indicative.client.android:Indicative-Android:1.1.0'
-  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  api 'org.java-websocket:Java-WebSocket:1.5.3'
+  api libs.indicative
+  implementation libs.kotlin.stdlib
+  api libs.java.web.socket
 
   api project(':appcoins-billing')
   api project(':appcoins-core')

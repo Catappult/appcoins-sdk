@@ -24,10 +24,10 @@ android {
 }
 
 dependencies {
-  testImplementation 'junit:junit:4.12'
-  androidTestImplementation "org.mockito:mockito-android:2.28.2"
-  androidTestImplementation 'com.android.support.test:runner:1.0.2'
-  androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+  testImplementation libs.junit
+  androidTestImplementation libs.mockito.android
+  androidTestImplementation libs.android.support.test.runner
+  androidTestImplementation libs.android.support.test.espresso.core
 
   api project(':appcoins-core')
 }

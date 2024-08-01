@@ -52,13 +52,13 @@ android {
 }
 
 dependencies {
-  testImplementation 'junit:junit:4.13.2'
-  testImplementation 'org.mockito:mockito-core:4.8.0'
-  testImplementation 'org.json:json:20220924'
-  androidTestImplementation 'com.android.support.test:runner:1.0.2'
-  androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+  testImplementation libs.junit
+  testImplementation libs.mockito.core
+  testImplementation libs.json
+  androidTestImplementation libs.android.support.test.runner
+  androidTestImplementation libs.android.support.test.espresso.core
 
-  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  implementation libs.kotlin.stdlib
 }
 
 //Publish configuration
