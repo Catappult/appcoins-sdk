@@ -141,7 +141,6 @@ dependencies {
   api 'org.java-websocket:Java-WebSocket:1.5.3'
 
   api project(':appcoins-billing')
-  api project(':appcoins-adyen')
   api project(':communication')
 }
 

@@ -1,8 +1,10 @@
 package com.appcoins.sdk.billing.service;
 
 import android.os.AsyncTask;
+
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.utils.RequestBuilderUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,13 +22,10 @@ public class BdsService implements Service {
   public final static int TIME_OUT_IN_MILLIS = 30000;
   private String baseUrl;
   private int timeoutInMillis;
-  private List<ServiceAsyncTask> asyncTasks;
 
   public BdsService(String baseUrl, int timeoutInMillis) {
-
     this.baseUrl = baseUrl;
     this.timeoutInMillis = timeoutInMillis;
-    this.asyncTasks = new ArrayList<>();
   }
 
   RequestResponse createRequest(String baseUrl, String endPoint, String httpMethod,
@@ -145,12 +144,5 @@ public class BdsService implements Service {
         new ServiceAsyncTask(this, baseUrl, endPoint, httpMethod, paths, queries, header, body,
             serviceResponseListener);
     serviceAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    asyncTasks.add(serviceAsyncTask);
-  }
-
-  @Override public void cancelRequests() {
-    for (ServiceAsyncTask asyncTask : asyncTasks) {
-      asyncTask.cancel(true);
-    }
   }
 }

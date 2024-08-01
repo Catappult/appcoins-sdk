@@ -26,7 +26,6 @@ import com.appcoins.sdk.billing.analytics.IndicativeLaunchCallback;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.managers.ApiKeysManager;
 import com.appcoins.sdk.billing.managers.WebPaymentSocketManager;
-import com.appcoins.sdk.billing.payasguest.IabActivity;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
 import com.indicative.client.android.Indicative;
@@ -99,14 +98,6 @@ public class WalletUtils {
     sdkAnalytics.sendCallBindServiceFailEvent(methodName, methodPriority);
     e.printStackTrace();
     return null;
-  }
-
-  public static Bundle startPayAsGuest(BuyItemProperties buyItemProperties) {
-    if (isMainThread()) {
-      return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
-    }
-    Intent intent = IabActivity.newIntent(context, buyItemProperties, sdkAnalytics);
-    return createIntentBundle(intent);
   }
 
   public static Bundle startWebFirstPayment() {

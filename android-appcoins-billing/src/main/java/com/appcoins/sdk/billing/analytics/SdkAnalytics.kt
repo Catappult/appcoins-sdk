@@ -253,9 +253,3 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
     )
   }
 }
-
-class PayAsAGuestAnalytics(private val analyticsManager: AnalyticsManager) {
-  companion object {
-    const val EVENT_CONTEXT = "PayAsAGuestSDK"
-  }
-}

@@ -3,13 +3,10 @@ package com.appcoins.sdk.billing.managers
 import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.WalletInteract
 import com.appcoins.sdk.billing.analytics.IndicativeAnalytics
-import com.appcoins.sdk.billing.analytics.WalletAddressProvider
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.mappers.AttributionResponse
 import com.appcoins.sdk.billing.repositories.AttributionRepository
 import com.appcoins.sdk.billing.service.BdsService
-import com.appcoins.sdk.billing.service.wallet.WalletGenerationMapper
-import com.appcoins.sdk.billing.service.wallet.WalletRepository
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
 import com.appcoins.sdk.billing.usecases.GetOemIdForPackage
 
@@ -68,14 +65,7 @@ object AttributionManager {
     }
 
     private fun getWalletId(): String? {
-        val backendService =
-            BdsService(BuildConfig.BACKEND_BASE, BdsService.TIME_OUT_IN_MILLIS)
-        val walletAddressProvider =
-            WalletAddressProvider.provideWalletAddressProvider()
-        val walletRepository =
-            WalletRepository(backendService, WalletGenerationMapper(), walletAddressProvider)
-
-        val walletInteract = WalletInteract(attributionSharedPreferences, walletRepository)
+        val walletInteract = WalletInteract(attributionSharedPreferences)
 
         return walletInteract.retrieveWalletId()
     }

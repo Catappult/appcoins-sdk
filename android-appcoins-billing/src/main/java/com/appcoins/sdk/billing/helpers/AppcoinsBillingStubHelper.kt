@@ -40,8 +40,7 @@ object AppcoinsBillingStubHelper {
                 return AppcoinsBillingWrapper(
                     appcoinsBilling,
                     AppCoinsPendingIntentCaller.getInstance(),
-                    attributionSharedPreferences.getWalletId(),
-                    BdsService.TIME_OUT_IN_MILLIS
+                    attributionSharedPreferences.getWalletId()
                 )
             }
         }

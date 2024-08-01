@@ -25,10 +25,6 @@ read_config_file(${API_KEYS_FILE})
 # Definition of the values for the API Keys
 add_definitions(-DINDICATIVE_API_KEY="${INDICATIVE_API_KEY}")
 add_definitions(-DINDICATIVE_API_KEY_DEV="${INDICATIVE_API_KEY_DEV}")
-add_definitions(-DRAKAM_API_KEY="${RAKAM_API_KEY}")
-add_definitions(-DRAKAM_API_KEY_DEV="${RAKAM_API_KEY_DEV}")
-add_definitions(-DADYEN_API_KEY="${ADYEN_API_KEY}")
-add_definitions(-DADYEN_API_KEY_DEV="${ADYEN_API_KEY_DEV}")
 
 # Declaration of the project name.
 project("native-keys-storer")

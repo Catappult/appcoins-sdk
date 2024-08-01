@@ -15,10 +15,11 @@ import com.appcoins.sdk.billing.SkuDetails
 import com.appcoins.sdk.billing.SkuDetailsResultV2
 import com.appcoins.sdk.billing.SkuDetailsV2
 import com.appcoins.sdk.billing.WSServiceController
-import com.appcoins.sdk.billing.payasguest.BillingRepository
+import com.appcoins.sdk.billing.managers.BrokerManager
+import com.appcoins.sdk.billing.mappers.PurchasesBundleMapper
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.getPaymentFlowFromPayflowMethod
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.PayAsAGuest
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.WebPayment
+import com.appcoins.sdk.billing.repositories.BrokerRepository
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.GET_SKU_DETAILS_ITEM_LIST
@@ -83,20 +84,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         var bundle: Bundle? = null
         if (hasRequiredFields(type, sku) && WalletUtils.getPayflowMethodsList().isNotEmpty()) {
             for (method in WalletUtils.getPayflowMethodsList()) {
-                if (method is PayAsAGuest) {
-                    Log.d(
-                        TAG,
-                        "Service is NOT installed and should StartPayAsGuest with buyItemProperties = [$buyItemProperties]"
-                    )
-                    setBuyItemPropertiesForPayflow(
-                        packageName,
-                        apiVersion,
-                        sku,
-                        type,
-                        developerPayload
-                    )
-                    bundle = WalletUtils.startPayAsGuest(buyItemProperties)
-                } else if (method is WebPayment) {
+                if (method is WebPayment) {
                     Log.d(
                         TAG,
                         "Service is NOT installed and should make WebFirstPayment with buyItemProperties = [$buyItemProperties]"
@@ -170,10 +158,11 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         var bundleResponse = buildEmptyBundle()
         val walletId = walletId
         if (walletId != null && type.equals("INAPP", ignoreCase = true)) {
-            val billingRepository =
-                BillingRepository(BdsService(BuildConfig.HOST_WS, 30000))
+            val brokerRepository = BrokerRepository(BdsService(BuildConfig.HOST_WS, 30000))
             val guestPurchaseInteract =
-                GuestPurchasesInteract(billingRepository)
+                PurchasesBundleMapper(
+                    brokerRepository
+                )
 
             bundleResponse =
                 guestPurchaseInteract.mapGuestPurchases(bundleResponse, walletId, packageName, type)
@@ -197,13 +186,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         walletId: String,
         packageName: String,
         purchaseToken: String
-    ): Int {
-        val billingRepository =
-            BillingRepository(BdsService(BuildConfig.HOST_WS, BdsService.TIME_OUT_IN_MILLIS))
-        val guestPurchaseInteract = GuestPurchasesInteract(billingRepository)
-
-        return guestPurchaseInteract.consumeGuestPurchase(walletId, packageName, purchaseToken)
-    }
+    ): Int = BrokerManager.consumePurchase(walletId, packageName, purchaseToken)
 
     private fun buildEmptyBundle(): Bundle {
         val bundleResponse = Bundle()
