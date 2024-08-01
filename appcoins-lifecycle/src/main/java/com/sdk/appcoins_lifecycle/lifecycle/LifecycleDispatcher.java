@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class LifecycleDispatcher {
 
-  private static AtomicBoolean sInitialized = new AtomicBoolean(false);
+  private static final AtomicBoolean sInitialized = new AtomicBoolean(false);
 
   private LifecycleDispatcher() {
   }

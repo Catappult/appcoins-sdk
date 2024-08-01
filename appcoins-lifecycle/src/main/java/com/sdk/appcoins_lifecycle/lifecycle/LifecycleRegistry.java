@@ -42,7 +42,7 @@ public class LifecycleRegistry extends Lifecycle {
    * if addition_order(observer1) < addition_order(observer2), then
    * state(observer1) >= state(observer2),
    */
-  private FastSafeIterableMap<LifecycleObserver, ObserverWithState> mObserverMap =
+  private final FastSafeIterableMap<LifecycleObserver, ObserverWithState> mObserverMap =
       new FastSafeIterableMap<>();
   /**
    * Current state
@@ -61,7 +61,7 @@ public class LifecycleRegistry extends Lifecycle {
   // newObserver should be brought only to CREATED state during the execution of
   // this onStart method. our invariant with mObserverMap doesn't help, because parent observer
   // is no longer in the map.
-  private ArrayList<State> mParentStates = new ArrayList<>();
+  private final ArrayList<State> mParentStates = new ArrayList<>();
 
   /**
    * Creates a new LifecycleRegistry for the given provider.

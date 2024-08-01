@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class FastSafeIterableMap<K, V> extends SafeIterableMap<K, V> {
 
-  private HashMap<K, Entry<K, V>> mHashMap = new HashMap<>();
+  private final HashMap<K, Entry<K, V>> mHashMap = new HashMap<>();
 
   @Override protected Entry<K, V> get(K k) {
     return mHashMap.get(k);

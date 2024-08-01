@@ -7,7 +7,7 @@ import java.util.Map;
  * @hide
  */
 public class MethodCallsLogger {
-  private Map<String, Integer> mCalledMethods = new HashMap<>();
+  private final Map<String, Integer> mCalledMethods = new HashMap<>();
 
   /**
    * @hide

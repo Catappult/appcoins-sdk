@@ -22,8 +22,8 @@ import java.util.Map;
 public class BdsService implements Service {
 
   public final static int TIME_OUT_IN_MILLIS = 30000;
-  private String baseUrl;
-  private int timeoutInMillis;
+  private final String baseUrl;
+  private final int timeoutInMillis;
 
   public BdsService(String baseUrl, int timeoutInMillis) {
     this.baseUrl = baseUrl;

@@ -19,8 +19,8 @@ public class EventLogger implements Runnable {
   private final String BASE_URL = "https://ws75.aptoide.com/api/7/";
   private final String SERVICE_PATH = "user/addEvent/action=CLICK/context=BILLING_SDK/name=";
   private final String purchaseEventName = "PURCHASE_INTENT";
-  private String sku;
-  private String appPackage;
+  private final String sku;
+  private final String appPackage;
 
   public EventLogger(String sku, String appPackage) {
     this.sku = sku;
@@ -85,7 +85,7 @@ public class EventLogger implements Runnable {
       }
       if (connection != null) {
         connection.disconnect();
-        System.out.println(response.toString());
+        System.out.println(response);
       }
       br.close();
     } catch (MalformedURLException e) {

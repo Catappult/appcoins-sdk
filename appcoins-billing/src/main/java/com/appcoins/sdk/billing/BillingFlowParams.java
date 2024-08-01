@@ -2,11 +2,11 @@ package com.appcoins.sdk.billing;
 
 public class BillingFlowParams {
 
-  private String orderReference;
+  private final String orderReference;
 
-  private String developerPayload;
+  private final String developerPayload;
 
-  private String origin;
+  private final String origin;
 
   private final String sku;
 

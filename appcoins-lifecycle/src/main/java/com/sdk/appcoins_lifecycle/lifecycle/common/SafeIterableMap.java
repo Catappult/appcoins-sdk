@@ -20,7 +20,7 @@ public class SafeIterableMap<K, V> implements Iterable<Map.Entry<K, V>> {
   private Entry<K, V> mEnd;
   // using WeakHashMap over List<WeakReference>, so we don't have to manually remove
   // WeakReferences that have null in them.
-  private WeakHashMap<SupportRemove<K, V>, Boolean> mIterators = new WeakHashMap<>();
+  private final WeakHashMap<SupportRemove<K, V>, Boolean> mIterators = new WeakHashMap<>();
   private int mSize = 0;
 
   protected Entry<K, V> get(K k) {

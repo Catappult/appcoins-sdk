@@ -7,8 +7,8 @@ import java.util.ArrayList;
 public class SkuDetailsAsync implements Runnable {
 
   private final Repository repository;
-  private SkuDetailsResponseListener skuDetailsResponseListener;
-  private SkuDetailsParams skuDetailsParams;
+  private final SkuDetailsResponseListener skuDetailsResponseListener;
+  private final SkuDetailsParams skuDetailsParams;
 
   public SkuDetailsAsync(SkuDetailsParams skuDetailsParams,
       SkuDetailsResponseListener skuDetailsResponseListener, Repository repository) {

@@ -15,9 +15,9 @@ class IndicativeEventLogger : EventLogger, Serializable {
         eventName: String, data: Map<String, Any>?,
         action: AnalyticsManager.Action, context: String
     ) {
-        val completedData: Map<String, Any>? = (data ?: HashMap())
+        val completedData: Map<String, Any> = (data ?: HashMap())
         val superPropertiesAndData: Map<String, Any>?
-        superPropertiesAndData = IndicativeAnalytics.superProperties + (completedData ?: HashMap())
+        superPropertiesAndData = IndicativeAnalytics.superProperties + completedData
         Indicative.recordEvent(eventName, IndicativeAnalytics.instanceId, superPropertiesAndData)
         logDebug(
             "Called with: eventName = [$eventName], superProperties = [${IndicativeAnalytics.superProperties}] data = [$completedData], action = [$action], context = [$context], instanceId = [${IndicativeAnalytics.instanceId}]"

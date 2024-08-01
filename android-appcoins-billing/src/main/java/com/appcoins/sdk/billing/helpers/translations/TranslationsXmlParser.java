@@ -14,8 +14,8 @@ public class TranslationsXmlParser {
   private static final String translationsRelativePath =
       "appcoins-wallet/resources/translations/values-";
   private static final String translationsFileName = "/external_strings.xml";
-  private Context context;
-  private List<String> requiredCountryCodes;
+  private final Context context;
+  private final List<String> requiredCountryCodes;
 
   public TranslationsXmlParser(Context context) {
     this.context = context;

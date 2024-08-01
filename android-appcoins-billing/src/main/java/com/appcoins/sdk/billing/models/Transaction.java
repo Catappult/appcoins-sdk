@@ -6,7 +6,7 @@ public class Transaction {
   private final String hash;
   private final String orderReference;
   private final Status status;
-  private String gateway;
+  private final String gateway;
 
   public Transaction(String uid, String hash, String orderReference, Status status,
       String gateway) {

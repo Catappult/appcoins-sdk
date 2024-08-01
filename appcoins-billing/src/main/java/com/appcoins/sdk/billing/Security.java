@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing;
 
+import static com.appcoins.sdk.core.logger.Logger.logError;
+
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -88,16 +90,16 @@ public class Security {
       sig.initVerify(publicKey);
       sig.update(signedData.getBytes());
       if (!sig.verify(decodedSignature)) {
-        //logError("Signature verification failed.");
+        logError("Signature verification failed.");
         return false;
       }
       return true;
     } catch (NoSuchAlgorithmException e) {
-      //logError("NoSuchAlgorithmException.");
+      logError("NoSuchAlgorithmException.", e);
     } catch (InvalidKeyException e) {
-      //logError("Invalid key specification.");
+      logError("Invalid key specification.", e);
     } catch (SignatureException e) {
-      //logError("Signature exception.");
+      logError("Signature exception.", e);
     }
     return false;
   }

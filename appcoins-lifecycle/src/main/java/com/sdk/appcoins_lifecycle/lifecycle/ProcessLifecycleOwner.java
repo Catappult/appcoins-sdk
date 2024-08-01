@@ -37,11 +37,9 @@ import android.os.Handler;
   private boolean mPauseSent = true;
   private boolean mStopSent = true;
   private Handler mHandler;
-  private Runnable mDelayedPauseRunnable = new Runnable() {
-    @Override public void run() {
-      dispatchPauseIfNeeded();
-      dispatchStopIfNeeded();
-    }
+  private final Runnable mDelayedPauseRunnable = () -> {
+    dispatchPauseIfNeeded();
+    dispatchStopIfNeeded();
   };
   ReportFragment.ActivityInitializationListener mInitializationListener =
       new ReportFragment.ActivityInitializationListener() {

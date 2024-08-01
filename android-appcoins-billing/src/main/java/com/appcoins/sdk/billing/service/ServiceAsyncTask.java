@@ -10,11 +10,11 @@ public class ServiceAsyncTask extends AsyncTask<Object, Object, RequestResponse>
   private final List<String> paths;
   private final Map<String, String> queries;
   private final Map<String, Object> body;
-  private Map<String, String> header;
-  private BdsService bdsService;
-  private String baseUrl;
-  private String endPoint;
-  private ServiceResponseListener serviceResponseListener;
+  private final Map<String, String> header;
+  private final BdsService bdsService;
+  private final String baseUrl;
+  private final String endPoint;
+  private final ServiceResponseListener serviceResponseListener;
 
   ServiceAsyncTask(BdsService bdsService, String baseUrl, String endPoint, String httpMethod,
       List<String> paths, Map<String, String> queries, Map<String, String> header,

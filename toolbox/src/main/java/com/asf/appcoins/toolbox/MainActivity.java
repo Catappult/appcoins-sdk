@@ -50,7 +50,7 @@ public class MainActivity extends Activity {
 
     listener = new AppCoinsBillingStateListener() {
       @Override public void onBillingSetupFinished(int responseCode) {
-        logDebug("Is Billing Setup Finished:  Connected-" + responseCode + "");
+        logDebug("Is Billing Setup Finished:  Connected-" + responseCode);
       }
 
       @Override public void onBillingServiceDisconnected() {
@@ -70,7 +70,7 @@ public class MainActivity extends Activity {
           Object value = bundle.get(key);
           if (value != null) {
             logDebug("Message Key: " + key);
-            logDebug("Message value: " + value.toString());
+            logDebug("Message value: " + value);
           }
         }
       }

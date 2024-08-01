@@ -22,8 +22,8 @@ public class Lifecycling {
   private static final int REFLECTIVE_CALLBACK = 1;
   private static final int GENERATED_CALLBACK = 2;
 
-  private static Map<Class, Integer> sCallbackCache = new HashMap<>();
-  private static Map<Class, List<Constructor<? extends GeneratedAdapter>>> sClassToAdapters =
+  private static final Map<Class, Integer> sCallbackCache = new HashMap<>();
+  private static final Map<Class, List<Constructor<? extends GeneratedAdapter>>> sClassToAdapters =
       new HashMap<>();
 
   // Left for binary compatibility when lifecycle-common goes up 2.1 as transitive dep

@@ -15,7 +15,7 @@ import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iap
 public class TranslationsModel {
 
   //This is needed as there may be an error parsing the Xml.
-  private Map<TranslationsKeys, String> defaultStringsMap;
+  private final Map<TranslationsKeys, String> defaultStringsMap;
 
   /**
    * Whenever you add a string to an xml file, you should create the enum with the key name in

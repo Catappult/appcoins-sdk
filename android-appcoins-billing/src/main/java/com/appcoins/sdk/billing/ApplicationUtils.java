@@ -88,7 +88,7 @@ class ApplicationUtils {
       logDebug("Result code was OK but in-app billing response was not OK: " + getResponseDesc(
           responseCode));
       sdkAnalytics.sendPurchaseStatusEvent("error", getResponseDesc(responseCode));
-      purchaseFinishedListener.onPurchasesUpdated(responseCode, Collections.<Purchase>emptyList());
+      purchaseFinishedListener.onPurchasesUpdated(responseCode, Collections.emptyList());
     } else if (resultCode == Activity.RESULT_CANCELED) {
       logDebug("Purchase canceled - Response: " + getResponseDesc(responseCode));
       sdkAnalytics.sendPurchaseStatusEvent("user_canceled", getResponseDesc(responseCode));
