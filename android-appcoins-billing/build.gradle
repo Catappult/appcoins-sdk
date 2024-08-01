@@ -37,12 +37,12 @@ android {
   }
 
   compileOptions {
-    targetCompatibility TARGET_COMPATIBILITY
-    sourceCompatibility SOURCE_COMPATIBILITY
+    sourceCompatibility = SOURCE_COMPATIBILITY
+    targetCompatibility = TARGET_COMPATIBILITY
   }
 
   kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_1_8.toString()
+    jvmTarget = TARGET_COMPATIBILITY
   }
 
   buildTypes {
@@ -141,6 +141,7 @@ dependencies {
   api 'org.java-websocket:Java-WebSocket:1.5.3'
 
   api project(':appcoins-billing')
+  api project(':appcoins-core')
   api project(':communication')
 }
 

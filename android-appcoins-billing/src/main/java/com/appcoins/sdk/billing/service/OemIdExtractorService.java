@@ -1,6 +1,6 @@
 package com.appcoins.sdk.billing.service;
 
-import android.util.Log;
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
 
 import com.appcoins.sdk.billing.oemid.OemIdExtractor;
 
@@ -20,7 +20,7 @@ public class OemIdExtractorService {
         if (oemId == null || oemId.isEmpty()) {
             oemId = extractorV1.extract(packageName);
         }
-        Log.d("OemIdExtractor", "Extracted OemId -> " + oemId);
+        logDebug("Extracted OemId -> " + oemId);
         return oemId;
     }
 }

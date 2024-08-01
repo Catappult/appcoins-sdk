@@ -1,10 +1,11 @@
 package com.appcoins.sdk.billing.helpers;
 
+import static com.appcoins.sdk.core.logger.Logger.logError;
+
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 
 import com.appcoins.billing.AppcoinsBilling;
 import com.appcoins.sdk.billing.ConnectionLifeCycle;
@@ -75,7 +76,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
         skuDetailsResult = AndroidBillingMapper.mapBundleToHashMapSkuDetails(skuType, response);
 
         if (skuDetailsResult.getResponseCode() == ResponseCode.SERVICE_UNAVAILABLE.getValue()) {
-            Log.e("AppCoinsBillingRepo", "Failed to get SkuDetails request: " + skuDetailsResult.getResponseCode());
+            logError("Failed to get SkuDetails request: " + skuDetailsResult.getResponseCode());
             Thread.sleep(5000);
         }
       } while (skuDetailsResult.getResponseCode() == ResponseCode.SERVICE_UNAVAILABLE.getValue());

@@ -28,6 +28,8 @@ dependencies {
   androidTestImplementation "org.mockito:mockito-android:2.28.2"
   androidTestImplementation 'com.android.support.test:runner:1.0.2'
   androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+  api project(':appcoins-core')
 }
 
 //Publish configuration

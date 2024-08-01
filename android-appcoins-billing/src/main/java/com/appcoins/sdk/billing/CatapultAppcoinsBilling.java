@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing;
 
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
@@ -7,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Looper;
-import android.util.Log;
 
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.helpers.AppCoinsPendingIntentCaller;
@@ -69,7 +70,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
       String oemid = attributionSharedPreferences.getOemId();
       String guestWalletId = attributionSharedPreferences.getWalletId();
 
-      Log.d("Message: ", payload);
+      logDebug("Message: " + payload);
 
       Thread eventLoggerThread = new Thread(new EventLogger(billingFlowParams.getSku(),
           activity.getApplicationContext()
@@ -220,7 +221,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
             String oemid = attributionSharedPreferences.getOemId();
             String guestWalletId = attributionSharedPreferences.getWalletId();
 
-            Log.d("Message: ", payload);
+            logDebug("Message: " + payload);
 
             Thread eventLoggerThread =
                     new Thread(

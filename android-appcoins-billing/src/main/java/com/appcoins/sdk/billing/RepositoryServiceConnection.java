@@ -1,10 +1,11 @@
 package com.appcoins.sdk.billing;
 
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
@@ -17,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 
 public class RepositoryServiceConnection implements ServiceConnection, RepositoryConnection, PayflowPriorityStream.Consumer<ArrayList<PaymentFlowMethod>> {
-    private static final String TAG = RepositoryServiceConnection.class.getSimpleName();
     private final Context context;
     private final ConnectionLifeCycle connectionLifeCycle;
     private AppCoinsBillingStateListener listener;
@@ -29,14 +29,13 @@ public class RepositoryServiceConnection implements ServiceConnection, Repositor
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        Log.d(TAG,
-                "onServiceConnected() called with: name = [" + name + "], service = [" + service + "]");
+        logDebug("called with: name = [" + name + "], service = [" + service + "]");
         connectionLifeCycle.onConnect(name, service, listener);
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        Log.d(TAG, "onServiceDisconnected() called with: name = [" + name + "]");
+        logDebug("called with: name = [" + name + "]");
         connectionLifeCycle.onDisconnect(listener);
     }
 

@@ -1,8 +1,9 @@
 package com.appcoins.communication.requester;
 
+import static com.appcoins.sdk.core.logger.Logger.logWarning;
+
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -12,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class TaskQueueSynchronizer {
-    private final String TAG = TaskQueueSynchronizer.class.getSimpleName();
     private final BlockingQueue<FutureTask<Parcelable>> taskQueue = new LinkedBlockingQueue<>();
 
     public TaskQueueSynchronizer() {
@@ -36,7 +36,7 @@ public class TaskQueueSynchronizer {
         try {
             return futureTask.get(timeout, timeUnit);
         } catch (TimeoutException e) {
-            Log.w(TAG, "Task execution timed out.");
+            logWarning("Task execution timed out.");
             futureTask.cancel(true);
             return new Parcelable() {
                 @Override

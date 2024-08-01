@@ -1,10 +1,12 @@
 package com.appcoins.sdk.billing.service
 
 import android.content.Context
-import android.util.Log
 import com.appcoins.sdk.billing.ResponseCode
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
 import com.appcoins.sdk.billing.listeners.SDKWebResponseStream
+import com.appcoins.sdk.core.logger.Logger.logDebug
+import com.appcoins.sdk.core.logger.Logger.logError
+import com.appcoins.sdk.core.logger.Logger.logInfo
 import org.java_websocket.WebSocket
 import org.java_websocket.handshake.ClientHandshake
 import org.java_websocket.server.WebSocketServer
@@ -19,8 +21,8 @@ class WebPaymentCommunicationWebSocket(port: Int) : WebSocketServer(InetSocketAd
     private var isNewPaymentRequest = false
 
     override fun onOpen(conn: WebSocket, handshake: ClientHandshake) {
-        Log.i(TAG, "New connection established.")
-        Log.d(TAG, "New connection: " + conn.remoteSocketAddress)
+        logInfo("New connection established.")
+        logDebug("New connection: " + conn.remoteSocketAddress)
         if (isNewPaymentRequest) {
             isNewPaymentRequest = false
             remoteSocketAddressForCurrentPayment = conn.remoteSocketAddress.toString()
@@ -28,8 +30,8 @@ class WebPaymentCommunicationWebSocket(port: Int) : WebSocketServer(InetSocketAd
     }
 
     override fun onClose(conn: WebSocket, code: Int, reason: String, remote: Boolean) {
-        Log.i(TAG, "Connection closed.")
-        Log.d(TAG, "Closed connection to: " + conn.remoteSocketAddress + " with reason: $reason")
+        logInfo("Connection closed.")
+        logDebug("Closed connection to: " + conn.remoteSocketAddress + " with reason: $reason")
         if (conn.remoteSocketAddress.toString() == remoteSocketAddressForCurrentPayment) {
             remoteSocketAddressForCurrentPayment = null
             SDKWebResponseStream.getInstance()
@@ -38,8 +40,8 @@ class WebPaymentCommunicationWebSocket(port: Int) : WebSocketServer(InetSocketAd
     }
 
     override fun onMessage(conn: WebSocket, message: String) {
-        Log.i(TAG, "Received new message.")
-        Log.d(TAG, "Received message from " + conn.remoteSocketAddress + ": " + message)
+        logInfo("Received new message.")
+        logDebug("Received message from " + conn.remoteSocketAddress + ": " + message)
 
         if (conn.remoteSocketAddress.toString() == remoteSocketAddressForCurrentPayment) {
             remoteSocketAddressForCurrentPayment = null
@@ -55,15 +57,15 @@ class WebPaymentCommunicationWebSocket(port: Int) : WebSocketServer(InetSocketAd
     }
 
     override fun onError(conn: WebSocket?, ex: Exception) {
-        Log.e(TAG, ex.message.toString())
+        logError(ex.message.toString())
     }
 
     override fun onStart() {
-        Log.i(TAG, "WebSocket server started successfully")
+        logInfo("WebSocket server started successfully")
     }
 
     override fun stop(timeout: Int, closeMessage: String?) {
-        Log.i(TAG, "WebSocket stopped with timeout=$timeout and closeMessage=$closeMessage.")
+        logInfo("WebSocket stopped with timeout=$timeout and closeMessage=$closeMessage.")
         context = null
         isStarted = false
         super.stop(timeout, closeMessage)
@@ -81,9 +83,5 @@ class WebPaymentCommunicationWebSocket(port: Int) : WebSocketServer(InetSocketAd
     fun prepareForNewPaymentResponse() {
         remoteSocketAddressForCurrentPayment = null
         isNewPaymentRequest = true
-    }
-
-    private companion object {
-        const val TAG = "WebPaymentSocket"
     }
 }

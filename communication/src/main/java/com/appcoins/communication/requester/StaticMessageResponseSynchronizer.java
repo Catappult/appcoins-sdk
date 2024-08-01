@@ -1,7 +1,8 @@
 package com.appcoins.communication.requester;
 
+import static com.appcoins.sdk.core.logger.Logger.logWarning;
+
 import android.os.Parcelable;
-import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,7 +10,6 @@ class StaticMessageResponseSynchronizer {
 
   static private final Map<Long, Object> blockingObjects = new HashMap<>();
   static private final Map<Long, Parcelable> responses = new HashMap<>();
-  static private final String TAG = StaticMessageResponseSynchronizer.class.getSimpleName();
   static private MessageRequesterListener messageReceivedListener;
 
   private StaticMessageResponseSynchronizer() {
@@ -20,7 +20,7 @@ class StaticMessageResponseSynchronizer {
       responses.put(requestCode, returnValue);
       Object blockingObject = blockingObjects.get(requestCode);
       if (blockingObject == null) {
-        Log.w(TAG, "there is no request for message id: " + requestCode);
+        logWarning("There is no request for message id: " + requestCode);
         return;
       }
       synchronized (blockingObject) {
