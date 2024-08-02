@@ -5,7 +5,6 @@ import com.appcoins.sdk.billing.analytics.manager.EventLogger
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.indicative.client.android.Indicative
 import java.io.Serializable
-import java.util.HashMap
 
 class IndicativeEventLogger : EventLogger, Serializable {
 
@@ -15,9 +14,9 @@ class IndicativeEventLogger : EventLogger, Serializable {
         eventName: String, data: Map<String, Any>?,
         action: AnalyticsManager.Action, context: String
     ) {
-        val completedData: Map<String, Any>? = (data ?: HashMap())
-        val superPropertiesAndData: Map<String, Any>?
-        superPropertiesAndData = IndicativeAnalytics.superProperties + (completedData ?: HashMap())
+        val completedData: Map<String, Any> = (data ?: HashMap())
+        val superPropertiesAndData: Map<String, Any> =
+            IndicativeAnalytics.superProperties + completedData
         Indicative.recordEvent(eventName, IndicativeAnalytics.instanceId, superPropertiesAndData)
         logDebug(
             "Called with: eventName = [$eventName], superProperties = [${IndicativeAnalytics.superProperties}] data = [$completedData], action = [$action], context = [$context], instanceId = [${IndicativeAnalytics.instanceId}]"

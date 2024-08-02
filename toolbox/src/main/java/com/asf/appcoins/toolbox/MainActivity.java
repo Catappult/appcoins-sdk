@@ -50,7 +50,7 @@ public class MainActivity extends Activity {
 
     listener = new AppCoinsBillingStateListener() {
       @Override public void onBillingSetupFinished(int responseCode) {
-        logDebug("Is Billing Setup Finished:  Connected-" + responseCode + "");
+        logDebug("Is Billing Setup Finished:  Connected-" + responseCode);
       }
 
       @Override public void onBillingServiceDisconnected() {
@@ -58,10 +58,6 @@ public class MainActivity extends Activity {
       }
     };
     cab.startConnection(listener);
-  }
-
-  @Override protected void onDestroy() {
-    super.onDestroy();
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -74,7 +70,7 @@ public class MainActivity extends Activity {
           Object value = bundle.get(key);
           if (value != null) {
             logDebug("Message Key: " + key);
-            logDebug("Message value: " + value.toString());
+            logDebug("Message value: " + value);
           }
         }
       }
@@ -97,8 +93,7 @@ public class MainActivity extends Activity {
 
     Thread t = new Thread(() -> {
       PurchasesResult pr = cab.queryPurchases(SkuType.inapp.toString());
-      if (pr.getPurchases()
-          .size() > 0) {
+      if (!pr.getPurchases().isEmpty()) {
         for (Purchase p : pr.getPurchases()) {
           logDebug("Purchase result token: " + p.getToken());
           logDebug("Purchase result sku: " + p.getSku());

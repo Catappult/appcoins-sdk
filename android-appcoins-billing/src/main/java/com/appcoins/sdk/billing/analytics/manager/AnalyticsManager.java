@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class AnalyticsManager implements Serializable {
   private final KeyValueNormalizer analyticsNormalizer;
-  private Map<EventLogger, Collection<String>> eventLoggers;
+  private final Map<EventLogger, Collection<String>> eventLoggers;
 
   private AnalyticsManager(
       Map<EventLogger, Collection<String>> eventLoggers,

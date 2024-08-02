@@ -10,7 +10,7 @@ public class MessageRequesterFactory {
    * described in activity's intent-filter)
    * @param requesterActivityUri URI of the activity declared on manifest that extends
    * {@link MessageRequesterActivity } (usually described in activity's intent-filter)
-   * @param timeout
+   * @param timeout Timeout time in milliseconds.
    *
    * @return {@link SyncIpcMessageRequester} that allows you to communicate with the processor
    * application

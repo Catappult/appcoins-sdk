@@ -4,12 +4,12 @@ import java.io.Serializable;
 
 public class BuyItemProperties implements Serializable {
 
-  private int apiVersion;
-  private String packageName;
-  private String sku;
-  private String type;
-  private DeveloperPayload developerPayload;
-  private SkuDetails skuDetails;
+  private final int apiVersion;
+  private final String packageName;
+  private final String sku;
+  private final String type;
+  private final DeveloperPayload developerPayload;
+  private final SkuDetails skuDetails;
 
   public BuyItemProperties(int apiVersion, String packageName, String sku, String type,
       DeveloperPayload developerPayload, SkuDetails skuDetails) {

@@ -22,16 +22,16 @@ class ApplicationUtils {
   private static final String RESPONSE_INAPP_SIGNATURE = "INAPP_DATA_SIGNATURE";
   private static final String RESPONSE_INAPP_PURCHASE_ID = "INAPP_PURCHASE_ID";
 
-  static boolean handleActivityResult(Billing billing, int resultCode, Intent data,
-      PurchasesUpdatedListener purchaseFinishedListener) {
+  static void handleActivityResult(Billing billing, int resultCode, Intent data,
+                                   PurchasesUpdatedListener purchaseFinishedListener) {
 
     SdkAnalytics sdkAnalytics = WalletUtils.getSdkAnalytics();
 
     if (data == null) {
       logError("Null data in IAB activity result.");
       purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.getValue(),
-          Collections.<Purchase>emptyList());
-      return false;
+          Collections.emptyList());
+      return;
     }
 
     int responseCode = getResponseCodeFromIntent(data);
@@ -47,16 +47,15 @@ class ApplicationUtils {
 
       if (purchaseData == null || dataSignature == null) {
         logError("BUG: either purchaseData or dataSignature is null.");
-        logDebug("Extras: " + data.getExtras()
-            .toString());
+        logDebug("Extras: " + data.getExtras());
         purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.getValue(),
-            Collections.<Purchase>emptyList());
+            Collections.emptyList());
 
-        return false;
+        return;
       }
 
       if (billing.verifyPurchase(purchaseData, Base64.decode(dataSignature, Base64.DEFAULT))) {
-        JSONObject purchaseDataJSON = null;
+        JSONObject purchaseDataJSON;
         try {
           purchaseDataJSON = new JSONObject(purchaseData);
           Purchase purchase =
@@ -76,36 +75,32 @@ class ApplicationUtils {
         } catch (Exception e) {
           e.printStackTrace();
           purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.getValue(),
-              Collections.<Purchase>emptyList());
+              Collections.emptyList());
           logError("Failed to parse purchase data.");
-          return false;
         }
-        return true;
       } else {
         logError("Signature verification failed for sku:");
         purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.getValue(),
-            Collections.<Purchase>emptyList());
-        return false;
+            Collections.emptyList());
       }
     } else if (resultCode == Activity.RESULT_OK) {
       // result code was OK, but in-app billing response was not OK.
       logDebug("Result code was OK but in-app billing response was not OK: " + getResponseDesc(
           responseCode));
       sdkAnalytics.sendPurchaseStatusEvent("error", getResponseDesc(responseCode));
-      purchaseFinishedListener.onPurchasesUpdated(responseCode, Collections.<Purchase>emptyList());
+      purchaseFinishedListener.onPurchasesUpdated(responseCode, Collections.emptyList());
     } else if (resultCode == Activity.RESULT_CANCELED) {
       logDebug("Purchase canceled - Response: " + getResponseDesc(responseCode));
       sdkAnalytics.sendPurchaseStatusEvent("user_canceled", getResponseDesc(responseCode));
       purchaseFinishedListener.onPurchasesUpdated(ResponseCode.USER_CANCELED.getValue(),
-          Collections.<Purchase>emptyList());
+          Collections.emptyList());
     } else {
       logError("Purchase failed. Result code: " + resultCode + ". Response: " + getResponseDesc(
           responseCode));
       sdkAnalytics.sendPurchaseStatusEvent("error", getResponseDesc(responseCode));
       purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.getValue(),
-          Collections.<Purchase>emptyList());
+          Collections.emptyList());
     }
-    return true;
   }
 
   static void handleWebBasedResult(
@@ -167,13 +162,12 @@ class ApplicationUtils {
   }
 
   private static int getResponseCodeFromIntent(Intent i) {
-    Object o = i.getExtras()
-        .get(RESPONSE_CODE);
+    Object o = i.getExtras().get(RESPONSE_CODE);
     if (o == null) {
       logError("Intent with no response code, assuming OK (known issue)");
       return ResponseCode.OK.getValue();
     } else if (o instanceof Integer) {
-      return ((Integer) o).intValue();
+      return (Integer) o;
     } else if (o instanceof Long) {
       return (int) ((Long) o).longValue();
     } else {

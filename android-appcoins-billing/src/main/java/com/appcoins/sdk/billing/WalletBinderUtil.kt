@@ -4,7 +4,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.os.Build
 import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.helpers.BindType
 import com.appcoins.sdk.billing.helpers.IBinderWalletNotInstalled
@@ -77,9 +76,7 @@ object WalletBinderUtil {
     }
 
     private fun bindFailedBehaviour(connection: ServiceConnection): Boolean {
-        if (BuildConfig.URI_COMMUNICATION
-            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH
-        ) {
+        if (BuildConfig.URI_COMMUNICATION) {
             logInfo("Establishing URI Communication Protocol with Wallet.")
             bindType = BindType.URI_CONNECTION
             connection.onServiceConnected(

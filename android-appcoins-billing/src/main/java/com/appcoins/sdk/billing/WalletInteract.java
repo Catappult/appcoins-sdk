@@ -6,8 +6,8 @@ import java.util.Random;
 
 public class WalletInteract {
 
-    private static int ID_LENGTH = 40;
-    private AttributionSharedPreferences attributionSharedPreferences;
+    private static final int ID_LENGTH = 40;
+    private final AttributionSharedPreferences attributionSharedPreferences;
 
     public WalletInteract(AttributionSharedPreferences attributionSharedPreferences) {
         this.attributionSharedPreferences = attributionSharedPreferences;

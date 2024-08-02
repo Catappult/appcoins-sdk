@@ -10,7 +10,7 @@ import java.util.zip.ZipFile;
 
 public class OemIdExtractorV1 implements OemIdExtractor {
 
-  private Context context;
+  private final Context context;
 
   public OemIdExtractorV1(Context context) {
     this.context = context;

@@ -70,8 +70,13 @@ class BrokerRepository(private val bdsService: BdsService) {
         queries["type"] = type
 
         bdsService.makeRequest(
-            "/inapp/8.20180518/packages", "GET", path, queries,
-            HashMap<String, String>(), HashMap<String, Any>(), serviceResponseListener
+            "/inapp/8.20180518/packages",
+            "GET",
+            path,
+            queries,
+            emptyMap(),
+            emptyMap(),
+            serviceResponseListener
         )
 
         waitForCountDown(countDownLatch)
@@ -106,8 +111,13 @@ class BrokerRepository(private val bdsService: BdsService) {
         body["status"] = "CONSUMED"
 
         bdsService.makeRequest(
-            "/inapp/8.20180518/packages", "PATCH", path, queries,
-            HashMap<String, String>(), body, serviceResponseListener
+            "/inapp/8.20180518/packages",
+            "PATCH",
+            path,
+            queries,
+            emptyMap(),
+            body,
+            serviceResponseListener
         )
 
         waitForCountDown(countDownLatch)

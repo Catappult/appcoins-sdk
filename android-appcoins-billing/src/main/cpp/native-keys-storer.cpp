@@ -18,10 +18,10 @@ Java_com_appcoins_sdk_billing_helpers_PrivateKeysNativeHelper_getApiKey(JNIEnv *
                                                                         jobject instance,
                                                                         jstring buildType,
                                                                         jstring key) {
-    string_code apiKeyCode = hashit(env->GetStringUTFChars(key, 0));
+    string_code apiKeyCode = hashit(env->GetStringUTFChars(key, nullptr));
     std::string stringToBeReturned;
 
-    if (strcmp(env->GetStringUTFChars(buildType, 0), "release") == 0) {
+    if (strcmp(env->GetStringUTFChars(buildType, nullptr), "release") == 0) {
         switch (apiKeyCode) {
             case E_INDICATIVE_API_KEY:
                 stringToBeReturned = INDICATIVE_API_KEY;
@@ -29,7 +29,7 @@ Java_com_appcoins_sdk_billing_helpers_PrivateKeysNativeHelper_getApiKey(JNIEnv *
             default:
                 stringToBeReturned = "";
         }
-    } else if (strcmp(env->GetStringUTFChars(buildType, 0), "debug") == 0) {
+    } else if (strcmp(env->GetStringUTFChars(buildType, nullptr), "debug") == 0) {
         switch (apiKeyCode) {
             case E_INDICATIVE_API_KEY:
                 stringToBeReturned = INDICATIVE_API_KEY_DEV;

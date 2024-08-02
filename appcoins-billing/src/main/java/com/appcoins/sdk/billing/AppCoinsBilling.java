@@ -24,10 +24,10 @@ public class AppCoinsBilling implements Billing {
       PurchasesResult purchasesResult = repository.getPurchases(skuType);
 
       if (purchasesResult.getResponseCode() != ResponseCode.OK.getValue()) {
-        return new PurchasesResult(new ArrayList<Purchase>(), purchasesResult.getResponseCode());
+        return new PurchasesResult(new ArrayList<>(), purchasesResult.getResponseCode());
       }
 
-      ArrayList<Purchase> invalidPurchase = new ArrayList<Purchase>();
+      ArrayList<Purchase> invalidPurchase = new ArrayList<>();
       for (Purchase purchase : purchasesResult.getPurchases()) {
         String purchaseData = purchase.getOriginalJson();
         byte[] decodeSignature = purchase.getSignature();
@@ -38,7 +38,7 @@ public class AppCoinsBilling implements Billing {
         }
       }
 
-      if (invalidPurchase.size() > 0) {
+      if (!invalidPurchase.isEmpty()) {
         purchasesResult.getPurchases()
             .removeAll(invalidPurchase);
       }
@@ -81,10 +81,7 @@ public class AppCoinsBilling implements Billing {
       throws ServiceConnectionException {
     try {
 
-      LaunchBillingFlowResult result =
-          repository.launchBillingFlow(params.getSkuType(), params.getSku(), payload, oemid, guestWalletId);
-
-      return result;
+      return repository.launchBillingFlow(params.getSkuType(), params.getSku(), payload, oemid, guestWalletId);
     } catch (ServiceConnectionException e) {
       e.printStackTrace();
       throw new ServiceConnectionException(e.getMessage());

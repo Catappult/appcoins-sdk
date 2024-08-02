@@ -108,11 +108,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
                 );
         activity.startActivity(webBuyIntent);
       }
-    } catch (NullPointerException e) {
-      return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
-    } catch (IntentSender.SendIntentException e) {
-      return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
-    } catch (ActivityNotFoundException e) {
+    } catch (NullPointerException | IntentSender.SendIntentException | ActivityNotFoundException e) {
       return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
     } catch (ServiceConnectionException e) {
       return handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e, billingFlowParams);
@@ -262,9 +258,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
                         );
                 activity.startActivity(webBuyIntent);
             }
-        } catch (NullPointerException e) {
-            handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
-        } catch (IntentSender.SendIntentException e) {
+        } catch (NullPointerException | IntentSender.SendIntentException e) {
             handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
         } catch (ServiceConnectionException e) {
             handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e, billingFlowParams);

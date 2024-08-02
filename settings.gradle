@@ -5,3 +5,5 @@ include ':appcoins-billing'
 include ':appcoins-core'
 include ':communication'
 include ':toolbox'
+
+enableFeaturePreview("VERSION_CATALOGS")

@@ -383,11 +383,7 @@ public class WalletUtils {
     }
     Display display = wm.getDefaultDisplay();
     DisplayMetrics displayMetrics = new DisplayMetrics();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      display.getRealMetrics(displayMetrics);
-    } else {
-      display.getMetrics(displayMetrics);
-    }
+    display.getRealMetrics(displayMetrics);
     return displayMetrics;
   }
 

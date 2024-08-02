@@ -28,11 +28,11 @@ class PaymentsResultsManager {
     }
 
     private final SDKWebResponseStream.Consumer<SDKWebResponse> sdkWebResponseCollector =
-            sdkWebResponse -> {
-                ApplicationUtils.handleWebBasedResult(
-                        sdkWebResponse,
-                        billingFlowParams,
-                        developerPayload,
-                        catapultAppcoinsBilling.getPurchaseFinishedListener());
-            };
+            sdkWebResponse ->
+                    ApplicationUtils.handleWebBasedResult(
+                            sdkWebResponse,
+                            billingFlowParams,
+                            developerPayload,
+                            catapultAppcoinsBilling.getPurchaseFinishedListener()
+                    );
 }

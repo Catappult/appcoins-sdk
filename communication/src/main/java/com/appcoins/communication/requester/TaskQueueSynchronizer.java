@@ -14,10 +14,9 @@ import java.util.concurrent.TimeoutException;
 
 public class TaskQueueSynchronizer {
     private final BlockingQueue<FutureTask<Parcelable>> taskQueue = new LinkedBlockingQueue<>();
-    private final Thread workerThread;
 
     public TaskQueueSynchronizer() {
-        workerThread = new Thread(() -> {
+        Thread workerThread = new Thread(() -> {
             try {
                 while (true) {
                     FutureTask<Parcelable> task = taskQueue.take();

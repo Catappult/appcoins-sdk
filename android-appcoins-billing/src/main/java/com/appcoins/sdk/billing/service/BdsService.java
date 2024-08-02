@@ -2,8 +2,6 @@ package com.appcoins.sdk.billing.service;
 
 import static com.appcoins.sdk.core.logger.Logger.logDebug;
 
-import android.os.AsyncTask;
-
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.utils.RequestBuilderUtils;
 
@@ -22,8 +20,8 @@ import java.util.Map;
 public class BdsService implements Service {
 
   public final static int TIME_OUT_IN_MILLIS = 30000;
-  private String baseUrl;
-  private int timeoutInMillis;
+  private final String baseUrl;
+  private final int timeoutInMillis;
 
   public BdsService(String baseUrl, int timeoutInMillis) {
     this.baseUrl = baseUrl;
@@ -143,9 +141,10 @@ public class BdsService implements Service {
     if (queries == null) {
       queries = new HashMap<>();
     }
-    ServiceAsyncTask serviceAsyncTask =
-        new ServiceAsyncTask(this, baseUrl, endPoint, httpMethod, paths, queries, header, body,
+    ServiceAsyncTaskExecutorAsync serviceAsyncTaskExecutorAsync =
+        new ServiceAsyncTaskExecutorAsync(
+                this, baseUrl, endPoint, httpMethod, paths, queries, header, body,
             serviceResponseListener);
-    serviceAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    serviceAsyncTaskExecutorAsync.execute();
   }
 }

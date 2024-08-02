@@ -111,7 +111,7 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
 
     private void pingConnection(final int apiVersion, final String packageName, final String type) {
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.scheduleAtFixedRate(() -> {
+        executorService.scheduleWithFixedDelay(() -> {
             try {
                 appcoinsBilling.isBillingSupported(apiVersion, packageName, type);
             } catch (RemoteException e) {

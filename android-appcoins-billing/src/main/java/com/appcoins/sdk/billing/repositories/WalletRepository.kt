@@ -35,7 +35,12 @@ class WalletRepository(
         }
 
         service.makeRequest(
-            "/appc/guest_wallet", "GET", ArrayList(), queries, null, null,
+            "/appc/guest_wallet",
+            "GET",
+            ArrayList(),
+            queries,
+            emptyMap(),
+            emptyMap(),
             serviceResponseListener
         )
 
