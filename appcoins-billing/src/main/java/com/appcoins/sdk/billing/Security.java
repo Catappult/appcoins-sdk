@@ -27,8 +27,7 @@ public class Security {
   /**
    * Verifies that the data was signed with the given Signature, and returns
    * the verified purchase. The data is in JSON format and signed
-   * with a private key. The data also contains the {@link PurchaseState}
-   * and product ID of the purchase.
+   * with a private key.
    *
    * @param base64DecodedPublicKey the base64-decoded public key to use for verifying.
    * @param signedData the signed JSON string (signed, not encrypted)
@@ -65,10 +64,7 @@ public class Security {
       KeyFactory keyFactory = KeyFactory.getInstance(KEY_FACTORY_ALGORITHM);
 
       return keyFactory.generatePublic(new X509EncodedKeySpec(base64DecodedPublicKey));
-    } catch (NoSuchAlgorithmException e) {
-      e.printStackTrace();
-      return null;
-    } catch (InvalidKeySpecException e) {
+    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
       e.printStackTrace();
       return null;
     }

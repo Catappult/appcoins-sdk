@@ -55,7 +55,7 @@ class ApplicationUtils {
       }
 
       if (billing.verifyPurchase(purchaseData, Base64.decode(dataSignature, Base64.DEFAULT))) {
-        JSONObject purchaseDataJSON = null;
+        JSONObject purchaseDataJSON;
         try {
           purchaseDataJSON = new JSONObject(purchaseData);
           Purchase purchase =
@@ -167,7 +167,7 @@ class ApplicationUtils {
       logError("Intent with no response code, assuming OK (known issue)");
       return ResponseCode.OK.getValue();
     } else if (o instanceof Integer) {
-      return ((Integer) o).intValue();
+      return (Integer) o;
     } else if (o instanceof Long) {
       return (int) ((Long) o).longValue();
     } else {

@@ -23,7 +23,7 @@ public class SkuDetailsAsync implements Runnable {
 
       if (response.getSkuDetailsList() == null || response.getSkuDetailsList().isEmpty()) {
         skuDetailsResponseListener.onSkuDetailsResponse(response.getResponseCode(),
-            new ArrayList<SkuDetails>());
+                new ArrayList<>());
       } else {
         skuDetailsResponseListener.onSkuDetailsResponse(response.getResponseCode(),
             response.getSkuDetailsList());
@@ -31,7 +31,7 @@ public class SkuDetailsAsync implements Runnable {
     } catch (ServiceConnectionException e) {
       e.printStackTrace();
       skuDetailsResponseListener.onSkuDetailsResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(),
-          new ArrayList<SkuDetails>());
+              new ArrayList<>());
     }
   }
 

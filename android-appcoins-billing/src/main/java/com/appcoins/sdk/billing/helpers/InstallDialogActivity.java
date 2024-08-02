@@ -15,7 +15,6 @@ import static com.appcoins.sdk.core.logger.Logger.logDebug;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -230,18 +229,16 @@ public class InstallDialogActivity extends Activity {
     skipButton.setBackgroundColor(Color.TRANSPARENT);
     skipButton.setIncludeFontPadding(false);
     skipButton.setClickable(true);
-    skipButton.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-        sdkAnalytics.walletInstallClick("cancel");
-        Bundle response = new Bundle();
-        response.putInt(RESPONSE_CODE, RESULT_USER_CANCELED);
+    skipButton.setOnClickListener(v -> {
+      sdkAnalytics.walletInstallClick("cancel");
+      Bundle response = new Bundle();
+      response.putInt(RESPONSE_CODE, RESULT_USER_CANCELED);
 
-        Intent intent = new Intent();
-        intent.putExtras(response);
+      Intent intent = new Intent();
+      intent.putExtras(response);
 
-        setResult(Activity.RESULT_CANCELED, intent);
-        finish();
-      }
+      setResult(Activity.RESULT_CANCELED, intent);
+      finish();
     });
     RelativeLayout.LayoutParams skipButtonParams =
         new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, dpToPx(36));
@@ -274,11 +271,9 @@ public class InstallDialogActivity extends Activity {
     installButtonParams.addRule(RelativeLayout.ALIGN_RIGHT, dialogLayout.getId());
     installButtonParams.setMargins(0, 0, dpToPx(20), dpToPx(16));
     installButton.setLayoutParams(installButtonParams);
-    installButton.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-        sdkAnalytics.walletInstallClick("install_wallet");
-        redirectToRemainingStores(storeUrl);
-      }
+    installButton.setOnClickListener(v -> {
+      sdkAnalytics.walletInstallClick("install_wallet");
+      redirectToRemainingStores(storeUrl);
     });
     return installButton;
   }
@@ -290,7 +285,7 @@ public class InstallDialogActivity extends Activity {
       startActivity(storeIntentPair.getFirst());
     } else {
       sdkAnalytics.downloadWalletFallbackImpression("browser");
-      startActivityForBrowser(BuildConfig.WALLET_APP_BROWSER_URL);
+      startActivityForBrowser();
     }
   }
 
@@ -302,8 +297,8 @@ public class InstallDialogActivity extends Activity {
     }
   }
 
-  private void startActivityForBrowser(String url) {
-    Intent browserIntent = buildBrowserIntent(url);
+  private void startActivityForBrowser() {
+    Intent browserIntent = buildBrowserIntent();
     if (isAbleToRedirect(browserIntent)) {
       startActivity(browserIntent);
     } else {
@@ -472,8 +467,8 @@ public class InstallDialogActivity extends Activity {
     return activityInfo != null;
   }
 
-  private Intent buildBrowserIntent(String url) {
-    return new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+  private Intent buildBrowserIntent() {
+    return new Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.WALLET_APP_BROWSER_URL));
   }
 
   private void buildAlertNoBrowserAndStores() {
@@ -483,15 +478,13 @@ public class InstallDialogActivity extends Activity {
         translations.getString(iap_wallet_and_appstore_not_installed_popup_button);
     alert.setMessage(value);
     alert.setCancelable(true);
-    alert.setPositiveButton(dismissValue, new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int id) {
-        Bundle response = new Bundle();
-        response.putInt(RESPONSE_CODE, RESULT_USER_CANCELED);
-        Intent intent = new Intent();
-        intent.putExtras(response);
-        setResult(Activity.RESULT_CANCELED, intent);
-        finish();
-      }
+    alert.setPositiveButton(dismissValue, (dialog, id) -> {
+      Bundle response = new Bundle();
+      response.putInt(RESPONSE_CODE, RESULT_USER_CANCELED);
+      Intent intent = new Intent();
+      intent.putExtras(response);
+      setResult(Activity.RESULT_CANCELED, intent);
+      finish();
     });
     AlertDialog alertDialog = alert.create();
     alertDialog.show();

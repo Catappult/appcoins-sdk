@@ -5,8 +5,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
@@ -54,10 +52,9 @@ public class EventLogger implements Runnable {
   }
 
   private void PostDataToURL(String urlStr, JSONObject jsonObj) {
-    URL url = null;
-    String responseStr = "";
+    URL url;
 
-    try {
+      try {
       url = new URL(urlStr);
 
       HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
@@ -79,7 +76,7 @@ public class EventLogger implements Runnable {
       BufferedReader br =
           new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
       StringBuilder response = new StringBuilder();
-      String responseLine = null;
+      String responseLine;
       while ((responseLine = br.readLine()) != null) {
         response.append(responseLine.trim());
       }
@@ -88,15 +85,8 @@ public class EventLogger implements Runnable {
         System.out.println(response);
       }
       br.close();
-    } catch (MalformedURLException e) {
-      responseStr = "";
-      e.printStackTrace();
-    } catch (ProtocolException e) {
-      responseStr = "";
-      e.printStackTrace();
     } catch (IOException e) {
-      responseStr = "";
-      e.printStackTrace();
+          e.printStackTrace();
     }
   }
 

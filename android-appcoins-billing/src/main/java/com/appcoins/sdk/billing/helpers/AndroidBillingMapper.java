@@ -24,7 +24,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class AndroidBillingMapper {
@@ -43,9 +42,8 @@ public class AndroidBillingMapper {
       for (int i = 0; i < purchaseDataList.size(); ++i) {
         String purchaseData = purchaseDataList.get(i);
         String signature = signatureList.get(i);
-        String id = idsList.get(i);
 
-        JSONObject jsonElement = null;
+        JSONObject jsonElement;
         try {
           jsonElement = new JSONObject(purchaseData);
           String orderId = jsonElement.getString("orderId");
@@ -86,7 +84,7 @@ public class AndroidBillingMapper {
           //Base64 decoded string
           byte[] decodedSignature = Base64.decode(signature, Base64.DEFAULT);
           list.add(
-              new Purchase(id, skuType, purchaseData, decodedSignature, purchaseTime, purchaseState,
+              new Purchase(orderId, skuType, purchaseData, decodedSignature, purchaseTime, purchaseState,
                   developerPayload, token, packageName, sku, isAutoRenewing));
         } catch (JSONException e) {
           e.printStackTrace();
@@ -103,8 +101,7 @@ public class AndroidBillingMapper {
   }
 
   public static SkuDetailsResult mapBundleToHashMapSkuDetails(String skuType, Bundle bundle) {
-    HashMap<String, Object> hashMap = new HashMap<String, Object>();
-    ArrayList<SkuDetails> arrayList = new ArrayList<SkuDetails>();
+      ArrayList<SkuDetails> arrayList = new ArrayList<>();
 
     if (bundle.containsKey("DETAILS_LIST")) {
       ArrayList<String> responseList = bundle.getStringArrayList("DETAILS_LIST");

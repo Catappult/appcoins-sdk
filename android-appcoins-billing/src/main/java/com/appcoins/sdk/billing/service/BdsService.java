@@ -2,8 +2,6 @@ package com.appcoins.sdk.billing.service;
 
 import static com.appcoins.sdk.core.logger.Logger.logDebug;
 
-import android.os.AsyncTask;
-
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.utils.RequestBuilderUtils;
 
@@ -143,9 +141,10 @@ public class BdsService implements Service {
     if (queries == null) {
       queries = new HashMap<>();
     }
-    ServiceAsyncTask serviceAsyncTask =
-        new ServiceAsyncTask(this, baseUrl, endPoint, httpMethod, paths, queries, header, body,
+    ServiceAsyncTaskExecutorAsync serviceAsyncTaskExecutorAsync =
+        new ServiceAsyncTaskExecutorAsync(
+                this, baseUrl, endPoint, httpMethod, paths, queries, header, body,
             serviceResponseListener);
-    serviceAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    serviceAsyncTaskExecutorAsync.execute();
   }
 }
