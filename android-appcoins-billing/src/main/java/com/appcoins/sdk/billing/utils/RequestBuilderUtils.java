@@ -42,8 +42,7 @@ public class RequestBuilderUtils {
     } catch (UnsupportedEncodingException e) {
       e.printStackTrace();
     }
-    urlBuilder.append(key + "=" + value)
-        .append("&");
+    urlBuilder.append(key).append("=").append(value).append("&");
   }
 
   private static void buildPath(String path, StringBuilder urlBuilder) {
@@ -72,8 +71,7 @@ public class RequestBuilderUtils {
           if (isMap(entry.getValue())) {
             value = buildBody((Map) entry.getValue());
           }
-          builder.append("\"" + entry.getKey() + "\"" + ":" + value)
-              .append(",");
+          builder.append("\"").append(entry.getKey()).append("\"").append(":").append(value).append(",");
         }
       }
       if (!bodyKeys.isEmpty()) {

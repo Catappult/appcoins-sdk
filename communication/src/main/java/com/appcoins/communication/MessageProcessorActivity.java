@@ -21,17 +21,15 @@ public abstract class MessageProcessorActivity extends Activity {
     final ProcessedValueReturner processedValueReturner =
         new ProcessedValueReturner(this, requesterUri);
 
-    new Thread(new Runnable() {
-      @Override public void run() {
-        Intent intent = getIntent();
-        long requestCode = intent.getLongExtra(MESSAGE_ID, -1);
-        int methodId = intent.getIntExtra(METHOD_ID, -1);
-        String packageName = intent.getStringExtra(REQUESTER_PACKAGE_NAME);
-        Parcelable arguments = intent.getParcelableExtra(ARGUMENTS);
-        Parcelable returnValue = processValue(methodId, arguments);
-        processedValueReturner.returnValue(packageName, requestCode, returnValue);
-        finish();
-      }
+    new Thread(() -> {
+      Intent intent = getIntent();
+      long requestCode = intent.getLongExtra(MESSAGE_ID, -1);
+      int methodId = intent.getIntExtra(METHOD_ID, -1);
+      String packageName = intent.getStringExtra(REQUESTER_PACKAGE_NAME);
+      Parcelable arguments = intent.getParcelableExtra(ARGUMENTS);
+      Parcelable returnValue = processValue(methodId, arguments);
+      processedValueReturner.returnValue(packageName, requestCode, returnValue);
+      finish();
     }).start();
   }
 

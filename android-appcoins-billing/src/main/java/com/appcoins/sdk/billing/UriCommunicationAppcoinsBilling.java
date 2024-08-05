@@ -1,6 +1,5 @@
 package com.appcoins.sdk.billing;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -81,11 +80,6 @@ public class UriCommunicationAppcoinsBilling implements AppcoinsBilling, Seriali
   }
 
   private RemoteException handleRemoteExceptionThrow(Exception e) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
       return new RemoteException(e.getLocalizedMessage());
-    } else {
-      e.printStackTrace();
-      return new RemoteException();
-    }
   }
 }

@@ -1,12 +1,9 @@
 rootProject.name = 'bds-sdk'
 
-include ':appcoins'
-include ':appcoins-adyen'
-include ':appcoins-core'
-include ':appcoins-contract-proxy'
-include ':appcoins-billing'
 include ':android-appcoins-billing'
-include ':appcoins-ads'
-include ':toolbox'
+include ':appcoins-billing'
+include ':appcoins-core'
 include ':communication'
-include ':appcoins-lifecycle'
+include ':toolbox'
+
+enableFeaturePreview("VERSION_CATALOGS")

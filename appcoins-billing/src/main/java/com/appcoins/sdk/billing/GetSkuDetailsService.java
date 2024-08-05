@@ -4,18 +4,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.List;
 
 public class GetSkuDetailsService {
   private final static String URL_PATH = "/product/8.20240201/applications/packageName/inapp/consumables?skus=";
   private final String serviceUrl;
-  private String packageName;
-  private List<String> sku;
-  private String userAgent;
-  private String paymentFlow;
+  private final String packageName;
+  private final List<String> sku;
+  private final String userAgent;
+  private final String paymentFlow;
 
   public GetSkuDetailsService(final String serviceUrl, final String packageName,
       final List<String> sku, String userAgent, String paymentFlow) {
@@ -27,7 +25,7 @@ public class GetSkuDetailsService {
   }
 
   public String getSkuDetailsForPackageName() {
-    String response = "";
+    StringBuilder response = new StringBuilder();
     URL url;
     try {
       String urlBuilt = buildURL(packageName, sku, paymentFlow);
@@ -41,7 +39,7 @@ public class GetSkuDetailsService {
       String inputLine;
 
       while ((inputLine = in.readLine()) != null) {
-        response += inputLine;
+        response.append(inputLine);
       }
 
       if (in != null) {
@@ -51,29 +49,23 @@ public class GetSkuDetailsService {
       if (connection != null) {
         connection.disconnect();
       }
-    } catch (MalformedURLException e) {
-      response = "";
-      e.printStackTrace();
-    } catch (ProtocolException e) {
-      response = "";
-      e.printStackTrace();
     } catch (IOException e) {
-      response = "";
+      response = new StringBuilder();
       e.printStackTrace();
     }
 
-    return response;
+    return response.toString();
   }
 
   private String buildURL(String packageName, List<String> sku, String paymentFlow) {
-    String url = serviceUrl + URL_PATH.replaceFirst("packageName", packageName);
+    StringBuilder url = new StringBuilder(serviceUrl + URL_PATH.replaceFirst("packageName", packageName));
     for (String skuName : sku) {
-      url += skuName + ",";
+      url.append(skuName).append(",");
     }
-    url = url.substring(0, url.length() - 1);
+    url = new StringBuilder(url.substring(0, url.length() - 1));
     if (paymentFlow!=null && !paymentFlow.isEmpty()){
-      url += "&discount_policy=" + paymentFlow;
+      url.append("&discount_policy=").append(paymentFlow);
     }
-    return url;
+    return url.toString();
   }
 }

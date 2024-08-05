@@ -70,6 +70,3 @@ object SdkUpdateFlowActions {
   const val CANCEL = "cancel"
   const val BACK_PRESSED = "back_pressed"
 }
-
-object PayAsAGuestEvents {
-}

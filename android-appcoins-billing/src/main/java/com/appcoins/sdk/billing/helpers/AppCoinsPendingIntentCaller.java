@@ -14,7 +14,7 @@ public final class AppCoinsPendingIntentCaller {
   public static final String BUY_INTENT_RAW = "BUY_INTENT_RAW";
   public static final String BUY_INTENT = "BUY_INTENT";
   private static final AppCoinsPendingIntentCaller instance =
-      new AppCoinsPendingIntentCaller(new HashMap<Integer, Intent>());
+      new AppCoinsPendingIntentCaller(new HashMap<>());
   private final Map<Integer, Intent> cache;
 
   public static void startPendingAppCoinsIntent(Activity activity, IntentSender intentSender,

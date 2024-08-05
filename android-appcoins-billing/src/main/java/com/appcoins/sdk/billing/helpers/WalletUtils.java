@@ -25,7 +25,7 @@ import com.appcoins.sdk.billing.analytics.IndicativeAnalytics;
 import com.appcoins.sdk.billing.analytics.IndicativeLaunchCallback;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.managers.ApiKeysManager;
-import com.appcoins.sdk.billing.payasguest.IabActivity;
+import com.appcoins.sdk.billing.managers.WebPaymentSocketManager;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
 import com.appcoins.sdk.billing.webpayment.WebPaymentActivity;
@@ -99,14 +99,6 @@ public class WalletUtils {
     sdkAnalytics.sendCallBindServiceFailEvent(methodName, methodPriority);
     e.printStackTrace();
     return null;
-  }
-
-  public static Bundle startPayAsGuest(BuyItemProperties buyItemProperties) {
-    if (isMainThread()) {
-      return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
-    }
-    Intent intent = IabActivity.newIntent(context, buyItemProperties, sdkAnalytics);
-    return createIntentBundle(intent);
   }
 
   public static Bundle startWebFirstPayment() {
@@ -393,11 +385,7 @@ public class WalletUtils {
     }
     Display display = wm.getDefaultDisplay();
     DisplayMetrics displayMetrics = new DisplayMetrics();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      display.getRealMetrics(displayMetrics);
-    } else {
-      display.getMetrics(displayMetrics);
-    }
+    display.getRealMetrics(displayMetrics);
     return displayMetrics;
   }
 
