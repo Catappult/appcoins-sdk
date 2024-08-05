@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/base_constraint_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#64000000"
-    android:orientation="vertical"
-    android:paddingStart="32dp"
-    android:paddingTop="64dp"
-    android:paddingEnd="32dp"
-    android:paddingBottom="64dp">
+    android:background="#64000000">
 
-    <WebView
-        android:id="@+id/web_view"
+    <LinearLayout
+        android:id="@+id/container_for_web_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_marginTop="64dp"
+        android:background="@drawable/round_corners_background"
+        android:paddingTop="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.75">
 
-</LinearLayout>
+        <WebView
+            android:id="@+id/web_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

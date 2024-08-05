@@ -138,6 +138,7 @@ dependencies {
 
   api libs.indicative
   implementation libs.kotlin.stdlib
+  implementation libs.androidx.constraint.layout
   api libs.java.web.socket
 
   api project(':appcoins-billing')
