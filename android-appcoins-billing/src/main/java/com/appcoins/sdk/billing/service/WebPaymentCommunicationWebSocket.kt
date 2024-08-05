@@ -46,6 +46,14 @@ class WebPaymentCommunicationWebSocket(port: Int) : WebSocketServer(InetSocketAd
         if (conn.remoteSocketAddress.toString() == remoteSocketAddressForCurrentPayment) {
             remoteSocketAddressForCurrentPayment = null
         }
+
+        try {
+            val jsonObject = JSONObject(message)
+            SDKWebResponseStream.getInstance().emit(SDKWebResponse(jsonObject))
+        } catch (exception: Exception) {
+            SDKWebResponseStream.getInstance().emit(SDKWebResponse(ResponseCode.ERROR.value))
+            exception.printStackTrace()
+        }
     }
 
     override fun onError(conn: WebSocket?, ex: Exception) {

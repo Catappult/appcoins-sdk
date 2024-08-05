@@ -109,15 +109,10 @@ public class WalletUtils {
       sdkAnalytics.sendWebPaymentUrlNotGeneratedEvent();
       return createBundleWithResponseCode(ResponseCode.ERROR.getValue());
     }
-    /*try {
-            val jsonObject = JSONObject(message)
-            SDKWebResponseStream.getInstance().emit(SDKWebResponse(jsonObject))
-        } catch (exception: Exception) {
-            SDKWebResponseStream.getInstance().emit(SDKWebResponse(ResponseCode.ERROR.value))
-            exception.printStackTrace()
-        }*/
+    int port = WebPaymentSocketManager.getInstance().startServiceForPayment(context);
+    String paymentUrl = generatePaymentUrlWithPort(port);
 
-    Intent intent = WebPaymentActivity.newIntent(context, getWebPaymentUrl());
+    Intent intent = WebPaymentActivity.newIntent(context, paymentUrl);
     return createWebIntentBundle(intent);
   }
 
@@ -127,6 +122,10 @@ public class WalletUtils {
     }
     Intent intent = InstallDialogActivity.newIntent(context, buyItemProperties, sdkAnalytics);
     return createIntentBundle(intent);
+  }
+
+  private static String generatePaymentUrlWithPort(int port) {
+    return WalletUtils.getWebPaymentUrl() + "&wsPort=" + port;
   }
 
   private static Bundle createWebIntentBundle(Intent intent) {
