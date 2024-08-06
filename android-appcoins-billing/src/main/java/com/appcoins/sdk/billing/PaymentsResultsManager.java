@@ -6,7 +6,6 @@ import com.appcoins.sdk.billing.listeners.SDKWebResponseStream;
 class PaymentsResultsManager {
 
     private BillingFlowParams billingFlowParams = null;
-    private String developerPayload = null;
     private CatapultAppcoinsBilling catapultAppcoinsBilling = null;
     private static PaymentsResultsManager instance;
 
@@ -20,9 +19,8 @@ class PaymentsResultsManager {
         return instance;
     }
 
-    public void collectPaymentResult(BillingFlowParams billingFlowParams, String developerPayload, CatapultAppcoinsBilling catapultAppcoinsBilling) {
+    public void collectPaymentResult(BillingFlowParams billingFlowParams, CatapultAppcoinsBilling catapultAppcoinsBilling) {
         this.billingFlowParams = billingFlowParams;
-        this.developerPayload = developerPayload;
         this.catapultAppcoinsBilling = catapultAppcoinsBilling;
         SDKWebResponseStream.getInstance().collect(sdkWebResponseCollector);
     }
@@ -32,7 +30,6 @@ class PaymentsResultsManager {
                 ApplicationUtils.handleWebBasedResult(
                         sdkWebResponse,
                         billingFlowParams,
-                        developerPayload,
                         catapultAppcoinsBilling.getPurchaseFinishedListener());
             };
 }
