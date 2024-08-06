@@ -112,7 +112,6 @@ class ApplicationUtils {
   static void handleWebBasedResult(
           SDKWebResponse sdkWebResponse,
           BillingFlowParams billingFlowParams,
-          String developerPayload,
           PurchasesUpdatedListener purchaseFinishedListener
   ) {
     if (sdkWebResponse.getResponseCode() == null) {
@@ -141,7 +140,7 @@ class ApplicationUtils {
       }
 
         try {
-          Purchase purchase = sdkWebResponse.toPurchase(billingFlowParams, developerPayload);
+          Purchase purchase = sdkWebResponse.toPurchase(billingFlowParams);
 
           List<Purchase> purchases = new ArrayList<>();
           purchases.add(purchase);

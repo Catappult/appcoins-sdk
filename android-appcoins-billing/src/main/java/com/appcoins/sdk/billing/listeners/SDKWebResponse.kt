@@ -15,10 +15,7 @@ data class SDKWebResponse(
         jsonObject.optString(ORDER_ID)
     )
 
-    fun toPurchase(
-        billingFlowParams: BillingFlowParams? = null,
-        developerPayload: String? = null
-    ): Purchase =
+    fun toPurchase(billingFlowParams: BillingFlowParams? = null): Purchase =
         Purchase(
             orderId,
             billingFlowParams?.skuType,
@@ -26,12 +23,26 @@ data class SDKWebResponse(
             null,
             0L,
             0,
-            developerPayload,
+            generateDeveloperPayloadFromBillingFlowParams(billingFlowParams),
             purchaseToken,
             null,
             billingFlowParams?.sku,
             false
         )
+
+    private fun generateDeveloperPayloadFromBillingFlowParams(
+        billingFlowParams: BillingFlowParams?
+    ): String {
+        if (!billingFlowParams?.developerPayload.isNullOrEmpty()) {
+            return billingFlowParams!!.developerPayload
+        }
+
+        if (!billingFlowParams?.orderReference.isNullOrEmpty()) {
+            return billingFlowParams!!.orderReference
+        }
+
+        return ""
+    }
 
     private companion object {
         const val RESPONSE_CODE = "responseCode"
