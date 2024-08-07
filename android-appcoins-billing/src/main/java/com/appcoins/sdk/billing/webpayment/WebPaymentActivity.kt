@@ -13,13 +13,19 @@ import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import com.appcoins.billing.sdk.R
+import com.appcoins.sdk.billing.ResponseCode
+import com.appcoins.sdk.billing.listeners.SDKWebResponse
+import com.appcoins.sdk.billing.listeners.SDKWebResponseStream
 import com.appcoins.sdk.core.logger.Logger.logInfo
+import org.json.JSONObject
 
 class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
 
     private var webView: WebView? = null
     private var webViewContainer: LinearLayout? = null
     private var baseConstraintLayout: ConstraintLayout? = null
+
+    private var responseReceived = false
 
     @SuppressLint("SetJavaScriptEnabled", "AddJavascriptInterface")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,10 +75,18 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
     }
 
     override fun onPurchaseResult(result: String?) {
+        responseReceived = true
         logInfo(result ?: "")
+        result?.apply {
+            val jsonObject = JSONObject(this)
+            SDKWebResponseStream.getInstance().emit(SDKWebResponse(jsonObject))
+        } ?: SDKWebResponseStream.getInstance().emit(SDKWebResponse(ResponseCode.ERROR.value))
     }
 
     override fun onClose() {
+        if (!responseReceived) {
+            SDKWebResponseStream.getInstance().emit(SDKWebResponse(ResponseCode.ERROR.value))
+        }
         finish()
     }
 

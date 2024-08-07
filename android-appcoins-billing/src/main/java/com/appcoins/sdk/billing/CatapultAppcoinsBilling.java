@@ -84,8 +84,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
 
       if (responseCode != ResponseCode.OK.getValue()) {
         ApplicationUtils.handleWebBasedResult(
-                new SDKWebResponse(ResponseCode.ERROR.getValue(), null, null),
-                billingFlowParams,
+                new SDKWebResponse(ResponseCode.ERROR.getValue()),
                 purchaseFinishedListener
         );
         return responseCode;
@@ -99,23 +98,21 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
           buyIntent.getIntentSender(), REQUEST_CODE, null, 0, 0, 0);
       } else if (webBuyIntent != null) {
         WalletUtils.getSdkAnalytics().sendPurchaseViaWebEvent(billingFlowParams.getSku());
-        PaymentsResultsManager.getInstance()
-                .collectPaymentResult(billingFlowParams, this);
+        PaymentsResultsManager.getInstance().collectPaymentResult(this);
         activity.startActivity(webBuyIntent);
       }
     } catch (NullPointerException | IntentSender.SendIntentException | ActivityNotFoundException e) {
-      return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
+      return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e);
     } catch (ServiceConnectionException e) {
-      return handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e, billingFlowParams);
+      return handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e);
     }
     return ResponseCode.OK.getValue();
   }
 
-  private int handleErrorTypeResponse(int value, Exception e, BillingFlowParams billingFlowParams) {
+  private int handleErrorTypeResponse(int value, Exception e) {
     e.printStackTrace();
     ApplicationUtils.handleWebBasedResult(
-            new SDKWebResponse(ResponseCode.ERROR.getValue(), null, null),
-            billingFlowParams,
+            new SDKWebResponse(ResponseCode.ERROR.getValue()),
             purchaseFinishedListener
     );
     return value;
@@ -229,8 +226,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
 
             if (responseCode != ResponseCode.OK.getValue()) {
                 ApplicationUtils.handleWebBasedResult(
-                        new SDKWebResponse(ResponseCode.ERROR.getValue(), null, null),
-                        billingFlowParams,
+                        new SDKWebResponse(ResponseCode.ERROR.getValue()),
                         purchaseFinishedListener
                 );
                 return;
@@ -244,13 +240,13 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
                         buyIntent.getIntentSender(), REQUEST_CODE, null, 0, 0, 0);
             } else if (webBuyIntent != null) {
                 PaymentsResultsManager.getInstance()
-                        .collectPaymentResult(billingFlowParams, this);
+                        .collectPaymentResult(this);
                 activity.startActivity(webBuyIntent);
             }
         } catch (NullPointerException | IntentSender.SendIntentException e) {
-            handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
+            handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e);
         } catch (ServiceConnectionException e) {
-            handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e, billingFlowParams);
+            handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e);
         }
     }
 }
