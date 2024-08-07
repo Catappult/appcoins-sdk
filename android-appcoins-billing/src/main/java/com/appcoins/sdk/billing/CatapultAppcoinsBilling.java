@@ -86,7 +86,6 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
         ApplicationUtils.handleWebBasedResult(
                 new SDKWebResponse(ResponseCode.ERROR.getValue(), null, null),
                 billingFlowParams,
-                billingFlowParams.getDeveloperPayload(),
                 purchaseFinishedListener
         );
         return responseCode;
@@ -101,11 +100,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
       } else if (webBuyIntent != null) {
         WalletUtils.getSdkAnalytics().sendPurchaseViaWebEvent(billingFlowParams.getSku());
         PaymentsResultsManager.getInstance()
-                .collectPaymentResult(
-                        billingFlowParams,
-                        payload,
-                        this
-                );
+                .collectPaymentResult(billingFlowParams, this);
         activity.startActivity(webBuyIntent);
       }
     } catch (NullPointerException | IntentSender.SendIntentException | ActivityNotFoundException e) {
@@ -121,7 +116,6 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
     ApplicationUtils.handleWebBasedResult(
             new SDKWebResponse(ResponseCode.ERROR.getValue(), null, null),
             billingFlowParams,
-            billingFlowParams.getDeveloperPayload(),
             purchaseFinishedListener
     );
     return value;
@@ -237,7 +231,6 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
                 ApplicationUtils.handleWebBasedResult(
                         new SDKWebResponse(ResponseCode.ERROR.getValue(), null, null),
                         billingFlowParams,
-                        billingFlowParams.getDeveloperPayload(),
                         purchaseFinishedListener
                 );
                 return;
@@ -251,11 +244,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
                         buyIntent.getIntentSender(), REQUEST_CODE, null, 0, 0, 0);
             } else if (webBuyIntent != null) {
                 PaymentsResultsManager.getInstance()
-                        .collectPaymentResult(
-                                billingFlowParams,
-                                payload,
-                                this
-                        );
+                        .collectPaymentResult(billingFlowParams, this);
                 activity.startActivity(webBuyIntent);
             }
         } catch (NullPointerException | IntentSender.SendIntentException e) {
