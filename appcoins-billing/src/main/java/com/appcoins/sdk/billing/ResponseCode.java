@@ -38,7 +38,7 @@ public enum ResponseCode {
    */
   ITEM_NOT_OWNED(8);
 
-  private int value;
+  private final int value;
 
   ResponseCode(int value) {
     this.value = value;

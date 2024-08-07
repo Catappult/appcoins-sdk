@@ -16,8 +16,6 @@ public class AnalyticsManagerProvider {
           new AnalyticsManager.Builder()
               .addLogger(indicativeEventLogger, provideIndicativeEventList())
               .setAnalyticsNormalizer(new KeysNormalizer())
-              .setKnockLogger(new EmptyKnockLogger())
-              .setDebugLogger(new DebugLogger())
               .build();
     }
     return analyticsManagerInstance;

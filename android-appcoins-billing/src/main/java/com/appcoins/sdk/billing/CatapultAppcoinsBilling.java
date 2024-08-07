@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing;
 
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
@@ -7,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Looper;
-import android.util.Log;
 
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.helpers.AppCoinsPendingIntentCaller;
@@ -69,7 +70,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
       String oemid = attributionSharedPreferences.getOemId();
       String guestWalletId = attributionSharedPreferences.getWalletId();
 
-      Log.d("Message: ", payload);
+      logDebug("Message: " + payload);
 
       Thread eventLoggerThread = new Thread(new EventLogger(billingFlowParams.getSku(),
           activity.getApplicationContext()
@@ -102,11 +103,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
                 .collectPaymentResult(billingFlowParams, this);
         activity.startActivity(webBuyIntent);
       }
-    } catch (NullPointerException e) {
-      return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
-    } catch (IntentSender.SendIntentException e) {
-      return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
-    } catch (ActivityNotFoundException e) {
+    } catch (NullPointerException | IntentSender.SendIntentException | ActivityNotFoundException e) {
       return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
     } catch (ServiceConnectionException e) {
       return handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e, billingFlowParams);
@@ -214,7 +211,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
             String oemid = attributionSharedPreferences.getOemId();
             String guestWalletId = attributionSharedPreferences.getWalletId();
 
-            Log.d("Message: ", payload);
+            logDebug("Message: " + payload);
 
             Thread eventLoggerThread =
                     new Thread(
@@ -250,9 +247,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
                         .collectPaymentResult(billingFlowParams, this);
                 activity.startActivity(webBuyIntent);
             }
-        } catch (NullPointerException e) {
-            handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
-        } catch (IntentSender.SendIntentException e) {
+        } catch (NullPointerException | IntentSender.SendIntentException e) {
             handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e, billingFlowParams);
         } catch (ServiceConnectionException e) {
             handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e, billingFlowParams);

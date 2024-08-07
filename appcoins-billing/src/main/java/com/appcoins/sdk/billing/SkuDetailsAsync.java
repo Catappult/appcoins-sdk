@@ -7,8 +7,8 @@ import java.util.ArrayList;
 public class SkuDetailsAsync implements Runnable {
 
   private final Repository repository;
-  private SkuDetailsResponseListener skuDetailsResponseListener;
-  private SkuDetailsParams skuDetailsParams;
+  private final SkuDetailsResponseListener skuDetailsResponseListener;
+  private final SkuDetailsParams skuDetailsParams;
 
   public SkuDetailsAsync(SkuDetailsParams skuDetailsParams,
       SkuDetailsResponseListener skuDetailsResponseListener, Repository repository) {
@@ -21,11 +21,9 @@ public class SkuDetailsAsync implements Runnable {
     try {
       SkuDetailsResult response = getSkuDetails();
 
-      if (response.getSkuDetailsList() == null
-          || response.getSkuDetailsList()
-          .size() == 0) {
+      if (response.getSkuDetailsList() == null || response.getSkuDetailsList().isEmpty()) {
         skuDetailsResponseListener.onSkuDetailsResponse(response.getResponseCode(),
-            new ArrayList<SkuDetails>());
+                new ArrayList<>());
       } else {
         skuDetailsResponseListener.onSkuDetailsResponse(response.getResponseCode(),
             response.getSkuDetailsList());
@@ -33,7 +31,7 @@ public class SkuDetailsAsync implements Runnable {
     } catch (ServiceConnectionException e) {
       e.printStackTrace();
       skuDetailsResponseListener.onSkuDetailsResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(),
-          new ArrayList<SkuDetails>());
+              new ArrayList<>());
     }
   }
 

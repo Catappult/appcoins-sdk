@@ -3,9 +3,9 @@ package com.appcoins.sdk.billing.managers
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.util.Log
 import com.appcoins.sdk.billing.payflow.PayflowManager
 import com.appcoins.sdk.billing.receivers.AppInstallationReceiver
+import com.appcoins.sdk.core.logger.Logger.logError
 
 object BillingLifecycleManager {
 
@@ -33,7 +33,7 @@ object BillingLifecycleManager {
         try {
             context.unregisterReceiver(appInstallationReceiver)
         } catch (e: Exception) {
-            Log.e("BillingLifecycleManager", "Failed to unregister AppInstallationReceiver: $e")
+            logError("Failed to unregister AppInstallationReceiver: $e")
         }
     }
 }

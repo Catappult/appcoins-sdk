@@ -11,7 +11,5 @@ internal class PrivateKeysNativeHelper {
 
     enum class ApiKeys {
         INDICATIVE_API_KEY,
-        RAKAM_API_KEY,
-        ADYEN_API_KEY,
     }
 }

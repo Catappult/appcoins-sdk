@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import android.preference.PreferenceManager
 
 abstract class SharedPreferencesRepository(context: Context) {
-    protected val sharedPreferences: SharedPreferences =
+    private val sharedPreferences: SharedPreferences =
         PreferenceManager.getDefaultSharedPreferences(context)
 
     fun getString(key: String, defaultValue: String? = null): String? =

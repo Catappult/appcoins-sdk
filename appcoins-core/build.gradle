@@ -1,9 +1,14 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
+apply plugin: 'kotlin-android'
 
 android {
   compileSdkVersion COMPILE_SDK_VERSION
+
+  buildFeatures {
+    buildConfig = true
+  }
 
   defaultConfig {
     minSdkVersion MIN_SDK_VERSION
@@ -15,6 +20,9 @@ android {
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     consumerProguardFiles 'proguard-rules.pro'
+
+    buildConfigField 'int', 'VERSION_CODE', "${defaultConfig.versionCode}"
+    buildConfigField 'String', 'VERSION_NAME', "\"${defaultConfig.versionName}\""
   }
 
   buildTypes {
@@ -35,19 +43,22 @@ android {
   }
 
   compileOptions {
-    targetCompatibility TARGET_COMPATIBILITY
     sourceCompatibility SOURCE_COMPATIBILITY
+    targetCompatibility TARGET_COMPATIBILITY
+  }
+  kotlinOptions {
+    jvmTarget = TARGET_COMPATIBILITY
   }
 }
 
 dependencies {
-  testImplementation lib.junit
-  testImplementation lib.mockito_core
+  testImplementation libs.junit
+  testImplementation libs.mockito.core
+  testImplementation libs.json
+  androidTestImplementation libs.android.support.test.runner
+  androidTestImplementation libs.android.support.test.espresso.core
 
-  androidTestImplementation lib.android_test_runner
-
-  api lib.rxjava
-  api lib.web3j
+  implementation libs.kotlin.stdlib
 }
 
 //Publish configuration

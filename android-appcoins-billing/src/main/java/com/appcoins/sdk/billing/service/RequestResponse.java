@@ -4,7 +4,7 @@ public class RequestResponse {
 
   private final int responseCode;
   private final String response;
-  private Exception exception;
+  private final Exception exception;
 
   /**
    * @param responseCode Response code returned by the request, 500 by default (if there's a non IO

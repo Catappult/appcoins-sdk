@@ -4,18 +4,15 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.os.Build
-import android.util.Log
 import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.helpers.BindType
 import com.appcoins.sdk.billing.helpers.IBinderWalletNotInstalled
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.helpers.WebAppcoinsBilling
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
+import com.appcoins.sdk.core.logger.Logger.logInfo
 
 object WalletBinderUtil {
-
-    private const val TAG = "WalletBinderUtil"
 
     @JvmStatic
     var bindType: BindType? = null
@@ -36,7 +33,7 @@ object WalletBinderUtil {
                     if (successfullyBound) return
                 }
 
-                is PaymentFlowMethod.WebPayment, is PaymentFlowMethod.PayAsAGuest -> {
+                is PaymentFlowMethod.WebPayment -> {
                     bindType = BindType.BILLING_SERVICE_NOT_INSTALLED
                     connection.onServiceConnected(
                         ComponentName("", WebAppcoinsBilling::class.java.simpleName),
@@ -79,13 +76,8 @@ object WalletBinderUtil {
     }
 
     private fun bindFailedBehaviour(connection: ServiceConnection): Boolean {
-        if (BuildConfig.URI_COMMUNICATION
-            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH
-        ) {
-            Log.i(
-                TAG,
-                "BindFailedBehaviour: establishing URI Communication Protocol with Wallet."
-            )
+        if (BuildConfig.URI_COMMUNICATION) {
+            logInfo("Establishing URI Communication Protocol with Wallet.")
             bindType = BindType.URI_CONNECTION
             connection.onServiceConnected(
                 ComponentName("", UriCommunicationAppcoinsBilling::class.java.simpleName),
@@ -93,10 +85,7 @@ object WalletBinderUtil {
             )
             return true
         }
-        Log.i(
-            TAG,
-            "BindFailedBehaviour: failed to establish URI Communication Protocol with Wallet."
-        )
+        logInfo("Failed to establish URI Communication Protocol with Wallet.")
         return false
     }
 
@@ -106,10 +95,7 @@ object WalletBinderUtil {
         serviceIntent: Intent
     ): Boolean =
         if (context.bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)) {
-            Log.i(
-                TAG,
-                "BillingServiceInstalledBehaviour: binding to the wallet aidl."
-            )
+            logInfo("Binding to the wallet aidl.")
             bindType = BindType.AIDL
             true
         } else {

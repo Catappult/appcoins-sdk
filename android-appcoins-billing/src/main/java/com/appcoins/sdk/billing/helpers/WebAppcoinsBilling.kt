@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.util.Log
 import com.appcoins.billing.AppcoinsBilling
 import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.BillingFlowParams
@@ -15,10 +14,11 @@ import com.appcoins.sdk.billing.SkuDetails
 import com.appcoins.sdk.billing.SkuDetailsResultV2
 import com.appcoins.sdk.billing.SkuDetailsV2
 import com.appcoins.sdk.billing.WSServiceController
-import com.appcoins.sdk.billing.payasguest.BillingRepository
+import com.appcoins.sdk.billing.managers.BrokerManager
+import com.appcoins.sdk.billing.mappers.PurchasesBundleMapper
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.getPaymentFlowFromPayflowMethod
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.PayAsAGuest
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.WebPayment
+import com.appcoins.sdk.billing.repositories.BrokerRepository
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.GET_SKU_DETAILS_ITEM_LIST
@@ -27,6 +27,7 @@ import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DA
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ITEM_LIST
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
 import com.appcoins.sdk.billing.webpayment.WebPaymentManager
+import com.appcoins.sdk.core.logger.Logger.logDebug
 import java.io.Serializable
 import java.util.concurrent.CountDownLatch
 
@@ -83,22 +84,8 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         var bundle: Bundle? = null
         if (hasRequiredFields(type, sku) && WalletUtils.getPayflowMethodsList().isNotEmpty()) {
             for (method in WalletUtils.getPayflowMethodsList()) {
-                if (method is PayAsAGuest) {
-                    Log.d(
-                        TAG,
-                        "Service is NOT installed and should StartPayAsGuest with buyItemProperties = [$buyItemProperties]"
-                    )
-                    setBuyItemPropertiesForPayflow(
-                        packageName,
-                        apiVersion,
-                        sku,
-                        type,
-                        developerPayload
-                    )
-                    bundle = WalletUtils.startPayAsGuest(buyItemProperties)
-                } else if (method is WebPayment) {
-                    Log.d(
-                        TAG,
+                if (method is WebPayment) {
+                    logDebug(
                         "Service is NOT installed and should make WebFirstPayment with buyItemProperties = [$buyItemProperties]"
                     )
                     WebPaymentManager(packageName)
@@ -120,8 +107,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         }
 
         //Fallback to WalletInstallation Activity if something fails
-        Log.d(
-            TAG,
+        logDebug(
             "Service is NOT installed and should start install flow with buyItemProperties = [$buyItemProperties]"
         )
         setBuyItemPropertiesForPayflow(packageName, apiVersion, sku, type, developerPayload)
@@ -170,10 +156,11 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         var bundleResponse = buildEmptyBundle()
         val walletId = walletId
         if (walletId != null && type.equals("INAPP", ignoreCase = true)) {
-            val billingRepository =
-                BillingRepository(BdsService(BuildConfig.HOST_WS, 30000))
+            val brokerRepository = BrokerRepository(BdsService(BuildConfig.HOST_WS, 30000))
             val guestPurchaseInteract =
-                GuestPurchasesInteract(billingRepository)
+                PurchasesBundleMapper(
+                    brokerRepository
+                )
 
             bundleResponse =
                 guestPurchaseInteract.mapGuestPurchases(bundleResponse, walletId, packageName, type)
@@ -197,13 +184,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         walletId: String,
         packageName: String,
         purchaseToken: String
-    ): Int {
-        val billingRepository =
-            BillingRepository(BdsService(BuildConfig.HOST_WS, BdsService.TIME_OUT_IN_MILLIS))
-        val guestPurchaseInteract = GuestPurchasesInteract(billingRepository)
-
-        return guestPurchaseInteract.consumeGuestPurchase(walletId, packageName, purchaseToken)
-    }
+    ): Int = BrokerManager.consumePurchase(walletId, packageName, purchaseToken)
 
     private fun buildEmptyBundle(): Bundle {
         val bundleResponse = Bundle()
@@ -299,8 +280,6 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         type.equals("inapp", ignoreCase = true) && apiVersion == SUPPORTED_API_VERSION
 
     companion object {
-        private val TAG = WebAppcoinsBilling::class.java.simpleName
-
         private const val SUPPORTED_API_VERSION = 3
         private const val MAX_SKUS_SEND_WS = 49 // 0 to 49
 
