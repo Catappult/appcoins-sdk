@@ -120,7 +120,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         val mConstraintSet = ConstraintSet()
         mConstraintSet.clone(mBaseConstraintLayout)
 
-        mConstraintSet.constrainPercentWidth(R.id.container_for_web_view, 0.66f)
+        mConstraintSet.constrainPercentWidth(R.id.container_for_web_view, 0.8f)
         mConstraintSet.connect(
             R.id.container_for_web_view,
             ConstraintSet.END,
@@ -141,7 +141,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         val mConstraintSet = ConstraintSet()
         mConstraintSet.clone(mBaseConstraintLayout)
 
-        mConstraintSet.constrainPercentHeight(R.id.container_for_web_view, 0.75f)
+        mConstraintSet.constrainPercentHeight(R.id.container_for_web_view, 0.9f)
         mConstraintSet.connect(
             R.id.container_for_web_view,
             ConstraintSet.BOTTOM,

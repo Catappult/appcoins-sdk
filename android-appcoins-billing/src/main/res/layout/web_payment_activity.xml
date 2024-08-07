@@ -14,7 +14,7 @@
         android:background="@drawable/round_corners_background"
         android:paddingTop="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHeight_percent="0.75">
+        app:layout_constraintHeight_percent="0.9">
 
         <WebView
             android:id="@+id/web_view"
