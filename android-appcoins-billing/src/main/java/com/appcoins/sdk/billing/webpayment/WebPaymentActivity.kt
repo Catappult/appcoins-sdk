@@ -13,9 +13,9 @@ import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import com.appcoins.billing.sdk.R
+import com.appcoins.sdk.core.logger.Logger.logInfo
 
-
-class WebPaymentActivity : Activity() {
+class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
 
     private var webView: WebView? = null
     private var webViewContainer: LinearLayout? = null
@@ -53,7 +53,7 @@ class WebPaymentActivity : Activity() {
             CookieManager.getInstance().setAcceptCookie(true)
         }
 
-        webView?.addJavascriptInterface(WebPaymentSDKInterface(), "WebPaymentSDKInterface")
+        webView?.addJavascriptInterface(this as SDKWebPaymentInterface, "WebPaymentSDKInterface")
         webView?.webViewClient = WebViewClient()
         webView?.loadUrl(url)
     }
@@ -68,6 +68,14 @@ class WebPaymentActivity : Activity() {
         webView?.saveState(outState)
     }
 
+    override fun onPurchaseResult(result: String?) {
+        logInfo(result ?: "")
+    }
+
+    override fun onClose() {
+        finish()
+    }
+
     private fun adjustWebViewSize(orientation: Int) {
         val mWebViewContainer = webViewContainer
         val mBaseConstraintLayout = baseConstraintLayout
@@ -80,47 +88,53 @@ class WebPaymentActivity : Activity() {
                     webViewContainerParams.width = 0
                     webViewContainerParams.height = LinearLayout.LayoutParams.MATCH_PARENT
 
-                    val mConstraintSet = ConstraintSet()
-
-                    mConstraintSet.clone(baseConstraintLayout)
-
-                    mConstraintSet.constrainPercentWidth(R.id.container_for_web_view, 0.66f)
-                    mConstraintSet.connect(
-                        R.id.container_for_web_view,
-                        ConstraintSet.END,
-                        R.id.base_constraint_layout,
-                        ConstraintSet.END
-                    )
-                    mConstraintSet.connect(
-                        R.id.container_for_web_view,
-                        ConstraintSet.START,
-                        R.id.base_constraint_layout,
-                        ConstraintSet.START
-                    )
-
-                    mConstraintSet.applyTo(mBaseConstraintLayout)
+                    applyLandscapeConstraints(mBaseConstraintLayout)
                 } else {
                     webViewContainerParams.width = LinearLayout.LayoutParams.MATCH_PARENT
                     webViewContainerParams.height = 0
 
-                    val mConstraintSet = ConstraintSet()
-
-                    mConstraintSet.clone(baseConstraintLayout)
-
-                    mConstraintSet.constrainPercentHeight(R.id.container_for_web_view, 0.75f)
-                    mConstraintSet.connect(
-                        R.id.container_for_web_view,
-                        ConstraintSet.BOTTOM,
-                        R.id.base_constraint_layout,
-                        ConstraintSet.BOTTOM
-                    )
-
-                    mConstraintSet.applyTo(mBaseConstraintLayout)
+                    applyPortraitConstraints(mBaseConstraintLayout)
                 }
 
                 webViewContainer?.layoutParams = webViewContainerParams
             }
         }
+    }
+
+    private fun applyLandscapeConstraints(mBaseConstraintLayout: ConstraintLayout) {
+        val mConstraintSet = ConstraintSet()
+        mConstraintSet.clone(mBaseConstraintLayout)
+
+        mConstraintSet.constrainPercentWidth(R.id.container_for_web_view, 0.66f)
+        mConstraintSet.connect(
+            R.id.container_for_web_view,
+            ConstraintSet.END,
+            R.id.base_constraint_layout,
+            ConstraintSet.END
+        )
+        mConstraintSet.connect(
+            R.id.container_for_web_view,
+            ConstraintSet.START,
+            R.id.base_constraint_layout,
+            ConstraintSet.START
+        )
+
+        mConstraintSet.applyTo(mBaseConstraintLayout)
+    }
+
+    private fun applyPortraitConstraints(mBaseConstraintLayout: ConstraintLayout) {
+        val mConstraintSet = ConstraintSet()
+        mConstraintSet.clone(mBaseConstraintLayout)
+
+        mConstraintSet.constrainPercentHeight(R.id.container_for_web_view, 0.75f)
+        mConstraintSet.connect(
+            R.id.container_for_web_view,
+            ConstraintSet.BOTTOM,
+            R.id.base_constraint_layout,
+            ConstraintSet.BOTTOM
+        )
+
+        mConstraintSet.applyTo(mBaseConstraintLayout)
     }
 
     companion object {
