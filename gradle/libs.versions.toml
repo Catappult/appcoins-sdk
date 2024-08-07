@@ -12,7 +12,6 @@ json_version = "20220924"
 
 # General
 indicative_version = "1.1.0"
-java_web_socket_version = "1.5.3"
 
 # Classpaths
 android_tools_build_gradle_version = "4.2.2"
@@ -49,8 +48,6 @@ json = { module = "org.json:json", version.ref = "json_version" }
 # General
 # https://mvnrepository.com/artifact/com.indicative.client.android/Indicative-Android
 indicative = { module = "com.indicative.client.android:Indicative-Android", version.ref = "indicative_version" }
-# https://mvnrepository.com/artifact/org.java-websocket/Java-WebSocket
-java_web_socket = { module = "org.java-websocket:Java-WebSocket", version.ref = "java_web_socket_version" }
 
 # Classpaths
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle
