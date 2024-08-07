@@ -85,7 +85,8 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
 
     override fun onClose() {
         if (!responseReceived) {
-            SDKWebResponseStream.getInstance().emit(SDKWebResponse(ResponseCode.ERROR.value))
+            SDKWebResponseStream.getInstance()
+                .emit(SDKWebResponse(ResponseCode.USER_CANCELED.value))
         }
         finish()
     }
