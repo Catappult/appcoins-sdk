@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.webkit.CookieManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -27,7 +28,6 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
 
     private var responseReceived = false
 
-    @SuppressLint("SetJavaScriptEnabled", "AddJavascriptInterface")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.web_payment_activity)
@@ -35,33 +35,20 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         val url = intent.getStringExtra(URL)
 
         if (url == null) {
-            //send error message
+            SDKWebResponseStream.getInstance().emit(SDKWebResponse(ResponseCode.ERROR.value))
             finish()
             return
         }
 
-        webView = findViewById(R.id.web_view)
-        webViewContainer = findViewById(R.id.container_for_web_view)
-        baseConstraintLayout = findViewById(R.id.base_constraint_layout)
+        connectViews()
 
         if (savedInstanceState != null) {
             webView?.restoreState(savedInstanceState)
             return
         }
 
-        webView?.settings?.javaScriptEnabled = true
-        webView?.settings?.domStorageEnabled = true
-        webView?.settings?.databaseEnabled = true
-
-        if (android.os.Build.VERSION.SDK_INT >= 21) {
-            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true)
-        } else {
-            CookieManager.getInstance().setAcceptCookie(true)
-        }
-
-        webView?.addJavascriptInterface(this as SDKWebPaymentInterface, "WebPaymentSDKInterface")
-        webView?.webViewClient = WebViewClient()
-        webView?.loadUrl(url)
+        setupCloseButton()
+        setupWebView(url)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -84,11 +71,44 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
     }
 
     override fun onClose() {
+        finish()
+    }
+
+    override fun onDestroy() {
         if (!responseReceived) {
             SDKWebResponseStream.getInstance()
                 .emit(SDKWebResponse(ResponseCode.USER_CANCELED.value))
         }
-        finish()
+        super.onDestroy()
+    }
+
+    private fun connectViews() {
+        webView = findViewById(R.id.web_view)
+        webViewContainer = findViewById(R.id.container_for_web_view)
+        baseConstraintLayout = findViewById(R.id.base_constraint_layout)
+    }
+
+    private fun setupCloseButton() {
+        findViewById<ImageView>(R.id.button_close).setOnClickListener {
+            finish()
+        }
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun setupWebView(url: String) {
+        webView?.settings?.javaScriptEnabled = true
+        webView?.settings?.domStorageEnabled = true
+        webView?.settings?.databaseEnabled = true
+
+        if (android.os.Build.VERSION.SDK_INT >= 21) {
+            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true)
+        } else {
+            CookieManager.getInstance().setAcceptCookie(true)
+        }
+
+        webView?.addJavascriptInterface(this as SDKWebPaymentInterface, "SDKWebPaymentInterface")
+        webView?.webViewClient = WebViewClient()
+        webView?.loadUrl(url)
     }
 
     private fun adjustWebViewSize(orientation: Int) {
