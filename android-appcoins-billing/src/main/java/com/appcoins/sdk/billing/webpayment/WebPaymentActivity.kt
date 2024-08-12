@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
 import android.webkit.CookieManager
 import android.webkit.WebView
@@ -107,7 +108,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         }
 
         webView?.addJavascriptInterface(this as SDKWebPaymentInterface, "SDKWebPaymentInterface")
-        webView?.webViewClient = WebViewClient()
+        webView?.webViewClient = InternalWebViewClient(this)
         webView?.loadUrl(url)
     }
 
@@ -180,6 +181,24 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
             val intent = Intent(context, WebPaymentActivity::class.java)
             intent.putExtra(URL, url)
             return intent
+        }
+    }
+
+    private class InternalWebViewClient(private val activity: Activity) : WebViewClient() {
+        @Deprecated("Deprecated in Java")
+        override fun shouldOverrideUrlLoading(view: WebView?, url: String): Boolean {
+            val uri = Uri.parse(url)
+            logInfo(url)
+            logInfo(uri.scheme.toString())
+            if (uri.scheme == WEB_DEEPLINK_SCHEME) {
+                activity.finish()
+                return true
+            }
+            return false
+        }
+
+        private companion object {
+            const val WEB_DEEPLINK_SCHEME = "web-iap-result"
         }
     }
 }
