@@ -1,5 +1,6 @@
 package com.appcoins.sdk.billing;
 
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESULT_CODE;
 import static com.appcoins.sdk.core.logger.Logger.logDebug;
 
 import android.app.Activity;
@@ -30,7 +31,6 @@ import org.jetbrains.annotations.Nullable;
 import kotlin.Pair;
 
 public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPurchaseStream.Consumer<Pair<Activity, BuyItemProperties>> {
-  private static final int REQUEST_CODE = 51;
 
   private final Billing billing;
   private final RepositoryConnection connection;
@@ -243,7 +243,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
             PaymentsResultsManager.getInstance().collectPaymentResult(this);
             if (buyIntent != null) {
                 AppCoinsPendingIntentCaller.startPendingAppCoinsIntent(activity,
-                        buyIntent.getIntentSender(), REQUEST_CODE, null, 0, 0, 0);
+                        buyIntent.getIntentSender(), RESULT_CODE, null, 0, 0, 0);
             } else if (webBuyIntent != null) {
                 activity.startActivity(webBuyIntent);
             }

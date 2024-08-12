@@ -1,31 +1,19 @@
 package com.appcoins.sdk.billing.activities
 
+import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import com.appcoins.billing.sdk.R
 import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESULT_CODE
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
 
-class BillingFlowActivity : AppCompatActivity() {
-
-    private val content =
-        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { activityResult ->
-            logInfo("Extras: " + activityResult.data?.extras)
-            logInfo("ResultCode: " + activityResult.resultCode)
-            logInfo("Extras: ")
-            PaymentResponseStream.getInstance().emit(
-                SDKPaymentResponse(activityResult.resultCode, activityResult.data)
-            )
-            finish()
-        }
+class BillingFlowActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,19 +27,23 @@ class BillingFlowActivity : AppCompatActivity() {
             }
 
         if (pendingIntent == null) {
+            PaymentResponseStream.getInstance().emit(SDKPaymentResponse(1))
             finish()
             return
         }
 
         val intentSender = pendingIntent.intentSender
 
-        val intentSenderRequest =
-            IntentSenderRequest.Builder(intentSender)
-                .setFillInIntent(Intent())
-                .setFlags(0, 0)
-                .build()
+        startIntentSenderForResult(intentSender, RESULT_CODE, null, 0, 0, 0)
+    }
 
-        content.launch(intentSenderRequest)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        logInfo("Extras: " + data?.extras)
+        logInfo("ResultCode: $resultCode")
+        logInfo("Extras: ")
+        PaymentResponseStream.getInstance().emit(SDKPaymentResponse(resultCode, data))
+        finish()
     }
 
     companion object {

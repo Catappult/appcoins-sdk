@@ -38,7 +38,7 @@
           android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
       <activity
           android:name="com.appcoins.sdk.billing.activities.BillingFlowActivity"
-          android:theme="@style/AppTheme.Transparent.FullScreen"/>
+          android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
     <activity android:name="com.appcoins.sdk.billing.UriCommunicationActivity"
         android:exported="true">
       <intent-filter>
