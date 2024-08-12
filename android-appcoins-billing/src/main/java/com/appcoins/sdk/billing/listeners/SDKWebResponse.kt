@@ -1,7 +1,13 @@
 package com.appcoins.sdk.billing.listeners
 
-import com.appcoins.sdk.billing.Purchase
+import android.content.Intent
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ID
 import org.json.JSONObject
+import java.io.Serializable
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.ORDER_REFERENCE as ORDER_REFERENCE_EXTRA
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE as RESPONSE_CODE_EXTRA
 
 data class SDKWebResponse(
     val responseCode: Int,
@@ -20,28 +26,23 @@ data class SDKWebResponse(
         responseCode, null, null, null
     )
 
-    fun toPurchase(): Purchase =
-        Purchase(
-            purchaseData?.orderId,
-            purchaseData?.productType,
-            toOriginalJson(),
-            dataSignature?.toByteArray(),
-            purchaseData?.purchaseTime ?: 0,
-            purchaseData?.purchaseState ?: 6,
-            purchaseData?.developerPayload,
-            purchaseData?.purchaseToken,
-            purchaseData?.packageName,
-            purchaseData?.productId,
-            purchaseData?.isAutoRenewing ?: false
-        )
+    fun toSDKPaymentResponse(): SDKPaymentResponse =
+        SDKPaymentResponse(responseCode, createPaymentResponseBundle())
+
+    private fun createPaymentResponseBundle() =
+        Intent().apply {
+            putExtra(RESPONSE_CODE_EXTRA, responseCode)
+            purchaseData?.toJson()?.let { putExtra(INAPP_PURCHASE_DATA, it) }
+            dataSignature?.let { putExtra(INAPP_DATA_SIGNATURE, it) }
+            purchaseData?.purchaseToken?.let { putExtra(INAPP_PURCHASE_ID, it) }
+            orderReference?.let { putExtra(ORDER_REFERENCE_EXTRA, it) }
+        }
 
     private companion object {
         const val RESPONSE_CODE = "responseCode"
         const val PURCHASE_DATA = "purchaseData"
         const val DATA_SIGNATURE = "dataSignature"
         const val ORDER_REFERENCE = "orderReference"
-        fun toOriginalJson(): String =
-            ""
     }
 }
 
@@ -55,7 +56,17 @@ data class PurchaseData(
     val purchaseState: Int,
     val isAutoRenewing: Boolean,
     val developerPayload: String?
-) {
+) : Serializable {
+    fun toJson(): String =
+        """{"orderId":"$orderId",
+            |"packageName":"$packageName"
+            |"productId":"$productId"
+            |"productType":"$productType"
+            |"purchaseTime":$purchaseTime
+            |"purchaseToken":"$purchaseToken"
+            |"purchaseState":$purchaseState
+            |"isAutoRenewing":"$isAutoRenewing"
+            |"developerPayload":"$developerPayload"}""".trimMargin()
 
     constructor(jsonObject: JSONObject) : this(
         jsonObject.optString(ORDER_ID),

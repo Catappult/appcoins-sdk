@@ -69,6 +69,7 @@ object WalletBinderUtil {
                     connection.onServiceDisconnected(
                         ComponentName(context, UriCommunicationAppcoinsBilling::class.java)
                     )
+                else -> Unit
             }
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()

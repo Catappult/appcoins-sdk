@@ -136,9 +136,13 @@ dependencies {
   androidTestImplementation libs.android.support.test.runner
   androidTestImplementation libs.android.support.test.espresso.core
 
-  api libs.indicative
   implementation libs.kotlin.stdlib
-  implementation libs.androidx.constraint.layout
+
+  api libs.indicative
+  api libs.androidx.constraint.layout
+  api libs.androidx.appcompat
+  api libs.androidx.core.ktx
+  api libs.androidx.activity.ktx
 
   api project(':appcoins-billing')
   api project(':appcoins-core')

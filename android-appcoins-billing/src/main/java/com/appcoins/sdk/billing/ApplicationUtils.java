@@ -1,26 +1,27 @@
 package com.appcoins.sdk.billing;
 
-import static com.appcoins.sdk.core.logger.Logger.logDebug;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
 import static com.appcoins.sdk.core.logger.Logger.logError;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Base64;
+
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
-import com.appcoins.sdk.billing.listeners.SDKWebResponse;
 import com.appcoins.sdk.billing.usecases.mmp.SendSuccessfulPurchaseResponseEvent;
+
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.json.JSONObject;
 
 class ApplicationUtils {
 
   private static final String RESPONSE_INAPP_PURCHASE_DATA = "INAPP_PURCHASE_DATA";
   private static final String RESPONSE_INAPP_SIGNATURE = "INAPP_DATA_SIGNATURE";
-  private static final String RESPONSE_INAPP_PURCHASE_ID = "INAPP_PURCHASE_ID";
 
   static void handleActivityResult(Billing billing, int resultCode, Intent data,
                                    PurchasesUpdatedListener purchaseFinishedListener) {
@@ -103,55 +104,6 @@ class ApplicationUtils {
     }
   }
 
-  static void handleWebBasedResult(
-          SDKWebResponse sdkWebResponse,
-          PurchasesUpdatedListener purchaseFinishedListener
-  ) {
-
-    if (sdkWebResponse.getResponseCode() == ResponseCode.OK.getValue()) {
-      WalletUtils.getSdkAnalytics().sendPurchaseStatusEvent("success", getResponseDesc(sdkWebResponse.getResponseCode()));
-      logDebug("Successful resultcode from purchase activity.");
-      logDebug("OrderId: " + sdkWebResponse.getPurchaseData().getOrderId());
-      logDebug("PurchaseToken: " + sdkWebResponse.getPurchaseData().getPurchaseToken());
-
-      if (sdkWebResponse.getPurchaseData().getPurchaseToken().isEmpty()
-              || sdkWebResponse.getPurchaseData().getOrderId().isEmpty()) {
-        logError("BUG: either OrderId or PurchaseToken is null.");
-        purchaseFinishedListener.onPurchasesUpdated(
-                ResponseCode.ERROR.getValue(),
-                Collections.emptyList()
-        );
-
-        return;
-      }
-
-        try {
-          Purchase purchase = sdkWebResponse.toPurchase();
-
-          List<Purchase> purchases = new ArrayList<>();
-          purchases.add(purchase);
-
-          SendSuccessfulPurchaseResponseEvent.Companion.invoke(purchase);
-          purchaseFinishedListener.onPurchasesUpdated(sdkWebResponse.getResponseCode(), purchases);
-        } catch (Exception e) {
-          e.printStackTrace();
-          purchaseFinishedListener.onPurchasesUpdated(
-                  ResponseCode.ERROR.getValue(),
-                  Collections.emptyList()
-          );
-          logError("Failed to parse purchase data.");
-          return;
-        }
-        return;
-      }
-
-    logAndSendAnalyticsForUnsuccessfulResult(sdkWebResponse.getResponseCode());
-    purchaseFinishedListener.onPurchasesUpdated(
-            sdkWebResponse.getResponseCode(),
-            Collections.emptyList()
-    );
-  }
-
   private static int getResponseCodeFromIntent(Intent i) {
     Object o = i.getExtras().get(RESPONSE_CODE);
     if (o == null) {
@@ -172,19 +124,6 @@ class ApplicationUtils {
 
   private static String getObjectFromJson(JSONObject data, String objectId) {
     return data.optString(objectId);
-  }
-
-  private static void logAndSendAnalyticsForUnsuccessfulResult(Integer responseCode) {
-    SdkAnalytics sdkAnalytics = WalletUtils.getSdkAnalytics();
-
-    if (responseCode == ResponseCode.USER_CANCELED.getValue()) {
-      logDebug("Purchase canceled - Response: " + getResponseDesc(responseCode));
-      sdkAnalytics.sendPurchaseStatusEvent("user_canceled", getResponseDesc(responseCode));
-    } else {
-      logError("Purchase failed. Response code: " + getResponseDesc(
-              responseCode));
-      sdkAnalytics.sendPurchaseStatusEvent("error", getResponseDesc(responseCode));
-    }
   }
 
   private static String getResponseDesc(int code) {
