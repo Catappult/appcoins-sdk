@@ -5,13 +5,12 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
-import android.net.Uri
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.webkit.CookieManager
+import android.webkit.JavascriptInterface
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.ImageView
 import android.widget.LinearLayout
 import com.appcoins.billing.sdk.R
@@ -19,6 +18,7 @@ import com.appcoins.sdk.billing.ResponseCode
 import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
+import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 import org.json.JSONObject
 
@@ -64,16 +64,24 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         webView?.saveState(outState)
     }
 
+    @JavascriptInterface
     override fun onPurchaseResult(result: String?) {
         responseReceived = true
         logInfo(result ?: "")
         result?.apply {
-            val jsonObject = JSONObject(this)
-            PaymentResponseStream.getInstance()
-                .emit(SDKWebResponse(jsonObject).toSDKPaymentResponse())
+            try {
+                val jsonObject = JSONObject(this)
+                PaymentResponseStream.getInstance()
+                    .emit(SDKWebResponse(jsonObject).toSDKPaymentResponse())
+            } catch (e: Exception) {
+                logError("There was a failure receiving the purchase result from the WebView", e)
+                PaymentResponseStream.getInstance()
+                    .emit(SDKPaymentResponse(ResponseCode.ERROR.value))
+            }
         } ?: PaymentResponseStream.getInstance().emit(SDKPaymentResponse(ResponseCode.ERROR.value))
     }
 
+    @JavascriptInterface
     override fun onClose() {
         finish()
     }
@@ -184,24 +192,6 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
             val intent = Intent(context, WebPaymentActivity::class.java)
             intent.putExtra(URL, url)
             return intent
-        }
-    }
-
-    private class InternalWebViewClient(private val activity: Activity) : WebViewClient() {
-        @Deprecated("Deprecated in Java")
-        override fun shouldOverrideUrlLoading(view: WebView?, url: String): Boolean {
-            val uri = Uri.parse(url)
-            logInfo(url)
-            logInfo(uri.scheme.toString())
-            if (uri.scheme == WEB_DEEPLINK_SCHEME) {
-                activity.finish()
-                return true
-            }
-            return false
-        }
-
-        private companion object {
-            const val WEB_DEEPLINK_SCHEME = "web-iap-result"
         }
     }
 }
