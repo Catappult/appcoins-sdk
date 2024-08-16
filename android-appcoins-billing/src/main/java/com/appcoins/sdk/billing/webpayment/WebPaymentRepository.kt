@@ -6,6 +6,7 @@ import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.service.ServiceResponseListener
 import com.appcoins.sdk.billing.utils.ServiceUtils
+import java.util.Locale
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -35,6 +36,7 @@ class WebPaymentRepository(private val bdsService: BdsService) {
             orderReference?.let { queries["order_id"] = it }
         }
         paymentFlow?.let { queries["payment_flow"] = it }
+        queries["lang_code"] = Locale.getDefault().language
 
         val paymentUrlVersion =
             PaymentFlowMethod.getPaymentUrlVersionFromPayflowMethod(WalletUtils.getPayflowMethodsList())
