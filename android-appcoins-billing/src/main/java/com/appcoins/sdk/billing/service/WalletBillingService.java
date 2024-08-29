@@ -5,6 +5,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import com.appcoins.billing.AppcoinsBilling;
 import com.appcoins.sdk.billing.helpers.AppcoinsBillingStubHelper;
+import com.appcoins.sdk.billing.helpers.WalletUtils;
 
 public class WalletBillingService implements AppcoinsBilling {
 
@@ -27,7 +28,9 @@ public class WalletBillingService implements AppcoinsBilling {
 
   @Override public Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type,
       String developerPayload, String oemid, String guestWalletId) throws RemoteException {
-    return service.getBuyIntent(apiVersion, packageName, sku, type, developerPayload, oemid, guestWalletId);
+    Bundle walletBuyIntentBundle =
+            service.getBuyIntent(apiVersion, packageName, sku, type, developerPayload, oemid, guestWalletId);
+    return WalletUtils.startWalletPayment(walletBuyIntentBundle);
   }
 
   @Override public Bundle getPurchases(int apiVersion, String packageName, String skuType,

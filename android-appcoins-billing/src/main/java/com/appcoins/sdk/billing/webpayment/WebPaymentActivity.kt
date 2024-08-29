@@ -15,6 +15,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import com.appcoins.billing.sdk.R
 import com.appcoins.sdk.billing.ResponseCode
+import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
@@ -49,6 +50,9 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
             webView?.restoreState(savedInstanceState)
             return
         }
+
+        val sku = intent.getStringExtra(SKU)
+        WalletUtils.getSdkAnalytics().sendPurchaseViaWebEvent(sku ?: "")
 
         setupCloseButton()
         setupWebView(url)
@@ -186,11 +190,13 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
 
     companion object {
         private const val URL = "URL"
+        private const val SKU = "SKU"
 
         @JvmStatic
-        fun newIntent(context: Context, url: String): Intent {
+        fun newIntent(context: Context, url: String, sku: String): Intent {
             val intent = Intent(context, WebPaymentActivity::class.java)
             intent.putExtra(URL, url)
+            intent.putExtra(SKU, sku)
             return intent
         }
     }

@@ -5,9 +5,8 @@ import android.content.Intent
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ID
-import com.appcoins.sdk.core.logger.Logger.logInfo
+import com.appcoins.sdk.core.logger.Logger.logDebug
 import org.json.JSONObject
-import java.io.Serializable
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.ORDER_REFERENCE as ORDER_REFERENCE_EXTRA
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE as RESPONSE_CODE_EXTRA
 
@@ -36,11 +35,11 @@ data class SDKWebResponse(
 
     private fun createPaymentResponseBundle() =
         Intent().apply {
-            logInfo("Putting RESPONSE_CODE_EXTRA with -> ${responseCode}")
-            logInfo("Putting INAPP_PURCHASE_DATA with -> ${purchaseData?.toJson()}")
-            logInfo("Putting INAPP_DATA_SIGNATURE with -> ${dataSignature}")
-            logInfo("Putting INAPP_PURCHASE_ID with -> ${purchaseData?.purchaseToken}")
-            logInfo("Putting ORDER_REFERENCE_EXTRA with -> ${orderReference}")
+            logDebug("Putting RESPONSE_CODE_EXTRA with -> $responseCode")
+            logDebug("Putting INAPP_PURCHASE_DATA with -> ${purchaseData?.toJson()}")
+            logDebug("Putting INAPP_DATA_SIGNATURE with -> $dataSignature")
+            logDebug("Putting INAPP_PURCHASE_ID with -> ${purchaseData?.purchaseToken}")
+            logDebug("Putting ORDER_REFERENCE_EXTRA with -> $orderReference")
             putExtra(RESPONSE_CODE_EXTRA, responseCode)
             purchaseData?.toJson()?.let { putExtra(INAPP_PURCHASE_DATA, it) }
             dataSignature?.let { putExtra(INAPP_DATA_SIGNATURE, it) }
@@ -73,7 +72,7 @@ data class PurchaseData(
     val purchaseState: Int,
     val isAutoRenewing: Boolean,
     val developerPayload: String?
-) : Serializable {
+) {
     fun toJson(): String =
         """{"orderId":"$orderId","packageName":"$packageName","productId":"$productId","productType":"$productType","purchaseTime":$purchaseTime,"purchaseToken":"$purchaseToken","purchaseState":$purchaseState,"isAutoRenewing":"$isAutoRenewing","developerPayload":"$developerPayload"}"""
 

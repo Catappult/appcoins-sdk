@@ -7,9 +7,9 @@ import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.os.Looper;
 
-import com.appcoins.sdk.billing.activities.BillingFlowActivity;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.helpers.EventLogger;
 import com.appcoins.sdk.billing.helpers.PayloadHelper;
@@ -93,16 +93,14 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
             }
 
             PendingIntent buyIntent = launchBillingFlowResult.getBuyIntent();
-            Intent webBuyIntent = launchBillingFlowResult.getWebBuyIntent();
 
             PaymentsResultsManager.getInstance().collectPaymentResult(this);
+
             if (buyIntent != null) {
-                activity.startActivity(BillingFlowActivity.newIntent(activity, buyIntent));
-            } else if (webBuyIntent != null) {
-                WalletUtils.getSdkAnalytics().sendPurchaseViaWebEvent(billingFlowParams.getSku());
-                activity.startActivity(webBuyIntent);
+                activity.startIntentSender(buyIntent.getIntentSender(), null, 0, 0, 0);
             }
-        } catch (NullPointerException | ActivityNotFoundException e) {
+        } catch (NullPointerException | IntentSender.SendIntentException |
+                 ActivityNotFoundException e) {
             return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e);
         } catch (ServiceConnectionException e) {
             return handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e);
@@ -239,15 +237,12 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
             }
 
             PendingIntent buyIntent = launchBillingFlowResult.getBuyIntent();
-            Intent webBuyIntent = launchBillingFlowResult.getWebBuyIntent();
 
             PaymentsResultsManager.getInstance().collectPaymentResult(this);
             if (buyIntent != null) {
-                activity.getApplicationContext().startActivity(BillingFlowActivity.newIntent(activity, buyIntent));
-            } else if (webBuyIntent != null) {
-                activity.getApplicationContext().startActivity(webBuyIntent);
+                activity.startIntentSender(buyIntent.getIntentSender(), null, 0, 0, 0);
             }
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | IntentSender.SendIntentException e) {
             handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e);
         } catch (ServiceConnectionException e) {
             handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e);

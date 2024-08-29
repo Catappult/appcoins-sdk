@@ -19,6 +19,7 @@ import com.appcoins.billing.AppcoinsBilling;
 import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.sdk.billing.BuyItemProperties;
 import com.appcoins.sdk.billing.ResponseCode;
+import com.appcoins.sdk.billing.activities.BillingFlowActivity;
 import com.appcoins.sdk.billing.analytics.AnalyticsManagerProvider;
 import com.appcoins.sdk.billing.analytics.IndicativeAnalytics;
 import com.appcoins.sdk.billing.analytics.IndicativeLaunchCallback;
@@ -99,7 +100,7 @@ public class WalletUtils {
     return null;
   }
 
-  public static Bundle startWebFirstPayment() {
+  public static Bundle startWebFirstPayment(String sku) {
     if (isMainThread()) {
       return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
     }
@@ -108,8 +109,13 @@ public class WalletUtils {
       return createBundleWithResponseCode(ResponseCode.ERROR.getValue());
     }
 
-    Intent intent = WebPaymentActivity.newIntent(context, WalletUtils.getWebPaymentUrl());
-    return createWebIntentBundle(intent);
+    Intent intent = WebPaymentActivity.newIntent(context, WalletUtils.getWebPaymentUrl(), sku);
+    return createIntentBundle(intent, ResponseCode.OK.getValue());
+  }
+
+  public static Bundle startWalletPayment(Bundle bundle) {
+    Intent intent = BillingFlowActivity.newIntent(context, bundle);
+    return createIntentBundle(intent, bundle.getInt(RESPONSE_CODE));
   }
 
   public static Bundle startInstallFlow(BuyItemProperties buyItemProperties) {
@@ -117,23 +123,16 @@ public class WalletUtils {
       return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
     }
     Intent intent = InstallDialogActivity.newIntent(context, buyItemProperties, sdkAnalytics);
-    return createIntentBundle(intent);
+    return createIntentBundle(intent, ResponseCode.OK.getValue());
   }
 
-  private static Bundle createWebIntentBundle(Intent intent) {
-    Bundle bundle = new Bundle();
-    bundle.putParcelable("WEB_BUY_INTENT", intent);
-    bundle.putInt(RESPONSE_CODE, ResponseCode.OK.getValue());
-    return bundle;
-  }
-
-  private static Bundle createIntentBundle(Intent intent) {
+  private static Bundle createIntentBundle(Intent intent, Integer responseCode) {
     PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
         PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
     Bundle bundle = new Bundle();
     bundle.putParcelable("BUY_INTENT", pendingIntent);
-    bundle.putInt(RESPONSE_CODE, ResponseCode.OK.getValue());
+    bundle.putInt(RESPONSE_CODE, responseCode);
     return bundle;
   }
 
