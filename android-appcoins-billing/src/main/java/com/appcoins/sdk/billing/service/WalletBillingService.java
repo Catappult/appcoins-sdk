@@ -28,9 +28,7 @@ public class WalletBillingService implements AppcoinsBilling {
 
   @Override public Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type,
       String developerPayload, String oemid, String guestWalletId) throws RemoteException {
-    Bundle walletBuyIntentBundle =
-            service.getBuyIntent(apiVersion, packageName, sku, type, developerPayload, oemid, guestWalletId);
-    return WalletUtils.startWalletPayment(walletBuyIntentBundle);
+    return service.getBuyIntent(apiVersion, packageName, sku, type, developerPayload, oemid, guestWalletId);
   }
 
   @Override public Bundle getPurchases(int apiVersion, String packageName, String skuType,
