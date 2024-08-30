@@ -4,6 +4,7 @@ import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.GET_SKU_DE
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ID_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.KEY_BUY_INTENT;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
 import static com.appcoins.sdk.core.logger.Logger.logDebug;
 
@@ -144,7 +145,7 @@ public class AndroidBillingMapper {
   }
 
   public static LaunchBillingFlowResult mapBundleToHashMapGetIntent(Bundle bundle) {
-    return new LaunchBillingFlowResult(bundle.getInt(RESPONSE_CODE), bundle.getParcelable("BUY_INTENT"));
+    return new LaunchBillingFlowResult(bundle.getInt(RESPONSE_CODE), bundle.getParcelable(KEY_BUY_INTENT));
   }
 
   public static ArrayList<SkuDetailsV2> mapSkuDetailsFromWS(String skuDetailsResponse) {

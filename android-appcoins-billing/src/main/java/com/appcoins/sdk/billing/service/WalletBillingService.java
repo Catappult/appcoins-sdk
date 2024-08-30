@@ -5,7 +5,6 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import com.appcoins.billing.AppcoinsBilling;
 import com.appcoins.sdk.billing.helpers.AppcoinsBillingStubHelper;
-import com.appcoins.sdk.billing.helpers.WalletUtils;
 
 public class WalletBillingService implements AppcoinsBilling {
 

@@ -1,6 +1,7 @@
 package com.appcoins.sdk.billing.helpers;
 
 import static com.appcoins.sdk.billing.helpers.DeviceInformationHelperKt.getDeviceInfo;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.KEY_BUY_INTENT;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
 
 import android.app.PendingIntent;
@@ -131,7 +132,7 @@ public class WalletUtils {
         PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
     Bundle bundle = new Bundle();
-    bundle.putParcelable("BUY_INTENT", pendingIntent);
+    bundle.putParcelable(KEY_BUY_INTENT, pendingIntent);
     bundle.putInt(RESPONSE_CODE, responseCode);
     return bundle;
   }
