@@ -18,6 +18,7 @@ import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
 import com.appcoins.sdk.billing.listeners.PendingPurchaseStream;
+import com.appcoins.sdk.billing.listeners.SDKPaymentResponse;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
 import com.appcoins.sdk.billing.usecases.ingameupdates.IsUpdateAvailable;
@@ -83,10 +84,11 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
             responseCode = launchBillingFlowResult.getResponseCode();
 
             if (responseCode != ResponseCode.OK.getValue()) {
+                SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
                 ApplicationUtils.handleActivityResult(
                         billing,
-                        ResponseCode.ERROR.getValue(),
-                        null,
+                        sdkPaymentResponse.getResultCode(),
+                        sdkPaymentResponse.getIntent(),
                         purchaseFinishedListener
                 );
                 return responseCode;
@@ -110,10 +112,11 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
 
     private int handleErrorTypeResponse(int value, Exception e) {
         e.printStackTrace();
+        SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
         ApplicationUtils.handleActivityResult(
                 billing,
-                ResponseCode.ERROR.getValue(),
-                null,
+                sdkPaymentResponse.getResultCode(),
+                sdkPaymentResponse.getIntent(),
                 purchaseFinishedListener
         );
         return value;
@@ -227,10 +230,11 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
             responseCode = launchBillingFlowResult.getResponseCode();
 
             if (responseCode != ResponseCode.OK.getValue()) {
+                SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
                 ApplicationUtils.handleActivityResult(
                         billing,
-                        ResponseCode.ERROR.getValue(),
-                        null,
+                        sdkPaymentResponse.getResultCode(),
+                        sdkPaymentResponse.getIntent(),
                         purchaseFinishedListener
                 );
                 return;

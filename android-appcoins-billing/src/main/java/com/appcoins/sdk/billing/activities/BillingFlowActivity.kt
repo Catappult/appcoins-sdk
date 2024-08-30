@@ -26,7 +26,7 @@ class BillingFlowActivity : Activity() {
 
             if (bundle == null) {
                 logInfo("Bundle from extras not found. Sending FAILURE response for payment.")
-                PaymentResponseStream.getInstance().emit(SDKPaymentResponse(1))
+                PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
                 finish()
                 return
             }
@@ -35,7 +35,7 @@ class BillingFlowActivity : Activity() {
 
             if (pendingIntent == null) {
                 logInfo("PendingIntent from bundle not found. Sending FAILURE response for payment.")
-                PaymentResponseStream.getInstance().emit(SDKPaymentResponse(1))
+                PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
                 finish()
                 return
             }
@@ -50,7 +50,7 @@ class BillingFlowActivity : Activity() {
             )
         } catch (ex: Exception) {
             logError("Failed to start payment activity.", ex)
-            PaymentResponseStream.getInstance().emit(SDKPaymentResponse(1))
+            PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
             finish()
         }
     }
@@ -77,7 +77,7 @@ class BillingFlowActivity : Activity() {
             "Received response from Billing Flow.\nRequest Code: $requestCode\nResult Code: $resultCode"
         )
         logDebug("Extras: " + data?.extras)
-        PaymentResponseStream.getInstance().emit(SDKPaymentResponse(resultCode, data))
+        PaymentResponseStream.getInstance().emit(SDKPaymentResponse(resultCode, data ?: Intent()))
         finish()
     }
 

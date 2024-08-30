@@ -80,9 +80,9 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
             } catch (e: Exception) {
                 logError("There was a failure receiving the purchase result from the WebView", e)
                 PaymentResponseStream.getInstance()
-                    .emit(SDKPaymentResponse(ResponseCode.ERROR.value))
+                    .emit(SDKPaymentResponse.createErrorTypeResponse())
             }
-        } ?: PaymentResponseStream.getInstance().emit(SDKPaymentResponse(ResponseCode.ERROR.value))
+        } ?: PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
     }
 
     @JavascriptInterface
@@ -93,7 +93,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
     override fun onDestroy() {
         if (!responseReceived) {
             PaymentResponseStream.getInstance()
-                .emit(SDKPaymentResponse(ResponseCode.USER_CANCELED.value))
+                .emit(SDKPaymentResponse.createCanceledTypeResponse())
         }
         super.onDestroy()
     }
