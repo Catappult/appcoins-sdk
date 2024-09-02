@@ -6,7 +6,7 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Build
 
-object AppDetailsHelper {
+class AppDetailsHelper {
 
     fun getAppName(context: Context): String? =
         try {

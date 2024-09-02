@@ -23,6 +23,7 @@ import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.DEFAULT_PAYMENT_FLOW
+import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 import com.appcoins.sdk.core.ui.RoundedImageView
@@ -77,12 +78,16 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
     @JavascriptInterface
     override fun onPurchaseResult(result: String?) {
         responseReceived = true
-        logInfo(result ?: "")
+        logDebug(result ?: "")
+        logInfo("Received response from WebView Payment Result.")
         result?.apply {
             try {
                 val jsonObject = JSONObject(this)
-                PaymentResponseStream.getInstance()
-                    .emit(SDKWebResponse(jsonObject).toSDKPaymentResponse())
+                val sdkWebResponse = SDKWebResponse(jsonObject)
+                logInfo("Received Payment Result with responseCode: ${sdkWebResponse.responseCode} for sku: ${sdkWebResponse.purchaseData?.productId}")
+                val paymentResponse = sdkWebResponse.toSDKPaymentResponse()
+                logInfo("Sending Payment Result with resultCode: ${paymentResponse.resultCode}")
+                PaymentResponseStream.getInstance().emit(paymentResponse)
             } catch (e: Exception) {
                 logError("There was a failure receiving the purchase result from the WebView", e)
                 PaymentResponseStream.getInstance()
@@ -118,28 +123,36 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
 
     private fun setupHeader() {
         val paymentFlow = intent?.getStringExtra(PAYMENT_FLOW)
-        logInfo("payment flow is -> $paymentFlow")
         val isWalletTypePayment =
             (paymentFlow == null || intent?.getStringExtra(PAYMENT_FLOW) == DEFAULT_PAYMENT_FLOW)
         if (isWalletTypePayment) {
-            findViewById<ImageView>(R.id.wallet_logo).apply { visibility = View.VISIBLE }
-            findViewById<RoundedImageView>(R.id.application_logo).apply { visibility = View.GONE }
-            findViewById<TextView>(R.id.application_title).apply { visibility = View.GONE }
+            setupWalletTypeHeader()
         } else {
-            findViewById<ImageView>(R.id.wallet_logo).apply {
-                visibility = View.GONE
+            setupExternalTypeHeader()
+        }
+    }
+
+    private fun setupWalletTypeHeader() {
+        findViewById<ImageView>(R.id.wallet_logo).apply { visibility = View.VISIBLE }
+        findViewById<RoundedImageView>(R.id.application_logo).apply { visibility = View.GONE }
+        findViewById<TextView>(R.id.application_title).apply { visibility = View.GONE }
+    }
+
+    private fun setupExternalTypeHeader() {
+        val appDetailsHelper = AppDetailsHelper()
+        findViewById<ImageView>(R.id.wallet_logo).apply {
+            visibility = View.GONE
+        }
+        findViewById<RoundedImageView>(R.id.application_logo).apply {
+            appDetailsHelper.getAppLauncherIcon(WalletUtils.getContext()).let { appLauncher ->
+                visibility = View.VISIBLE
+                setImageDrawable(appLauncher)
             }
-            findViewById<RoundedImageView>(R.id.application_logo).apply {
-                AppDetailsHelper.getAppLauncherIcon(WalletUtils.getContext()).let { appLauncher ->
-                    visibility = View.VISIBLE
-                    setImageDrawable(appLauncher)
-                }
-            }
-            findViewById<TextView>(R.id.application_title).apply {
-                AppDetailsHelper.getAppName(WalletUtils.getContext()).let { appTitle ->
-                    visibility = View.VISIBLE
-                    text = appTitle
-                }
+        }
+        findViewById<TextView>(R.id.application_title).apply {
+            appDetailsHelper.getAppName(WalletUtils.getContext()).let { appTitle ->
+                visibility = View.VISIBLE
+                text = appTitle
             }
         }
     }
