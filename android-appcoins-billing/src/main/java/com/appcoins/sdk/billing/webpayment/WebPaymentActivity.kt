@@ -16,7 +16,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.appcoins.billing.sdk.R
-import com.appcoins.sdk.billing.ResponseCode
 import com.appcoins.sdk.billing.helpers.AppDetailsHelper
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.listeners.PaymentResponseStream
@@ -44,8 +43,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         val url = intent.getStringExtra(URL)
 
         if (url == null) {
-            PaymentResponseStream.getInstance()
-                .emit(SDKWebResponse(ResponseCode.ERROR.value).toSDKPaymentResponse())
+            PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
             finish()
             return
         }
