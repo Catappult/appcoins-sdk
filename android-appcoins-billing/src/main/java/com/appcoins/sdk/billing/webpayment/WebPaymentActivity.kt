@@ -8,18 +8,24 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
+import android.view.View
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
+import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import com.appcoins.billing.sdk.R
 import com.appcoins.sdk.billing.ResponseCode
+import com.appcoins.sdk.billing.helpers.AppDetailsHelper
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
+import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.DEFAULT_PAYMENT_FLOW
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
+import com.appcoins.sdk.core.ui.RoundedImageView
 import org.json.JSONObject
 
 class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
@@ -53,6 +59,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         val sku = intent.getStringExtra(SKU)
         WalletUtils.getSdkAnalytics().sendPurchaseViaWebEvent(sku ?: "")
 
+        setupHeader()
         setupBackgroundToClose()
         setupWebView(url)
     }
@@ -106,6 +113,34 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
     private fun setupBackgroundToClose() {
         findViewById<ConstraintLayout>(R.id.base_constraint_layout).setOnClickListener {
             finish()
+        }
+    }
+
+    private fun setupHeader() {
+        val paymentFlow = intent?.getStringExtra(PAYMENT_FLOW)
+        logInfo("payment flow is -> $paymentFlow")
+        val isWalletTypePayment =
+            (paymentFlow == null || intent?.getStringExtra(PAYMENT_FLOW) == DEFAULT_PAYMENT_FLOW)
+        if (isWalletTypePayment) {
+            findViewById<ImageView>(R.id.wallet_logo).apply { visibility = View.VISIBLE }
+            findViewById<RoundedImageView>(R.id.application_logo).apply { visibility = View.GONE }
+            findViewById<TextView>(R.id.application_title).apply { visibility = View.GONE }
+        } else {
+            findViewById<ImageView>(R.id.wallet_logo).apply {
+                visibility = View.GONE
+            }
+            findViewById<RoundedImageView>(R.id.application_logo).apply {
+                AppDetailsHelper.getAppLauncherIcon(WalletUtils.getContext()).let { appLauncher ->
+                    visibility = View.VISIBLE
+                    setImageDrawable(appLauncher)
+                }
+            }
+            findViewById<TextView>(R.id.application_title).apply {
+                AppDetailsHelper.getAppName(WalletUtils.getContext()).let { appTitle ->
+                    visibility = View.VISIBLE
+                    text = appTitle
+                }
+            }
         }
     }
 
@@ -190,12 +225,19 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
     companion object {
         private const val URL = "URL"
         private const val SKU = "SKU"
+        private const val PAYMENT_FLOW = "PAYMENT_FLOW"
 
         @JvmStatic
-        fun newIntent(context: Context, url: String, sku: String): Intent {
+        fun newIntent(
+            context: Context,
+            url: String,
+            sku: String,
+            paymentFlow: String?
+        ): Intent {
             val intent = Intent(context, WebPaymentActivity::class.java)
             intent.putExtra(URL, url)
             intent.putExtra(SKU, sku)
+            paymentFlow?.let { intent.putExtra(PAYMENT_FLOW, it) }
             return intent
         }
     }

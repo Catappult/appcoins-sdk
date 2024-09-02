@@ -101,7 +101,7 @@ public class WalletUtils {
     return null;
   }
 
-  public static Bundle startWebFirstPayment(String sku) {
+  public static Bundle startWebFirstPayment(String sku, String paymentFlow) {
     if (isMainThread()) {
       return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
     }
@@ -110,7 +110,7 @@ public class WalletUtils {
       return createBundleWithResponseCode(ResponseCode.ERROR.getValue());
     }
 
-    Intent intent = WebPaymentActivity.newIntent(context, WalletUtils.getWebPaymentUrl(), sku);
+    Intent intent = WebPaymentActivity.newIntent(context, WalletUtils.getWebPaymentUrl(), sku, paymentFlow);
     return createIntentBundle(intent, ResponseCode.OK.getValue());
   }
 
