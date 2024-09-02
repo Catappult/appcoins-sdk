@@ -11,7 +11,6 @@ import android.support.constraint.ConstraintSet
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
-import android.widget.ImageView
 import android.widget.LinearLayout
 import com.appcoins.billing.sdk.R
 import com.appcoins.sdk.billing.ResponseCode
@@ -54,7 +53,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         val sku = intent.getStringExtra(SKU)
         WalletUtils.getSdkAnalytics().sendPurchaseViaWebEvent(sku ?: "")
 
-        setupCloseButton()
+        setupBackgroundToClose()
         setupWebView(url)
     }
 
@@ -104,8 +103,8 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         baseConstraintLayout = findViewById(R.id.base_constraint_layout)
     }
 
-    private fun setupCloseButton() {
-        findViewById<ImageView>(R.id.button_close).setOnClickListener {
+    private fun setupBackgroundToClose() {
+        findViewById<ConstraintLayout>(R.id.base_constraint_layout).setOnClickListener {
             finish()
         }
     }
@@ -177,7 +176,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         val mConstraintSet = ConstraintSet()
         mConstraintSet.clone(mBaseConstraintLayout)
 
-        mConstraintSet.constrainPercentHeight(R.id.container_for_web_view, 0.9f)
+        mConstraintSet.constrainPercentHeight(R.id.container_for_web_view, 0.6f)
         mConstraintSet.connect(
             R.id.container_for_web_view,
             ConstraintSet.BOTTOM,
