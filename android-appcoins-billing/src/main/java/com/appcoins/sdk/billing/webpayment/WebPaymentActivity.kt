@@ -169,6 +169,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
 
         webView?.addJavascriptInterface(this as SDKWebPaymentInterface, "SDKWebPaymentInterface")
         webView?.webViewClient = InternalWebViewClient(this)
+        logDebug("Loading WebView for URL: $url")
         webView?.loadUrl(url)
     }
 

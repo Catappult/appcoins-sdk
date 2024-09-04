@@ -77,7 +77,7 @@ class BillingFlowActivity : Activity() {
             "Received response from Billing Flow.\nRequest Code: $requestCode\nResult Code: $resultCode"
         )
         logDebug("Extras: " + data?.extras)
-        PaymentResponseStream.getInstance().emit(SDKPaymentResponse(resultCode, data ?: Intent()))
+        PaymentResponseStream.getInstance().emit(SDKPaymentResponse(resultCode, data))
         finish()
     }
 
