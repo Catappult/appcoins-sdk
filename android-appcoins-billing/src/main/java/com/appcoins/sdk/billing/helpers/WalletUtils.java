@@ -128,11 +128,8 @@ public class WalletUtils {
   }
 
   private static Bundle createIntentBundle(Intent intent, Integer responseCode) {
-    PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
-        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
     Bundle bundle = new Bundle();
-    bundle.putParcelable(KEY_BUY_INTENT, pendingIntent);
+    bundle.putParcelable(KEY_BUY_INTENT, intent);
     bundle.putInt(RESPONSE_CODE, responseCode);
     return bundle;
   }

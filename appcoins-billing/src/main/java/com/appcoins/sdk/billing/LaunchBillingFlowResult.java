@@ -1,12 +1,12 @@
 package com.appcoins.sdk.billing;
 
-import android.app.PendingIntent;
+import android.content.Intent;
 
 public class LaunchBillingFlowResult {
   private final int responseCode;
-  private final PendingIntent buyIntent;
+  private final Intent buyIntent;
 
-  public LaunchBillingFlowResult(int responseCode, PendingIntent buyIntent) {
+  public LaunchBillingFlowResult(int responseCode, Intent buyIntent) {
     this.responseCode = responseCode;
     this.buyIntent = buyIntent;
   }
@@ -15,7 +15,7 @@ public class LaunchBillingFlowResult {
     return responseCode;
   }
 
-  public PendingIntent getBuyIntent() {
+  public Intent getBuyIntent() {
     return buyIntent;
   }
 }

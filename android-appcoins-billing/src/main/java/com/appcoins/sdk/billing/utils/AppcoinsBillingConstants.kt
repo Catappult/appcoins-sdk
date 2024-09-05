@@ -2,6 +2,7 @@ package com.appcoins.sdk.billing.utils
 
 object AppcoinsBillingConstants {
     const val KEY_BUY_INTENT = "BUY_INTENT"
+    const val KEY_BUY_INTENT_RAW = "BUY_INTENT_RAW"
 
     const val RESPONSE_CODE = "RESPONSE_CODE"
 

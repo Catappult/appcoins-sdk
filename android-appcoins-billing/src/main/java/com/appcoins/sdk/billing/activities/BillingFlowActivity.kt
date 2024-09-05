@@ -1,7 +1,6 @@
 package com.appcoins.sdk.billing.activities
 
 import android.app.Activity
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -9,7 +8,7 @@ import android.os.Bundle
 import com.appcoins.billing.sdk.R
 import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
-import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.KEY_BUY_INTENT
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.KEY_BUY_INTENT_RAW
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESULT_CODE
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
@@ -26,28 +25,23 @@ class BillingFlowActivity : Activity() {
 
             if (bundle == null) {
                 logInfo("Bundle from extras not found. Sending FAILURE response for payment.")
-                PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
+                PaymentResponseStream.getInstance()
+                    .emit(SDKPaymentResponse.createErrorTypeResponse())
                 finish()
                 return
             }
 
-            val pendingIntent = getPendingIntentFromBundle(bundle)
+            val intent = getBuyIntentFromBundle(bundle)
 
-            if (pendingIntent == null) {
-                logInfo("PendingIntent from bundle not found. Sending FAILURE response for payment.")
-                PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
+            if (intent == null) {
+                logInfo("Buy Intent from bundle not found. Sending FAILURE response for payment.")
+                PaymentResponseStream.getInstance()
+                    .emit(SDKPaymentResponse.createErrorTypeResponse())
                 finish()
                 return
             }
-            logInfo("Starting Billing Flow intent sender: ${pendingIntent.intentSender.creatorPackage}")
-            startIntentSenderForResult(
-                pendingIntent.intentSender,
-                RESULT_CODE,
-                null,
-                0,
-                0,
-                0
-            )
+            logInfo("Starting Billing Flow intent package: ${intent.`package`}")
+            startActivityForResult(intent, RESULT_CODE)
         } catch (ex: Exception) {
             logError("Failed to start payment activity.", ex)
             PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
@@ -64,11 +58,11 @@ class BillingFlowActivity : Activity() {
         }
 
     @Suppress("deprecation")
-    private fun getPendingIntentFromBundle(bundle: Bundle): PendingIntent? =
+    private fun getBuyIntentFromBundle(bundle: Bundle): Intent? =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            bundle.getParcelable(KEY_BUY_INTENT, PendingIntent::class.java)
+            bundle.getParcelable(KEY_BUY_INTENT_RAW, Intent::class.java)
         } else {
-            bundle.getParcelable(KEY_BUY_INTENT)
+            bundle.getParcelable(KEY_BUY_INTENT_RAW)
         }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

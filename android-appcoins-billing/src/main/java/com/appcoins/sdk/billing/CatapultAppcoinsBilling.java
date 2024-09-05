@@ -3,11 +3,9 @@ package com.appcoins.sdk.billing;
 import static com.appcoins.sdk.core.logger.Logger.logDebug;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.os.Looper;
 
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
@@ -94,15 +92,14 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
                 return responseCode;
             }
 
-            PendingIntent buyIntent = launchBillingFlowResult.getBuyIntent();
+            Intent buyIntent = launchBillingFlowResult.getBuyIntent();
 
             PaymentsResultsManager.getInstance().collectPaymentResult(this);
 
             if (buyIntent != null) {
-                activity.startIntentSender(buyIntent.getIntentSender(), null, 0, 0, 0);
+                activity.startActivity(buyIntent);
             }
-        } catch (NullPointerException | IntentSender.SendIntentException |
-                 ActivityNotFoundException e) {
+        } catch (NullPointerException | ActivityNotFoundException e) {
             return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e);
         } catch (ServiceConnectionException e) {
             return handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e);
@@ -240,13 +237,13 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
                 return;
             }
 
-            PendingIntent buyIntent = launchBillingFlowResult.getBuyIntent();
+            Intent buyIntent = launchBillingFlowResult.getBuyIntent();
 
             PaymentsResultsManager.getInstance().collectPaymentResult(this);
             if (buyIntent != null) {
-                activity.startIntentSender(buyIntent.getIntentSender(), null, 0, 0, 0);
+                activity.startActivity(buyIntent);
             }
-        } catch (NullPointerException | IntentSender.SendIntentException e) {
+        } catch (NullPointerException | ActivityNotFoundException e) {
             handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e);
         } catch (ServiceConnectionException e) {
             handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e);
