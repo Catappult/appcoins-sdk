@@ -2,6 +2,7 @@ package com.appcoins.sdk.billing.listeners
 
 import android.app.Activity
 import android.content.Intent
+import com.appcoins.sdk.billing.types.SkuType
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ID
@@ -74,7 +75,7 @@ data class PurchaseData(
     val developerPayload: String?
 ) {
     fun toJson(): String =
-        """{"orderId":"$orderId","packageName":"$packageName","productId":"$productId","productType":"$productType","purchaseTime":$purchaseTime,"purchaseToken":"$purchaseToken","purchaseState":$purchaseState,"isAutoRenewing":"$isAutoRenewing","developerPayload":"$developerPayload"}"""
+        """{"orderId":"$orderId","packageName":"$packageName","productId":"$productId","purchaseTime":$purchaseTime,"purchaseToken":"$purchaseToken","purchaseState":$purchaseState${if (productType.equals(SkuType.subs.name, true)){""","isAutoRenewing":"$isAutoRenewing""""}else{""}},"developerPayload":"$developerPayload"}"""
 
     constructor(jsonObject: JSONObject) : this(
         jsonObject.optString(ORDER_ID),
