@@ -71,7 +71,7 @@ class ApplicationUtils {
                   Boolean.parseBoolean(getObjectFromJson(purchaseDataJSON, "isAutoRenewing")));
           List<Purchase> purchases = new ArrayList<>();
           purchases.add(purchase);
-          SendSuccessfulPurchaseResponseEvent.Companion.invoke(purchase);
+          SendSuccessfulPurchaseResponseEvent.INSTANCE.invoke(purchase);
           purchaseFinishedListener.onPurchasesUpdated(responseCode, purchases);
         } catch (Exception e) {
           e.printStackTrace();

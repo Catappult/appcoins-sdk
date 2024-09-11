@@ -43,6 +43,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         val url = intent.getStringExtra(URL)
 
         if (url == null) {
+            logError("URL not present in the Bundle. Aborting the WebView Payment.")
             PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
             finish()
             return
@@ -87,7 +88,8 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
                 logInfo("Sending Payment Result with resultCode: ${paymentResponse.resultCode}")
                 PaymentResponseStream.getInstance().emit(paymentResponse)
             } catch (e: Exception) {
-                logError("There was a failure receiving the purchase result from the WebView", e)
+                logError("There was a failure receiving the purchase result from the WebView.", e)
+                WalletUtils.getSdkAnalytics().sendUnsuccessfulWebViewResultEvent(e.toString())
                 PaymentResponseStream.getInstance()
                     .emit(SDKPaymentResponse.createErrorTypeResponse())
             }
@@ -170,6 +172,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         webView?.addJavascriptInterface(this as SDKWebPaymentInterface, "SDKWebPaymentInterface")
         webView?.webViewClient = InternalWebViewClient(this)
         logDebug("Loading WebView for URL: $url")
+        logInfo("Loading WebView to start Web Payment.")
         webView?.loadUrl(url)
     }
 

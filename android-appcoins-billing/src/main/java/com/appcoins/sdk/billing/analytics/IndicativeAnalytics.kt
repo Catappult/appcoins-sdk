@@ -1,6 +1,8 @@
 package com.appcoins.sdk.billing.analytics
 
 import com.appcoins.sdk.billing.helpers.DeviceInformation
+import com.appcoins.sdk.core.logger.Logger.logDebug
+import com.appcoins.sdk.core.logger.Logger.logInfo
 import java.io.Serializable
 
 object IndicativeAnalytics : Serializable {
@@ -27,6 +29,8 @@ object IndicativeAnalytics : Serializable {
     }
 
     fun updateInstanceId(instanceId: String) {
+        logInfo("Update IndicativeID for User.")
+        logDebug("New Id: $instanceId")
         this.instanceId = instanceId
         superProperties[AnalyticsSuperLabels.INSTANCE_ID] = instanceId
     }

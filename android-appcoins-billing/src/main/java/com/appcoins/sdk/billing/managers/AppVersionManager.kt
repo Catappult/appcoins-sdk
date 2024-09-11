@@ -5,11 +5,14 @@ import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.mappers.Version
 import com.appcoins.sdk.billing.repositories.AppVersionRepository
 import com.appcoins.sdk.billing.service.BdsService
+import com.appcoins.sdk.core.logger.Logger.logInfo
 
 class AppVersionManager(private val context: Context) {
     private val storeDeepLinkRepository =
         AppVersionRepository(BdsService(BuildConfig.WS75_BASE_HOST, 3000))
 
-    fun getAppVersions(): List<Version>? =
-        storeDeepLinkRepository.getAppVersions(context.packageName)
+    fun getAppVersions(): List<Version>? {
+        logInfo("Getting versions of the Application.")
+        return storeDeepLinkRepository.getAppVersions(context.packageName)
+    }
 }

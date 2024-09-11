@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing.listeners;
 
+import static com.appcoins.sdk.core.logger.Logger.logInfo;
+
 import android.app.Activity;
 
 import com.appcoins.sdk.billing.BuyItemProperties;
@@ -32,6 +34,7 @@ public class PendingPurchaseStream {
     }
 
     public void emit(@Nullable Pair<Activity, BuyItemProperties> value) {
+        logInfo("Emitting new value on PendingPurchaseStream.");
         notifyCollector(value);
     }
 

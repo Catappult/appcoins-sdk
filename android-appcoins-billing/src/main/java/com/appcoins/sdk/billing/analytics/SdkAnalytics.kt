@@ -39,10 +39,15 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
         )
     }
 
-    fun sendCallBackendPayflowEvent(responseCode: Int?, responseMessage: String?) {
+    fun sendCallBackendPayflowEvent(
+        responseCode: Int?,
+        responseMessage: String?,
+        errorMessage: String? = null
+    ) {
         val eventData: MutableMap<String, Any> = HashMap()
         eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
         eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
+        eventData[AnalyticsLabels.BACKEND_ERROR_MESSAGE] = errorMessage ?: ""
 
         logEvent(
             eventData,
@@ -51,11 +56,15 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
         )
     }
 
-    fun sendCallBackendWebPaymentUrlEvent(responseCode: Int?, responseMessage: String?) {
+    fun sendCallBackendWebPaymentUrlEvent(
+        responseCode: Int?,
+        responseMessage: String?,
+        errorMessage: String? = null
+    ) {
         val eventData: MutableMap<String, Any> = HashMap()
         eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
         eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
-        eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
+        eventData[AnalyticsLabels.BACKEND_ERROR_MESSAGE] = errorMessage ?: ""
 
         logEvent(
             eventData,
@@ -64,10 +73,15 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
         )
     }
 
-    fun sendCallBackendAttributionEvent(responseCode: Int?, responseMessage: String?) {
+    fun sendCallBackendAttributionEvent(
+        responseCode: Int?,
+        responseMessage: String?,
+        errorMessage: String? = null
+    ) {
         val eventData: MutableMap<String, Any> = HashMap()
         eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
         eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
+        eventData[AnalyticsLabels.BACKEND_ERROR_MESSAGE] = errorMessage ?: ""
 
         logEvent(
             eventData,
@@ -76,10 +90,15 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
         )
     }
 
-    fun sendCallBackendAppVersionEvent(responseCode: Int?, responseMessage: String?) {
+    fun sendCallBackendAppVersionEvent(
+        responseCode: Int?,
+        responseMessage: String?,
+        errorMessage: String? = null
+    ) {
         val eventData: MutableMap<String, Any> = HashMap()
         eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
         eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
+        eventData[AnalyticsLabels.BACKEND_ERROR_MESSAGE] = errorMessage ?: ""
 
         logEvent(
             eventData,
@@ -88,10 +107,15 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
         )
     }
 
-    fun sendCallBackendStoreLinkEvent(responseCode: Int?, responseMessage: String?) {
+    fun sendCallBackendStoreLinkEvent(
+        responseCode: Int?,
+        responseMessage: String?,
+        errorMessage: String? = null
+    ) {
         val eventData: MutableMap<String, Any> = HashMap()
         eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
         eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
+        eventData[AnalyticsLabels.BACKEND_ERROR_MESSAGE] = errorMessage ?: ""
 
         logEvent(
             eventData,
@@ -207,15 +231,25 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
         )
     }
 
+    fun sendUnsuccessfulWebViewResultEvent(failureMessage: String) =
+        sendEmptyUnexpectedFailureEvent(
+            SdkAnalyticsFailureLabels.SDK_WEB_VIEW_RESULT_FAILED,
+            failureMessage
+        )
+
     fun sendWebPaymentUrlNotGeneratedEvent() =
-        sendUnexpectedFailureEvent(SdkAnalyticsFailureLabels.SDK_WEB_PAYMENT_URL_GENERATION_FAILED)
+        sendEmptyUnexpectedFailureEvent(SdkAnalyticsFailureLabels.SDK_WEB_PAYMENT_URL_GENERATION_FAILED)
 
     fun sendBackendGuestUidGenerationFailedEvent() =
-        sendUnexpectedFailureEvent(SdkAnalyticsFailureLabels.SDK_BACKEND_GUEST_UID_GENERATION_FAILED)
+        sendEmptyUnexpectedFailureEvent(SdkAnalyticsFailureLabels.SDK_BACKEND_GUEST_UID_GENERATION_FAILED)
 
-    private fun sendUnexpectedFailureEvent(failureType: String) {
+    private fun sendEmptyUnexpectedFailureEvent(
+        failureType: String,
+        failureMessage: String? = null
+    ) {
         val eventData: MutableMap<String, Any> = HashMap()
         eventData[AnalyticsLabels.FAILURE_TYPE] = failureType
+        failureMessage?.let { eventData[AnalyticsLabels.FAILURE_MESSAGE] = it }
 
         logEvent(
             eventData,

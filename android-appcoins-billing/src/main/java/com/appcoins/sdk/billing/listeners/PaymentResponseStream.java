@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing.listeners;
 
+import static com.appcoins.sdk.core.logger.Logger.logInfo;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +22,7 @@ public class PaymentResponseStream {
     }
 
     public void emit(SDKPaymentResponse value) {
+        logInfo("Emitting new value on PaymentResponseStream.");
         notifyCollectors(value);
     }
 

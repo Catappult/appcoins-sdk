@@ -4,6 +4,7 @@ import static com.appcoins.sdk.billing.oemid.Constants.HEX_ARRAY;
 import static com.appcoins.sdk.billing.oemid.Constants.OEMID_SEPARATOR;
 import static com.appcoins.sdk.billing.oemid.Constants.PADDING_START;
 import static com.appcoins.sdk.billing.oemid.Constants.SIGNING_BLOCK_MAGIC;
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -119,14 +120,14 @@ public class OemIdExtractorV2 implements OemIdExtractor {
         if (trimmed.length == 0) {
             throw new IllegalStateException("Could not extract oemid");
         } else {
-            System.out.println("Extractor - Old oemid format trimmed: " + Arrays.toString(trimmed));
+            logDebug("Extractor - Old oemid format trimmed: " + Arrays.toString(trimmed));
             return new String(trimmed);
         }
     }
 
     private String getOemid(byte[] bytes, int header) {
         int oemidSize = bytes.length - header - 1;
-        System.out.println("Extractor - Getting oemid of size " + oemidSize);
+        logDebug("Extractor - Getting oemid of size " + oemidSize);
         if (oemidSize > 16) {
             throw new IllegalStateException("Could not extract oemid");
         } else if (oemidSize == 16) {

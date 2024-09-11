@@ -2,6 +2,7 @@ package com.appcoins.sdk.billing.mappers
 
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
+import com.appcoins.sdk.core.logger.Logger.logError
 import org.json.JSONObject
 
 class PurchaseResponseMapper {
@@ -55,7 +56,7 @@ class PurchaseResponseMapper {
                 order = order
             )
         }.getOrElse {
-            it.printStackTrace()
+            logError("There was a an error mapping the response.", Exception(it))
             return PurchaseResponse(response.responseCode)
         }
     }

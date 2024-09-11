@@ -6,7 +6,7 @@ import android.widget.Button
 import com.appcoins.billing.sdk.R
 import com.appcoins.sdk.billing.analytics.SdkUpdateFlowActions
 import com.appcoins.sdk.billing.usecases.ingameupdates.LaunchAppUpdate
-import com.appcoins.sdk.core.logger.Logger.logDebug
+import com.appcoins.sdk.core.logger.Logger.logInfo
 
 class UpdateDialogActivity : Activity() {
 
@@ -17,14 +17,14 @@ class UpdateDialogActivity : Activity() {
 
         setContentView(R.layout.update_dialog_activity)
 
-        //This log is necessary for the automatic test that validates the wallet installation dialog
-        logDebug("started")
+        logInfo("Starting UpdateDialogActivity.")
 
         sdkAnalytics.appUpdateImpression()
         setActionsForButtons()
     }
 
     override fun onBackPressed() {
+        logInfo("User BACK_PRESSED on UpdateDialogActivity.")
         sdkAnalytics.appUpdateClick(SdkUpdateFlowActions.BACK_PRESSED)
         super.onBackPressed()
     }
@@ -32,13 +32,15 @@ class UpdateDialogActivity : Activity() {
     private fun setActionsForButtons() {
         findViewById<Button>(R.id.button_update)?.let {
             it.setOnClickListener {
+                logInfo("User pressed UPDATE_APP on UpdateDialogActivity.")
                 sdkAnalytics.appUpdateClick(SdkUpdateFlowActions.UPDATE_APP)
-                Thread { LaunchAppUpdate.invoke(applicationContext) }.start()
+                Thread { LaunchAppUpdate(applicationContext) }.start()
                 finish()
             }
         }
         findViewById<Button>(R.id.button_close)?.let {
             it.setOnClickListener {
+                logInfo("User pressed CANCEL on UpdateDialogActivity.")
                 sdkAnalytics.appUpdateClick(SdkUpdateFlowActions.CANCEL)
                 finish()
             }
