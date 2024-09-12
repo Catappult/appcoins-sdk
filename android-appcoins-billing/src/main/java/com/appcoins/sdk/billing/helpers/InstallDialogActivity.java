@@ -10,6 +10,7 @@ import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iap
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iap_wallet_and_appstore_not_installed_popup_button;
 import static com.appcoins.sdk.billing.utils.LayoutUtils.generateRandomId;
 import static com.appcoins.sdk.core.logger.Logger.logInfo;
+import static com.appcoins.sdk.core.logger.Logger.logWarning;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -406,7 +407,7 @@ public class InstallDialogActivity extends Activity {
       icon = this.getPackageManager()
           .getApplicationIcon(packageName);
     } catch (PackageManager.NameNotFoundException e) {
-      e.printStackTrace();
+      logWarning("Failed to find Application Icon: " + e);
     }
     boolean hasImage = isAppBannerAvailable();
     Drawable appBannerDrawable;
@@ -435,7 +436,7 @@ public class InstallDialogActivity extends Activity {
       hasImage = Arrays.asList(getAssets().list(appBannerResourcePath))
           .contains(DIALOG_WALLET_INSTALL_GRAPHIC + ".png");
     } catch (IOException e) {
-      e.printStackTrace();
+      logWarning("Failed to add banner to Install Dialog: " + e);
       hasImage = false;
     }
     return hasImage;
@@ -448,7 +449,7 @@ public class InstallDialogActivity extends Activity {
           .getAssets()
           .open(path);
     } catch (IOException e) {
-      e.printStackTrace();
+      logWarning("Failed to add Graphic Drawable to Install Dialog: " + e);
     }
     return Drawable.createFromStream(inputStream, null);
   }

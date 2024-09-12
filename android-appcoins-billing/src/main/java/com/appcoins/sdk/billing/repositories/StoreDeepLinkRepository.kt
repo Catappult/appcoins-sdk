@@ -4,6 +4,7 @@ import com.appcoins.sdk.billing.mappers.StoreLinkResponseMapper
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.service.ServiceResponseListener
 import com.appcoins.sdk.billing.utils.ServiceUtils
+import com.appcoins.sdk.core.logger.Logger.logError
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -50,7 +51,7 @@ class StoreDeepLinkRepository(private val bdsService: BdsService) {
         try {
             countDownLatch.await(BdsService.TIME_OUT_IN_MILLIS.toLong(), TimeUnit.MILLISECONDS)
         } catch (e: InterruptedException) {
-            e.printStackTrace()
+            logError("Timeout getting Store Deeplink: $e")
         }
     }
 }

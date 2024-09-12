@@ -1,6 +1,7 @@
 package com.appcoins.sdk.billing;
 
 import static com.appcoins.sdk.core.logger.Logger.logError;
+import static com.appcoins.sdk.core.logger.Logger.logWarning;
 
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
@@ -66,7 +67,7 @@ public class AppCoinsBilling implements Billing {
     try {
       querySkuDetailsThread.stop();
     } catch (Exception e){
-      logError("Failed to stop previous SkuDetails Request Thread: " + e.getMessage());
+      logWarning("Failed to stop previous SkuDetails Request Thread: " + e);
     }
   }
 
@@ -83,7 +84,7 @@ public class AppCoinsBilling implements Billing {
 
       return repository.launchBillingFlow(params.getSkuType(), params.getSku(), payload, oemid, guestWalletId);
     } catch (ServiceConnectionException e) {
-      e.printStackTrace();
+      logError("Service is not ready to launch billing flow. " + e);
       throw new ServiceConnectionException(e.getMessage());
     }
   }

@@ -65,7 +65,7 @@ public class Security {
 
       return keyFactory.generatePublic(new X509EncodedKeySpec(base64DecodedPublicKey));
     } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-      e.printStackTrace();
+      logError("Failed to generate public key: " + e);
       return null;
     }
   }

@@ -6,6 +6,7 @@ import com.appcoins.sdk.billing.managers.AppVersionManager
 import com.appcoins.sdk.billing.mappers.Version
 import com.appcoins.sdk.billing.usecases.GetAppInstalledVersion
 import com.appcoins.sdk.billing.usecases.UseCase
+import com.appcoins.sdk.core.logger.Logger.logError
 
 object IsUpdateAvailable : UseCase() {
 
@@ -21,7 +22,7 @@ object IsUpdateAvailable : UseCase() {
                 currentVersion < latestVersion
             } ?: false
         } catch (e: Exception) {
-            e.printStackTrace()
+            logError("Failed to verify if update available: $e")
             false
         }
     }

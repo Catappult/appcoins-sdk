@@ -7,6 +7,7 @@ import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.service.Service
 import com.appcoins.sdk.billing.service.ServiceResponseListener
+import com.appcoins.sdk.core.logger.Logger.logError
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -47,7 +48,7 @@ class WalletRepository(
         try {
             countDownLatch.await(BdsService.TIME_OUT_IN_MILLIS.toLong(), TimeUnit.MILLISECONDS)
         } catch (e: InterruptedException) {
-            e.printStackTrace()
+            logError("Timeout for Wallet Request: $e")
         }
         return walletGenerationModel
     }

@@ -8,6 +8,7 @@ import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.managers.StoreDeepLinkManager
 import com.appcoins.sdk.billing.usecases.UseCase
+import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
 object LaunchAppUpdate : UseCase() {
@@ -36,7 +37,7 @@ object LaunchAppUpdate : UseCase() {
         try {
             context.startActivity(deeplinkIntent)
         } catch (e: ActivityNotFoundException) {
-            e.printStackTrace()
+            logError("Failed to launch App Update Deeplink: $e")
         }
     }
 }

@@ -5,6 +5,7 @@ import static com.appcoins.sdk.billing.oemid.Constants.OEMID_SEPARATOR;
 import static com.appcoins.sdk.billing.oemid.Constants.PADDING_START;
 import static com.appcoins.sdk.billing.oemid.Constants.SIGNING_BLOCK_MAGIC;
 import static com.appcoins.sdk.core.logger.Logger.logDebug;
+import static com.appcoins.sdk.core.logger.Logger.logWarning;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -35,7 +36,7 @@ public class OemIdExtractorV2 implements OemIdExtractor {
             File file = new File(sourceDir);
             oemId = readValueFromFile(file);
         } catch (Exception e) {
-            e.printStackTrace();
+            logWarning("Failed to obtain OEMID from Extractor V2: " + e);
         }
         if (oemId != null) {
             return oemId.split(OEMID_SEPARATOR)[0];

@@ -5,6 +5,7 @@ import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURC
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ID_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ITEM_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
+import static com.appcoins.sdk.core.logger.Logger.logWarning;
 
 import android.os.Bundle;
 import android.os.IBinder;
@@ -111,7 +112,7 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
             try {
                 appcoinsBilling.isBillingSupported(apiVersion, packageName, type);
             } catch (RemoteException e) {
-                e.printStackTrace();
+                logWarning("Failed to ping Billing connection: " + e);
             }
         }, 0L, 60L, TimeUnit.SECONDS);
     }

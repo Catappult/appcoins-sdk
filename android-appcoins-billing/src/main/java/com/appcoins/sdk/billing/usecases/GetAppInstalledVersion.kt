@@ -3,6 +3,7 @@ package com.appcoins.sdk.billing.usecases
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import com.appcoins.sdk.core.logger.Logger.logWarning
 
 object GetAppInstalledVersion : UseCase() {
     operator fun invoke(packageName: String?, context: Context): Int {
@@ -22,7 +23,7 @@ object GetAppInstalledVersion : UseCase() {
                 packageInfo.versionCode
             }
         } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
+            logWarning("Failed to find installed app: $e")
             return -1
         }
     }

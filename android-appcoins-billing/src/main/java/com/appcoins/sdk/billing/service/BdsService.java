@@ -1,6 +1,7 @@
 package com.appcoins.sdk.billing.service;
 
 import static com.appcoins.sdk.core.logger.Logger.logDebug;
+import static com.appcoins.sdk.core.logger.Logger.logError;
 
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.utils.RequestBuilderUtils;
@@ -53,7 +54,6 @@ public class BdsService implements Service {
       }
       return readResponse(inputStream, responseCode);
     } catch (Exception firstException) {
-      firstException.printStackTrace();
       return handleException(urlConnection, firstException);
     } finally {
       if (urlConnection != null) {
@@ -120,13 +120,13 @@ public class BdsService implements Service {
 
   private RequestResponse handleException(HttpURLConnection urlConnection,
       Exception firstException) {
-    firstException.printStackTrace();
+    logError("Failed to create backend request: " + firstException);
     int responseCode = 500;
     if (urlConnection != null) {
       try {
         responseCode = urlConnection.getResponseCode();
       } catch (IOException ioException) {
-        ioException.printStackTrace();
+        logError("Failed to read response code from request: " + ioException);
       }
     }
     return new RequestResponse(responseCode, null, firstException);

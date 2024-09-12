@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing.helpers.translations;
 
+import static com.appcoins.sdk.core.logger.Logger.logError;
+
 import android.content.Context;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +41,7 @@ public class TranslationsXmlParser {
       xmlContent = parseXml(inputStream);
       inputStream.close();
     } catch (IOException e) {
-      e.printStackTrace();
+      logError("Failed to parse translation xml: " + e);
     }
     return xmlContent;
   }
@@ -54,7 +56,7 @@ public class TranslationsXmlParser {
       xmlContent = parseXml(inputStream);
       inputStream.close();
     } catch (IOException e) {
-      e.printStackTrace();
+      logError("Failed to parse translation xml with path: " + e);
     }
     return xmlContent;
   }
@@ -78,7 +80,7 @@ public class TranslationsXmlParser {
       }
     } catch (Exception e) {
       inputStream.close();
-      e.printStackTrace();
+      logError("Failed to parse xml: " + e);
     }
     return xmlContent;
   }

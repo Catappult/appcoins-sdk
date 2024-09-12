@@ -6,6 +6,7 @@ import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_C
 import static com.appcoins.sdk.core.logger.Logger.logDebug;
 import static com.appcoins.sdk.core.logger.Logger.logError;
 import static com.appcoins.sdk.core.logger.Logger.logInfo;
+import static com.appcoins.sdk.core.logger.Logger.logWarning;
 
 import android.content.Context;
 import android.content.Intent;
@@ -161,7 +162,7 @@ public class WalletUtils {
         latch.await();
         return true;
       } catch (InterruptedException e) {
-        e.printStackTrace();
+        logWarning("Timeout verifying MainThread: " + e);
       }
     }
     return false;

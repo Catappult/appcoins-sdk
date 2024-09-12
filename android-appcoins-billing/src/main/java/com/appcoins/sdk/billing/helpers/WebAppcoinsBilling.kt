@@ -66,7 +66,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
             try {
                 latch.await()
             } catch (e: InterruptedException) {
-                e.printStackTrace()
+                logError("Failed to get SkuDetails: $e")
                 responseWs.putInt(RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.value)
             }
         } else {

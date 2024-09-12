@@ -76,7 +76,7 @@ object WalletBinderUtil {
                     )
             }
         } catch (e: IllegalArgumentException) {
-            e.printStackTrace()
+            logError("Failed to finish Billing Repository: $e")
         }
     }
 

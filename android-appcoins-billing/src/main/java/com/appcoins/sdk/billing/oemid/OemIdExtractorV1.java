@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing.oemid;
 
+import static com.appcoins.sdk.core.logger.Logger.logWarning;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 
@@ -31,7 +33,7 @@ public class OemIdExtractorV1 implements OemIdExtractor {
         }
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      logWarning("Failed to obtain OEMID from Extractor V1: " + e);
     }
     return oemId;
   }

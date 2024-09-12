@@ -3,6 +3,7 @@ package com.appcoins.sdk.billing;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
 import static com.appcoins.sdk.core.logger.Logger.logDebug;
 import static com.appcoins.sdk.core.logger.Logger.logError;
+import static com.appcoins.sdk.core.logger.Logger.logInfo;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -41,7 +42,7 @@ class ApplicationUtils {
 
     if (resultCode == Activity.RESULT_OK && responseCode == ResponseCode.OK.getValue()) {
       sdkAnalytics.sendPurchaseStatusEvent("success", getResponseDesc(responseCode));
-      logDebug("Successful resultcode from purchase activity.");
+      logInfo("Successful ResultCode from Purchase.");
       logDebug("Purchase data: " + purchaseData);
       logDebug("Data signature: " + dataSignature);
       logDebug("Extras: " + data.getExtras());
@@ -73,31 +74,34 @@ class ApplicationUtils {
           purchases.add(purchase);
           SendSuccessfulPurchaseResponseEvent.INSTANCE.invoke(purchase);
           purchaseFinishedListener.onPurchasesUpdated(responseCode, purchases);
+          logInfo("Purchase result successfully sent.");
         } catch (Exception e) {
-          e.printStackTrace();
+          logError("Failed to parse purchase data.", e);
           purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.getValue(),
               Collections.emptyList());
-          logError("Failed to parse purchase data.");
         }
       } else {
-        logError("Signature verification failed for sku:");
+        logError("Signature verification failed.");
         purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.getValue(),
             Collections.emptyList());
       }
     } else if (resultCode == Activity.RESULT_OK) {
       // result code was OK, but in-app billing response was not OK.
-      logDebug("Result code was OK but in-app billing response was not OK: " + getResponseDesc(
+      logError("Result code was OK but in-app billing response was not OK: " + getResponseDesc(
           responseCode));
+      logDebug("Bundle: " + data);
       sdkAnalytics.sendPurchaseStatusEvent("error", getResponseDesc(responseCode));
       purchaseFinishedListener.onPurchasesUpdated(responseCode, Collections.emptyList());
     } else if (resultCode == Activity.RESULT_CANCELED) {
-      logDebug("Purchase canceled - Response: " + getResponseDesc(responseCode));
+      logInfo("Purchase canceled - Response: " + getResponseDesc(responseCode));
+      logDebug("Bundle: " + data);
       sdkAnalytics.sendPurchaseStatusEvent("user_canceled", getResponseDesc(responseCode));
       purchaseFinishedListener.onPurchasesUpdated(ResponseCode.USER_CANCELED.getValue(),
           Collections.emptyList());
     } else {
       logError("Purchase failed. Result code: " + resultCode + ". Response: " + getResponseDesc(
           responseCode));
+      logDebug("Bundle: " + data);
       sdkAnalytics.sendPurchaseStatusEvent("error", getResponseDesc(responseCode));
       purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.getValue(),
           Collections.emptyList());
