@@ -234,6 +234,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
             intent.putExtra(URL, url)
             intent.putExtra(SKU, sku)
             paymentFlow?.let { intent.putExtra(PAYMENT_FLOW, it) }
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
             return intent
         }
     }
