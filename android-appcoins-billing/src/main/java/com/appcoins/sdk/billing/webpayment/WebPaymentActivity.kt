@@ -186,11 +186,11 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
             if (webViewContainerParams != null) {
                 if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     webViewContainerParams.width = 0
-                    webViewContainerParams.height = LinearLayout.LayoutParams.MATCH_PARENT
+                    webViewContainerParams.height = 0
 
                     applyLandscapeConstraints(mBaseConstraintLayout)
                 } else {
-                    webViewContainerParams.width = LinearLayout.LayoutParams.MATCH_PARENT
+                    webViewContainerParams.width = 0
                     webViewContainerParams.height = 0
 
                     applyPortraitConstraints(mBaseConstraintLayout)
@@ -205,19 +205,8 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         val mConstraintSet = ConstraintSet()
         mConstraintSet.clone(mBaseConstraintLayout)
 
+        mConstraintSet.constrainPercentHeight(R.id.container_for_web_view, 0.9f)
         mConstraintSet.constrainPercentWidth(R.id.container_for_web_view, 0.8f)
-        mConstraintSet.connect(
-            R.id.container_for_web_view,
-            ConstraintSet.END,
-            R.id.base_constraint_layout,
-            ConstraintSet.END
-        )
-        mConstraintSet.connect(
-            R.id.container_for_web_view,
-            ConstraintSet.START,
-            R.id.base_constraint_layout,
-            ConstraintSet.START
-        )
 
         mConstraintSet.applyTo(mBaseConstraintLayout)
     }
@@ -227,12 +216,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         mConstraintSet.clone(mBaseConstraintLayout)
 
         mConstraintSet.constrainPercentHeight(R.id.container_for_web_view, 0.6f)
-        mConstraintSet.connect(
-            R.id.container_for_web_view,
-            ConstraintSet.BOTTOM,
-            R.id.base_constraint_layout,
-            ConstraintSet.BOTTOM
-        )
+        mConstraintSet.constrainPercentWidth(R.id.container_for_web_view, 1f)
 
         mConstraintSet.applyTo(mBaseConstraintLayout)
     }

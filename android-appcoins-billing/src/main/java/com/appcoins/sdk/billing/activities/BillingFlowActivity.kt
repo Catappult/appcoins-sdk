@@ -20,6 +20,10 @@ class BillingFlowActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.transparent_activity)
 
+        if (savedInstanceState != null) {
+            return
+        }
+
         try {
             val bundle = getBundleFromExtras()
 
