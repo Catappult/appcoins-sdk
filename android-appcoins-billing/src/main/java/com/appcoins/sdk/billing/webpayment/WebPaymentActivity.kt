@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
@@ -161,7 +162,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         webView?.settings?.domStorageEnabled = true
         webView?.settings?.databaseEnabled = true
 
-        if (android.os.Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true)
         } else {
             CookieManager.getInstance().setAcceptCookie(true)
@@ -234,7 +235,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
             intent.putExtra(URL, url)
             intent.putExtra(SKU, sku)
             paymentFlow?.let { intent.putExtra(PAYMENT_FLOW, it) }
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             return intent
         }
     }

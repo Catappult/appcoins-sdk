@@ -6,7 +6,7 @@
         <item name="android:windowIsFloating">false</item>
     </style>
 
-    <style name="Theme.AppCompat.Transparent" parent="@android:style/Theme.Light.NoTitleBar">
+    <style name="Theme.AppCompat.Transparent" parent="@android:style/Theme.Black.NoTitleBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowNoTitle">true</item>

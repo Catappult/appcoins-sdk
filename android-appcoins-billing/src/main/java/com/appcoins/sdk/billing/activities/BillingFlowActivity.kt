@@ -86,7 +86,7 @@ class BillingFlowActivity : Activity() {
         fun newIntent(context: Context, bundle: Bundle): Intent {
             val intent = Intent(context, BillingFlowActivity::class.java)
             intent.putExtra(BUY_BUNDLE, bundle)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION
             return intent
         }
     }
