@@ -9,24 +9,20 @@ import android.os.Build
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
-import android.view.View
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
-import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
 import com.appcoins.billing.sdk.R
-import com.appcoins.sdk.billing.helpers.AppDetailsHelper
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.DEFAULT_PAYMENT_FLOW
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
-import com.appcoins.sdk.core.ui.RoundedImageView
+import com.appcoins.sdk.core.ui.floatToDps
+import com.appcoins.sdk.core.ui.getScreenHeightInDp
 import org.json.JSONObject
 
 class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
@@ -59,9 +55,9 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         val sku = intent.getStringExtra(SKU)
         WalletUtils.getSdkAnalytics().sendPurchaseViaWebEvent(sku ?: "")
 
-        setupHeader()
         setupBackgroundToClose()
         setupWebView(url)
+        adjustWebViewSize(resources.configuration.orientation)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -120,42 +116,6 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         }
     }
 
-    private fun setupHeader() {
-        val paymentFlow = intent?.getStringExtra(PAYMENT_FLOW)
-        val isWalletTypePayment =
-            (paymentFlow == null || intent?.getStringExtra(PAYMENT_FLOW) == DEFAULT_PAYMENT_FLOW)
-        if (isWalletTypePayment) {
-            setupWalletTypeHeader()
-        } else {
-            setupExternalTypeHeader()
-        }
-    }
-
-    private fun setupWalletTypeHeader() {
-        findViewById<ImageView>(R.id.wallet_logo).apply { visibility = View.VISIBLE }
-        findViewById<RoundedImageView>(R.id.application_logo).apply { visibility = View.GONE }
-        findViewById<TextView>(R.id.application_title).apply { visibility = View.GONE }
-    }
-
-    private fun setupExternalTypeHeader() {
-        val appDetailsHelper = AppDetailsHelper()
-        findViewById<ImageView>(R.id.wallet_logo).apply {
-            visibility = View.GONE
-        }
-        findViewById<RoundedImageView>(R.id.application_logo).apply {
-            appDetailsHelper.getAppLauncherIcon(WalletUtils.getContext()).let { appLauncher ->
-                visibility = View.VISIBLE
-                setImageDrawable(appLauncher)
-            }
-        }
-        findViewById<TextView>(R.id.application_title).apply {
-            appDetailsHelper.getAppName(WalletUtils.getContext()).let { appTitle ->
-                visibility = View.VISIBLE
-                text = appTitle
-            }
-        }
-    }
-
     @SuppressLint("SetJavaScriptEnabled")
     private fun setupWebView(url: String) {
         webView?.settings?.javaScriptEnabled = true
@@ -182,7 +142,9 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
             val webViewContainerParams = mWebViewContainer.layoutParams
 
             if (webViewContainerParams != null) {
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE
+                    || resources.getBoolean(R.bool.isTablet)
+                ) {
                     webViewContainerParams.width = 0
                     webViewContainerParams.height = 0
 
@@ -203,8 +165,22 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         val mConstraintSet = ConstraintSet()
         mConstraintSet.clone(mBaseConstraintLayout)
 
-        mConstraintSet.constrainPercentHeight(R.id.container_for_web_view, 0.9f)
-        mConstraintSet.constrainPercentWidth(R.id.container_for_web_view, 0.8f)
+        mConstraintSet.constrainPercentHeight(
+            R.id.container_for_web_view,
+            LANDSCAPE_MAX_HEIGHT_PERCENT
+        )
+        mConstraintSet.constrainPercentWidth(
+            R.id.container_for_web_view,
+            LANDSCAPE_MAX_WIDTH_PERCENT
+        )
+        mConstraintSet.constrainMaxHeight(
+            R.id.container_for_web_view,
+            floatToDps(LANDSCAPE_MAX_HEIGHT_PIXELS, this).toInt()
+        )
+        mConstraintSet.constrainMaxWidth(
+            R.id.container_for_web_view,
+            floatToDps(LANDSCAPE_MAX_WIDTH_PIXELS, this).toInt()
+        )
 
         mConstraintSet.applyTo(mBaseConstraintLayout)
     }
@@ -213,8 +189,21 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         val mConstraintSet = ConstraintSet()
         mConstraintSet.clone(mBaseConstraintLayout)
 
-        mConstraintSet.constrainPercentHeight(R.id.container_for_web_view, 0.6f)
-        mConstraintSet.constrainPercentWidth(R.id.container_for_web_view, 1f)
+        logInfo("getScreenHeightInDp: ${getScreenHeightInDp(this)}")
+
+        val maxHeightPercentage =
+            if (getScreenHeightInDp(this) < SMALL_PHONE_HEIGHT)
+                SMALL_PHONE_PORTRAIT_MAX_HEIGHT_PERCENT
+            else NORMAL_PHONE_PORTRAIT_MAX_HEIGHT_PERCENT
+
+        logInfo("maxHeightPercentage: $maxHeightPercentage")
+        mConstraintSet.constrainPercentHeight(R.id.container_for_web_view, maxHeightPercentage)
+        mConstraintSet.constrainPercentWidth(R.id.container_for_web_view, PORTRAIT_WIDTH_PERCENT)
+        mConstraintSet.constrainMaxHeight(
+            R.id.container_for_web_view,
+            floatToDps(PORTRAIT_MAX_HEIGHT_PIXELS, this).toInt()
+        )
+        mConstraintSet.constrainMaxWidth(R.id.container_for_web_view, 0)
 
         mConstraintSet.applyTo(mBaseConstraintLayout)
     }
@@ -223,6 +212,20 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         private const val URL = "URL"
         private const val SKU = "SKU"
         private const val PAYMENT_FLOW = "PAYMENT_FLOW"
+
+        private const val SMALL_PHONE_HEIGHT = 650
+
+        // Landscape Constants
+        private const val LANDSCAPE_MAX_HEIGHT_PIXELS = 336f
+        private const val LANDSCAPE_MAX_WIDTH_PIXELS = 688f
+        private const val LANDSCAPE_MAX_HEIGHT_PERCENT = 0.9f
+        private const val LANDSCAPE_MAX_WIDTH_PERCENT = 0.9f
+
+        // Portrait Constants
+        private const val PORTRAIT_MAX_HEIGHT_PIXELS = 504f
+        private const val SMALL_PHONE_PORTRAIT_MAX_HEIGHT_PERCENT = 0.8f
+        private const val NORMAL_PHONE_PORTRAIT_MAX_HEIGHT_PERCENT = 0.6f
+        private const val PORTRAIT_WIDTH_PERCENT = 1f
 
         @JvmStatic
         fun newIntent(

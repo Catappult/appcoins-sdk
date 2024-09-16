@@ -14,10 +14,10 @@
         android:paddingTop="14dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_max="336dp"
+        app:layout_constraintHeight_max="335dp"
         app:layout_constraintHeight_percent="0.9"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_max="688dp"
+        app:layout_constraintWidth_max="685dp"
         app:layout_constraintWidth_percent="0.9">
 
         <WebView
