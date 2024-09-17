@@ -11,13 +11,13 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/round_corners_background"
-        android:paddingTop="14dp"
+        android:paddingTop="@dimen/webViewRoundCornersRadius"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_max="335dp"
+        app:layout_constraintHeight_max="@dimen/webViewLandscapeMaxHeight"
         app:layout_constraintHeight_percent="0.9"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_max="685dp"
+        app:layout_constraintWidth_max="@dimen/webViewLandscapeMaxWidth"
         app:layout_constraintWidth_percent="0.9">
 
         <WebView

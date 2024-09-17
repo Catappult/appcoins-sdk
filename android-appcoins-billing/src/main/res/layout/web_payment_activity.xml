@@ -11,10 +11,10 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/round_corners_background"
-        android:paddingTop="14dp"
+        android:paddingTop="@dimen/webViewRoundCornersRadius"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_max="504dp"
+        app:layout_constraintHeight_max="@dimen/webViewPortraitMaxHeight"
         app:layout_constraintHeight_percent="0.6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintWidth_percent="1">
