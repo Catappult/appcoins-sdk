@@ -9,6 +9,7 @@ class TransactionResponseMapper {
     fun map(response: RequestResponse): TransactionResponse {
 
         if (!isSuccess(response.responseCode) || response.response == null) {
+            logError("Failed to obtain Transaction. ResponseCode: ${response.responseCode} | Cause: ${response.exception}")
             return TransactionResponse(response.responseCode)
         }
 

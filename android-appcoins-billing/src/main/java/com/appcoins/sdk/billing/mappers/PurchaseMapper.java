@@ -29,6 +29,8 @@ public class PurchaseMapper {
       } catch (JSONException e) {
         logError("Failed to map PurchaseModel from Backend Response: " + e);
       }
+    } else {
+      logError("Failed to obtain Purchase.");
     }
     return purchaseModel;
   }

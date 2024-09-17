@@ -33,7 +33,7 @@ class BrokerRepository(private val bdsService: BdsService) {
             }
 
         bdsService.makeRequest(
-            "/broker/8.20240722/transactions/$orderId",
+            "/broker/8.20240901/transactions/$orderId",
             "GET",
             emptyList(),
             emptyMap(),
@@ -71,7 +71,7 @@ class BrokerRepository(private val bdsService: BdsService) {
         queries["type"] = type
 
         bdsService.makeRequest(
-            "/inapp/8.20180518/packages",
+            "/inapp/8.20240901/packages",
             "GET",
             path,
             queries,
@@ -112,7 +112,7 @@ class BrokerRepository(private val bdsService: BdsService) {
         body["status"] = "CONSUMED"
 
         bdsService.makeRequest(
-            "/inapp/8.20180518/packages",
+            "/inapp/8.20240901/packages",
             "PATCH",
             path,
             queries,

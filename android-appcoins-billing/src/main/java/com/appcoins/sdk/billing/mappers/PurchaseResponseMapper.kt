@@ -9,6 +9,7 @@ class PurchaseResponseMapper {
     fun map(response: RequestResponse): PurchaseResponse {
 
         if (!isSuccess(response.responseCode) || response.response == null) {
+            logError("Failed to obtain Purchase Response. ResponseCode: ${response.responseCode} | Cause: ${response.exception}")
             return PurchaseResponse(response.responseCode)
         }
 
