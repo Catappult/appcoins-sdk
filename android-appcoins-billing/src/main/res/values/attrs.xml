@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="isTablet">false</bool>
+
+    <!-- WebPayment WebView dimensions -->
+    <dimen name="webViewRoundCornersRadius">14dp</dimen>
+    <dimen name="webViewPortraitMaxHeight">504dp</dimen>
+    <dimen name="webViewLandscapeMaxHeight">336dp</dimen>
+    <dimen name="webViewLandscapeMaxWidth">688dp</dimen>
+</resources>
