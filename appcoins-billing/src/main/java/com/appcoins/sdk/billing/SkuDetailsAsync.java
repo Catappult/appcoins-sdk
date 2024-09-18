@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing;
 
+import static com.appcoins.sdk.core.logger.Logger.logError;
+
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ public class SkuDetailsAsync implements Runnable {
             response.getSkuDetailsList());
       }
     } catch (ServiceConnectionException e) {
-      e.printStackTrace();
+      logError("Service is not ready to request SkuDetails: " + e);
       skuDetailsResponseListener.onSkuDetailsResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(),
               new ArrayList<>());
     }

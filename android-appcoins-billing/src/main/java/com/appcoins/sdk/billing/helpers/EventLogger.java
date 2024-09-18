@@ -1,5 +1,8 @@
 package com.appcoins.sdk.billing.helpers;
 
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
+import static com.appcoins.sdk.core.logger.Logger.logError;
+
 import com.appcoins.billing.sdk.BuildConfig;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -71,7 +74,7 @@ public class EventLogger implements Runnable {
       connection.connect();
 
       int code = connection.getResponseCode();
-      System.out.println(code);
+      logDebug(String.valueOf(code));
 
       BufferedReader br =
           new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
@@ -82,11 +85,11 @@ public class EventLogger implements Runnable {
       }
       if (connection != null) {
         connection.disconnect();
-        System.out.println(response);
+        logDebug(response.toString());
       }
       br.close();
     } catch (IOException e) {
-          e.printStackTrace();
+        logError("Failed to send Event to Server: " + e);
     }
   }
 
@@ -94,7 +97,7 @@ public class EventLogger implements Runnable {
     try {
       LogPurchaseEvent();
     } catch (JSONException e) {
-      e.printStackTrace();
+      logError("Failed to Log Purchase Event: " + e);
     }
   }
 }

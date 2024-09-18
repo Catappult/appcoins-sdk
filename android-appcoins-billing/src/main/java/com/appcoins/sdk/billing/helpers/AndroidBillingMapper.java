@@ -7,6 +7,7 @@ import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURC
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.KEY_BUY_INTENT;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
 import static com.appcoins.sdk.core.logger.Logger.logDebug;
+import static com.appcoins.sdk.core.logger.Logger.logError;
 
 import android.os.Bundle;
 import android.util.Base64;
@@ -88,7 +89,7 @@ public class AndroidBillingMapper {
               new Purchase(orderId, skuType, purchaseData, decodedSignature, purchaseTime, purchaseState,
                   developerPayload, token, packageName, sku, isAutoRenewing));
         } catch (JSONException e) {
-          e.printStackTrace();
+          logError("Failed to map Purchase: " + e);
         }
       }
     }
@@ -138,7 +139,7 @@ public class AndroidBillingMapper {
           appcPrice, appcPriceAmountMicros, appcPriceCurrencyCode, fiatPrice, fiatPriceAmountMicros,
           fiatPriceCurrencyCode, title, description);
     } catch (JSONException e) {
-      e.printStackTrace();
+      logError("Failed to parse SkuDetails: " + e);
     }
 
     return new SkuDetails(skuType, "", "", "", 0, "", "", 0, "", "", 0, "", "", "");
@@ -182,11 +183,11 @@ public class AndroidBillingMapper {
 
             skuDetailsList.add(skuDetailsV2);
           } catch (JSONException e) {
-            e.printStackTrace();
+            logError("Failed to map SkuDetailsV2 from WS: " + e);
           }
         }
       } catch (JSONException e) {
-        e.printStackTrace();
+        logError("Failed to map items list from WS: " + e);
       }
     }
 
@@ -236,7 +237,7 @@ public class AndroidBillingMapper {
                   fiatPriceCurrencyCode, title, description);
         }
       } catch (JSONException e) {
-        e.printStackTrace();
+        logError("Failed to map Single SkuDetails: " + e);
       }
     }
     return skuDetails;

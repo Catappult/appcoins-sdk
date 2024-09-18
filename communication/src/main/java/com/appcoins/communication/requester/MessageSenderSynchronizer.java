@@ -1,5 +1,7 @@
 package com.appcoins.communication.requester;
 
+import static com.appcoins.sdk.core.logger.Logger.logError;
+
 import android.os.Parcelable;
 
 import java.util.concurrent.Callable;
@@ -17,7 +19,7 @@ public class MessageSenderSynchronizer {
         try {
             return taskQueueSynchronizer.executeTask(task, timeout, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            e.printStackTrace();
+            logError("Failed to send synchronized message: " + e);
             return null;
         }
     }

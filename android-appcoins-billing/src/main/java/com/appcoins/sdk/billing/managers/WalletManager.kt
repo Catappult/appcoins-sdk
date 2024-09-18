@@ -5,6 +5,7 @@ import com.appcoins.sdk.billing.analytics.WalletAddressProvider
 import com.appcoins.sdk.billing.models.WalletGenerationModel
 import com.appcoins.sdk.billing.repositories.WalletRepository
 import com.appcoins.sdk.billing.service.BdsService
+import com.appcoins.sdk.core.logger.Logger.logInfo
 
 object WalletManager {
     private val walletRepository =
@@ -14,6 +15,7 @@ object WalletManager {
         )
 
     fun requestWallet(walletId: String): WalletGenerationModel {
+        logInfo("Requesting Wallet value.")
         val walletGenerationModel = walletRepository.requestWalletSync(walletId)
 
         return walletGenerationModel

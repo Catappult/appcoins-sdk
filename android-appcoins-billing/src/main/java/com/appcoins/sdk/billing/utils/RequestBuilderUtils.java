@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing.utils;
 
+import static com.appcoins.sdk.core.logger.Logger.logError;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
@@ -40,7 +42,7 @@ public class RequestBuilderUtils {
       key = URLEncoder.encode(entry.getKey(), "utf-8");
       value = URLEncoder.encode(entry.getValue(), "utf-8");
     } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
+      logError("Failed to build query: " + e);
     }
     urlBuilder.append(key).append("=").append(value).append("&");
   }
@@ -50,7 +52,7 @@ public class RequestBuilderUtils {
     try {
       encodedPath = URLEncoder.encode(path, "utf-8");
     } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
+      logError("Failed to build path: " + e);
     }
     //Encoder transforms "=" into %3D, but it's not needed for paths
     encodedPath = encodedPath.replaceAll("%3D", "=");

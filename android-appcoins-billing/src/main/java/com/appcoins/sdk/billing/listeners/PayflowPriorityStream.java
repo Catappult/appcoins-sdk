@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing.listeners;
 
+import static com.appcoins.sdk.core.logger.Logger.logInfo;
+
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 
@@ -34,7 +36,9 @@ public class PayflowPriorityStream {
     }
 
     public void emit(@Nullable ArrayList<PaymentFlowMethod> value) {
+        logInfo("Emitting new value on PayflowPriorityStream.");
         if (valueHasChanged(value) || isFirstValue) {
+            logInfo("Value of PayflowPriorityStream changed or isFirstValue.");
             WalletUtils.setPayflowMethodsList(value);
             notifyCollectors(value);
         }

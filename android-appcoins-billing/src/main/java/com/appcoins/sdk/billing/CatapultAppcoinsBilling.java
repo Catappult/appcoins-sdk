@@ -1,6 +1,8 @@
 package com.appcoins.sdk.billing;
 
 import static com.appcoins.sdk.core.logger.Logger.logDebug;
+import static com.appcoins.sdk.core.logger.Logger.logError;
+import static com.appcoins.sdk.core.logger.Logger.logInfo;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -69,7 +71,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
             String oemid = attributionSharedPreferences.getOemId();
             String guestWalletId = attributionSharedPreferences.getWalletId();
 
-            logDebug("Message: " + payload);
+            logDebug("Launching billing flow with payload: " + payload + " oemid: " + oemid + " guestWalletId: " + guestWalletId);
 
             Thread eventLoggerThread = new Thread(new EventLogger(billingFlowParams.getSku(),
                     activity.getApplicationContext()
@@ -82,6 +84,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
             responseCode = launchBillingFlowResult.getResponseCode();
 
             if (responseCode != ResponseCode.OK.getValue()) {
+                logError("Failed to launch billing flow. ResponseCode: " + responseCode);
                 SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
                 ApplicationUtils.handleActivityResult(
                         billing,
@@ -108,7 +111,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
     }
 
     private int handleErrorTypeResponse(int value, Exception e) {
-        e.printStackTrace();
+        logError("Failed to launch billing flow.", e);
         SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
         ApplicationUtils.handleActivityResult(
                 billing,
@@ -121,7 +124,9 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
 
     @Override
     public void startConnection(final AppCoinsBillingStateListener listener) {
+        logInfo("Request to start connection of SDK.");
         if (!isReady()) {
+            logInfo("Starting connection of SDK.");
             PendingPurchaseStream.getInstance().collect(this);
             connection.startConnection(listener);
         }
@@ -129,7 +134,9 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
 
     @Override
     public void endConnection() {
+        logInfo("Request to end connection of SDK.");
         if (isReady()) {
+            logInfo("Ending connection of SDK.");
             PendingPurchaseStream.getInstance().stopCollecting();
             connection.endConnection();
         }
@@ -142,7 +149,9 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
 
     @Override
     public boolean isAppUpdateAvailable() {
+        logInfo("Request to verify AppUpdateAvailable.");
         if (Looper.myLooper() == Looper.getMainLooper()) {
+            logInfo("Request from MainThread. Cancelling.");
             return false;
         } else {
             return IsUpdateAvailable.INSTANCE.invoke(WalletUtils.context);
@@ -151,6 +160,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
 
     @Override
     public void launchAppUpdateStore(Context context) {
+        logInfo("Request to launch App Update Store.");
         Runnable runnable = () -> {
             if (isAppUpdateAvailable()) {
                 LaunchAppUpdate.INSTANCE.invoke(context);
@@ -161,6 +171,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
 
     @Override
     public void launchAppUpdateDialog(Context context) {
+        logInfo("Request to launch App Update Dialog.");
         Runnable runnable = () -> {
             if (isAppUpdateAvailable()) {
                 Intent updateDialogActivityIntent =
@@ -197,6 +208,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
     }
 
     private void resumeBillingFlow(Activity activity, BillingFlowParams billingFlowParams) {
+        logInfo("Resuming Billing Flow after Wallet Installation.");
         int responseCode;
         try {
             String payload =
@@ -210,7 +222,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
             String oemid = attributionSharedPreferences.getOemId();
             String guestWalletId = attributionSharedPreferences.getWalletId();
 
-            logDebug("Message: " + payload);
+            logDebug("Launching billing flow with payload: " + payload + " oemid: " + oemid + " guestWalletId: " + guestWalletId);
 
             Thread eventLoggerThread =
                     new Thread(
@@ -227,6 +239,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
             responseCode = launchBillingFlowResult.getResponseCode();
 
             if (responseCode != ResponseCode.OK.getValue()) {
+                logError("Failed to launch billing flow. ResponseCode: " + responseCode);
                 SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
                 ApplicationUtils.handleActivityResult(
                         billing,

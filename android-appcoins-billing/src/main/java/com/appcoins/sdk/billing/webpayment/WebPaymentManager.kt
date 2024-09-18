@@ -15,7 +15,7 @@ class WebPaymentManager(val packageName: String) {
 
     fun getWebPaymentUrl(billingFlowParams: BillingFlowParams?) {
         val attributionSharedPreferences = AttributionSharedPreferences(WalletUtils.context)
-        val oemId = GetOemIdForPackage.invoke(packageName, WalletUtils.context)
+        val oemId = GetOemIdForPackage(packageName, WalletUtils.context)
         val walletId = attributionSharedPreferences.getWalletId()
 
         val webPaymentUrl =

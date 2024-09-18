@@ -28,6 +28,8 @@ import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_IT
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
 import com.appcoins.sdk.billing.webpayment.WebPaymentManager
 import com.appcoins.sdk.core.logger.Logger.logDebug
+import com.appcoins.sdk.core.logger.Logger.logError
+import com.appcoins.sdk.core.logger.Logger.logInfo
 import java.io.Serializable
 import java.util.concurrent.CountDownLatch
 
@@ -53,6 +55,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         type: String,
         skusBundle: Bundle
     ): Bundle {
+        logInfo("Getting SKU Details.")
         val latch = CountDownLatch(1)
         val responseWs = Bundle()
         if (Looper.myLooper() == Looper.getMainLooper()) {
@@ -63,7 +66,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
             try {
                 latch.await()
             } catch (e: InterruptedException) {
-                e.printStackTrace()
+                logError("Failed to get SkuDetails: $e")
                 responseWs.putInt(RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.value)
             }
         } else {
@@ -81,13 +84,14 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         oemid: String?,
         guestWalletId: String?,
     ): Bundle {
+        logInfo("Getting Buy Intent.")
+        logDebug("BuyItemProperties = [$buyItemProperties]")
         var bundle: Bundle? = null
         if (hasRequiredFields(type, sku) && WalletUtils.getPayflowMethodsList().isNotEmpty()) {
             for (method in WalletUtils.getPayflowMethodsList()) {
+                logInfo("Payment Method ${method.name}.")
                 if (method is WebPayment) {
-                    logDebug(
-                        "Service is NOT installed and should make WebFirstPayment with buyItemProperties = [$buyItemProperties]"
-                    )
+                    logInfo("Billing App is NOT installed. Starting WebPayment.")
                     WebPaymentManager(packageName)
                         .getWebPaymentUrl(
                             BillingFlowParams(
@@ -107,9 +111,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         }
 
         //Fallback to WalletInstallation Activity if something fails
-        logDebug(
-            "Service is NOT installed and should start install flow with buyItemProperties = [$buyItemProperties]"
-        )
+        logInfo("Failed to find available Payflow Method. Using fallback of install Wallet.")
         setBuyItemPropertiesForPayflow(packageName, apiVersion, sku, type, developerPayload)
         return WalletUtils.startInstallFlow(buyItemProperties)
     }
@@ -121,6 +123,14 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         type: String,
         developerPayload: String
     ) {
+        logDebug(
+            "Saving Buy Item Properties:" +
+                    " packageName: $packageName" +
+                    " apiVersion: $apiVersion" +
+                    " sku: $sku" +
+                    " type: $type" +
+                    " developerPayload: $developerPayload"
+        )
         if (Looper.myLooper() == Looper.getMainLooper()) {
             Handler(Looper.getMainLooper()).post {
                 skuDetails = getMappedSkuDetails(sku, packageName, type)
@@ -153,6 +163,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         type: String,
         continuationToken: String?
     ): Bundle {
+        logInfo("Getting Purchases of type: $type")
         var bundleResponse = buildEmptyBundle()
         val walletId = walletId
         if (walletId != null && type.equals("INAPP", ignoreCase = true)) {
@@ -164,11 +175,15 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
 
             bundleResponse =
                 guestPurchaseInteract.mapGuestPurchases(bundleResponse, walletId, packageName, type)
+        } else {
+            logError("Purchases type not available in WebPayments.")
         }
         return bundleResponse
     }
 
     override fun consumePurchase(apiVersion: Int, packageName: String, purchaseToken: String): Int {
+        logInfo("Consuming Purchase.")
+        logDebug("Purchase Token: $purchaseToken")
         val responseCode: Int
         val walletId = walletId
         responseCode =
@@ -177,6 +192,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
             } else {
                 ResponseCode.ERROR.value
             }
+        logInfo("Result of Consume: $responseCode")
         return responseCode
     }
 

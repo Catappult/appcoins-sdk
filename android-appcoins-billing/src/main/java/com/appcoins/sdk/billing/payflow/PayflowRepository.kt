@@ -15,7 +15,7 @@ class PayflowRepository(private val bdsService: BdsService) {
             "/$PAYFLOW_VERSION/payment_flow",
             "GET",
             emptyList(),
-            GetQueriesListForPayflowPriority.invoke(),
+            GetQueriesListForPayflowPriority(),
             emptyMap(),
             emptyMap(),
             serviceResponseListener

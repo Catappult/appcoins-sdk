@@ -6,6 +6,7 @@ import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.repositories.MMPEventsRepository
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
+import com.appcoins.sdk.core.logger.Logger.logInfo
 
 object MMPEventsManager {
 
@@ -22,6 +23,7 @@ object MMPEventsManager {
         orderId: String,
         purchaseValue: String
     ) {
+        logInfo("Sending Successful Purchase Result Event to MMP.")
         val walletId = attributionSharedPreferences.getWalletId() ?: return
         mmpEventsRepository.sendSuccessfulPurchaseResultEvent(
             packageName,

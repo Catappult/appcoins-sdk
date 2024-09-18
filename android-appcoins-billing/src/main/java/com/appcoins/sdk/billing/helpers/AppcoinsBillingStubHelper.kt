@@ -18,12 +18,14 @@ object AppcoinsBillingStubHelper {
             logInfo("Stub: BindType $bindType, service $service")
 
             if (bindType == BindType.BILLING_SERVICE_NOT_INSTALLED) {
+                logInfo("AppcoinsBilling of type WebAppcoinsBilling.")
                 return WebAppcoinsBilling.instance
             } else {
                 val attributionSharedPreferences =
                     AttributionSharedPreferences(WalletUtils.getContext())
                 val appcoinsBilling: AppcoinsBilling
                 if (bindType == BindType.URI_CONNECTION) {
+                    logInfo("AppcoinsBilling of type UriCommunicationAppcoinsBilling.")
                     val messageRequester =
                         MessageRequesterFactory.create(
                             WalletUtils.getLifecycleActivityProvider(),
@@ -34,6 +36,7 @@ object AppcoinsBillingStubHelper {
                         )
                     appcoinsBilling = UriCommunicationAppcoinsBilling(messageRequester)
                 } else {
+                    logInfo("AppcoinsBilling of type WalletBillingService.")
                     appcoinsBilling = AppcoinsBilling.Stub.asInterface(service)
                 }
                 return AppcoinsBillingWrapper(

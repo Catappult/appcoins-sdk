@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess;
+import static com.appcoins.sdk.core.logger.Logger.logError;
 
 public class PurchaseMapper {
 
@@ -26,7 +27,7 @@ public class PurchaseMapper {
         SkuPurchase skuPurchase = mapSkuPurchase(jsonObject);
         purchaseModel = new PurchaseModel(skuPurchase, false);
       } catch (JSONException e) {
-        e.printStackTrace();
+        logError("Failed to map PurchaseModel from Backend Response: " + e);
       }
     }
     return purchaseModel;
@@ -46,11 +47,11 @@ public class PurchaseMapper {
             SkuPurchase skuPurchase = mapSkuPurchase(jsonObject);
             skuPurchases.add(skuPurchase);
           } catch (JSONException e) {
-            e.printStackTrace();
+            logError("Failed to map SkuPurchase from Backend Response." + e, e);
           }
         }
       } catch (JSONException e) {
-        e.printStackTrace();
+        logError("Failed to map PurchaseModel List from Backend Response." + e, e);
       }
       purchasesModel = new PurchasesModel(skuPurchases, false);
     } else {

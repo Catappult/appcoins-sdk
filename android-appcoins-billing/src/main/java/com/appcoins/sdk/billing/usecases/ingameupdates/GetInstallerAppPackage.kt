@@ -3,11 +3,15 @@ package com.appcoins.sdk.billing.usecases.ingameupdates
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import com.appcoins.sdk.billing.usecases.UseCase
+import com.appcoins.sdk.core.logger.Logger.logError
 
-object GetInstallerAppPackage {
+object GetInstallerAppPackage : UseCase() {
 
-    fun invoke(context: Context): String? =
-        context.packageManager.getInstallerInfo(context.packageName)
+    operator fun invoke(context: Context): String? {
+        super.invokeUseCase()
+        return context.packageManager.getInstallerInfo(context.packageName)
+    }
 
     private fun PackageManager.getInstallerInfo(packageName: String): String? {
         return try {
@@ -19,7 +23,7 @@ object GetInstallerAppPackage {
                 }
             installerPackageName?.takeIf { isAppInstalled(it) }
         } catch (e: Exception) {
-            e.printStackTrace()
+            logError("Failed to obtain the Installer App.", e)
             null
         }
     }
@@ -29,7 +33,7 @@ object GetInstallerAppPackage {
             getPackageInfo(packageName, PackageManager.GET_META_DATA)
             true
         } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
+            logError("Installer App: $packageName not installed.", e)
             false
         }
     }

@@ -10,6 +10,7 @@ import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DA
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
+import com.appcoins.sdk.core.logger.Logger.logInfo
 import org.json.JSONObject
 
 internal object ApplicationUtils {
@@ -35,7 +36,7 @@ internal object ApplicationUtils {
 
         if (resultCode == Activity.RESULT_OK && responseCode == ResponseCode.OK.value) {
             sdkAnalytics.sendPurchaseStatusEvent("success", getResponseDesc(responseCode))
-            logDebug("Successful resultcode from purchase activity.")
+            logInfo("Successful ResultCode from Purchase.")
             logDebug("Purchase data: $purchaseData")
             logDebug("Data signature: $dataSignature")
             logDebug("Extras: " + data.extras)
@@ -72,26 +73,28 @@ internal object ApplicationUtils {
                     purchases.add(purchase)
                     SendSuccessfulPurchaseResponseEvent.invoke(purchase)
                     purchaseFinishedListener.onPurchasesUpdated(responseCode, purchases)
+                    logInfo("Purchase result successfully sent.")
                 } catch (e: Exception) {
-                    e.printStackTrace()
+                    logError("Failed to parse purchase data: $e")
                     purchaseFinishedListener
                         .onPurchasesUpdated(ResponseCode.ERROR.value, emptyList())
-                    logError("Failed to parse purchase data.")
                 }
             } else {
-                logError("Signature verification failed for sku:")
+                logError("Signature verification failed.")
                 purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.value, emptyList())
             }
         } else if (resultCode == Activity.RESULT_OK) {
             // result code was OK, but in-app billing response was not OK.
-            logDebug(
+            logError(
                 "Result code was OK but in-app billing response was not OK: " +
                         getResponseDesc(responseCode)
             )
+            logDebug("Bundle: $data")
             sdkAnalytics.sendPurchaseStatusEvent("error", getResponseDesc(responseCode))
             purchaseFinishedListener.onPurchasesUpdated(responseCode, emptyList())
         } else if (resultCode == Activity.RESULT_CANCELED) {
-            logDebug("Purchase canceled - Response: " + getResponseDesc(responseCode))
+            logInfo("Purchase canceled - Response: " + getResponseDesc(responseCode))
+            logDebug("Bundle: $data")
             sdkAnalytics.sendPurchaseStatusEvent("user_canceled", getResponseDesc(responseCode))
             purchaseFinishedListener
                 .onPurchasesUpdated(ResponseCode.USER_CANCELED.value, emptyList())
@@ -100,6 +103,7 @@ internal object ApplicationUtils {
                 "Purchase failed. Result code: $resultCode. Response: " +
                         getResponseDesc(responseCode)
             )
+            logDebug("Bundle: $data")
             sdkAnalytics.sendPurchaseStatusEvent("error", getResponseDesc(responseCode))
             purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.value, emptyList())
         }

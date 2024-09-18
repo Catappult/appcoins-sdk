@@ -1,12 +1,16 @@
 package com.appcoins.sdk.billing.helpers;
 
+import static com.appcoins.sdk.core.logger.Logger.logInfo;
+
 import android.content.Context;
 import android.util.Base64;
+
 import com.appcoins.sdk.billing.AppCoinsBilling;
 import com.appcoins.sdk.billing.AppcoinsBillingClient;
 import com.appcoins.sdk.billing.CatapultAppcoinsBilling;
 import com.appcoins.sdk.billing.PurchasesUpdatedListener;
 import com.appcoins.sdk.billing.RepositoryServiceConnection;
+import com.appcoins.sdk.billing.usecases.LogGeneralInformation;
 import com.appcoins.sdk.core.logger.Logger;
 
 public class CatapultBillingAppCoinsFactory {
@@ -15,6 +19,8 @@ public class CatapultBillingAppCoinsFactory {
       PurchasesUpdatedListener purchaseFinishedListener) {
 
     Logger.setupLogger(context);
+    logInfo("Starting setup of AppcoinsBillingClient.");
+    LogGeneralInformation.INSTANCE.invoke(context);
 
     AppCoinsAndroidBillingRepository repository =
         new AppCoinsAndroidBillingRepository(3, context.getPackageName());

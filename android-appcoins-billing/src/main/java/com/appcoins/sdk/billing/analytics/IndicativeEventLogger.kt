@@ -3,6 +3,7 @@ package com.appcoins.sdk.billing.analytics
 import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
 import com.appcoins.sdk.billing.analytics.manager.EventLogger
 import com.appcoins.sdk.core.logger.Logger.logDebug
+import com.appcoins.sdk.core.logger.Logger.logInfo
 import com.indicative.client.android.Indicative
 import java.io.Serializable
 
@@ -21,5 +22,6 @@ class IndicativeEventLogger : EventLogger, Serializable {
         logDebug(
             "Called with: eventName = [$eventName], superProperties = [${IndicativeAnalytics.superProperties}] data = [$completedData], action = [$action], context = [$context], instanceId = [${IndicativeAnalytics.instanceId}]"
         )
+        logInfo("Called with: eventName = [$eventName], superProperties = [${IndicativeAnalytics.getLoggableSuperProperties()}], action = [$action], context = [$context]")
     }
 }

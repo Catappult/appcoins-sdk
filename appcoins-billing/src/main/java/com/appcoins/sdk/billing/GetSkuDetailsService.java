@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing;
 
+import static com.appcoins.sdk.core.logger.Logger.logError;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -51,7 +53,7 @@ public class GetSkuDetailsService {
       }
     } catch (IOException e) {
       response = new StringBuilder();
-      e.printStackTrace();
+      logError("Failed to execute request for getSkuDetailsForPackageName: " + e);
     }
 
     return response.toString();
