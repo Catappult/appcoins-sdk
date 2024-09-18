@@ -1,5 +1,6 @@
 package com.appcoins.sdk.billing.webpayment
 
+import android.annotation.TargetApi
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -9,19 +10,32 @@ import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.content.Intent.FLAG_ACTIVITY_REQUIRE_NON_BROWSER
 import android.net.Uri
 import android.os.Build
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
+
 internal class InternalWebViewClient(private val activity: Activity) : WebViewClient() {
 
     @Deprecated("Deprecated in Java")
-    override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+    override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean =
         try {
-            val uri = Uri.parse(url)
-            logDebug(url ?: "")
+            handleUri(Uri.parse(url))
+        } catch (e: Exception) {
+            logError("There was a failure with the URL to Override.", e)
+            false
+        }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest): Boolean =
+        handleUri(request.url)
+
+    private fun handleUri(uri: Uri): Boolean {
+        try {
+            logDebug("$uri")
             logInfo(uri.scheme.toString())
 
             if (canHandleWebDeeplinkScheme(uri)) return true
