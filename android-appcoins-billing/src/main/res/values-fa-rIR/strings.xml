@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="igu_app_new_version_available_popup_body">There is a new version for this application.\nPlease update to the new version.</string>
-    <string name="igu_app_new_version_available_popup_update_button">UPDATE</string>
-    <string name="igu_app_new_version_available_popup_close_button">CLOSE</string>
+    <string name="igu_app_new_version_available_popup_body">نسخه جدیدی از این اپلیکیشن موجود است.\nلطفا به نسخه جدید بروزرسانی کنید.</string>
+    <string name="igu_app_new_version_available_popup_update_button">بروزرسانی</string>
+    <string name="igu_app_new_version_available_popup_close_button">بستن</string>
 </resources>
