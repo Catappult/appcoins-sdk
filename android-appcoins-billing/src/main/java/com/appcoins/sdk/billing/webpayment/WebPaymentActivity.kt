@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
+import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
@@ -145,18 +146,14 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
             val webViewContainerParams = mWebViewContainer.layoutParams
 
             if (webViewContainerParams != null) {
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE
-                    || resources.getBoolean(R.bool.isTablet)
-                ) {
-                    webViewContainerParams.width = 0
-                    webViewContainerParams.height = 0
+                when {
+                    resources.getBoolean(R.bool.isTablet) ->
+                        applyTabletConstraints(mBaseConstraintLayout, webViewContainerParams)
 
-                    applyLandscapeConstraints(mBaseConstraintLayout)
-                } else {
-                    webViewContainerParams.width = 0
-                    webViewContainerParams.height = 0
+                    orientation == Configuration.ORIENTATION_LANDSCAPE ->
+                        applyLandscapeConstraints(mBaseConstraintLayout, webViewContainerParams)
 
-                    applyPortraitConstraints(mBaseConstraintLayout)
+                    else -> applyPortraitConstraints(webViewContainerParams)
                 }
 
                 webViewContainer?.layoutParams = webViewContainerParams
@@ -164,7 +161,43 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         }
     }
 
-    private fun applyLandscapeConstraints(mBaseConstraintLayout: ConstraintLayout) {
+    private fun applyTabletConstraints(
+        mBaseConstraintLayout: ConstraintLayout,
+        webViewContainerParams: ViewGroup.LayoutParams
+    ) {
+        webViewContainerParams.width = 0
+        webViewContainerParams.height = 0
+
+        val mConstraintSet = ConstraintSet()
+        mConstraintSet.clone(mBaseConstraintLayout)
+
+        mConstraintSet.constrainPercentHeight(
+            R.id.container_for_web_view,
+            TABLET_MAX_HEIGHT_PERCENT
+        )
+        mConstraintSet.constrainPercentWidth(
+            R.id.container_for_web_view,
+            TABLET_MAX_WIDTH_PERCENT
+        )
+        mConstraintSet.constrainMaxHeight(
+            R.id.container_for_web_view,
+            floatToDps(TABLET_MAX_HEIGHT_PIXELS, this).toInt()
+        )
+        mConstraintSet.constrainMaxWidth(
+            R.id.container_for_web_view,
+            floatToDps(TABLET_MAX_WIDTH_PIXELS, this).toInt()
+        )
+
+        mConstraintSet.applyTo(mBaseConstraintLayout)
+    }
+
+    private fun applyLandscapeConstraints(
+        mBaseConstraintLayout: ConstraintLayout,
+        webViewContainerParams: ViewGroup.LayoutParams
+    ) {
+        webViewContainerParams.width = 0
+        webViewContainerParams.height = 0
+
         val mConstraintSet = ConstraintSet()
         mConstraintSet.clone(mBaseConstraintLayout)
 
@@ -176,39 +209,19 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
             R.id.container_for_web_view,
             LANDSCAPE_MAX_WIDTH_PERCENT
         )
-        mConstraintSet.constrainMaxHeight(
-            R.id.container_for_web_view,
-            floatToDps(LANDSCAPE_MAX_HEIGHT_PIXELS, this).toInt()
-        )
-        mConstraintSet.constrainMaxWidth(
-            R.id.container_for_web_view,
-            floatToDps(LANDSCAPE_MAX_WIDTH_PIXELS, this).toInt()
-        )
+        mConstraintSet.constrainMaxHeight(R.id.container_for_web_view, 0)
+        mConstraintSet.constrainMaxWidth(R.id.container_for_web_view, 0)
 
         mConstraintSet.applyTo(mBaseConstraintLayout)
     }
 
-    private fun applyPortraitConstraints(mBaseConstraintLayout: ConstraintLayout) {
-        val mConstraintSet = ConstraintSet()
-        mConstraintSet.clone(mBaseConstraintLayout)
-
-        logInfo("getScreenHeightInDp: ${getScreenHeightInDp(this)}")
-
-        val maxHeightPercentage =
-            if (getScreenHeightInDp(this) < SMALL_PHONE_HEIGHT)
-                SMALL_PHONE_PORTRAIT_MAX_HEIGHT_PERCENT
-            else NORMAL_PHONE_PORTRAIT_MAX_HEIGHT_PERCENT
-
-        logInfo("maxHeightPercentage: $maxHeightPercentage")
-        mConstraintSet.constrainPercentHeight(R.id.container_for_web_view, maxHeightPercentage)
-        mConstraintSet.constrainPercentWidth(R.id.container_for_web_view, PORTRAIT_WIDTH_PERCENT)
-        mConstraintSet.constrainMaxHeight(
-            R.id.container_for_web_view,
-            floatToDps(PORTRAIT_MAX_HEIGHT_PIXELS, this).toInt()
-        )
-        mConstraintSet.constrainMaxWidth(R.id.container_for_web_view, 0)
-
-        mConstraintSet.applyTo(mBaseConstraintLayout)
+    private fun applyPortraitConstraints(webViewContainerParams: ViewGroup.LayoutParams) {
+        val screenMaxHeight = getScreenHeightInDp(this)
+        val heightToSet =
+            if (screenMaxHeight < PORTRAIT_MAX_HEIGHT_PIXELS) LinearLayout.LayoutParams.MATCH_PARENT
+            else floatToDps(PORTRAIT_MAX_HEIGHT_PIXELS, this).toInt()
+        webViewContainerParams.width = LinearLayout.LayoutParams.MATCH_PARENT
+        webViewContainerParams.height = heightToSet
     }
 
     companion object {
@@ -216,19 +229,18 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         private const val SKU = "SKU"
         private const val PAYMENT_FLOW = "PAYMENT_FLOW"
 
-        private const val SMALL_PHONE_HEIGHT = 650
+        // Tablet Constants
+        private const val TABLET_MAX_HEIGHT_PIXELS = 480f
+        private const val TABLET_MAX_WIDTH_PIXELS = 688f
+        private const val TABLET_MAX_HEIGHT_PERCENT = 0.9f
+        private const val TABLET_MAX_WIDTH_PERCENT = 0.9f
 
         // Landscape Constants
-        private const val LANDSCAPE_MAX_HEIGHT_PIXELS = 336f
-        private const val LANDSCAPE_MAX_WIDTH_PIXELS = 688f
         private const val LANDSCAPE_MAX_HEIGHT_PERCENT = 0.9f
         private const val LANDSCAPE_MAX_WIDTH_PERCENT = 0.9f
 
         // Portrait Constants
         private const val PORTRAIT_MAX_HEIGHT_PIXELS = 504f
-        private const val SMALL_PHONE_PORTRAIT_MAX_HEIGHT_PERCENT = 0.8f
-        private const val NORMAL_PHONE_PORTRAIT_MAX_HEIGHT_PERCENT = 0.6f
-        private const val PORTRAIT_WIDTH_PERCENT = 1f
 
         @JvmStatic
         fun newIntent(
