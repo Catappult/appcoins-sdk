@@ -5,19 +5,25 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
+import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.widget.LinearLayout
 import com.appcoins.billing.sdk.R
-import com.appcoins.sdk.billing.ResponseCode
+import com.appcoins.sdk.billing.helpers.WalletUtils
+import com.appcoins.sdk.billing.listeners.PaymentResponseStream
+import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
-import com.appcoins.sdk.billing.listeners.SDKWebResponseStream
+import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
+import com.appcoins.sdk.core.ui.floatToDps
+import com.appcoins.sdk.core.ui.getScreenHeightInDp
 import org.json.JSONObject
 
 class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
@@ -35,7 +41,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         val url = intent.getStringExtra(URL)
 
         if (url == null) {
-            SDKWebResponseStream.getInstance().emit(SDKWebResponse(ResponseCode.ERROR.value))
+            PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
             finish()
             return
         }
@@ -47,8 +53,12 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
             return
         }
 
+        val sku = intent.getStringExtra(SKU)
+        WalletUtils.getSdkAnalytics().sendPurchaseViaWebEvent(sku ?: "")
+
         setupBackgroundToClose()
         setupWebView(url)
+        adjustWebViewSize(resources.configuration.orientation)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -64,16 +74,22 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
     @JavascriptInterface
     override fun onPurchaseResult(result: String?) {
         responseReceived = true
-        logInfo(result ?: "")
+        logDebug(result ?: "")
+        logInfo("Received response from WebView Payment Result.")
         result?.apply {
             try {
                 val jsonObject = JSONObject(this)
-                SDKWebResponseStream.getInstance().emit(SDKWebResponse(jsonObject))
+                val sdkWebResponse = SDKWebResponse(jsonObject)
+                logInfo("Received Payment Result with responseCode: ${sdkWebResponse.responseCode} for sku: ${sdkWebResponse.purchaseData?.productId}")
+                val paymentResponse = sdkWebResponse.toSDKPaymentResponse()
+                logInfo("Sending Payment Result with resultCode: ${paymentResponse.resultCode}")
+                PaymentResponseStream.getInstance().emit(paymentResponse)
             } catch (e: Exception) {
                 logError("There was a failure receiving the purchase result from the WebView", e)
-                SDKWebResponseStream.getInstance().emit(SDKWebResponse(ResponseCode.ERROR.value))
+                PaymentResponseStream.getInstance()
+                    .emit(SDKPaymentResponse.createErrorTypeResponse())
             }
-        } ?: SDKWebResponseStream.getInstance().emit(SDKWebResponse(ResponseCode.ERROR.value))
+        } ?: PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
     }
 
     @JavascriptInterface
@@ -83,8 +99,8 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
 
     override fun onDestroy() {
         if (!responseReceived) {
-            SDKWebResponseStream.getInstance()
-                .emit(SDKWebResponse(ResponseCode.USER_CANCELED.value))
+            PaymentResponseStream.getInstance()
+                .emit(SDKPaymentResponse.createCanceledTypeResponse())
         }
         super.onDestroy()
     }
@@ -107,7 +123,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         webView?.settings?.domStorageEnabled = true
         webView?.settings?.databaseEnabled = true
 
-        if (android.os.Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true)
         } else {
             CookieManager.getInstance().setAcceptCookie(true)
@@ -115,6 +131,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
 
         webView?.addJavascriptInterface(this as SDKWebPaymentInterface, "SDKWebPaymentInterface")
         webView?.webViewClient = InternalWebViewClient(this)
+        logDebug("Loading WebView for URL: $url")
         webView?.loadUrl(url)
     }
 
@@ -126,16 +143,14 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
             val webViewContainerParams = mWebViewContainer.layoutParams
 
             if (webViewContainerParams != null) {
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    webViewContainerParams.width = 0
-                    webViewContainerParams.height = LinearLayout.LayoutParams.MATCH_PARENT
+                when {
+                    resources.getBoolean(R.bool.isTablet) ->
+                        applyTabletConstraints(mBaseConstraintLayout, webViewContainerParams)
 
-                    applyLandscapeConstraints(mBaseConstraintLayout)
-                } else {
-                    webViewContainerParams.width = LinearLayout.LayoutParams.MATCH_PARENT
-                    webViewContainerParams.height = 0
+                    orientation == Configuration.ORIENTATION_LANDSCAPE ->
+                        applyLandscapeConstraints(mBaseConstraintLayout, webViewContainerParams)
 
-                    applyPortraitConstraints(mBaseConstraintLayout)
+                    else -> applyPortraitConstraints(webViewContainerParams)
                 }
 
                 webViewContainer?.layoutParams = webViewContainerParams
@@ -143,49 +158,99 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         }
     }
 
-    private fun applyLandscapeConstraints(mBaseConstraintLayout: ConstraintLayout) {
+    private fun applyTabletConstraints(
+        mBaseConstraintLayout: ConstraintLayout,
+        webViewContainerParams: ViewGroup.LayoutParams
+    ) {
+        webViewContainerParams.width = 0
+        webViewContainerParams.height = 0
+
         val mConstraintSet = ConstraintSet()
         mConstraintSet.clone(mBaseConstraintLayout)
 
-        mConstraintSet.constrainPercentWidth(R.id.container_for_web_view, 0.8f)
-        mConstraintSet.connect(
+        mConstraintSet.constrainPercentHeight(
             R.id.container_for_web_view,
-            ConstraintSet.END,
-            R.id.base_constraint_layout,
-            ConstraintSet.END
+            TABLET_MAX_HEIGHT_PERCENT
         )
-        mConstraintSet.connect(
+        mConstraintSet.constrainPercentWidth(
             R.id.container_for_web_view,
-            ConstraintSet.START,
-            R.id.base_constraint_layout,
-            ConstraintSet.START
+            TABLET_MAX_WIDTH_PERCENT
+        )
+        mConstraintSet.constrainMaxHeight(
+            R.id.container_for_web_view,
+            floatToDps(TABLET_MAX_HEIGHT_PIXELS, this).toInt()
+        )
+        mConstraintSet.constrainMaxWidth(
+            R.id.container_for_web_view,
+            floatToDps(TABLET_MAX_WIDTH_PIXELS, this).toInt()
         )
 
         mConstraintSet.applyTo(mBaseConstraintLayout)
     }
 
-    private fun applyPortraitConstraints(mBaseConstraintLayout: ConstraintLayout) {
+    private fun applyLandscapeConstraints(
+        mBaseConstraintLayout: ConstraintLayout,
+        webViewContainerParams: ViewGroup.LayoutParams
+    ) {
+        webViewContainerParams.width = 0
+        webViewContainerParams.height = 0
+
         val mConstraintSet = ConstraintSet()
         mConstraintSet.clone(mBaseConstraintLayout)
 
-        mConstraintSet.constrainPercentHeight(R.id.container_for_web_view, 0.6f)
-        mConstraintSet.connect(
+        mConstraintSet.constrainPercentHeight(
             R.id.container_for_web_view,
-            ConstraintSet.BOTTOM,
-            R.id.base_constraint_layout,
-            ConstraintSet.BOTTOM
+            LANDSCAPE_MAX_HEIGHT_PERCENT
         )
+        mConstraintSet.constrainPercentWidth(
+            R.id.container_for_web_view,
+            LANDSCAPE_MAX_WIDTH_PERCENT
+        )
+        mConstraintSet.constrainMaxHeight(R.id.container_for_web_view, 0)
+        mConstraintSet.constrainMaxWidth(R.id.container_for_web_view, 0)
 
         mConstraintSet.applyTo(mBaseConstraintLayout)
+    }
+
+    private fun applyPortraitConstraints(webViewContainerParams: ViewGroup.LayoutParams) {
+        val screenMaxHeight = getScreenHeightInDp(this)
+        val heightToSet =
+            if (screenMaxHeight < PORTRAIT_MAX_HEIGHT_PIXELS) LinearLayout.LayoutParams.MATCH_PARENT
+            else floatToDps(PORTRAIT_MAX_HEIGHT_PIXELS, this).toInt()
+        webViewContainerParams.width = LinearLayout.LayoutParams.MATCH_PARENT
+        webViewContainerParams.height = heightToSet
     }
 
     companion object {
         private const val URL = "URL"
+        private const val SKU = "SKU"
+        private const val PAYMENT_FLOW = "PAYMENT_FLOW"
+
+        // Tablet Constants
+        private const val TABLET_MAX_HEIGHT_PIXELS = 480f
+        private const val TABLET_MAX_WIDTH_PIXELS = 688f
+        private const val TABLET_MAX_HEIGHT_PERCENT = 0.9f
+        private const val TABLET_MAX_WIDTH_PERCENT = 0.9f
+
+        // Landscape Constants
+        private const val LANDSCAPE_MAX_HEIGHT_PERCENT = 0.9f
+        private const val LANDSCAPE_MAX_WIDTH_PERCENT = 0.9f
+
+        // Portrait Constants
+        private const val PORTRAIT_MAX_HEIGHT_PIXELS = 504f
 
         @JvmStatic
-        fun newIntent(context: Context, url: String): Intent {
+        fun newIntent(
+            context: Context,
+            url: String,
+            sku: String,
+            paymentFlow: String?
+        ): Intent {
             val intent = Intent(context, WebPaymentActivity::class.java)
             intent.putExtra(URL, url)
+            intent.putExtra(SKU, sku)
+            paymentFlow?.let { intent.putExtra(PAYMENT_FLOW, it) }
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             return intent
         }
     }

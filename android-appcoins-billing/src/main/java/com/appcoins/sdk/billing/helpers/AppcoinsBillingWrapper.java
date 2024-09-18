@@ -27,13 +27,10 @@ import java.util.concurrent.TimeUnit;
 class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
 
     private final AppcoinsBilling appcoinsBilling;
-    private final AppCoinsPendingIntentCaller pendingIntentCaller;
     private final String walletId;
 
-    AppcoinsBillingWrapper(AppcoinsBilling appcoinsBilling,
-                           AppCoinsPendingIntentCaller pendingIntentCaller, String walletId) {
+    AppcoinsBillingWrapper(AppcoinsBilling appcoinsBilling,String walletId) {
         this.appcoinsBilling = appcoinsBilling;
-        this.pendingIntentCaller = pendingIntentCaller;
         this.walletId = walletId;
     }
 
@@ -60,8 +57,7 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
             bundle = new Bundle();
             bundle.putInt(RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.getValue());
         }
-        pendingIntentCaller.saveIntent(bundle);
-        return bundle;
+        return WalletUtils.startWalletPayment(bundle);
     }
 
     @Override

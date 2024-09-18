@@ -38,7 +38,6 @@ object AppcoinsBillingStubHelper {
                 }
                 return AppcoinsBillingWrapper(
                     appcoinsBilling,
-                    AppCoinsPendingIntentCaller.getInstance(),
                     attributionSharedPreferences.getWalletId()
                 )
             }
