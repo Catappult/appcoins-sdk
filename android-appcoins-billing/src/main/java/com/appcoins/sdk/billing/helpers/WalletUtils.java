@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,9 +24,9 @@ import com.appcoins.sdk.billing.analytics.IndicativeAnalytics;
 import com.appcoins.sdk.billing.analytics.IndicativeLaunchCallback;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.managers.ApiKeysManager;
-import com.appcoins.sdk.billing.managers.WebPaymentSocketManager;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
+import com.appcoins.sdk.billing.webpayment.WebPaymentActivity;
 import com.indicative.client.android.Indicative;
 
 import org.jetbrains.annotations.Nullable;
@@ -108,10 +107,8 @@ public class WalletUtils {
       sdkAnalytics.sendWebPaymentUrlNotGeneratedEvent();
       return createBundleWithResponseCode(ResponseCode.ERROR.getValue());
     }
-    int port = WebPaymentSocketManager.getInstance().startServiceForPayment(context);
-    String paymentUrl = generatePaymentUrlWithPort(port);
 
-    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl));
+    Intent intent = WebPaymentActivity.newIntent(context, WalletUtils.getWebPaymentUrl());
     return createWebIntentBundle(intent);
   }
 
@@ -121,10 +118,6 @@ public class WalletUtils {
     }
     Intent intent = InstallDialogActivity.newIntent(context, buyItemProperties, sdkAnalytics);
     return createIntentBundle(intent);
-  }
-
-  private static String generatePaymentUrlWithPort(int port) {
-    return WalletUtils.getWebPaymentUrl() + "&wsPort=" + port;
   }
 
   private static Bundle createWebIntentBundle(Intent intent) {

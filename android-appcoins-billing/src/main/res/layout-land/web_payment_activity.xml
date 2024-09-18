@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base_constraint_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#64000000">
+
+    <LinearLayout
+        android:id="@+id/container_for_web_view"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/round_corners_background"
+        android:paddingTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.8">
+
+        <WebView
+            android:id="@+id/web_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="110dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="14dp"
+        android:padding="4dp"
+        android:src="@drawable/wallet_logo_white"
+        app:layout_constraintStart_toStartOf="@id/container_for_web_view"
+        app:layout_constraintTop_toTopOf="@id/container_for_web_view"
+        tools:ignore="ContentDescription" />
+
+</android.support.constraint.ConstraintLayout>

@@ -105,25 +105,17 @@ class ApplicationUtils {
 
   static void handleWebBasedResult(
           SDKWebResponse sdkWebResponse,
-          BillingFlowParams billingFlowParams,
           PurchasesUpdatedListener purchaseFinishedListener
   ) {
-    if (sdkWebResponse.getResponseCode() == null) {
-      logError("No response code returned on Web Result.");
-      purchaseFinishedListener.onPurchasesUpdated(
-              ResponseCode.ERROR.getValue(),
-              Collections.emptyList()
-      );
-      return;
-    }
 
     if (sdkWebResponse.getResponseCode() == ResponseCode.OK.getValue()) {
       WalletUtils.getSdkAnalytics().sendPurchaseStatusEvent("success", getResponseDesc(sdkWebResponse.getResponseCode()));
       logDebug("Successful resultcode from purchase activity.");
-      logDebug("OrderId: " + sdkWebResponse.getOrderId());
-      logDebug("PurchaseToken: " + sdkWebResponse.getPurchaseToken());
+      logDebug("OrderId: " + sdkWebResponse.getPurchaseData().getOrderId());
+      logDebug("PurchaseToken: " + sdkWebResponse.getPurchaseData().getPurchaseToken());
 
-      if (sdkWebResponse.getPurchaseToken() == null || sdkWebResponse.getOrderId() == null) {
+      if (sdkWebResponse.getPurchaseData().getPurchaseToken().isEmpty()
+              || sdkWebResponse.getPurchaseData().getOrderId().isEmpty()) {
         logError("BUG: either OrderId or PurchaseToken is null.");
         purchaseFinishedListener.onPurchasesUpdated(
                 ResponseCode.ERROR.getValue(),
@@ -134,7 +126,7 @@ class ApplicationUtils {
       }
 
         try {
-          Purchase purchase = sdkWebResponse.toPurchase(billingFlowParams);
+          Purchase purchase = sdkWebResponse.toPurchase();
 
           List<Purchase> purchases = new ArrayList<>();
           purchases.add(purchase);

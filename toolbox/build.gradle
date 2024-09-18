@@ -38,10 +38,8 @@ android {
 }
 
 dependencies {
-  implementation libs.androidx.appcompat
+  implementation libs.app.compat.contraint.layout
   testImplementation libs.junit
-  implementation libs.androidx.constraint.layout
-  implementation libs.androidx.multidex
 
   api project(':android-appcoins-billing')
   api project(':appcoins-core')
