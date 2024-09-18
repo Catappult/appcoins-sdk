@@ -14,10 +14,10 @@
         android:paddingTop="@dimen/webViewRoundCornersRadius"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_max="@dimen/webViewLandscapeMaxHeight"
+        app:layout_constraintHeight_max="@dimen/webViewTabletMaxHeight"
         app:layout_constraintHeight_percent="0.9"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_max="@dimen/webViewLandscapeMaxWidth"
+        app:layout_constraintWidth_max="@dimen/webViewTabletMaxWidth"
         app:layout_constraintWidth_percent="0.9">
 
         <WebView
