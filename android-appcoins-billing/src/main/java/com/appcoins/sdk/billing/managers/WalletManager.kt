@@ -14,9 +14,11 @@ object WalletManager {
             WalletAddressProvider.provideWalletAddressProvider()
         )
 
-    fun requestWallet(walletId: String): WalletGenerationModel {
+    fun requestWallet(walletId: String?): WalletGenerationModel {
         logInfo("Requesting Wallet value.")
-        val walletGenerationModel = walletRepository.requestWalletSync(walletId)
+        val walletGenerationModel = walletId?.let {
+            walletRepository.requestWalletSync(it)
+        } ?: WalletGenerationModel.createErrorWalletGenerationModel()
 
         return walletGenerationModel
     }

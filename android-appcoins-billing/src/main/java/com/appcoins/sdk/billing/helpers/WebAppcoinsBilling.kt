@@ -5,7 +5,6 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import com.appcoins.billing.AppcoinsBilling
-import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.BillingFlowParams
 import com.appcoins.sdk.billing.BuyItemProperties
 import com.appcoins.sdk.billing.DeveloperPayload
@@ -13,13 +12,10 @@ import com.appcoins.sdk.billing.ResponseCode
 import com.appcoins.sdk.billing.SkuDetails
 import com.appcoins.sdk.billing.SkuDetailsResultV2
 import com.appcoins.sdk.billing.SkuDetailsV2
-import com.appcoins.sdk.billing.WSServiceController
-import com.appcoins.sdk.billing.managers.BrokerManager
+import com.appcoins.sdk.billing.managers.ProductV2Manager
 import com.appcoins.sdk.billing.mappers.PurchasesBundleMapper
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.getPaymentFlowFromPayflowMethod
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.WebPayment
-import com.appcoins.sdk.billing.repositories.BrokerRepository
-import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.GET_SKU_DETAILS_ITEM_LIST
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE_LIST
@@ -167,14 +163,9 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         var bundleResponse = buildEmptyBundle()
         val walletId = walletId
         if (walletId != null && type.equals("INAPP", ignoreCase = true)) {
-            val brokerRepository = BrokerRepository(BdsService(BuildConfig.HOST_WS, 30000))
-            val guestPurchaseInteract =
-                PurchasesBundleMapper(
-                    brokerRepository
-                )
-
+            val purchasesResponse = ProductV2Manager.getPurchasesSync(packageName, walletId, type)
             bundleResponse =
-                guestPurchaseInteract.mapGuestPurchases(bundleResponse, walletId, packageName, type)
+                PurchasesBundleMapper().mapGuestPurchases(bundleResponse, purchasesResponse)
         } else {
             logError("Purchases type not available in WebPayments.")
         }
@@ -200,7 +191,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         walletId: String,
         packageName: String,
         purchaseToken: String
-    ): Int = BrokerManager.consumePurchase(walletId, packageName, purchaseToken)
+    ): Int = ProductV2Manager.consumePurchase(walletId, packageName, purchaseToken)
 
     private fun buildEmptyBundle(): Bundle {
         val bundleResponse = Bundle()
@@ -237,20 +228,19 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         sku: List<String>?,
         packageName: String
     ): ArrayList<SkuDetailsV2> {
-        val skuSendList: MutableList<String> = ArrayList()
+        val skuSendList: ArrayList<String> = ArrayList()
         val skuDetailsList = ArrayList<SkuDetailsV2>()
 
         if (sku != null)
             for (i in 1..sku.size) {
                 skuSendList.add(sku[i - 1])
                 if (i % MAX_SKUS_SEND_WS == 0 || i == sku.size) {
-                    val response =
-                        WSServiceController.getSkuDetailsService(
-                            BuildConfig.HOST_WS, packageName, skuSendList,
-                            WalletUtils.getUserAgent(),
-                            getPaymentFlowFromPayflowMethod(WalletUtils.getPayflowMethodsList())
-                        )
-                    skuDetailsList.addAll(AndroidBillingMapper.mapSkuDetailsFromWS(response))
+                    val skuDetailsResponse = ProductV2Manager.getSkuDetails(
+                        packageName,
+                        skuSendList,
+                        getPaymentFlowFromPayflowMethod(WalletUtils.getPayflowMethodsList())
+                    )
+                    skuDetailsList.addAll(skuDetailsResponse?.items ?: emptyList())
                     skuSendList.clear()
                 }
             }
@@ -262,13 +252,20 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         packageName: String,
         type: String
     ): SkuDetails {
-        val response =
-            WSServiceController.getSkuDetailsService(
-                BuildConfig.HOST_WS, packageName, sku,
-                WalletUtils.getUserAgent(),
-                getPaymentFlowFromPayflowMethod(WalletUtils.getPayflowMethodsList())
-            )
-        return AndroidBillingMapper.mapSingleSkuDetails(type, response)
+        val emptySkuDetails =
+            SkuDetails(type, "", "", "", 0, "", "", 0, "", "", 0, "", "", "")
+
+        if (sku.isNullOrEmpty()) {
+            return emptySkuDetails
+        }
+
+        val skuDetailsResponse = ProductV2Manager.getSkuDetails(
+            packageName,
+            arrayListOf(sku.first()),
+            getPaymentFlowFromPayflowMethod(WalletUtils.getPayflowMethodsList())
+        )
+
+        return skuDetailsResponse?.items?.firstOrNull()?.toSkuDetails() ?: emptySkuDetails
     }
 
     private fun getMappedSkuDetails(sku: String, packageName: String, type: String): SkuDetails {

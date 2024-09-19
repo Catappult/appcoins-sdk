@@ -5,12 +5,12 @@ import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import com.appcoins.sdk.core.logger.Logger.logError
 import org.json.JSONObject
 
-class PurchaseResponseMapper {
-    fun map(response: RequestResponse): PurchaseResponse {
+class InappPurchaseResponseMapper {
+    fun map(response: RequestResponse): InappPurchaseResponse {
 
         if (!isSuccess(response.responseCode) || response.response == null) {
             logError("Failed to obtain Purchase Response. ResponseCode: ${response.responseCode} | Cause: ${response.exception}")
-            return PurchaseResponse(response.responseCode)
+            return InappPurchaseResponse(response.responseCode)
         }
 
         runCatching {
@@ -43,7 +43,7 @@ class PurchaseResponseMapper {
                 )
             }
 
-            return PurchaseResponse(
+            return InappPurchaseResponse(
                 responseCode = response.responseCode,
                 uid = uid,
                 sku = sku,
@@ -58,7 +58,7 @@ class PurchaseResponseMapper {
             )
         }.getOrElse {
             logError("There was a an error mapping the response.", Exception(it))
-            return PurchaseResponse(response.responseCode)
+            return InappPurchaseResponse(response.responseCode)
         }
     }
 }
@@ -76,7 +76,7 @@ data class Order(
     val created: String? = null
 )
 
-data class PurchaseResponse(
+data class InappPurchaseResponse(
     val responseCode: Int?,
     val uid: String? = null,
     val sku: String? = null,
