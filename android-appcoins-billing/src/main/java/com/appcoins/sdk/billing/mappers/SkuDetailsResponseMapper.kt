@@ -9,7 +9,6 @@ import com.appcoins.sdk.core.logger.Logger.logError
 import org.json.JSONObject
 
 class SkuDetailsResponseMapper {
-    // TODO: Remove the Defaults and check docs to handle correctly the nullables or not nullables.
     fun map(response: RequestResponse): SkuDetailsResponse {
 
         if (!isSuccess(response.responseCode) || response.response == null) {
@@ -24,46 +23,40 @@ class SkuDetailsResponseMapper {
                 for (i in 0 until listOfItemsJson.length()) {
                     val jsonObjectItem = listOfItemsJson.optJSONObject(i)
 
-                    val sku = jsonObjectItem.optString("sku").takeIf { it.isNotEmpty() }
-                    val title = jsonObjectItem.optString("title").takeIf { it.isNotEmpty() }
+                    val sku = jsonObjectItem.getString("sku")
+                    val title = jsonObjectItem.getString("title")
                     val description =
                         jsonObjectItem.optString("description").takeIf { it.isNotEmpty() } ?: ""
 
-                    val priceJson = jsonObjectItem.optJSONObject("price")
-                    val price = priceJson?.let { price ->
-                        val currency = price.optString("currency").takeIf { it.isNotEmpty() }
-                        val label = price.optString("label").takeIf { it.isNotEmpty() }
-                        val symbol = price.optString("symbol").takeIf { it.isNotEmpty() }
-                        val micros = price.optDouble("micros")
+                    val price =
+                        jsonObjectItem.getJSONObject("price").let { price ->
+                            val currency = price.getString("currency")
+                            val label = price.getString("label")
+                            val symbol = price.getString("symbol")
+                            val micros = price.getDouble("micros")
 
-                        val appcJson = price.optJSONObject("appc")
-                        val appc = appcJson?.let { appc ->
-                            AppcV2(
-                                label = appc.optString("label").takeIf { it.isNotEmpty() } ?: "",
-                                micros = appc.optDouble("micros")
+                            val appc =
+                                price.getJSONObject("appc").let { appc ->
+                                    AppcV2(
+                                        label = appc.getString("label"),
+                                        micros = appc.getDouble("micros")
+                                    )
+                                }
+
+                            PriceV2(
+                                currency = currency,
+                                label = label,
+                                symbol = symbol,
+                                micros = micros,
+                                appc = appc
                             )
                         }
 
-                        PriceV2(
-                            currency = currency ?: "",
-                            label = label ?: "",
-                            symbol = symbol ?: "",
-                            micros = micros,
-                            appc = appc ?: AppcV2("", 0.0)
-                        )
-                    }
-
                     val skuDetails = SkuDetailsV2(
-                        sku = sku ?: "",
-                        title = title ?: "",
+                        sku = sku,
+                        title = title,
                         description = description,
-                        price = price ?: PriceV2(
-                            "",
-                            "",
-                            "",
-                            0.0,
-                            AppcV2("", 0.0)
-                        )
+                        price = price
                     )
 
                     listOfItems.add(skuDetails)
