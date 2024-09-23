@@ -12,12 +12,10 @@ import android.os.IBinder;
 import android.os.RemoteException;
 
 import com.appcoins.billing.AppcoinsBilling;
-import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.sdk.billing.ResponseCode;
-import com.appcoins.sdk.billing.managers.BrokerManager;
+import com.appcoins.sdk.billing.managers.ProductV2Manager;
 import com.appcoins.sdk.billing.mappers.PurchasesBundleMapper;
-import com.appcoins.sdk.billing.repositories.BrokerRepository;
-import com.appcoins.sdk.billing.service.BdsService;
+import com.appcoins.sdk.billing.mappers.PurchasesResponse;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -30,7 +28,7 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
     private final AppcoinsBilling appcoinsBilling;
     private final String walletId;
 
-    AppcoinsBillingWrapper(AppcoinsBilling appcoinsBilling,String walletId) {
+    AppcoinsBillingWrapper(AppcoinsBilling appcoinsBilling, String walletId) {
         this.appcoinsBilling = appcoinsBilling;
         this.walletId = walletId;
     }
@@ -70,12 +68,10 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
             ArrayList<String> skuList = bundle.getStringArrayList(INAPP_PURCHASE_ITEM_LIST);
             ArrayList<String> dataList = bundle.getStringArrayList(INAPP_PURCHASE_DATA_LIST);
             ArrayList<String> signatureDataList = bundle.getStringArrayList(INAPP_DATA_SIGNATURE_LIST);
-            BrokerRepository brokerRepository =
-                    new BrokerRepository(new BdsService(BuildConfig.HOST_WS, BdsService.TIME_OUT_IN_MILLIS));
-            PurchasesBundleMapper purchasesBundleMapper = new PurchasesBundleMapper(brokerRepository);
+            PurchasesResponse purchasesResponse = ProductV2Manager.INSTANCE.getPurchasesSync(packageName, walletId, type);
             bundle =
-                    purchasesBundleMapper.mapGuestPurchases(bundle, walletId, packageName, type, idsList,
-                            skuList, dataList, signatureDataList);
+                    new PurchasesBundleMapper()
+                            .mapGuestPurchases(bundle, purchasesResponse, idsList, skuList, dataList, signatureDataList);
         }
         return bundle;
     }
@@ -101,7 +97,7 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
                                      String purchaseToken) {
         int responseCode = ResponseCode.ERROR.getValue();
         if (walletId != null && apiVersion == 3) {
-            responseCode = BrokerManager.INSTANCE.consumePurchase(this.walletId, packageName, purchaseToken);
+            responseCode = ProductV2Manager.INSTANCE.consumePurchase(this.walletId, packageName, purchaseToken);
         }
         return responseCode;
     }

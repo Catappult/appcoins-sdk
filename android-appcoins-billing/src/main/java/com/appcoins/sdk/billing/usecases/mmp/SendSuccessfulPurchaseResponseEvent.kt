@@ -11,9 +11,9 @@ object SendSuccessfulPurchaseResponseEvent : UseCase() {
         super.invokeUseCase()
         Thread {
             val purchaseToken = purchase.token ?: return@Thread
-            val purchaseResponse = ProductV2Manager.getPurchase(purchaseToken)
+            val inappPurchaseResponse = ProductV2Manager.getInappPurchase(purchaseToken)
 
-            val orderId = purchaseResponse?.order?.reference ?: return@Thread
+            val orderId = inappPurchaseResponse?.order?.reference ?: return@Thread
             val transactionResponse = getTransaction(orderId)
 
             val price = transactionResponse?.price?.appc ?: return@Thread

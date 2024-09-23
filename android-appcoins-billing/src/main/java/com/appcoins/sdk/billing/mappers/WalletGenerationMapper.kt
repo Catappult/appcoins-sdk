@@ -9,6 +9,7 @@ class WalletGenerationMapper {
     fun map(requestResponse: RequestResponse): WalletGenerationResponse {
 
         if (!isSuccess(requestResponse.responseCode) || requestResponse.response == null) {
+            logError("Failed to obtain Wallet Values. ResponseCode: ${requestResponse.responseCode} | Cause: ${requestResponse.exception}")
             return WalletGenerationResponse()
         }
 
