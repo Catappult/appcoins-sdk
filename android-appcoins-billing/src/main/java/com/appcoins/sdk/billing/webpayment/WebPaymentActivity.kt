@@ -107,6 +107,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface,
                     ?: SDKPaymentResponse.createCanceledTypeResponse()
             PaymentResponseStream.getInstance().emit(sdkPaymentResponse)
         }
+        removeWalletPurchaseResultDeeplinkStreamCollector()
         super.onDestroy()
     }
 
@@ -239,7 +240,11 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface,
     }
 
     private fun observeWalletPurchaseResultDeeplinkStream() {
+        WalletPaymentDeeplinkResponseStream.getInstance().collect(this)
+    }
 
+    private fun removeWalletPurchaseResultDeeplinkStreamCollector() {
+        WalletPaymentDeeplinkResponseStream.getInstance().removeCollector(this)
     }
 
     companion object {

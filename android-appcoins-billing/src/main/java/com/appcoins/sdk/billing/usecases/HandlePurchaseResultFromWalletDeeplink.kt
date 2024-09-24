@@ -44,11 +44,12 @@ object HandlePurchaseResultFromWalletDeeplink : UseCase() {
                     SDKWebResponse(
                         responseCode,
                         PurchaseData(JSONObject(purchaseResponse.purchase.verification.data)),
-                        purchaseResponse.purchase.verification.data,
                         purchaseResponse.purchase.verification.signature,
+                        // TODO Handle correctly the orderReference
+                        null,
                     ).toSDKPaymentResponse()
                 )
-            WalletPaymentDeeplinkResponseStream.getInstance().emit(purchaseResponse.responseCode)
+            WalletPaymentDeeplinkResponseStream.getInstance().emit(responseCode)
         } catch (e: Exception) {
             logError("There was a failure parsing the Purchase Result from the Wallet Deeplink.", e)
             WalletPaymentDeeplinkResponseStream.getInstance().emit(ResponseCode.ERROR.value)

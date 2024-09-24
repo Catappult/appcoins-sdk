@@ -79,12 +79,10 @@ data class PurchaseData(
 ) {
     fun toJson(): String =
         """{"orderId":"$orderId","packageName":"$packageName","productId":"$productId","purchaseTime":$purchaseTime,"purchaseToken":"$purchaseToken","purchaseState":$purchaseState${
-            if (productType.equals(SkuType.subs.name, true)) {
+            if (productType.equals(SkuType.subs.name, true))
                 ""","isAutoRenewing":"$isAutoRenewing""""
-            } else {
-                ""
-            }
-        },"developerPayload":"$developerPayload"}"""
+            else ""
+        }${if (developerPayload.isNullOrEmpty()) "" else ""","developerPayload":"$developerPayload""""}}"""
 
     constructor(jsonObject: JSONObject) : this(
         jsonObject.optString(ORDER_ID),

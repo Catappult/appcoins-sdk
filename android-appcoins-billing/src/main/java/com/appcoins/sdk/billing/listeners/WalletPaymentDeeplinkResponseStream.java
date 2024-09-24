@@ -32,6 +32,10 @@ public class WalletPaymentDeeplinkResponseStream {
         }
     }
 
+    public void removeCollector(Consumer<Integer> collector) {
+        collectors.remove(collector);
+    }
+
     private void notifyCollectors(Integer value) {
         for (Consumer<Integer> collector : collectors) {
             collector.accept(value);
