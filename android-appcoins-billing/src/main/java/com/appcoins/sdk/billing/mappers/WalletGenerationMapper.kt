@@ -18,8 +18,9 @@ class WalletGenerationMapper {
             val jsonObject = JSONObject(response)
             val walletAddress = jsonObject.getString("address")
             val signature = jsonObject.getString("signature")
+            val ewt = jsonObject.getString("ewt")
 
-            return WalletGenerationResponse(walletAddress, signature, false)
+            return WalletGenerationResponse(walletAddress, signature, ewt, false)
         }.getOrElse {
             logError("There was a an error mapping the response.", Exception(it))
             return WalletGenerationResponse()
@@ -30,10 +31,11 @@ class WalletGenerationMapper {
 data class WalletGenerationResponse(
     val address: String,
     val signature: String,
+    val ewt: String,
     val error: Boolean
 ) {
 
-    constructor() : this("", "", true)
+    constructor() : this("", "", "", true)
 
     fun hasError(): Boolean {
         return error

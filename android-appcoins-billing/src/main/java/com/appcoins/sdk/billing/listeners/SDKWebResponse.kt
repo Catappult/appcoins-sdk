@@ -90,12 +90,12 @@ data class PurchaseData(
         jsonObject.optString(ORDER_ID),
         jsonObject.optString(PACKAGE_NAME),
         jsonObject.optString(PRODUCT_ID),
-        jsonObject.optString(PRODUCT_TYPE),
+        jsonObject.optString(PRODUCT_TYPE).takeIf { it.isNotEmpty() } ?: "INAPP",
         jsonObject.optLong(PURCHASE_TIME),
         jsonObject.optString(PURCHASE_TOKEN),
         jsonObject.optInt(PURCHASE_STATE),
         jsonObject.optBoolean(IS_AUTO_RENEWING),
-        jsonObject.optString(DEVELOPER_PAYLOAD)
+        jsonObject.optString(DEVELOPER_PAYLOAD).takeIf { it.isNotEmpty() }
     )
 
     private companion object {

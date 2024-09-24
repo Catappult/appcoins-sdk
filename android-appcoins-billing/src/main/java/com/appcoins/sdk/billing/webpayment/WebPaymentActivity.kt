@@ -15,10 +15,12 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.widget.LinearLayout
 import com.appcoins.billing.sdk.R
+import com.appcoins.sdk.billing.ResponseCode
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
+import com.appcoins.sdk.billing.listeners.WalletPaymentDeeplinkResponseStream
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
@@ -26,13 +28,16 @@ import com.appcoins.sdk.core.ui.floatToDps
 import com.appcoins.sdk.core.ui.getScreenHeightInDp
 import org.json.JSONObject
 
-class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
+class WebPaymentActivity : Activity(), SDKWebPaymentInterface,
+    WalletPaymentDeeplinkResponseStream.Consumer<Int> {
 
     private var webView: WebView? = null
     private var webViewContainer: LinearLayout? = null
     private var baseConstraintLayout: ConstraintLayout? = null
 
     private var responseReceived = false
+
+    private var walletDeeplinkResponseCode: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +65,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         setupBackgroundToClose()
         setupWebView(url)
         adjustWebViewSize(resources.configuration.orientation)
+        observeWalletPurchaseResultDeeplinkStream()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -94,17 +100,25 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         } ?: PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
     }
 
-    @JavascriptInterface
-    override fun onClose() {
-        finish()
-    }
-
     override fun onDestroy() {
         if (!responseReceived) {
-            PaymentResponseStream.getInstance()
-                .emit(SDKPaymentResponse.createCanceledTypeResponse())
+            val sdkPaymentResponse =
+                walletDeeplinkResponseCode?.let { SDKWebResponse(it).toSDKPaymentResponse() }
+                    ?: SDKPaymentResponse.createCanceledTypeResponse()
+            PaymentResponseStream.getInstance().emit(sdkPaymentResponse)
         }
         super.onDestroy()
+    }
+
+    override fun accept(value: Int) {
+        logInfo("Received response from WalletPaymentDeeplinkResponseStream $value.")
+        if (value == ResponseCode.OK.value) {
+            responseReceived = true
+            logInfo("Response code successful. Finishing WebPaymentActivity.")
+            finish()
+            return
+        }
+        walletDeeplinkResponseCode = value
     }
 
     private fun connectViews() {
@@ -222,6 +236,10 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
             else floatToDps(PORTRAIT_MAX_HEIGHT_PIXELS, this).toInt()
         webViewContainerParams.width = LinearLayout.LayoutParams.MATCH_PARENT
         webViewContainerParams.height = heightToSet
+    }
+
+    private fun observeWalletPurchaseResultDeeplinkStream() {
+
     }
 
     companion object {

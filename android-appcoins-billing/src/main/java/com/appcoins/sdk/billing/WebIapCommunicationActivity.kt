@@ -1,16 +1,37 @@
-package com.appcoins.sdk.billing;
+package com.appcoins.sdk.billing
 
-import static com.appcoins.sdk.core.logger.Logger.logInfo;
+import android.app.Activity
+import android.os.Bundle
+import com.appcoins.sdk.billing.usecases.HandlePurchaseResultFromWalletDeeplink
+import com.appcoins.sdk.core.logger.Logger.logError
+import com.appcoins.sdk.core.logger.Logger.logInfo
+import org.json.JSONObject
+import java.net.URLDecoder
 
-import android.app.Activity;
-import android.os.Bundle;
+class WebIapCommunicationActivity : Activity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        logInfo("Deeplink to SDK requested.")
+        verifyPurchaseResult()
+        finish()
+    }
 
-public class WebIapCommunicationActivity extends Activity {
+    private fun verifyPurchaseResult() {
+        intent.data?.let { uri ->
+            try {
+                uri.getQueryParameter("purchaseResult")?.let { jsonString ->
+                    val decodedJson = URLDecoder.decode(jsonString, "UTF-8")
+                    val jsonObject = JSONObject(decodedJson)
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        logInfo("Deeplink to SDK requested.");
-        finish();
+                    val responseCode = jsonObject.getInt("responseCode")
+                    val purchaseToken =
+                        jsonObject.optString("purchaseToken").takeIf { it.isNotEmpty() }
+
+                    HandlePurchaseResultFromWalletDeeplink(responseCode, purchaseToken)
+                }
+            } catch (e: Exception) {
+                logError("There was an error with the Purchase Result from Deeplink.", e)
+            }
+        }
     }
 }
