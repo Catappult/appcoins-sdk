@@ -5,7 +5,7 @@ import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import com.appcoins.sdk.core.logger.Logger.logError
 import org.json.JSONObject
 
-class PurchaseResponseMapper {
+class PurchasesResponseMapper {
     fun map(response: RequestResponse): PurchasesResponse {
 
         if (!isSuccess(response.responseCode) || response.response == null) {

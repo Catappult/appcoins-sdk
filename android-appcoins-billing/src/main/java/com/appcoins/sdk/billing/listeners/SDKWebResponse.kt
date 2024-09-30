@@ -79,23 +79,21 @@ data class PurchaseData(
 ) {
     fun toJson(): String =
         """{"orderId":"$orderId","packageName":"$packageName","productId":"$productId","purchaseTime":$purchaseTime,"purchaseToken":"$purchaseToken","purchaseState":$purchaseState${
-            if (productType.equals(SkuType.subs.name, true)) {
+            if (productType.equals(SkuType.subs.name, true))
                 ""","isAutoRenewing":"$isAutoRenewing""""
-            } else {
-                ""
-            }
-        },"developerPayload":"$developerPayload"}"""
+            else ""
+        }${if (developerPayload.isNullOrEmpty()) "" else ""","developerPayload":"$developerPayload""""}}"""
 
     constructor(jsonObject: JSONObject) : this(
         jsonObject.optString(ORDER_ID),
         jsonObject.optString(PACKAGE_NAME),
         jsonObject.optString(PRODUCT_ID),
-        jsonObject.optString(PRODUCT_TYPE),
+        jsonObject.optString(PRODUCT_TYPE).takeIf { it.isNotEmpty() } ?: "INAPP",
         jsonObject.optLong(PURCHASE_TIME),
         jsonObject.optString(PURCHASE_TOKEN),
         jsonObject.optInt(PURCHASE_STATE),
         jsonObject.optBoolean(IS_AUTO_RENEWING),
-        jsonObject.optString(DEVELOPER_PAYLOAD)
+        jsonObject.optString(DEVELOPER_PAYLOAD).takeIf { it.isNotEmpty() }
     )
 
     private companion object {

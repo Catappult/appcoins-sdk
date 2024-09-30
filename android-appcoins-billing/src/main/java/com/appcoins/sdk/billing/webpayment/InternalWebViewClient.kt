@@ -43,11 +43,13 @@ internal class InternalWebViewClient(private val activity: Activity) : WebViewCl
         } catch (e: Exception) {
             logError("There was a failure with the URL to Override.", e)
         }
+        logInfo("SDK can't handle internally the Deeplink. WebView should handle.")
         return false
     }
 
     private fun canHandleWebDeeplinkScheme(uri: Uri): Boolean =
         if (uri.scheme.equals(WEB_DEEPLINK_SCHEME)) {
+            logInfo("Handling WebDeeplinkScheme.")
             activity.finish()
             true
         } else {
@@ -64,6 +66,7 @@ internal class InternalWebViewClient(private val activity: Activity) : WebViewCl
                     FLAG_ACTIVITY_NEW_TASK
                 }
             }
+            logInfo("Handling Application Deeplink.")
             activity.startActivity(intent)
             true
         } catch (e: ActivityNotFoundException) {

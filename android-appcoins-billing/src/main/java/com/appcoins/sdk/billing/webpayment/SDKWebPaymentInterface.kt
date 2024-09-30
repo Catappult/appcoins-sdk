@@ -6,7 +6,4 @@ interface SDKWebPaymentInterface {
 
     @JavascriptInterface
     fun onPurchaseResult(result: String?)
-
-    @JavascriptInterface
-    fun onClose()
 }

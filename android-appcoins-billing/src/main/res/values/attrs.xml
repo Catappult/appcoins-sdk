@@ -4,7 +4,7 @@
 
     <!-- WebPayment WebView dimensions -->
     <dimen name="webViewRoundCornersRadius">14dp</dimen>
-    <dimen name="webViewPortraitHeight">504dp</dimen>
+    <dimen name="webViewPortraitHeight">560dp</dimen>
     <dimen name="webViewTabletMaxHeight">480dp</dimen>
     <dimen name="webViewTabletMaxWidth">688dp</dimen>
 </resources>
