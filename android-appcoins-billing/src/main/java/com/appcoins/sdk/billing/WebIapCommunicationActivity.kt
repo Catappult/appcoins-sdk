@@ -8,6 +8,7 @@ import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 import org.json.JSONObject
 import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 class WebIapCommunicationActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,22 +20,28 @@ class WebIapCommunicationActivity : Activity() {
 
     private fun verifyPurchaseResult() {
         intent.data?.let { uri ->
-            try {
-                logDebug("$uri")
-                uri.getQueryParameter("purchaseResult")?.let { jsonString ->
-                    val decodedJson = URLDecoder.decode(jsonString, "UTF-8")
+            logDebug("$uri")
+            uri.getQueryParameter(PURCHASE_RESULT_KEY)?.let { jsonString ->
+                try {
+                    val decodedJson = URLDecoder.decode(jsonString, StandardCharsets.UTF_8.name())
                     val jsonObject = JSONObject(decodedJson)
 
-                    val responseCode = jsonObject.getInt("responseCode")
+                    val responseCode = jsonObject.getInt(RESPONSE_CODE_KEY)
                     val purchaseToken =
-                        jsonObject.optString("purchaseToken").takeIf { it.isNotEmpty() }
+                        jsonObject.optString(PURCHASE_TOKEN_KEY).takeIf { it.isNotEmpty() }
                     logInfo("Received Purchase Result from Wallet Deeplink. ResponseCode: $responseCode")
                     HandlePurchaseResultFromWalletDeeplink(responseCode, purchaseToken)
+                } catch (e: Exception) {
+                    logError("There was an error with the Purchase Result from Deeplink.", e)
+                    HandlePurchaseResultFromWalletDeeplink(ResponseCode.ERROR.value, null)
                 }
-            } catch (e: Exception) {
-                logError("There was an error with the Purchase Result from Deeplink.", e)
-                HandlePurchaseResultFromWalletDeeplink(ResponseCode.ERROR.value, null)
             }
         }
+    }
+
+    private companion object {
+        const val PURCHASE_RESULT_KEY = "purchaseResult"
+        const val PURCHASE_TOKEN_KEY = "purchaseToken"
+        const val RESPONSE_CODE_KEY = "responseCode"
     }
 }
