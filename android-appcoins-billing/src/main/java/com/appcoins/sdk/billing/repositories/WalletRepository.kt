@@ -29,6 +29,7 @@ class WalletRepository(
                 WalletGenerationModel(
                     walletGenerationResponse.address,
                     walletGenerationResponse.signature,
+                    walletGenerationResponse.ewt,
                     walletGenerationResponse.hasError()
                 )
             saveWalletAddress(walletGenerationModel)

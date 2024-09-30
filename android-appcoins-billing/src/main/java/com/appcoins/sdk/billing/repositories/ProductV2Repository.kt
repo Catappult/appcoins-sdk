@@ -3,8 +3,10 @@ package com.appcoins.sdk.billing.repositories
 import com.appcoins.sdk.billing.ResponseCode
 import com.appcoins.sdk.billing.mappers.InappPurchaseResponse
 import com.appcoins.sdk.billing.mappers.InappPurchaseResponseMapper
+import com.appcoins.sdk.billing.mappers.PurchaseResponse
 import com.appcoins.sdk.billing.mappers.PurchaseResponseMapper
 import com.appcoins.sdk.billing.mappers.PurchasesResponse
+import com.appcoins.sdk.billing.mappers.PurchasesResponseMapper
 import com.appcoins.sdk.billing.mappers.SkuDetailsResponse
 import com.appcoins.sdk.billing.mappers.SkuDetailsResponseMapper
 import com.appcoins.sdk.billing.service.BdsService
@@ -59,7 +61,7 @@ class ProductV2Repository(private val bdsService: BdsService) {
 
         val serviceResponseListener =
             ServiceResponseListener { requestResponse ->
-                val purchasesModel = PurchaseResponseMapper().map(requestResponse)
+                val purchasesModel = PurchasesResponseMapper().map(requestResponse)
                 purchasesResponse = purchasesModel
                 countDownLatch.countDown()
             }
@@ -82,6 +84,38 @@ class ProductV2Repository(private val bdsService: BdsService) {
 
         waitForCountDown(countDownLatch)
         return purchasesResponse
+    }
+
+    fun getPurchaseSync(
+        packageName: String,
+        authorization: String,
+        purchaseToken: String
+    ): PurchaseResponse? {
+        val countDownLatch = CountDownLatch(1)
+        var purchaseResponse: PurchaseResponse? = null
+
+        val serviceResponseListener =
+            ServiceResponseListener { requestResponse ->
+                val purchaseModel = PurchaseResponseMapper().map(requestResponse)
+                purchaseResponse = purchaseModel
+                countDownLatch.countDown()
+            }
+
+        val headers: MutableMap<String, String> = HashMap()
+        headers["authorization"] = "Bearer $authorization"
+
+        bdsService.makeRequest(
+            "/productv2/8.20240901/applications/$packageName/inapp/consumable/purchases/$purchaseToken",
+            "GET",
+            emptyList(),
+            emptyMap(),
+            headers,
+            emptyMap(),
+            serviceResponseListener
+        )
+
+        waitForCountDown(countDownLatch)
+        return purchaseResponse
     }
 
     fun consumePurchaseSync(

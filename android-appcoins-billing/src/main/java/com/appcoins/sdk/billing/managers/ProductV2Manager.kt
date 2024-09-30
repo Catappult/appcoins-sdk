@@ -3,6 +3,7 @@ package com.appcoins.sdk.billing.managers
 import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.managers.WalletManager.requestWallet
 import com.appcoins.sdk.billing.mappers.InappPurchaseResponse
+import com.appcoins.sdk.billing.mappers.PurchaseResponse
 import com.appcoins.sdk.billing.mappers.PurchasesResponse
 import com.appcoins.sdk.billing.mappers.SkuDetailsResponse
 import com.appcoins.sdk.billing.repositories.ProductV2Repository
@@ -29,6 +30,20 @@ object ProductV2Manager {
             walletGenerationModel.walletAddress,
             walletGenerationModel.signature,
             type
+        )
+    }
+
+    fun getPurchaseSync(
+        packageName: String,
+        walletId: String?,
+        purchaseToken: String
+    ): PurchaseResponse? {
+        logInfo("Getting Purchase.")
+        val walletGenerationModel = requestWallet(walletId)
+        return productV2Repository.getPurchaseSync(
+            packageName,
+            walletGenerationModel.ewt,
+            purchaseToken
         )
     }
 

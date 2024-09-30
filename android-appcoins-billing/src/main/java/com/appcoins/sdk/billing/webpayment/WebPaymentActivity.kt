@@ -15,24 +15,29 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.widget.LinearLayout
 import com.appcoins.billing.sdk.R
+import com.appcoins.sdk.billing.ResponseCode
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
+import com.appcoins.sdk.billing.listeners.WalletPaymentDeeplinkResponseStream
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
-import com.appcoins.sdk.core.ui.floatToDps
+import com.appcoins.sdk.core.ui.floatToPxs
 import com.appcoins.sdk.core.ui.getScreenHeightInDp
 import org.json.JSONObject
 
-class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
+class WebPaymentActivity : Activity(), SDKWebPaymentInterface,
+    WalletPaymentDeeplinkResponseStream.Consumer<Int> {
 
     private var webView: WebView? = null
     private var webViewContainer: LinearLayout? = null
     private var baseConstraintLayout: ConstraintLayout? = null
 
     private var responseReceived = false
+
+    private var walletDeeplinkResponseCode: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +65,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         setupBackgroundToClose()
         setupWebView(url)
         adjustWebViewSize(resources.configuration.orientation)
+        observeWalletPurchaseResultDeeplinkStream()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -94,17 +100,26 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         } ?: PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
     }
 
-    @JavascriptInterface
-    override fun onClose() {
-        finish()
-    }
-
     override fun onDestroy() {
         if (!responseReceived) {
-            PaymentResponseStream.getInstance()
-                .emit(SDKPaymentResponse.createCanceledTypeResponse())
+            val sdkPaymentResponse =
+                walletDeeplinkResponseCode?.let { SDKWebResponse(it).toSDKPaymentResponse() }
+                    ?: SDKPaymentResponse.createCanceledTypeResponse()
+            PaymentResponseStream.getInstance().emit(sdkPaymentResponse)
         }
+        removeWalletPurchaseResultDeeplinkStreamCollector()
         super.onDestroy()
+    }
+
+    override fun accept(value: Int) {
+        logInfo("Received response from WalletPaymentDeeplinkResponseStream $value.")
+        if (value == ResponseCode.OK.value) {
+            responseReceived = true
+            logInfo("Response code successful. Finishing WebPaymentActivity.")
+            finish()
+            return
+        }
+        walletDeeplinkResponseCode = value
     }
 
     private fun connectViews() {
@@ -181,11 +196,11 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         )
         mConstraintSet.constrainMaxHeight(
             R.id.container_for_web_view,
-            floatToDps(TABLET_MAX_HEIGHT_PIXELS, this).toInt()
+            floatToPxs(TABLET_MAX_HEIGHT_DP, this).toInt()
         )
         mConstraintSet.constrainMaxWidth(
             R.id.container_for_web_view,
-            floatToDps(TABLET_MAX_WIDTH_PIXELS, this).toInt()
+            floatToPxs(TABLET_MAX_WIDTH_DP, this).toInt()
         )
 
         mConstraintSet.applyTo(mBaseConstraintLayout)
@@ -218,10 +233,18 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
     private fun applyPortraitConstraints(webViewContainerParams: ViewGroup.LayoutParams) {
         val screenMaxHeight = getScreenHeightInDp(this)
         val heightToSet =
-            if (screenMaxHeight < PORTRAIT_MAX_HEIGHT_PIXELS) LinearLayout.LayoutParams.MATCH_PARENT
-            else floatToDps(PORTRAIT_MAX_HEIGHT_PIXELS, this).toInt()
+            if (screenMaxHeight < PORTRAIT_MAX_HEIGHT_DP) LinearLayout.LayoutParams.MATCH_PARENT
+            else floatToPxs(PORTRAIT_MAX_HEIGHT_DP, this).toInt()
         webViewContainerParams.width = LinearLayout.LayoutParams.MATCH_PARENT
         webViewContainerParams.height = heightToSet
+    }
+
+    private fun observeWalletPurchaseResultDeeplinkStream() {
+        WalletPaymentDeeplinkResponseStream.getInstance().collect(this)
+    }
+
+    private fun removeWalletPurchaseResultDeeplinkStreamCollector() {
+        WalletPaymentDeeplinkResponseStream.getInstance().removeCollector(this)
     }
 
     companion object {
@@ -230,8 +253,8 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         private const val PAYMENT_FLOW = "PAYMENT_FLOW"
 
         // Tablet Constants
-        private const val TABLET_MAX_HEIGHT_PIXELS = 480f
-        private const val TABLET_MAX_WIDTH_PIXELS = 688f
+        private const val TABLET_MAX_HEIGHT_DP = 480f
+        private const val TABLET_MAX_WIDTH_DP = 688f
         private const val TABLET_MAX_HEIGHT_PERCENT = 0.9f
         private const val TABLET_MAX_WIDTH_PERCENT = 0.9f
 
@@ -240,7 +263,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface {
         private const val LANDSCAPE_MAX_WIDTH_PERCENT = 0.9f
 
         // Portrait Constants
-        private const val PORTRAIT_MAX_HEIGHT_PIXELS = 504f
+        private const val PORTRAIT_MAX_HEIGHT_DP = 560f
 
         @JvmStatic
         fun newIntent(
