@@ -10,7 +10,7 @@ public class DeveloperPayload implements Serializable {
     private final String origin;
 
     public DeveloperPayload(String rawPayload, String developerPayload, String orderReference,
-                            String origin) {
+        String origin) {
 
         this.rawPayload = rawPayload;
         this.developerPayload = developerPayload;

@@ -86,9 +86,9 @@ sealed class PaymentFlowMethod(
             if (other::class.java == this::class.java) {
                 other as PaymentFlowMethod
                 return other.paymentFlow == paymentFlow
-                        && other.name == name
-                        && other.priority == priority
-                        && other.version == version
+                    && other.name == name
+                    && other.priority == priority
+                    && other.version == version
             }
         }
         return false

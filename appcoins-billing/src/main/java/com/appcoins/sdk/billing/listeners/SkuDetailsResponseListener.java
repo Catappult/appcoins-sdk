@@ -1,7 +1,6 @@
 package com.appcoins.sdk.billing.listeners;
 
 import com.appcoins.sdk.billing.SkuDetails;
-
 import java.util.List;
 
 public interface SkuDetailsResponseListener {

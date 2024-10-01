@@ -13,7 +13,7 @@ public class BillingFlowParams {
     private final String skuType;
 
     public BillingFlowParams(String sku, String skuType, String orderReference,
-                             String developerPayload, String origin) {
+        String developerPayload, String origin) {
         this.sku = sku;
         this.skuType = skuType;
         this.orderReference = orderReference;

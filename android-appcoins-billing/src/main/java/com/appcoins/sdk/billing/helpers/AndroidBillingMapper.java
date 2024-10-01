@@ -1,5 +1,18 @@
 package com.appcoins.sdk.billing.helpers;
 
+import android.os.Bundle;
+import android.util.Base64;
+import com.appcoins.sdk.billing.LaunchBillingFlowResult;
+import com.appcoins.sdk.billing.Purchase;
+import com.appcoins.sdk.billing.PurchasesResult;
+import com.appcoins.sdk.billing.SkuDetails;
+import com.appcoins.sdk.billing.SkuDetailsResult;
+import com.appcoins.sdk.billing.SkuDetailsV2;
+import java.util.ArrayList;
+import java.util.List;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.GET_SKU_DETAILS_ITEM_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST;
@@ -9,31 +22,13 @@ import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_C
 import static com.appcoins.sdk.core.logger.Logger.logDebug;
 import static com.appcoins.sdk.core.logger.Logger.logError;
 
-import android.os.Bundle;
-import android.util.Base64;
-
-import com.appcoins.sdk.billing.LaunchBillingFlowResult;
-import com.appcoins.sdk.billing.Purchase;
-import com.appcoins.sdk.billing.PurchasesResult;
-import com.appcoins.sdk.billing.SkuDetails;
-import com.appcoins.sdk.billing.SkuDetailsResult;
-import com.appcoins.sdk.billing.SkuDetailsV2;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class AndroidBillingMapper {
 
     public static PurchasesResult mapPurchases(Bundle bundle, String skuType) {
         int responseCode = bundle.getInt(RESPONSE_CODE);
         List<Purchase> list = new ArrayList<>();
-        ArrayList<String> purchaseDataList =
-                bundle.getStringArrayList(INAPP_PURCHASE_DATA_LIST);
-        ArrayList<String> signatureList =
-                bundle.getStringArrayList(INAPP_DATA_SIGNATURE_LIST);
+        ArrayList<String> purchaseDataList = bundle.getStringArrayList(INAPP_PURCHASE_DATA_LIST);
+        ArrayList<String> signatureList = bundle.getStringArrayList(INAPP_DATA_SIGNATURE_LIST);
         ArrayList<String> idsList = bundle.getStringArrayList(INAPP_PURCHASE_ID_LIST);
 
         if (purchaseDataList != null && signatureList != null && idsList != null) {
@@ -82,8 +77,9 @@ public class AndroidBillingMapper {
                     //Base64 decoded string
                     byte[] decodedSignature = Base64.decode(signature, Base64.DEFAULT);
                     list.add(
-                            new Purchase(orderId, skuType, purchaseData, decodedSignature, purchaseTime, purchaseState,
-                                    developerPayload, token, packageName, sku, isAutoRenewing));
+                        new Purchase(orderId, skuType, purchaseData, decodedSignature, purchaseTime,
+                            purchaseState, developerPayload, token, packageName, sku,
+                            isAutoRenewing));
                 } catch (JSONException e) {
                     logError("Failed to map Purchase: " + e);
                 }
@@ -132,8 +128,8 @@ public class AndroidBillingMapper {
             String description = jsonElement.getString("description");
 
             return new SkuDetails(skuType, sku, type, price, priceAmountMicros, priceCurrencyCode,
-                    appcPrice, appcPriceAmountMicros, appcPriceCurrencyCode, fiatPrice, fiatPriceAmountMicros,
-                    fiatPriceCurrencyCode, title, description);
+                appcPrice, appcPriceAmountMicros, appcPriceCurrencyCode, fiatPrice,
+                fiatPriceAmountMicros, fiatPriceCurrencyCode, title, description);
         } catch (JSONException e) {
             logError("Failed to parse SkuDetails: " + e);
         }
@@ -142,36 +138,47 @@ public class AndroidBillingMapper {
     }
 
     public static LaunchBillingFlowResult mapBundleToHashMapGetIntent(Bundle bundle) {
-        return new LaunchBillingFlowResult(bundle.getInt(RESPONSE_CODE), bundle.getParcelable(KEY_BUY_INTENT));
+        return new LaunchBillingFlowResult(bundle.getInt(RESPONSE_CODE),
+            bundle.getParcelable(KEY_BUY_INTENT));
     }
 
     public static String mapSkuDetailsResponse(SkuDetailsV2 skuDetails) {
         return "{\"productId\":\""
-                + skuDetails.getSku()
-                + "\",\"type\" : \""
-                + "INAPP"
-                + "\",\"price\" : \""
-                + skuDetails.getPrice().getLabel()
-                + "\",\"price_currency_code\": \""
-                + skuDetails.getPrice().getCurrency()
-                + "\",\"price_amount_micros\": "
-                + skuDetails.getPrice().getMicros()
-                + ",\"appc_price\" : \""
-                + skuDetails.getPrice().getAppc().getLabel()
-                + "\",\"appc_price_currency_code\": \""
-                + "APPC"
-                + "\",\"appc_price_amount_micros\": "
-                + skuDetails.getPrice().getAppc().getMicros()
-                + ",\"fiat_price\" : \""
-                + skuDetails.getPrice().getLabel()
-                + "\",\"fiat_price_currency_code\": \""
-                + skuDetails.getPrice().getCurrency()
-                + "\",\"fiat_price_amount_micros\": "
-                + skuDetails.getPrice().getMicros()
-                + ",\"title\" : \""
-                + skuDetails.getTitle()
-                + "\",\"description\" : \""
-                + skuDetails.getDescription()
-                + "\"}";
+            + skuDetails.getSku()
+            + "\",\"type\" : \""
+            + "INAPP"
+            + "\",\"price\" : \""
+            + skuDetails.getPrice()
+            .getLabel()
+            + "\",\"price_currency_code\": \""
+            + skuDetails.getPrice()
+            .getCurrency()
+            + "\",\"price_amount_micros\": "
+            + skuDetails.getPrice()
+            .getMicros()
+            + ",\"appc_price\" : \""
+            + skuDetails.getPrice()
+            .getAppc()
+            .getLabel()
+            + "\",\"appc_price_currency_code\": \""
+            + "APPC"
+            + "\",\"appc_price_amount_micros\": "
+            + skuDetails.getPrice()
+            .getAppc()
+            .getMicros()
+            + ",\"fiat_price\" : \""
+            + skuDetails.getPrice()
+            .getLabel()
+            + "\",\"fiat_price_currency_code\": \""
+            + skuDetails.getPrice()
+            .getCurrency()
+            + "\",\"fiat_price_amount_micros\": "
+            + skuDetails.getPrice()
+            .getMicros()
+            + ",\"title\" : \""
+            + skuDetails.getTitle()
+            + "\",\"description\" : \""
+            + skuDetails.getDescription()
+            + "\"}";
     }
 }

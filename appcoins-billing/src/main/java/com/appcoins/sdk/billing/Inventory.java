@@ -69,7 +69,10 @@ public class Inventory {
     public List<String> getAllOwnedSkus(String itemType) {
         List<String> result = new ArrayList<>();
         for (Purchase p : mPurchaseMap.values()) {
-            if (p.getItemType().equals(itemType)) result.add(p.getSku());
+            if (p.getItemType()
+                .equals(itemType)) {
+                result.add(p.getSku());
+            }
         }
         return result;
     }

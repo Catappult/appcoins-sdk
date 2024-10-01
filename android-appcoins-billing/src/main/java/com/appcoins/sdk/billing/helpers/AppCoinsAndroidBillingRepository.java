@@ -1,14 +1,9 @@
 package com.appcoins.sdk.billing.helpers;
 
-import static com.appcoins.sdk.core.logger.Logger.logDebug;
-import static com.appcoins.sdk.core.logger.Logger.logError;
-import static com.appcoins.sdk.core.logger.Logger.logInfo;
-
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-
 import com.appcoins.billing.AppcoinsBilling;
 import com.appcoins.sdk.billing.ConnectionLifeCycle;
 import com.appcoins.sdk.billing.LaunchBillingFlowResult;
@@ -19,8 +14,11 @@ import com.appcoins.sdk.billing.SkuDetailsResult;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.service.WalletBillingService;
-
 import java.util.List;
+
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
+import static com.appcoins.sdk.core.logger.Logger.logError;
+import static com.appcoins.sdk.core.logger.Logger.logInfo;
 
 class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycle {
     private final int apiVersion;
@@ -29,31 +27,32 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
     private boolean isServiceReady;
 
     public AppCoinsAndroidBillingRepository(int apiVersion, String packageName) {
-        logInfo(String.format("Initializing apiVersion:%s packageName:%s", apiVersion, packageName));
+        logInfo(
+            String.format("Initializing apiVersion:%s packageName:%s", apiVersion, packageName));
         this.apiVersion = apiVersion;
         this.packageName = packageName;
     }
 
-    @Override
-    public void onConnect(ComponentName name, IBinder service, final AppCoinsBillingStateListener listener) {
-        logInfo(String.format("Billing Connected className:%s service:%s",
-                name.getClassName(), service.getClass().getCanonicalName()));
+    @Override public void onConnect(ComponentName name, IBinder service,
+        final AppCoinsBillingStateListener listener) {
+        logInfo(String.format("Billing Connected className:%s service:%s", name.getClassName(),
+            service.getClass()
+                .getCanonicalName()));
         this.service = new WalletBillingService(service, name.getClassName());
         isServiceReady = true;
         logInfo("Billing Connected, notifying client onBillingSetupFinished(ResponseCode.OK)");
         listener.onBillingSetupFinished(ResponseCode.OK.getValue());
     }
 
-    @Override
-    public void onDisconnect(final AppCoinsBillingStateListener listener) {
+    @Override public void onDisconnect(final AppCoinsBillingStateListener listener) {
         logInfo("Billing Disconnected, notifying client onBillingServiceDisconnected.");
         service = null;
         isServiceReady = false;
         listener.onBillingServiceDisconnected();
     }
 
-    @Override
-    public PurchasesResult getPurchases(String skuType) throws ServiceConnectionException {
+    @Override public PurchasesResult getPurchases(String skuType)
+        throws ServiceConnectionException {
         logInfo("Executing getPurchases.");
         logInfo(String.format("Parameters skuType:%s", skuType));
 
@@ -77,7 +76,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
 
     @Override
     public SkuDetailsResult querySkuDetailsAsync(final String skuType, final List<String> sku)
-            throws ServiceConnectionException {
+        throws ServiceConnectionException {
         logInfo("Executing querySkuDetailsAsync.");
         String size = "0";
         if (sku != null) {
@@ -100,13 +99,17 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
                 Bundle response = service.getSkuDetails(apiVersion, packageName, skuType, bundle);
                 logDebug("Sku Details received: " + response.toString());
 
-                skuDetailsResult = AndroidBillingMapper.mapBundleToHashMapSkuDetails(skuType, response);
+                skuDetailsResult =
+                    AndroidBillingMapper.mapBundleToHashMapSkuDetails(skuType, response);
 
-                if (skuDetailsResult.getResponseCode() == ResponseCode.SERVICE_UNAVAILABLE.getValue()) {
-                    logError("Failed to get SkuDetails request: " + skuDetailsResult.getResponseCode());
+                if (skuDetailsResult.getResponseCode()
+                    == ResponseCode.SERVICE_UNAVAILABLE.getValue()) {
+                    logError(
+                        "Failed to get SkuDetails request: " + skuDetailsResult.getResponseCode());
                     Thread.sleep(5000);
                 }
-            } while (skuDetailsResult.getResponseCode() == ResponseCode.SERVICE_UNAVAILABLE.getValue());
+            } while (skuDetailsResult.getResponseCode()
+                == ResponseCode.SERVICE_UNAVAILABLE.getValue());
 
             logInfo("SkuDetailsResult code: " + skuDetailsResult.getResponseCode());
             return skuDetailsResult;
@@ -116,8 +119,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
         }
     }
 
-    @Override
-    public int consumeAsync(String purchaseToken) throws ServiceConnectionException {
+    @Override public int consumeAsync(String purchaseToken) throws ServiceConnectionException {
         logInfo("Executing consumeAsync.");
         logDebug(String.format("Debuggable parameters purchaseToken:%s ", purchaseToken));
 
@@ -137,22 +139,25 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
     }
 
     @Override
-    public LaunchBillingFlowResult launchBillingFlow(String skuType, String sku, String payload, String oemid, String guestWalletId)
-            throws ServiceConnectionException {
+    public LaunchBillingFlowResult launchBillingFlow(String skuType, String sku, String payload,
+        String oemid, String guestWalletId) throws ServiceConnectionException {
         logInfo("Executing launchBillingFlow.");
         logInfo(String.format("Parameters skuType:%s sku:%s oemid:%s", skuType, sku, oemid));
-        logDebug(String.format("Debuggable parameters payload:%s guestWalletId:%s", payload, guestWalletId));
+        logDebug(String.format("Debuggable parameters payload:%s guestWalletId:%s", payload,
+            guestWalletId));
 
         if (!isReady()) {
             logError("Service is not ready. Throwing ServiceConnectionException.");
             throw new ServiceConnectionException();
         }
         try {
-            Bundle response = service.getBuyIntent(apiVersion, packageName, sku, skuType, payload, oemid, guestWalletId);
+            Bundle response =
+                service.getBuyIntent(apiVersion, packageName, sku, skuType, payload, oemid,
+                    guestWalletId);
             logDebug("Get Buy Intent bundle: " + response.toString());
 
             LaunchBillingFlowResult launchBillingFlowResult =
-                    AndroidBillingMapper.mapBundleToHashMapGetIntent(response);
+                AndroidBillingMapper.mapBundleToHashMapGetIntent(response);
             logInfo("LaunchBillingFlowResult code: " + launchBillingFlowResult.getResponseCode());
             return launchBillingFlowResult;
         } catch (RemoteException e) {
@@ -161,8 +166,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
         }
     }
 
-    @Override
-    public boolean isReady() {
+    @Override public boolean isReady() {
         return isServiceReady;
     }
 }

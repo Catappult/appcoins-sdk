@@ -1,7 +1,5 @@
 package com.appcoins.sdk.billing;
 
-import static com.appcoins.sdk.core.logger.Logger.logError;
-
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -10,6 +8,8 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+
+import static com.appcoins.sdk.core.logger.Logger.logError;
 
 /**
  * Security-related methods. For a secure implementation, all of this code
@@ -30,14 +30,14 @@ public class Security {
      * with a private key.
      *
      * @param base64DecodedPublicKey the base64-decoded public key to use for verifying.
-     * @param signedData             the signed JSON string (signed, not encrypted)
-     * @param decodedSignature       the Signature for the data, signed with the private key
+     * @param signedData the signed JSON string (signed, not encrypted)
+     * @param decodedSignature the Signature for the data, signed with the private key
      */
     public static boolean verifyPurchase(byte[] base64DecodedPublicKey, String signedData,
-                                         byte[] decodedSignature) {
+        byte[] decodedSignature) {
         if (signedData.isEmpty()
-                || base64DecodedPublicKey.length <= 0
-                || decodedSignature.length <= 0) {
+            || base64DecodedPublicKey.length <= 0
+            || decodedSignature.length <= 0) {
             return false;
         }
 
@@ -55,6 +55,7 @@ public class Security {
      * Base64-decoded public key.
      *
      * @param base64DecodedPublicKey Base64-decoded public key
+     *
      * @throws IllegalArgumentException if decodedPublicKey is invalid
      */
     public static PublicKey generatePublicKey(byte[] base64DecodedPublicKey) {
@@ -73,9 +74,10 @@ public class Security {
      * Verifies that the signature from the server matches the computed
      * signature on the data.  Returns true if the data is correctly signed.
      *
-     * @param publicKey        public key associated with the developer account
-     * @param signedData       signed data from server
+     * @param publicKey public key associated with the developer account
+     * @param signedData signed data from server
      * @param decodedSignature server signature
+     *
      * @return true if the data and signature match
      */
     public static boolean verify(PublicKey publicKey, String signedData, byte[] decodedSignature) {

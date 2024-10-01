@@ -3,7 +3,6 @@ package com.appcoins.sdk.billing;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
@@ -12,7 +11,7 @@ public interface AppcoinsBillingClient {
     PurchasesResult queryPurchases(String skuType);
 
     void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
-                              SkuDetailsResponseListener onSkuDetailsResponseListener);
+        SkuDetailsResponseListener onSkuDetailsResponseListener);
 
     void consumeAsync(String token, ConsumeResponseListener consumeResponseListener);
 

@@ -1,16 +1,16 @@
 package com.appcoins.sdk.billing.utils;
 
-import static com.appcoins.sdk.core.logger.Logger.logError;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
+import static com.appcoins.sdk.core.logger.Logger.logError;
+
 public class RequestBuilderUtils {
 
     public static String buildUrl(String baseUrl, String endPoint, List<String> paths,
-                                  Map<String, String> queries) {
+        Map<String, String> queries) {
         boolean hasQueries = !queries.isEmpty();
         if (endPoint == null) {
             endPoint = "";
@@ -44,7 +44,10 @@ public class RequestBuilderUtils {
         } catch (UnsupportedEncodingException e) {
             logError("Failed to build query: " + e);
         }
-        urlBuilder.append(key).append("=").append(value).append("&");
+        urlBuilder.append(key)
+            .append("=")
+            .append(value)
+            .append("&");
     }
 
     private static void buildPath(String path, StringBuilder urlBuilder) {
@@ -57,7 +60,7 @@ public class RequestBuilderUtils {
         //Encoder transforms "=" into %3D, but it's not needed for paths
         encodedPath = encodedPath.replaceAll("%3D", "=");
         urlBuilder.append("/")
-                .append(encodedPath);
+            .append(encodedPath);
     }
 
     public static String buildBody(Map<String, Object> bodyKeys) {
@@ -66,14 +69,19 @@ public class RequestBuilderUtils {
             for (Map.Entry<String, Object> entry : bodyKeys.entrySet()) {
                 if (entry.getValue() != null) {
                     String value = entry.getValue()
-                            .toString();
+                        .toString();
                     if (isString(entry.getValue())) {
                         value = "\"" + value + "\"";
                     }
                     if (isMap(entry.getValue())) {
                         value = buildBody((Map) entry.getValue());
                     }
-                    builder.append("\"").append(entry.getKey()).append("\"").append(":").append(value).append(",");
+                    builder.append("\"")
+                        .append(entry.getKey())
+                        .append("\"")
+                        .append(":")
+                        .append(value)
+                        .append(",");
                 }
             }
             if (!bodyKeys.isEmpty()) {
@@ -89,7 +97,8 @@ public class RequestBuilderUtils {
     }
 
     private static boolean isString(Object value) {
-        return value instanceof String && !((String) value).contains("{") && !((String) value).contains(
-                "[");
+        return value instanceof String
+            && !((String) value).contains("{")
+            && !((String) value).contains("[");
     }
 }

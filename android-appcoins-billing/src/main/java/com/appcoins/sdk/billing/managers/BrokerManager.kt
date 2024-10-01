@@ -7,7 +7,10 @@ import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
 object BrokerManager {
-    private val brokerRepository = BrokerRepository(BdsService(BuildConfig.HOST_WS, 3000))
+    private const val TIMEOUT_IN_MILLIS = 3000
+
+    private val brokerRepository =
+        BrokerRepository(BdsService(BuildConfig.HOST_WS, TIMEOUT_IN_MILLIS))
 
     fun getTransaction(orderId: String): TransactionResponse? {
         logInfo("Getting transaction value.")

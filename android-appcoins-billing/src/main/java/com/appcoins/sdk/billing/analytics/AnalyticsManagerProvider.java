@@ -1,7 +1,6 @@
 package com.appcoins.sdk.billing.analytics;
 
 import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,10 +13,10 @@ public class AnalyticsManagerProvider {
             IndicativeEventLogger indicativeEventLogger = new IndicativeEventLogger();
 
             analyticsManagerInstance =
-                    new AnalyticsManager.Builder()
-                            .addLogger(indicativeEventLogger, provideIndicativeEventList())
-                            .setAnalyticsNormalizer(new KeysNormalizer())
-                            .build();
+                new AnalyticsManager.Builder().addLogger(indicativeEventLogger,
+                        provideIndicativeEventList())
+                    .setAnalyticsNormalizer(new KeysNormalizer())
+                    .build();
         }
         return analyticsManagerInstance;
     }

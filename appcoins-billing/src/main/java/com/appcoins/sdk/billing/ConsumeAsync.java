@@ -15,8 +15,7 @@ public class ConsumeAsync implements Runnable {
         this.repository = repository;
     }
 
-    @Override
-    public void run() {
+    @Override public void run() {
 
         if (token == null || token.isEmpty()) {
             listener.onConsumeResponse(ResponseCode.DEVELOPER_ERROR.getValue(), null);

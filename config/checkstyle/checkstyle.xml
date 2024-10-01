@@ -1,0 +1,61 @@
+<?xml version="1.0"?><!DOCTYPE module PUBLIC
+    "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
+    "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+
+<module name="Checker">
+    <module name="FileLength">
+        <property name="max" value="1340" />
+    </module>
+
+    <module name="TreeWalker">
+        <module name="Indentation">
+            <property name="basicOffset" value="4" />
+            <property name="caseIndent" value="4" />
+            <property name="throwsIndent" value="4" />
+        </module>
+        <module name="MethodLength">
+            <property name="max" value="80" />
+        </module>
+        <module name="ParameterNumber">
+            <property name="max" value="19" />
+        </module>
+        <module name="CyclomaticComplexity">
+            <property name="max" value="14" />
+        </module>
+        <module name="NestedIfDepth">
+            <property name="max" value="3" />
+        </module>
+        <module name="RedundantImport" />
+        <module name="UnusedImports" />
+
+        <!-- Checks for Naming Conventions.                  -->
+        <!-- See http://checkstyle.sf.net/config_naming.html -->
+        <module name="MethodName">
+            <property name="applyToPublic" value="false" />
+        </module>
+        <module name="PackageName" />
+
+        <!-- Checks for whitespace                               -->
+        <!-- See http://checkstyle.sf.net/config_whitespace.html -->
+        <module name="EmptyForIteratorPad" />
+        <module name="GenericWhitespace" />
+        <module name="MethodParamPad" />
+        <module name="ParenPad" />
+        <module name="TypecastParenPad" />
+        <module name="WhitespaceAfter" />
+        <module name="WhitespaceAround">
+            <property name="tokens" value="ASSIGN, EQUAL, NOT_EQUAL, COLON" />
+        </module>
+    </module>
+
+    <!-- Space after 'for' and 'if' -->
+    <module name="RegexpSingleline">
+        <property name="format" value="^\s*(for|if)[^ ]\(" />
+        <property name="message" value="Space needed before opening parenthesis." />
+    </module>
+
+    <module name="RegexpMultiline">
+        <property name="format" value="\r?\n[ \t\x0B\f]*\r?\n[ \t\x0B\f]*\r?\n" />
+        <property name="message" value="Two consecutive empty lines" />
+    </module>
+</module>

@@ -1,21 +1,18 @@
 package com.appcoins.sdk.billing.helpers;
 
-import static com.appcoins.sdk.core.logger.Logger.logDebug;
-import static com.appcoins.sdk.core.logger.Logger.logError;
-
 import com.appcoins.billing.sdk.BuildConfig;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-
 import javax.net.ssl.HttpsURLConnection;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
+import static com.appcoins.sdk.core.logger.Logger.logError;
 
 public class EventLogger implements Runnable {
 
@@ -53,10 +50,10 @@ public class EventLogger implements Runnable {
 
         String finalURL = BASE_URL + SERVICE_PATH + purchaseEventName;
 
-        PostDataToURL(finalURL, jsonObj);
+        postDataToURL(finalURL, jsonObj);
     }
 
-    private void PostDataToURL(String urlStr, JSONObject jsonObj) {
+    private void postDataToURL(String urlStr, JSONObject jsonObj) {
         URL url;
 
         try {
@@ -78,8 +75,8 @@ public class EventLogger implements Runnable {
             int code = connection.getResponseCode();
             logDebug(String.valueOf(code));
 
-            BufferedReader br =
-                    new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+            BufferedReader br = new BufferedReader(
+                new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
             StringBuilder response = new StringBuilder();
             String responseLine;
             while ((responseLine = br.readLine()) != null) {
@@ -95,8 +92,7 @@ public class EventLogger implements Runnable {
         }
     }
 
-    @Override
-    public void run() {
+    @Override public void run() {
         try {
             LogPurchaseEvent();
         } catch (JSONException e) {

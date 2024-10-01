@@ -1,13 +1,11 @@
 package com.appcoins.sdk.billing.listeners;
 
-import static com.appcoins.sdk.core.logger.Logger.logInfo;
-
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
-
+import java.util.ArrayList;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
+import static com.appcoins.sdk.core.logger.Logger.logInfo;
 
 public class PayflowPriorityStream {
 
@@ -15,11 +13,9 @@ public class PayflowPriorityStream {
 
     private boolean isFirstValue = true;
 
-    @Nullable
-    private ArrayList<PaymentFlowMethod> value = null;
+    @Nullable private ArrayList<PaymentFlowMethod> value = null;
 
-    @Nullable
-    private Consumer<ArrayList<PaymentFlowMethod>> collector = null;
+    @Nullable private Consumer<ArrayList<PaymentFlowMethod>> collector = null;
 
     private PayflowPriorityStream() {
     }

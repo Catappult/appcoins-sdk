@@ -1,15 +1,7 @@
 package com.appcoins.sdk.billing.oemid;
 
-import static com.appcoins.sdk.billing.oemid.Constants.HEX_ARRAY;
-import static com.appcoins.sdk.billing.oemid.Constants.OEMID_SEPARATOR;
-import static com.appcoins.sdk.billing.oemid.Constants.PADDING_START;
-import static com.appcoins.sdk.billing.oemid.Constants.SIGNING_BLOCK_MAGIC;
-import static com.appcoins.sdk.core.logger.Logger.logDebug;
-import static com.appcoins.sdk.core.logger.Logger.logWarning;
-
 import android.content.Context;
 import android.content.pm.PackageManager;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -18,6 +10,13 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.appcoins.sdk.billing.oemid.Constants.HEX_ARRAY;
+import static com.appcoins.sdk.billing.oemid.Constants.OEMID_SEPARATOR;
+import static com.appcoins.sdk.billing.oemid.Constants.PADDING_START;
+import static com.appcoins.sdk.billing.oemid.Constants.SIGNING_BLOCK_MAGIC;
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
+import static com.appcoins.sdk.core.logger.Logger.logWarning;
 
 public class OemIdExtractorV2 implements OemIdExtractor {
 
@@ -28,8 +27,7 @@ public class OemIdExtractorV2 implements OemIdExtractor {
         this.context = context;
     }
 
-    @Override
-    public String extract(String packageName) {
+    @Override public String extract(String packageName) {
         String oemId = null;
         try {
             String sourceDir = getPackageName(context, packageName);
@@ -45,9 +43,9 @@ public class OemIdExtractorV2 implements OemIdExtractor {
     }
 
     private String getPackageName(Context context, String packageName)
-            throws PackageManager.NameNotFoundException {
+        throws PackageManager.NameNotFoundException {
         return context.getPackageManager()
-                .getPackageInfo(packageName, 0).applicationInfo.sourceDir;
+            .getPackageInfo(packageName, 0).applicationInfo.sourceDir;
     }
 
     private String readValueFromFile(File file) throws IOException {
@@ -80,7 +78,10 @@ public class OemIdExtractorV2 implements OemIdExtractor {
 
         if (firstZero != -1) {
             for (i = firstZero - 4; i >= 0; --i) {
-                if (paddingBuffer[i] == 119 && paddingBuffer[i + 1] == 101 && paddingBuffer[i + 2] == 114 && paddingBuffer[i + 3] == 66) {
+                if (paddingBuffer[i] == 119
+                    && paddingBuffer[i + 1] == 101
+                    && paddingBuffer[i + 2] == 114
+                    && paddingBuffer[i + 3] == 66) {
                     return;
                 }
             }
@@ -95,7 +96,8 @@ public class OemIdExtractorV2 implements OemIdExtractor {
         }
     }
 
-    private String readValue(int cdOffset, byte[] buffer, RandomAccessFile randomAccessFile) throws IOException {
+    private String readValue(int cdOffset, byte[] buffer, RandomAccessFile randomAccessFile)
+        throws IOException {
         ByteBuffer wrap = ByteBuffer.wrap(buffer);
         wrap.order(ByteOrder.LITTLE_ENDIAN);
         int blockSize = wrap.getInt();
@@ -105,7 +107,8 @@ public class OemIdExtractorV2 implements OemIdExtractor {
         randomAccessFile.readFully(byteArray);
         byteArray = Arrays.copyOfRange(byteArray, getPaddingStart(byteArray), byteArray.length);
         int headerIndex = getHeaderIndex(byteArray);
-        return headerIndex == -1 ? this.getOldOemidFormat(byteArray) : this.getOemid(byteArray, headerIndex);
+        return headerIndex == -1 ? this.getOldOemidFormat(byteArray)
+            : this.getOemid(byteArray, headerIndex);
     }
 
     private String getOldOemidFormat(byte[] bytes) {
@@ -168,7 +171,10 @@ public class OemIdExtractorV2 implements OemIdExtractor {
 
     private int getPaddingStart(byte[] bytes) {
         for (int i = bytes.length - 4; i >= 0; --i) {
-            if (bytes[i] == PADDING_START[0] && bytes[i + 1] == PADDING_START[1] && bytes[i + 2] == PADDING_START[2] && bytes[i + 3] == PADDING_START[3]) {
+            if (bytes[i] == PADDING_START[0]
+                && bytes[i + 1] == PADDING_START[1]
+                && bytes[i + 2] == PADDING_START[2]
+                && bytes[i + 3] == PADDING_START[3]) {
                 return i + 4;
             }
         }

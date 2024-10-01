@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'kotlin-android'
+apply plugin: 'checkstyle'
 
 android {
     compileSdkVersion COMPILE_SDK_VERSION
@@ -29,17 +30,34 @@ android {
         debug {
             minifyEnabled false
             buildConfigField 'String', 'APPCOINS_WALLET_PACKAGE_NAME',
-                    project.APPCOINS_WALLET_PACKAGE_NAME_DEV
+                project.APPCOINS_WALLET_PACKAGE_NAME_DEV
         }
         release {
             buildConfigField 'String', 'APPCOINS_WALLET_PACKAGE_NAME',
-                    project.APPCOINS_WALLET_PACKAGE_NAME
+                project.APPCOINS_WALLET_PACKAGE_NAME
             minifyEnabled false
         }
     }
 
     lintOptions {
+        abortOnError false
+        warningsAsErrors true
+        checkReleaseBuilds true
+        disable 'TypographyFractions', 'TypographyQuotes'
+        enable 'RtlHardcoded', 'RtlCompat', 'RtlEnabled'
         warning 'InvalidPackage'
+    }
+
+    checkstyle {
+        toolVersion = "10.12.4"
+        configFile = file("$rootDir/config/checkstyle/checkstyle.xml")
+    }
+
+    tasks.withType(Checkstyle).configureEach {
+        reports {
+            xml.required = false
+            html.required = true
+        }
     }
 
     compileOptions {
@@ -57,6 +75,7 @@ dependencies {
     testImplementation libs.json
     androidTestImplementation libs.android.support.test.runner
     androidTestImplementation libs.android.support.test.espresso.core
+    detektPlugins libs.detekt.formatting
 
     implementation libs.kotlin.stdlib
 }
@@ -83,8 +102,7 @@ if (secretPropsFile.exists()) {
     println "Found secret props file, loading props"
     Properties p = new Properties()
     p.load(new FileInputStream(secretPropsFile))
-    p.each { name, value ->
-        ext[name] = value
+    p.each { name, value -> ext[name] = value
     }
 } else {
     println "No props file, loading env vars"
@@ -103,7 +121,8 @@ publishing {
             artifactId project.name
             version PUBLISH_VERSION
 
-            artifact("$buildDir/outputs/aar/${project.name}-${System.getenv('BUILD_TYPE_NAME')}.aar")
+            artifact(
+                "$buildDir/outputs/aar/${project.name}-${System.getenv('BUILD_TYPE_NAME')}.aar")
             artifact androidSourcesJar
 
             pom {

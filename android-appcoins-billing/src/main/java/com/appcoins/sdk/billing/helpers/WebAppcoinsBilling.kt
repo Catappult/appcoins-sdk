@@ -121,11 +121,11 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
     ) {
         logDebug(
             "Saving Buy Item Properties:" +
-                    " packageName: $packageName" +
-                    " apiVersion: $apiVersion" +
-                    " sku: $sku" +
-                    " type: $type" +
-                    " developerPayload: $developerPayload"
+                " packageName: $packageName" +
+                " apiVersion: $apiVersion" +
+                " sku: $sku" +
+                " type: $type" +
+                " developerPayload: $developerPayload"
         )
         if (Looper.myLooper() == Looper.getMainLooper()) {
             Handler(Looper.getMainLooper()).post {

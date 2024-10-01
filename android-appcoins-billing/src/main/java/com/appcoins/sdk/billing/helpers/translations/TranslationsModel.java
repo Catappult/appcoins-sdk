@@ -1,15 +1,15 @@
 package com.appcoins.sdk.billing.helpers.translations;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.appcoins_wallet;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_body;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_close_button;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_close_install;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iap_wallet_and_appstore_not_installed_popup_body;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iap_wallet_and_appstore_not_installed_popup_button;
-
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 //Class covered with AndroidTests. Always run them if you change this class
 public class TranslationsModel {
@@ -24,15 +24,18 @@ public class TranslationsModel {
      */
     public TranslationsModel() {
         defaultStringsMap = new LinkedHashMap<TranslationsKeys, String>() {
-            { //This list needs to be in the same order as the string xml file. If not the androidTests
+            { //This list needs to be in the same order as the string xml file. If not the
+                // androidTests
                 // will fail.
-                put(iab_wallet_not_installed_popup_body, "To buy this item you first need to get the %s.");
+                put(iab_wallet_not_installed_popup_body,
+                    "To buy this item you first need to get the %s.");
                 put(appcoins_wallet, "AppCoins Wallet");
                 put(iab_wallet_not_installed_popup_close_button, "CLOSE");
                 put(iap_wallet_and_appstore_not_installed_popup_body,
-                        "You need the AppCoins Wallet to make this purchase. Download it from Aptoide or Play "
-                                + "Store"
-                                + " and come back to complete your purchase!");
+                    "You need the AppCoins Wallet to make this purchase. Download it from "
+                        + "Aptoide or Play "
+                        + "Store"
+                        + " and come back to complete your purchase!");
                 put(iap_wallet_and_appstore_not_installed_popup_button, "GOT IT!");
                 put(iab_wallet_not_installed_popup_close_install, "INSTALL WALLET");
             }

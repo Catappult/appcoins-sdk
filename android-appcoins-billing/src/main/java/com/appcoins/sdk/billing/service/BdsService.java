@@ -1,11 +1,7 @@
 package com.appcoins.sdk.billing.service;
 
-import static com.appcoins.sdk.core.logger.Logger.logDebug;
-import static com.appcoins.sdk.core.logger.Logger.logError;
-
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.utils.RequestBuilderUtils;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,9 +14,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
+import static com.appcoins.sdk.core.logger.Logger.logError;
+
 public class BdsService implements Service {
 
-    public final static int TIME_OUT_IN_MILLIS = 30000;
+    public static final int TIME_OUT_IN_MILLIS = 30000;
     private final String baseUrl;
     private final int timeoutInMillis;
 
@@ -30,8 +29,8 @@ public class BdsService implements Service {
     }
 
     RequestResponse createRequest(String baseUrl, String endPoint, String httpMethod,
-                                  List<String> paths, Map<String, String> queries, Map<String, String> header,
-                                  Map<String, Object> body) {
+        List<String> paths, Map<String, String> queries, Map<String, String> header,
+        Map<String, Object> body) {
         HttpURLConnection urlConnection = null;
         try {
             String urlBuilder = RequestBuilderUtils.buildUrl(baseUrl, endPoint, paths, queries);
@@ -63,7 +62,7 @@ public class BdsService implements Service {
     }
 
     private void handlePostPatchRequests(HttpURLConnection urlConnection, String httpMethod,
-                                         Map<String, Object> body) throws IOException {
+        Map<String, Object> body) throws IOException {
         if (isValidPostPatchRequest(httpMethod, body)) {
             if (httpMethod.equals("PATCH")) {
                 urlConnection.setRequestProperty("X-HTTP-Method-Override", "PATCH");
@@ -95,7 +94,7 @@ public class BdsService implements Service {
     }
 
     private RequestResponse readResponse(InputStream inputStream, int responseCode)
-            throws IOException {
+        throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
         String inputLine;
         StringBuilder response = new StringBuilder();
@@ -108,7 +107,7 @@ public class BdsService implements Service {
     }
 
     private void setPostOutput(HttpURLConnection urlConnection, Map<String, Object> bodyKeys)
-            throws IOException {
+        throws IOException {
         urlConnection.setRequestProperty("Content-Type", "application/json");
         urlConnection.setRequestProperty("Accept", "application/json");
         urlConnection.setDoOutput(true);
@@ -119,7 +118,7 @@ public class BdsService implements Service {
     }
 
     private RequestResponse handleException(HttpURLConnection urlConnection,
-                                            Exception firstException) {
+        Exception firstException) {
         logError("Failed to create backend request: " + firstException);
         int responseCode = 500;
         if (urlConnection != null) {
@@ -133,8 +132,8 @@ public class BdsService implements Service {
     }
 
     public void makeRequest(String endPoint, String httpMethod, List<String> paths,
-                            Map<String, String> queries, Map<String, String> header, Map<String, Object> body,
-                            ServiceResponseListener serviceResponseListener) {
+        Map<String, String> queries, Map<String, String> header, Map<String, Object> body,
+        ServiceResponseListener serviceResponseListener) {
         if (paths == null) {
             paths = new ArrayList<>();
         }
@@ -142,9 +141,8 @@ public class BdsService implements Service {
             queries = new HashMap<>();
         }
         ServiceAsyncTaskExecutorAsync serviceAsyncTaskExecutorAsync =
-                new ServiceAsyncTaskExecutorAsync(
-                        this, baseUrl, endPoint, httpMethod, paths, queries, header, body,
-                        serviceResponseListener);
+            new ServiceAsyncTaskExecutorAsync(this, baseUrl, endPoint, httpMethod, paths, queries,
+                header, body, serviceResponseListener);
         serviceAsyncTaskExecutorAsync.execute();
     }
 }

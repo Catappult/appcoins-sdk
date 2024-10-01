@@ -2,20 +2,20 @@ package com.appcoins.sdk.billing.helpers;
 
 import android.content.Context;
 import android.telephony.TelephonyManager;
-
 import java.util.Locale;
 
 public class UserCountryUtils {
 
     public static String getUserCountry(Context context) {
         TelephonyManager telephonyManager =
-                (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         String userCountry = Locale.getDefault()
-                .getCountry();
+            .getCountry();
         String simCountry = telephonyManager.getSimCountryIso();
         if (hasCorrectCountryFormat(simCountry)) {
             userCountry = simCountry;
-        } else if (isPhoneTypeReliable(telephonyManager)) { // device is not 3G (would be unreliable)
+        } else if (isPhoneTypeReliable(
+            telephonyManager)) { // device is not 3G (would be unreliable)
             String networkCountry = telephonyManager.getNetworkCountryIso();
             if (hasCorrectCountryFormat(networkCountry)) {
                 userCountry = networkCountry;

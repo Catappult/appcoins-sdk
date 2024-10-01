@@ -8,6 +8,7 @@ public interface KeyValueNormalizer {
      * In Vanilla for example null values are parsed into empty strings.
      *
      * @param data map to parse
+     *
      * @return map after being parsed by a subset of rules.
      */
     Map<String, Object> normalize(Map<String, Object> data);

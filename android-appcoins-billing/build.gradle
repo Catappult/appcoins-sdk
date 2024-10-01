@@ -3,6 +3,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: "kotlin-android"
 apply plugin: 'com.kezong.fat-aar' //https://github.com/kezong/fat-aar-android
+apply plugin: 'checkstyle'
 
 android {
     compileSdkVersion COMPILE_SDK_VERSION
@@ -45,33 +46,54 @@ android {
         jvmTarget = TARGET_COMPATIBILITY
     }
 
+    lintOptions {
+        abortOnError false
+        warningsAsErrors true
+        checkReleaseBuilds true
+        disable 'TypographyFractions', 'TypographyQuotes'
+        enable 'RtlHardcoded', 'RtlCompat', 'RtlEnabled'
+        warning 'InvalidPackage'
+    }
+
+    checkstyle {
+        toolVersion = "10.12.4"
+        configFile = file("$rootDir/config/checkstyle/checkstyle.xml")
+    }
+
+    tasks.withType(Checkstyle).configureEach {
+        reports {
+            xml.required = false
+            html.required = true
+        }
+    }
+
     buildTypes {
         debug {
             minifyEnabled false
             buildConfigField 'String', 'APTOIDE_PACKAGE_NAME',
-                    project.APTOIDE_PACKAGE_NAME_DEV
+                project.APTOIDE_PACKAGE_NAME_DEV
             buildConfigField 'String', 'APPCOINS_WALLET_PACKAGE_NAME',
-                    project.APPCOINS_WALLET_PACKAGE_NAME_DEV
+                project.APPCOINS_WALLET_PACKAGE_NAME_DEV
             buildConfigField 'String', 'GAMESHUB_PACKAGE_NAME',
-                    project.GAMESHUB_PACKAGE_NAME_STG
+                project.GAMESHUB_PACKAGE_NAME_STG
             buildConfigField 'String', 'GAMESHUB_PACKAGE_NAME_ALTERNATIVE',
-                    project.GAMESHUB_PACKAGE_NAME_DEV
+                project.GAMESHUB_PACKAGE_NAME_DEV
             buildConfigField 'String', 'APTOIDE_GAMES_PACKAGE_NAME',
-                    project.APTOIDE_GAMES_PACKAGE_NAME_DEV
+                project.APTOIDE_GAMES_PACKAGE_NAME_DEV
 
             buildConfigField 'String', 'APPCOINS_WALLET_IAB_BIND_ACTION',
-                    project.APPCOINS_WALLET_IAB_BIND_ACTION_DEV
+                project.APPCOINS_WALLET_IAB_BIND_ACTION_DEV
             buildConfigField 'String', 'GAMESHUB_IAB_BIND_ACTION',
-                    project.GAMESHUB_IAB_BIND_ACTION_STG
+                project.GAMESHUB_IAB_BIND_ACTION_STG
             buildConfigField 'String', 'GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE',
-                    project.GAMESHUB_IAB_BIND_ACTION_DEV
+                project.GAMESHUB_IAB_BIND_ACTION_DEV
             buildConfigField 'String', 'APTOIDE_GAMES_IAB_BIND_ACTION',
-                    project.APTOIDE_GAMES_IAB_BIND_ACTION_DEV
+                project.APTOIDE_GAMES_IAB_BIND_ACTION_DEV
 
             buildConfigField 'String', 'HOST_WS',
-                    "\"" + project.ROPSTEN_NETWORK_BACKEND_BASE_HOST_WS + "\""
+                "\"" + project.ROPSTEN_NETWORK_BACKEND_BASE_HOST_WS + "\""
             buildConfigField 'String', 'BACKEND_BASE',
-                    "\"" + project.ROPSTEN_NETWORK_BACKEND_BASE_HOST + "\""
+                "\"" + project.ROPSTEN_NETWORK_BACKEND_BASE_HOST + "\""
             buildConfigField 'String', 'BDS_BASE_HOST', project.BDS_BASE_HOST_DEV
             buildConfigField 'String', 'PAYFLOW_HOST', project.PAYFLOW_NETWORK_BASE_HOST_DEV
             buildConfigField 'String', 'MMP_BASE_HOST', project.MMP_BASE_HOST_DEV
@@ -80,38 +102,39 @@ android {
 
             buildConfigField 'String', 'WALLET_APP_BROWSER_URL', project.WALLET_APP_BROWSER_URL
 
-            buildConfigField 'String', 'DEFAULT_OEM_ADDRESS', "\"" + project.DEFAULT_OEM_ADDRESS + "\""
+            buildConfigField 'String', 'DEFAULT_OEM_ADDRESS',
+                "\"" + project.DEFAULT_OEM_ADDRESS + "\""
             buildConfigField 'String', 'DEFAULT_STORE_ADDRESS',
-                    "\"" + project.DEFAULT_STORE_ADDRESS + "\""
+                "\"" + project.DEFAULT_STORE_ADDRESS + "\""
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             buildConfigField 'String', 'APTOIDE_PACKAGE_NAME',
-                    project.APTOIDE_PACKAGE_NAME
+                project.APTOIDE_PACKAGE_NAME
             buildConfigField 'String', 'APPCOINS_WALLET_PACKAGE_NAME',
-                    project.APPCOINS_WALLET_PACKAGE_NAME
+                project.APPCOINS_WALLET_PACKAGE_NAME
             buildConfigField 'String', 'GAMESHUB_PACKAGE_NAME',
-                    project.GAMESHUB_PACKAGE_NAME
+                project.GAMESHUB_PACKAGE_NAME
             buildConfigField 'String', 'GAMESHUB_PACKAGE_NAME_ALTERNATIVE',
-                    project.GAMESHUB_PACKAGE_NAME
+                project.GAMESHUB_PACKAGE_NAME
             buildConfigField 'String', 'APTOIDE_GAMES_PACKAGE_NAME',
-                    project.APTOIDE_GAMES_PACKAGE_NAME
+                project.APTOIDE_GAMES_PACKAGE_NAME
 
             buildConfigField 'String', 'APPCOINS_WALLET_IAB_BIND_ACTION',
-                    project.APPCOINS_WALLET_IAB_BIND_ACTION
+                project.APPCOINS_WALLET_IAB_BIND_ACTION
             buildConfigField 'String', 'GAMESHUB_IAB_BIND_ACTION',
-                    project.GAMESHUB_IAB_BIND_ACTION
+                project.GAMESHUB_IAB_BIND_ACTION
             buildConfigField 'String', 'GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE',
-                    project.GAMESHUB_IAB_BIND_ACTION
+                project.GAMESHUB_IAB_BIND_ACTION
             buildConfigField 'String', 'APTOIDE_GAMES_IAB_BIND_ACTION',
-                    project.APTOIDE_GAMES_IAB_BIND_ACTION
+                project.APTOIDE_GAMES_IAB_BIND_ACTION
 
             buildConfigField 'String', 'HOST_WS',
-                    "\"" + project.MAIN_NETWORK_BACKEND_BASE_HOST_WS + "\""
+                "\"" + project.MAIN_NETWORK_BACKEND_BASE_HOST_WS + "\""
             buildConfigField 'String', 'BACKEND_BASE',
-                    "\"" + project.MAIN_NETWORK_BACKEND_BASE_HOST + "\""
+                "\"" + project.MAIN_NETWORK_BACKEND_BASE_HOST + "\""
             buildConfigField 'String', 'BDS_BASE_HOST', project.BDS_BASE_HOST_PROD
             buildConfigField 'String', 'PAYFLOW_HOST', project.PAYFLOW_NETWORK_BASE_HOST
             buildConfigField 'String', 'MMP_BASE_HOST', project.MMP_BASE_HOST_PROD
@@ -120,9 +143,10 @@ android {
 
             buildConfigField 'String', 'WALLET_APP_BROWSER_URL', project.WALLET_APP_BROWSER_URL
 
-            buildConfigField 'String', 'DEFAULT_OEM_ADDRESS', "\"" + project.DEFAULT_OEM_ADDRESS + "\""
+            buildConfigField 'String', 'DEFAULT_OEM_ADDRESS',
+                "\"" + project.DEFAULT_OEM_ADDRESS + "\""
             buildConfigField 'String', 'DEFAULT_STORE_ADDRESS',
-                    "\"" + project.DEFAULT_STORE_ADDRESS + "\""
+                "\"" + project.DEFAULT_STORE_ADDRESS + "\""
         }
     }
 }
@@ -135,6 +159,7 @@ dependencies {
     testImplementation libs.json
     androidTestImplementation libs.android.support.test.runner
     androidTestImplementation libs.android.support.test.espresso.core
+    detektPlugins libs.detekt.formatting
 
     implementation libs.kotlin.stdlib
 
@@ -168,8 +193,7 @@ if (secretPropsFile.exists()) {
     println "Found secret props file, loading props"
     Properties p = new Properties()
     p.load(new FileInputStream(secretPropsFile))
-    p.each { name, value ->
-        ext[name] = value
+    p.each { name, value -> ext[name] = value
     }
 } else {
     println "No props file, loading env vars"
@@ -188,7 +212,8 @@ publishing {
             artifactId project.name
             version PUBLISH_VERSION
 
-            artifact("$buildDir/outputs/aar/${project.name}-${System.getenv('BUILD_TYPE_NAME')}.aar")
+            artifact(
+                "$buildDir/outputs/aar/${project.name}-${System.getenv('BUILD_TYPE_NAME')}.aar")
             artifact androidSourcesJar
 
             pom {

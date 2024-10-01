@@ -12,7 +12,7 @@ public class BuyItemProperties implements Serializable {
     private final SkuDetails skuDetails;
 
     public BuyItemProperties(int apiVersion, String packageName, String sku, String type,
-                             DeveloperPayload developerPayload, SkuDetails skuDetails) {
+        DeveloperPayload developerPayload, SkuDetails skuDetails) {
         this.apiVersion = apiVersion;
         this.packageName = packageName;
         this.sku = sku;
@@ -46,12 +46,7 @@ public class BuyItemProperties implements Serializable {
     }
 
     public BillingFlowParams toBillingFlowParams() {
-        return new BillingFlowParams(
-                sku,
-                type,
-                developerPayload.getOrderReference(),
-                developerPayload.getDeveloperPayload(),
-                developerPayload.getOrigin()
-        );
+        return new BillingFlowParams(sku, type, developerPayload.getOrderReference(),
+            developerPayload.getDeveloperPayload(), developerPayload.getOrigin());
     }
 }

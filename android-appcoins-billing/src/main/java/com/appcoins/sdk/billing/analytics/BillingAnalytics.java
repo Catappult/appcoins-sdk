@@ -1,7 +1,6 @@
 package com.appcoins.sdk.billing.analytics;
 
 import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +21,7 @@ public class BillingAnalytics implements EventSender {
 
     @Override
     public void sendPurchaseStartEvent(String packageName, String skuDetails, String value,
-                                       String transactionType, String context) {
+        String transactionType, String context) {
         Map<String, Object> eventData = new HashMap<>();
 
         eventData.put(EVENT_PACKAGE_NAME, packageName);

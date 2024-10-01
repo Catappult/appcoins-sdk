@@ -3,10 +3,8 @@ package com.appcoins.sdk.billing;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-
 import com.appcoins.billing.AppcoinsBilling;
 import com.appcoins.communication.SyncIpcMessageRequester;
-
 import java.io.Serializable;
 
 public class UriCommunicationAppcoinsBilling implements AppcoinsBilling, Serializable {
@@ -16,9 +14,8 @@ public class UriCommunicationAppcoinsBilling implements AppcoinsBilling, Seriali
         this.messageRequester = messageRequester;
     }
 
-    @Override
-    public int isBillingSupported(int apiVersion, String packageName, String type)
-            throws RemoteException {
+    @Override public int isBillingSupported(int apiVersion, String packageName, String type)
+        throws RemoteException {
         Bundle arguments = new Bundle();
         arguments.putInt("API_VERSION", apiVersion);
         arguments.putString("PACKAGE_NAME", packageName);
@@ -29,7 +26,7 @@ public class UriCommunicationAppcoinsBilling implements AppcoinsBilling, Seriali
 
     @Override
     public Bundle getSkuDetails(int apiVersion, String packageName, String type, Bundle skusBundle)
-            throws RemoteException {
+        throws RemoteException {
         Bundle arguments = new Bundle();
         arguments.putInt("API_VERSION", apiVersion);
         arguments.putString("PACKAGE_NAME", packageName);
@@ -40,7 +37,7 @@ public class UriCommunicationAppcoinsBilling implements AppcoinsBilling, Seriali
 
     @Override
     public Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type,
-                               String developerPayload, String oemid, String guestWalletId) throws RemoteException {
+        String developerPayload, String oemid, String guestWalletId) throws RemoteException {
         Bundle arguments = new Bundle();
         arguments.putInt("API_VERSION", apiVersion);
         arguments.putString("PACKAGE_NAME", packageName);
@@ -52,9 +49,8 @@ public class UriCommunicationAppcoinsBilling implements AppcoinsBilling, Seriali
         return callMethod(3, arguments).getBundle("RESULT_VALUE");
     }
 
-    @Override
-    public Bundle getPurchases(int apiVersion, String packageName, String type,
-                               String continuationToken) throws RemoteException {
+    @Override public Bundle getPurchases(int apiVersion, String packageName, String type,
+        String continuationToken) throws RemoteException {
         Bundle arguments = new Bundle();
         arguments.putInt("API_VERSION", apiVersion);
         arguments.putString("PACKAGE_NAME", packageName);
@@ -63,9 +59,8 @@ public class UriCommunicationAppcoinsBilling implements AppcoinsBilling, Seriali
         return callMethod(2, arguments).getBundle("RESULT_VALUE");
     }
 
-    @Override
-    public int consumePurchase(int apiVersion, String packageName, String purchaseToken)
-            throws RemoteException {
+    @Override public int consumePurchase(int apiVersion, String packageName, String purchaseToken)
+        throws RemoteException {
         Bundle arguments = new Bundle();
         arguments.putInt("API_VERSION", apiVersion);
         arguments.putString("PACKAGE_NAME", packageName);
@@ -81,8 +76,7 @@ public class UriCommunicationAppcoinsBilling implements AppcoinsBilling, Seriali
         }
     }
 
-    @Override
-    public IBinder asBinder() {
+    @Override public IBinder asBinder() {
         return null;
     }
 

@@ -1,22 +1,20 @@
 package com.appcoins.sdk.billing.helpers.translations;
 
-import static com.appcoins.sdk.core.logger.Logger.logError;
-
 import android.content.Context;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import static com.appcoins.sdk.core.logger.Logger.logError;
 
 public class TranslationsXmlParser {
 
     private static final String translationsRelativePath =
-            "appcoins-wallet/resources/translations/values-";
+        "appcoins-wallet/resources/translations/values-";
     private static final String translationsFileName = "/external_strings.xml";
     private final Context context;
     private final List<String> requiredCountryCodes;
@@ -30,7 +28,7 @@ public class TranslationsXmlParser {
         String translationXmlPath;
         if (isRequiredCountryCode(countryCode)) {
             translationXmlPath =
-                    translationsRelativePath + language + "-r" + countryCode + translationsFileName;
+                translationsRelativePath + language + "-r" + countryCode + translationsFileName;
         } else {
             translationXmlPath = translationsRelativePath + language + translationsFileName;
         }
@@ -39,7 +37,7 @@ public class TranslationsXmlParser {
         List<String> xmlContent = new ArrayList<>();
         try {
             inputStream = context.getAssets()
-                    .open(translationXmlPath);
+                .open(translationXmlPath);
             xmlContent = parseXml(inputStream);
             inputStream.close();
         } catch (IOException e) {
@@ -54,7 +52,7 @@ public class TranslationsXmlParser {
         List<String> xmlContent = new ArrayList<>();
         try {
             inputStream = context.getAssets()
-                    .open(path);
+                .open(path);
             xmlContent = parseXml(inputStream);
             inputStream.close();
         } catch (IOException e) {
@@ -75,7 +73,7 @@ public class TranslationsXmlParser {
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 String value = parser.getText();
                 if (eventType == XmlPullParser.TEXT && !value.trim()
-                        .isEmpty()) {
+                    .isEmpty()) {
                     xmlContent.add(value.trim());
                 }
                 eventType = parser.next();

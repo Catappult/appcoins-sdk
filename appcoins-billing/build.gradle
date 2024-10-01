@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: "kotlin-android"
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
+apply plugin: 'checkstyle'
 
 android {
     compileSdkVersion COMPILE_SDK_VERSION
@@ -26,7 +27,24 @@ android {
     }
 
     lintOptions {
+        abortOnError false
+        warningsAsErrors true
+        checkReleaseBuilds true
+        disable 'TypographyFractions', 'TypographyQuotes'
+        enable 'RtlHardcoded', 'RtlCompat', 'RtlEnabled'
         warning 'InvalidPackage'
+    }
+
+    checkstyle {
+        toolVersion = "10.12.4"
+        configFile = file("$rootDir/config/checkstyle/checkstyle.xml")
+    }
+
+    tasks.withType(Checkstyle).configureEach {
+        reports {
+            xml.required = false
+            html.required = true
+        }
     }
 
     compileOptions {
@@ -36,6 +54,8 @@ android {
 }
 
 dependencies {
+    detektPlugins libs.detekt.formatting
+
     implementation libs.kotlin.stdlib
     api project(':appcoins-core')
 }
@@ -62,8 +82,7 @@ if (secretPropsFile.exists()) {
     println "Found secret props file, loading props"
     Properties p = new Properties()
     p.load(new FileInputStream(secretPropsFile))
-    p.each { name, value ->
-        ext[name] = value
+    p.each { name, value -> ext[name] = value
     }
 } else {
     println "No props file, loading env vars"
@@ -82,7 +101,8 @@ publishing {
             artifactId project.name
             version PUBLISH_VERSION
 
-            artifact("$buildDir/outputs/aar/${project.name}-${System.getenv('BUILD_TYPE_NAME')}.aar")
+            artifact(
+                "$buildDir/outputs/aar/${project.name}-${System.getenv('BUILD_TYPE_NAME')}.aar")
             artifact androidSourcesJar
 
             pom {

@@ -9,12 +9,12 @@ public interface Billing {
     PurchasesResult queryPurchases(String skuType);
 
     void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
-                              SkuDetailsResponseListener onSkuDetailsResponseListener);
+        SkuDetailsResponseListener onSkuDetailsResponseListener);
 
     void consumeAsync(String purchaseToken, ConsumeResponseListener listener);
 
-    LaunchBillingFlowResult launchBillingFlow(BillingFlowParams params, String payload, String oemid, String guestWalletId)
-            throws ServiceConnectionException;
+    LaunchBillingFlowResult launchBillingFlow(BillingFlowParams params, String payload,
+        String oemid, String guestWalletId) throws ServiceConnectionException;
 
     boolean isReady();
 

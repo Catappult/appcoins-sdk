@@ -1,16 +1,14 @@
 package com.appcoins.communication.processor;
 
-import static org.junit.Assert.assertEquals;
-
 import android.content.Context;
 import android.content.Intent;
-
 import com.appcoins.communication.ProcessedValueReturner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+
+import static org.junit.Assert.assertEquals;
 
 public class MessageSenderTest {
 
@@ -19,18 +17,16 @@ public class MessageSenderTest {
     private ProcessedValueReturner messageSender;
     private Context context;
 
-    @Before
-    public void setUp() {
+    @Before public void setUp() {
         context = Mockito.mock(Context.class);
         messageSender = new ProcessedValueReturner(context, SENDER_URI);
     }
 
-    @Test
-    public void sendMessage() {
+    @Test public void sendMessage() {
         ArgumentCaptor<Intent> argumentCaptor = ArgumentCaptor.forClass(Intent.class);
         Mockito.doNothing()
-                .when(context)
-                .startActivity(argumentCaptor.capture());
+            .when(context)
+            .startActivity(argumentCaptor.capture());
 
         Intent response = new Intent("");
         messageSender.returnValue(PACKAGE_NAME, 1L, response);

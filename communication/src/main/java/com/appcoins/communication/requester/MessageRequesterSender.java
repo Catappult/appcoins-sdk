@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Parcelable;
-
 import com.appcoins.communication.MessageProcessorActivity;
 
 class MessageRequesterSender {
@@ -13,8 +12,8 @@ class MessageRequesterSender {
     private final String targetUri;
     private final String requesterActivityUri;
 
-    MessageRequesterSender(ActivityProvider activityProvider, String targetPackage, String targetUri,
-                           String requesterActivityUri) {
+    MessageRequesterSender(ActivityProvider activityProvider, String targetPackage,
+        String targetUri, String requesterActivityUri) {
         this.activityProvider = activityProvider;
         this.targetPackage = targetPackage;
         this.targetUri = targetUri;

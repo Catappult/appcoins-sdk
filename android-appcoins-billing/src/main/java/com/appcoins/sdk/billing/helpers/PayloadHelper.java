@@ -1,7 +1,6 @@
 package com.appcoins.sdk.billing.helpers;
 
 import android.net.Uri;
-
 import com.appcoins.billing.AppcoinsBilling;
 
 /**
@@ -24,16 +23,17 @@ public class PayloadHelper {
      * Method to build the payload required on the {@link AppcoinsBilling#getBuyIntent} method.
      *
      * @param developerPayload The additional payload to be sent
-     * @param origin           payment origin (BDS, UNITY,EXTERNAL)
-     * @param orderReference   a reference that allows the developers to identify this order in
-     *                         server-to-server communication
+     * @param origin payment origin (BDS, UNITY,EXTERNAL)
+     * @param orderReference a reference that allows the developers to identify this order in
+     * server-to-server communication
+     *
      * @return The final developers payload to be sent
      */
     public static String buildIntentPayload(String orderReference, String developerPayload,
-                                            String origin) {
+        String origin) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme(SCHEME)
-                .authority("appcoins.io");
+            .authority("appcoins.io");
         if (developerPayload != null && !developerPayload.isEmpty()) {
             builder.appendQueryParameter(PAYLOAD_PARAMETER, developerPayload);
         }
@@ -51,11 +51,14 @@ public class PayloadHelper {
      * addition payload content.
      *
      * @param uriString The payload uri content
+     *
      * @return The additional payload content
      */
     public static String getPayload(String uriString) {
         Uri uri = checkRequirements(uriString);
-        if (uri == null) return null;
+        if (uri == null) {
+            return null;
+        }
         return uri.getQueryParameter(PAYLOAD_PARAMETER);
     }
 
@@ -72,13 +75,17 @@ public class PayloadHelper {
 
     public static String getOrderReference(String uriString) {
         Uri uri = checkRequirements(uriString);
-        if (uri == null) return null;
+        if (uri == null) {
+            return null;
+        }
         return uri.getQueryParameter(ORDER_PARAMETER);
     }
 
     public static String getOrigin(String uriString) {
         Uri uri = checkRequirements(uriString);
-        if (uri == null) return null;
+        if (uri == null) {
+            return null;
+        }
         return uri.getQueryParameter(ORIGIN_PARAMETER);
     }
 }

@@ -1,11 +1,10 @@
 package com.appcoins.sdk.billing;
 
-import static com.appcoins.sdk.core.logger.Logger.logError;
-
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
-
 import java.util.ArrayList;
+
+import static com.appcoins.sdk.core.logger.Logger.logError;
 
 public class SkuDetailsAsync implements Runnable {
 
@@ -14,33 +13,33 @@ public class SkuDetailsAsync implements Runnable {
     private final SkuDetailsParams skuDetailsParams;
 
     public SkuDetailsAsync(SkuDetailsParams skuDetailsParams,
-                           SkuDetailsResponseListener skuDetailsResponseListener, Repository repository) {
+        SkuDetailsResponseListener skuDetailsResponseListener, Repository repository) {
         this.skuDetailsParams = skuDetailsParams;
         this.skuDetailsResponseListener = skuDetailsResponseListener;
         this.repository = repository;
     }
 
-    @Override
-    public void run() {
+    @Override public void run() {
         try {
             SkuDetailsResult response = getSkuDetails();
 
-            if (response.getSkuDetailsList() == null || response.getSkuDetailsList().isEmpty()) {
+            if (response.getSkuDetailsList() == null || response.getSkuDetailsList()
+                .isEmpty()) {
                 skuDetailsResponseListener.onSkuDetailsResponse(response.getResponseCode(),
-                        new ArrayList<>());
+                    new ArrayList<>());
             } else {
                 skuDetailsResponseListener.onSkuDetailsResponse(response.getResponseCode(),
-                        response.getSkuDetailsList());
+                    response.getSkuDetailsList());
             }
         } catch (ServiceConnectionException e) {
             logError("Service is not ready to request SkuDetails: " + e);
-            skuDetailsResponseListener.onSkuDetailsResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(),
-                    new ArrayList<>());
+            skuDetailsResponseListener.onSkuDetailsResponse(
+                ResponseCode.SERVICE_UNAVAILABLE.getValue(), new ArrayList<>());
         }
     }
 
     private SkuDetailsResult getSkuDetails() throws ServiceConnectionException {
         return repository.querySkuDetailsAsync(skuDetailsParams.getItemType(),
-                skuDetailsParams.getMoreItemSkus());
+            skuDetailsParams.getMoreItemSkus());
     }
 }

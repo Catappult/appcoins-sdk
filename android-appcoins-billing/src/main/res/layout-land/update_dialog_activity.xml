@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:background="#64000000"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -14,14 +15,16 @@
         android:background="#FFFFFFFF"
         android:orientation="vertical"
         android:paddingHorizontal="32dp"
-        android:paddingVertical="20dp">
+        android:paddingVertical="20dp"
+        >
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="@string/igu_app_new_version_available_popup_body"
-            android:textColor="#4a4a4a" />
+            android:textColor="#4a4a4a"
+            />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,13 +33,15 @@
             android:baselineAligned="false"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:weightSum="2">
+            android:weightSum="2"
+            >
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="start">
+                android:gravity="start"
+                >
 
                 <Button
                     android:id="@+id/button_close"
@@ -44,14 +49,16 @@
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
                     android:text="@string/igu_app_new_version_available_popup_close_button"
-                    android:textColor="#8f000000" />
+                    android:textColor="#8f000000"
+                    />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="end">
+                android:gravity="end"
+                >
 
                 <Button
                     android:id="@+id/button_update"
@@ -61,7 +68,8 @@
                     android:paddingHorizontal="12dp"
                     android:background="@drawable/update_button_background"
                     android:text="@string/igu_app_new_version_available_popup_update_button"
-                    android:textColor="#FFFFFFFF" />
+                    android:textColor="#FFFFFFFF"
+                    />
             </LinearLayout>
 
         </LinearLayout>

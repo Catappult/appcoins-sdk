@@ -14,10 +14,11 @@ import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
 object AttributionManager {
+    private const val TIMEOUT_IN_MILLIS = 30000
 
     private val packageName by lazy { WalletUtils.context.packageName }
     private val attributionRepository by lazy {
-        AttributionRepository(BdsService(BuildConfig.MMP_BASE_HOST, 30000))
+        AttributionRepository(BdsService(BuildConfig.MMP_BASE_HOST, TIMEOUT_IN_MILLIS))
     }
     private val attributionSharedPreferences by lazy {
         AttributionSharedPreferences(WalletUtils.context)
@@ -40,6 +41,7 @@ object AttributionManager {
     private fun updateIndicativeUserId(walletId: String?) =
         walletId?.let { IndicativeAnalytics.updateInstanceId(it) }
 
+    @Suppress("complexity:CyclomaticComplexMethod")
     private fun saveAttributionResult(attributionResponse: AttributionResponse?) {
         logInfo("Saving Attribution values.")
         if (attributionResponse?.packageName == packageName) {

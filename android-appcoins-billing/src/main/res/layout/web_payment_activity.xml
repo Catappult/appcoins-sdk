@@ -4,7 +4,8 @@
     android:id="@+id/base_constraint_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#64000000">
+    android:background="#64000000"
+    >
 
     <LinearLayout
         android:id="@+id/container_for_web_view"
@@ -14,12 +15,14 @@
         android:paddingTop="@dimen/webViewRoundCornersRadius"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        >
 
         <WebView
             android:id="@+id/web_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

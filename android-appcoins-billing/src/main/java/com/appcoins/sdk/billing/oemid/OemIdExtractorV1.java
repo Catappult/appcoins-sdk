@@ -1,14 +1,13 @@
 package com.appcoins.sdk.billing.oemid;
 
-import static com.appcoins.sdk.core.logger.Logger.logWarning;
-
 import android.content.Context;
 import android.content.pm.PackageManager;
-
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import static com.appcoins.sdk.core.logger.Logger.logWarning;
 
 public class OemIdExtractorV1 implements OemIdExtractor {
 
@@ -18,8 +17,7 @@ public class OemIdExtractorV1 implements OemIdExtractor {
         this.context = context;
     }
 
-    @Override
-    public String extract(String packageName) {
+    @Override public String extract(String packageName) {
         String oemId = null;
         try {
             String sourceDir = getPackageName(context, packageName);
@@ -40,8 +38,8 @@ public class OemIdExtractorV1 implements OemIdExtractor {
     }
 
     private String getPackageName(Context context, String packageName)
-            throws PackageManager.NameNotFoundException {
+        throws PackageManager.NameNotFoundException {
         return context.getPackageManager()
-                .getPackageInfo(packageName, 0).applicationInfo.sourceDir;
+            .getPackageInfo(packageName, 0).applicationInfo.sourceDir;
     }
 }

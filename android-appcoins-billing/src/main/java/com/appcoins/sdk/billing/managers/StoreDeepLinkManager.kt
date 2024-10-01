@@ -9,7 +9,7 @@ import com.appcoins.sdk.core.logger.Logger.logInfo
 
 class StoreDeepLinkManager(private val context: Context) {
     private val storeDeepLinkRepository =
-        StoreDeepLinkRepository(BdsService(BuildConfig.STORE_LINK_BASE_HOST, 3000))
+        StoreDeepLinkRepository(BdsService(BuildConfig.STORE_LINK_BASE_HOST, TIMEOUT_IN_MILLIS))
 
     fun getStoreDeepLink(): String? {
         logInfo("Getting Store Deeplink value.")
@@ -22,4 +22,7 @@ class StoreDeepLinkManager(private val context: Context) {
         return storeDeepLink
     }
 
+    private companion object {
+        const val TIMEOUT_IN_MILLIS = 3000
+    }
 }

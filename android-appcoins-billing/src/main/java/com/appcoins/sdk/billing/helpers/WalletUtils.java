@@ -1,13 +1,5 @@
 package com.appcoins.sdk.billing.helpers;
 
-import static com.appcoins.sdk.billing.helpers.DeviceInformationHelperKt.getDeviceInfo;
-import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.KEY_BUY_INTENT;
-import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
-import static com.appcoins.sdk.core.logger.Logger.logDebug;
-import static com.appcoins.sdk.core.logger.Logger.logError;
-import static com.appcoins.sdk.core.logger.Logger.logInfo;
-import static com.appcoins.sdk.core.logger.Logger.logWarning;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
@@ -18,7 +10,6 @@ import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
-
 import com.appcoins.billing.AppcoinsBilling;
 import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.sdk.billing.BuyItemProperties;
@@ -33,13 +24,19 @@ import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
 import com.appcoins.sdk.billing.webpayment.WebPaymentActivity;
 import com.indicative.client.android.Indicative;
-
-import org.jetbrains.annotations.Nullable;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
+import org.jetbrains.annotations.Nullable;
+
+import static com.appcoins.sdk.billing.helpers.DeviceInformationHelperKt.getDeviceInfo;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.KEY_BUY_INTENT;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
+import static com.appcoins.sdk.core.logger.Logger.logError;
+import static com.appcoins.sdk.core.logger.Logger.logInfo;
+import static com.appcoins.sdk.core.logger.Logger.logWarning;
 
 public class WalletUtils {
     public static Context context;
@@ -56,27 +53,30 @@ public class WalletUtils {
     }
 
     public static Bundle startServiceBind(AppcoinsBilling serviceAppcoinsBilling, int apiVersion,
-                                          String sku, String type, String developerPayload, String oemid, String guestWalletId) {
+        String sku, String type, String developerPayload, String oemid, String guestWalletId) {
         try {
-            // temporary workaround for the possibility of the endpoint failing, with two hardcoded options
+            // temporary workaround for the possibility of the endpoint failing, with two
+            // hardcoded options
             // but the logic should be reused instead of this hardcoded solution
             if (paymentFlowMethods == null) {
                 logInfo("PaymentFlowMethods is null");
                 if (Objects.equals(billingPackageName, BuildConfig.APPCOINS_WALLET_PACKAGE_NAME)
-                        || Objects.equals(billingPackageName, BuildConfig.GAMESHUB_PACKAGE_NAME)
-                        || Objects.equals(billingPackageName, BuildConfig.APTOIDE_GAMES_PACKAGE_NAME)) {
+                    || Objects.equals(billingPackageName, BuildConfig.GAMESHUB_PACKAGE_NAME)
+                    || Objects.equals(billingPackageName, BuildConfig.APTOIDE_GAMES_PACKAGE_NAME)) {
                     logInfo("billingPackageName: " + billingPackageName);
-                    return handleBindServiceAttempt(serviceAppcoinsBilling, packageToMethodName(), 1, apiVersion, sku,
-                            type, developerPayload, oemid, guestWalletId);
+                    return handleBindServiceAttempt(serviceAppcoinsBilling, packageToMethodName(),
+                        1, apiVersion, sku, type, developerPayload, oemid, guestWalletId);
                 }
             } else {
                 for (PaymentFlowMethod method : paymentFlowMethods) {
                     if (method instanceof PaymentFlowMethod.Wallet
-                            || method instanceof PaymentFlowMethod.GamesHub
-                            || method instanceof PaymentFlowMethod.AptoideGames) {
+                        || method instanceof PaymentFlowMethod.GamesHub
+                        || method instanceof PaymentFlowMethod.AptoideGames) {
                         logInfo("PaymentFlowMethod found: " + method.getName());
-                        Bundle bundle = handleBindServiceAttempt(serviceAppcoinsBilling, method.getName(),
-                                method.getPriority(), apiVersion, sku, type, developerPayload, oemid, guestWalletId);
+                        Bundle bundle =
+                            handleBindServiceAttempt(serviceAppcoinsBilling, method.getName(),
+                                method.getPriority(), apiVersion, sku, type, developerPayload,
+                                oemid, guestWalletId);
                         if (bundle != null) {
                             return bundle;
                         }
@@ -90,14 +90,15 @@ public class WalletUtils {
         }
     }
 
+    @SuppressWarnings({ "ant:checkstyle:ParameterNumber", "ant:checkstyle:ParameterNumber", })
     private static Bundle handleBindServiceAttempt(AppcoinsBilling serviceAppcoinsBilling,
-                                                   String methodName, int methodPriority, int apiVersion, String sku, String type,
-                                                   String developerPayload, String oemid, String guestWalletId) {
+        String methodName, int methodPriority, int apiVersion, String sku, String type,
+        String developerPayload, String oemid, String guestWalletId) {
         try {
             logInfo("Getting BuyIntent from BillingApp.");
             sdkAnalytics.sendCallBindServiceAttemptEvent(methodName, methodPriority);
-            return serviceAppcoinsBilling.getBuyIntent(apiVersion, context.getPackageName(), sku, type,
-                    developerPayload, oemid, guestWalletId);
+            return serviceAppcoinsBilling.getBuyIntent(apiVersion, context.getPackageName(), sku,
+                type, developerPayload, oemid, guestWalletId);
         } catch (Exception e) {
             logError("Failure getting BuyIntent from BillingApp.", e);
             return handleBindServiceFail(methodName, methodPriority);
@@ -121,7 +122,8 @@ public class WalletUtils {
             return createBundleWithResponseCode(ResponseCode.ERROR.getValue());
         }
 
-        Intent intent = WebPaymentActivity.newIntent(context, WalletUtils.getWebPaymentUrl(), sku, paymentFlow);
+        Intent intent =
+            WebPaymentActivity.newIntent(context, WalletUtils.getWebPaymentUrl(), sku, paymentFlow);
         Bundle intentBundle = createIntentBundle(intent, ResponseCode.OK.getValue());
         logDebug("WebPayment intentBundle:" + intentBundle);
         return intentBundle;
@@ -174,7 +176,8 @@ public class WalletUtils {
         return bundle;
     }
 
-    public static void setPayflowMethodsList(@Nullable List<PaymentFlowMethod> paymentFlowMethodsList) {
+    public static void setPayflowMethodsList(
+        @Nullable List<PaymentFlowMethod> paymentFlowMethodsList) {
         paymentFlowMethods = paymentFlowMethodsList;
         setBillingServiceInfoToBind();
     }
@@ -217,7 +220,7 @@ public class WalletUtils {
                     }
                 } else if (method instanceof PaymentFlowMethod.GamesHub) {
                     if (isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION)
-                            || isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE)) {
+                        || isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE)) {
                         setGamesHubBillingInfo();
                     }
                 } else if (method instanceof PaymentFlowMethod.AptoideGames) {
@@ -255,11 +258,11 @@ public class WalletUtils {
     private static void setGamesHubBillingInfo() {
         logInfo("Setting GamesHub Billing info.");
         boolean shouldUseAlternative =
-                BuildConfig.DEBUG && !isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION);
+            BuildConfig.DEBUG && !isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION);
         billingPackageName = shouldUseAlternative ? BuildConfig.GAMESHUB_PACKAGE_NAME_ALTERNATIVE
-                : BuildConfig.GAMESHUB_PACKAGE_NAME;
+            : BuildConfig.GAMESHUB_PACKAGE_NAME;
         billingIabAction = shouldUseAlternative ? BuildConfig.GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE
-                : BuildConfig.GAMESHUB_IAB_BIND_ACTION;
+            : BuildConfig.GAMESHUB_IAB_BIND_ACTION;
     }
 
     private static void setAptoideGamesBillingInfo() {
@@ -276,9 +279,9 @@ public class WalletUtils {
 
     private static String packageToMethodName() {
         boolean shouldUseAlternative =
-                BuildConfig.DEBUG && !isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION);
+            BuildConfig.DEBUG && !isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION);
         String gamesHub = shouldUseAlternative ? BuildConfig.GAMESHUB_PACKAGE_NAME_ALTERNATIVE
-                : BuildConfig.GAMESHUB_PACKAGE_NAME;
+            : BuildConfig.GAMESHUB_PACKAGE_NAME;
 
         if (billingPackageName == null) {
             return "unknown";
@@ -287,7 +290,8 @@ public class WalletUtils {
                 return "wallet";
             } else if (billingPackageName.equalsIgnoreCase(gamesHub)) {
                 return "games_hub_checkout";
-            } else if (billingPackageName.equalsIgnoreCase(BuildConfig.APTOIDE_GAMES_PACKAGE_NAME)) {
+            } else if (billingPackageName.equalsIgnoreCase(
+                BuildConfig.APTOIDE_GAMES_PACKAGE_NAME)) {
                 return "aptoide_games";
             } else {
                 return "unknown";
@@ -298,7 +302,7 @@ public class WalletUtils {
     public static boolean isAppAvailableToBind(String action) {
         Intent intent = new Intent(action);
         List<ResolveInfo> resolveInfoList = context.getPackageManager()
-                .queryIntentServices(intent, 0);
+            .queryIntentServices(intent, 0);
         return !resolveInfoList.isEmpty();
     }
 
@@ -332,19 +336,15 @@ public class WalletUtils {
         logInfo(String.format("Starting Indicative for %s", packageName));
         launchIndicative(() -> new Thread(() -> {
             String walletId = getWalletIdForUserSession();
-            logDebug(
-                    String.format("Parameters for indicative:" +
-                                    " walletId: %s" +
-                                    " packageName: %s" +
-                                    " versionCode: %s",
-                            walletId,
-                            packageName,
-                            BuildConfig.VERSION_CODE
-                    )
-            );
+            logDebug(String.format("Parameters for indicative:"
+                + " walletId: %s"
+                + " packageName: %s"
+                + " versionCode: %s", walletId, packageName, BuildConfig.VERSION_CODE));
             IndicativeAnalytics.INSTANCE.setInstanceId(walletId);
-            IndicativeAnalytics.INSTANCE.setIndicativeSuperProperties(packageName, BuildConfig.VERSION_CODE, getDeviceInfo());
-            SdkAnalytics sdkAnalytics = new SdkAnalytics(AnalyticsManagerProvider.provideAnalyticsManager());
+            IndicativeAnalytics.INSTANCE.setIndicativeSuperProperties(packageName,
+                BuildConfig.VERSION_CODE, getDeviceInfo());
+            SdkAnalytics sdkAnalytics =
+                new SdkAnalytics(AnalyticsManagerProvider.provideAnalyticsManager());
             sdkAnalytics.sendStartConnetionEvent();
         }).start());
     }
@@ -381,26 +381,26 @@ public class WalletUtils {
 
     private static String buildUserAgent(int widthPixels, int heightPixels) {
         return "AppCoinsGuestSDK/"
-                + BuildConfig.VERSION_NAME
-                + " (Linux; Android "
-                + Build.VERSION.RELEASE.replaceAll(";", " ")
-                + "; "
-                + Build.VERSION.SDK_INT
-                + "; "
-                + Build.MODEL.replaceAll(";", " ")
-                + " Build/"
-                + Build.PRODUCT.replace(";", " ")
-                + "; "
-                + System.getProperty("os.arch")
-                + "; "
-                + context.getPackageName()
-                + "; "
-                + BuildConfig.VERSION_CODE
-                + "; "
-                + widthPixels
-                + "x"
-                + heightPixels
-                + ")";
+            + BuildConfig.VERSION_NAME
+            + " (Linux; Android "
+            + Build.VERSION.RELEASE.replaceAll(";", " ")
+            + "; "
+            + Build.VERSION.SDK_INT
+            + "; "
+            + Build.MODEL.replaceAll(";", " ")
+            + " Build/"
+            + Build.PRODUCT.replace(";", " ")
+            + "; "
+            + System.getProperty("os.arch")
+            + "; "
+            + context.getPackageName()
+            + "; "
+            + BuildConfig.VERSION_CODE
+            + "; "
+            + widthPixels
+            + "x"
+            + heightPixels
+            + ")";
     }
 
     private static DisplayMetrics getDisplayMetrics() {

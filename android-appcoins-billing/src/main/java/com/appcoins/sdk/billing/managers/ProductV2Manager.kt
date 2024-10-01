@@ -11,7 +11,10 @@ import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
 object ProductV2Manager {
-    private val productV2Repository = ProductV2Repository(BdsService(BuildConfig.HOST_WS, 3000))
+    private const val TIMEOUT_IN_MILLIS = 3000
+
+    private val productV2Repository =
+        ProductV2Repository(BdsService(BuildConfig.HOST_WS, TIMEOUT_IN_MILLIS))
 
     fun getInappPurchase(purchaseToken: String): InappPurchaseResponse? {
         logInfo("Getting InappPurchase value.")

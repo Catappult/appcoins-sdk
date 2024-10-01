@@ -19,8 +19,8 @@ public class Purchase {
     private final boolean isAutoRenewing;
 
     public Purchase(String orderId, String itemType, String originalJson, byte[] signature,
-                    long purchaseTime, int purchaseState, String developerPayload, String token,
-                    String packageName, String sku, boolean isAutoRenewing) {
+        long purchaseTime, int purchaseState, String developerPayload, String token,
+        String packageName, String sku, boolean isAutoRenewing) {
         this.itemType = itemType;
         this.orderId = orderId;
         this.packageName = packageName;
@@ -62,8 +62,7 @@ public class Purchase {
         return developerPayload;
     }
 
-    @Nullable
-    public String getToken() {
+    @Nullable public String getToken() {
         return token;
     }
 

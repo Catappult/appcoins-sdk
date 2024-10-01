@@ -1,11 +1,10 @@
 package com.appcoins.communication.requester;
 
-import static com.appcoins.sdk.core.logger.Logger.logWarning;
-
 import android.os.Parcelable;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.appcoins.sdk.core.logger.Logger.logWarning;
 
 class StaticMessageResponseSynchronizer {
 
@@ -36,15 +35,17 @@ class StaticMessageResponseSynchronizer {
      * method. See {@link StaticMessageResponseSynchronizer#init()}
      *
      * @param requestCode id of the message to wait for
-     * @param timeout     the maximum time to wait in milliseconds.
+     * @param timeout the maximum time to wait in milliseconds.
+     *
      * @return the response from the target application
-     * @throws InterruptedException  if the waiter thread is interrupted or timeout was reached
+     *
+     * @throws InterruptedException if the waiter thread is interrupted or timeout was reached
      * @throws IllegalStateException if {@link StaticMessageResponseSynchronizer#init()} not called
-     *                               before calling waitMessage method
+     * before calling waitMessage method
      * @see StaticMessageResponseSynchronizer#init()
      */
     public static Parcelable waitMessage(long requestCode, int timeout)
-            throws InterruptedException, IllegalStateException {
+        throws InterruptedException, IllegalStateException {
         checkIfInitialized();
         if (!responses.containsKey(requestCode)) {
             Object blockingObject = new Object();
@@ -62,14 +63,15 @@ class StaticMessageResponseSynchronizer {
     private static void checkIfInitialized() throws IllegalStateException {
         if (messageReceivedListener == null) {
             throw new IllegalStateException(
-                    "StaticMessageResponseSynchronizer class must be initialized before being used.");
+                "StaticMessageResponseSynchronizer class must be initialized before being "
+                    + "used.");
         }
     }
 
     /**
      * @throws IllegalStateException if {@link StaticMessageResponseSynchronizer#init()} not called
-     *                               * before calling waitMessage method
-     *                               * @see StaticMessageResponseSynchronizer#init()
+     * * before calling waitMessage method
+     * * @see StaticMessageResponseSynchronizer#init()
      */
     public static MessageRequesterListener getMessageListener() throws IllegalStateException {
         checkIfInitialized();
