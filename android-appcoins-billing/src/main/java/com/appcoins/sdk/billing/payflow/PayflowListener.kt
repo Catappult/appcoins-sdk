@@ -1,5 +1,5 @@
 package com.appcoins.sdk.billing.payflow
 
 interface PayflowListener {
-  fun onResponse(payflowMethodResponse: PayflowMethodResponse)
+    fun onResponse(payflowMethodResponse: PayflowMethodResponse)
 }

@@ -2,42 +2,42 @@ package com.appcoins.sdk.billing;
 
 public class BillingFlowParams {
 
-  private final String orderReference;
+    private final String orderReference;
 
-  private final String developerPayload;
+    private final String developerPayload;
 
-  private final String origin;
+    private final String origin;
 
-  private final String sku;
+    private final String sku;
 
-  private final String skuType;
+    private final String skuType;
 
-  public BillingFlowParams(String sku, String skuType, String orderReference,
-      String developerPayload, String origin) {
-    this.sku = sku;
-    this.skuType = skuType;
-    this.orderReference = orderReference;
-    this.developerPayload = developerPayload;
-    this.origin = origin;
-  }
+    public BillingFlowParams(String sku, String skuType, String orderReference,
+                             String developerPayload, String origin) {
+        this.sku = sku;
+        this.skuType = skuType;
+        this.orderReference = orderReference;
+        this.developerPayload = developerPayload;
+        this.origin = origin;
+    }
 
-  public String getSku() {
-    return sku;
-  }
+    public String getSku() {
+        return sku;
+    }
 
-  public String getSkuType() {
-    return skuType;
-  }
+    public String getSkuType() {
+        return skuType;
+    }
 
-  public String getOrderReference() {
-    return orderReference;
-  }
+    public String getOrderReference() {
+        return orderReference;
+    }
 
-  public String getDeveloperPayload() {
-    return developerPayload;
-  }
+    public String getDeveloperPayload() {
+        return developerPayload;
+    }
 
-  public String getOrigin() {
-    return origin;
-  }
+    public String getOrigin() {
+        return origin;
+    }
 }

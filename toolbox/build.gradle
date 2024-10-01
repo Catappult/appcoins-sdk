@@ -1,46 +1,46 @@
 apply plugin: 'com.android.application'
 
 android {
-  compileSdkVersion COMPILE_SDK_VERSION
+    compileSdkVersion COMPILE_SDK_VERSION
 
-  defaultConfig {
-    applicationId "com.appcoins.toolbox"
+    defaultConfig {
+        applicationId "com.appcoins.toolbox"
 
-    minSdkVersion MIN_SDK_VERSION
-    targetSdkVersion TARGET_SDK_VERSION
+        minSdkVersion MIN_SDK_VERSION
+        targetSdkVersion TARGET_SDK_VERSION
 
-    versionCode 1
-    versionName "1.0"
+        versionCode 1
+        versionName "1.0"
 
-    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-    buildConfigField "String", "IAB_KEY",
-        "\"" + project.APPCOINS_DEV_IAB_KEY + "\""
-    multiDexEnabled = true
-  }
-
-  buildTypes {
-    release {
-      minifyEnabled false
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-      signingConfig signingConfigs.debug
+        buildConfigField "String", "IAB_KEY",
+                "\"" + project.APPCOINS_DEV_IAB_KEY + "\""
+        multiDexEnabled = true
     }
-  }
 
-  compileOptions {
-    targetCompatibility TARGET_COMPATIBILITY
-    sourceCompatibility SOURCE_COMPATIBILITY
-  }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+    }
 
-  lintOptions {
-    warning 'InvalidPackage'
-  }
+    compileOptions {
+        targetCompatibility TARGET_COMPATIBILITY
+        sourceCompatibility SOURCE_COMPATIBILITY
+    }
+
+    lintOptions {
+        warning 'InvalidPackage'
+    }
 }
 
 dependencies {
-  implementation libs.app.compat.contraint.layout
-  testImplementation libs.junit
+    implementation libs.app.compat.contraint.layout
+    testImplementation libs.junit
 
-  api project(':android-appcoins-billing')
-  api project(':appcoins-core')
+    api project(':android-appcoins-billing')
+    api project(':appcoins-core')
 }

@@ -9,8 +9,6 @@ import java.io.Serializable
 
 class IndicativeEventLogger : EventLogger, Serializable {
 
-    override fun setup() = Unit
-
     override fun logEvent(
         eventName: String, data: Map<String, Any>?,
         action: AnalyticsManager.Action, context: String
