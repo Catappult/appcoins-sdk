@@ -43,8 +43,8 @@ build
 release
 
 # IDEA
-.idea
-!.idea/codeStyleSettings.xml
+.idea/*
+!.idea/codeStyles
 *.iml
 *.iws
 
