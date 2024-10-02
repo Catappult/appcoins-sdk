@@ -18,7 +18,10 @@ class PayflowResponseMapper {
             )
 
         if (!isSuccess(response.responseCode) || response.response == null) {
-            logError("Failed to obtain Payflow Response. ResponseCode: ${response.responseCode} | Cause: ${response.exception}")
+            logError(
+                "Failed to obtain Payflow Response. " +
+                    "ResponseCode: ${response.responseCode} | Cause: ${response.exception}"
+            )
             return PayflowMethodResponse(response.responseCode, arrayListOf())
         }
 
@@ -85,10 +88,10 @@ sealed class PaymentFlowMethod(
         if (other != null) {
             if (other::class.java == this::class.java) {
                 other as PaymentFlowMethod
-                return other.paymentFlow == paymentFlow
-                    && other.name == name
-                    && other.priority == priority
-                    && other.version == version
+                return other.paymentFlow == paymentFlow &&
+                    other.name == name &&
+                    other.priority == priority &&
+                    other.version == version
             }
         }
         return false

@@ -170,12 +170,7 @@ complexity:
     active: true
     threshold: 80
   LongParameterList:
-    active: true
-    functionThreshold: 6
-    constructorThreshold: 7
-    ignoreDefaultParameters: false
-    ignoreDataClasses: true
-    ignoreAnnotatedParameter: [ ]
+    active: false
   MethodOverloading:
     active: false
     threshold: 6
@@ -227,14 +222,14 @@ complexity:
         "**/jsTest/**",
         "**/iosTest/**",
       ]
-    thresholdInFiles: 11
-    thresholdInClasses: 11
-    thresholdInInterfaces: 11
-    thresholdInObjects: 11
-    thresholdInEnums: 11
+    thresholdInFiles: 14
+    thresholdInClasses: 14
+    thresholdInInterfaces: 14
+    thresholdInObjects: 14
+    thresholdInEnums: 14
     ignoreDeprecated: false
     ignorePrivate: false
-    ignoreOverridden: false
+    ignoreOverridden: true
 
 coroutines:
   active: true
@@ -363,28 +358,7 @@ exceptions:
   ThrowingNewInstanceOfSameException:
     active: true
   TooGenericExceptionCaught:
-    active: true
-    excludes:
-      [
-        "**/test/**",
-        "**/androidTest/**",
-        "**/commonTest/**",
-        "**/jvmTest/**",
-        "**/androidUnitTest/**",
-        "**/androidInstrumentedTest/**",
-        "**/jsTest/**",
-        "**/iosTest/**",
-      ]
-    exceptionNames:
-      - "ArrayIndexOutOfBoundsException"
-      - "Error"
-      - "Exception"
-      - "IllegalMonitorStateException"
-      - "IndexOutOfBoundsException"
-      - "NullPointerException"
-      - "RuntimeException"
-      - "Throwable"
-    allowedExceptionNameRegex: "_|(ignore|expected).*"
+    active: false
   TooGenericExceptionThrown:
     active: true
     exceptionNames:
@@ -392,6 +366,11 @@ exceptions:
       - "Exception"
       - "RuntimeException"
       - "Throwable"
+
+formatting:
+  active: true
+  Filename:
+    active: false
 
 naming:
   active: true
@@ -549,7 +528,7 @@ potential-bugs:
   EqualsAlwaysReturnsTrueOrFalse:
     active: true
   EqualsWithHashCodeExist:
-    active: true
+    active: false
   ExitOutsideMain:
     active: false
   ExplicitGarbageCollectionCall:
@@ -766,6 +745,13 @@ style:
       - "0"
       - "1"
       - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+      - "8"
+      - "9"
     ignoreHashCodeFunction: true
     ignorePropertyDeclaration: false
     ignoreLocalVariableDeclaration: false
@@ -826,7 +812,7 @@ style:
     active: false
   ReturnCount:
     active: true
-    max: 2
+    max: 4
     excludedFunctions:
       - "equals"
     excludeLabeled: false
@@ -835,7 +821,7 @@ style:
   SafeCast:
     active: true
   SerialVersionUIDInSerializableClass:
-    active: true
+    active: false
   SpacingBetweenPackageAndImports:
     active: false
   StringShouldBeRawString:

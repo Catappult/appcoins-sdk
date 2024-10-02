@@ -28,7 +28,9 @@ import com.appcoins.sdk.core.ui.floatToPxs
 import com.appcoins.sdk.core.ui.getScreenHeightInDp
 import org.json.JSONObject
 
-class WebPaymentActivity : Activity(), SDKWebPaymentInterface,
+class WebPaymentActivity :
+    Activity(),
+    SDKWebPaymentInterface,
     WalletPaymentDeeplinkResponseStream.Consumer<Int> {
 
     private var webView: WebView? = null
@@ -87,7 +89,11 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface,
             try {
                 val jsonObject = JSONObject(this)
                 val sdkWebResponse = SDKWebResponse(jsonObject)
-                logInfo("Received Payment Result with responseCode: ${sdkWebResponse.responseCode} for sku: ${sdkWebResponse.purchaseData?.productId}")
+                logInfo(
+                    "Received Payment Result with " +
+                        "responseCode: ${sdkWebResponse.responseCode} " +
+                        "for sku: ${sdkWebResponse.purchaseData?.productId}"
+                )
                 val paymentResponse = sdkWebResponse.toSDKPaymentResponse()
                 logInfo("Sending Payment Result with resultCode: ${paymentResponse.resultCode}")
                 PaymentResponseStream.getInstance().emit(paymentResponse)
@@ -233,8 +239,11 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface,
     private fun applyPortraitConstraints(webViewContainerParams: ViewGroup.LayoutParams) {
         val screenMaxHeight = getScreenHeightInDp(this)
         val heightToSet =
-            if (screenMaxHeight < PORTRAIT_MAX_HEIGHT_DP) LinearLayout.LayoutParams.MATCH_PARENT
-            else floatToPxs(PORTRAIT_MAX_HEIGHT_DP, this).toInt()
+            if (screenMaxHeight < PORTRAIT_MAX_HEIGHT_DP) {
+                LinearLayout.LayoutParams.MATCH_PARENT
+            } else {
+                floatToPxs(PORTRAIT_MAX_HEIGHT_DP, this).toInt()
+            }
         webViewContainerParams.width = LinearLayout.LayoutParams.MATCH_PARENT
         webViewContainerParams.height = heightToSet
     }

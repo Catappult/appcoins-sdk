@@ -55,8 +55,7 @@ public class AppCoinsBilling implements Billing {
         return Security.verifyPurchase(base64DecodedPublicKey, purchaseData, decodeSignature);
     }
 
-    @Override
-    public void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
+    @Override public void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
         SkuDetailsResponseListener onSkuDetailsResponseListener) {
         stopPreviousSkuDetailsRequests();
         SkuDetailsAsync skuDetailsAsync =

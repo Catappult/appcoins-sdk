@@ -7,7 +7,7 @@ import java.io.Serializable
 
 object IndicativeAnalytics : Serializable {
 
-    var instanceId: String = ""  // Instance id from
+    var instanceId: String = "" // Instance id from
     var superProperties: MutableMap<String, Any> = HashMap()
 
     fun setIndicativeSuperProperties(

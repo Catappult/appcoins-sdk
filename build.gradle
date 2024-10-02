@@ -45,7 +45,6 @@ configure(allprojects) {
     apply from: "${rootProject.projectDir}/gradle/checkstyle.gradle"
 
     apply plugin: 'io.gitlab.arturbosch.detekt'
-    apply plugin: 'checkstyle'
 
     repositories {
         mavenCentral()

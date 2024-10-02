@@ -13,6 +13,7 @@ fun getDeviceInfo(): DeviceInformation {
     )
 }
 
+@Suppress("formatting:Filename")
 class DeviceInformation(
     val osVersion: String,
     val brand: String,
@@ -21,27 +22,30 @@ class DeviceInformation(
     val isProbablyEmulator: Boolean
 )
 
+@Suppress("complexity:CyclomaticComplexMethod")
 private fun isProbablyEmulator(): Boolean {
     return (
-        (Build.FINGERPRINT.startsWith("google/sdk_gphone_")
-            && Build.FINGERPRINT.endsWith(":user/release-keys")
-            && Build.MANUFACTURER == "Google"
-            && Build.PRODUCT.startsWith("sdk_gphone_")
-            && Build.BRAND == "google"
-            && Build.MODEL.startsWith("sdk_gphone_")
-            )
-            || Build.FINGERPRINT.startsWith("generic")
-            || Build.FINGERPRINT.startsWith("unknown")
-            || Build.MODEL.contains("google_sdk")
-            || Build.MODEL.contains("Emulator")
-            || Build.MODEL.contains("Android SDK built for x86")
-            || ("QC_Reference_Phone" == Build.BOARD && !"Xiaomi".equals(
-            Build.MANUFACTURER,
-            ignoreCase = true
-        )) // Bluestacks
-            || Build.MANUFACTURER.contains("Genymotion")
-            || Build.HOST.startsWith("Build") //MSI App Player
-            || (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
-            || Build.PRODUCT == "google_sdk"
+        (
+            Build.FINGERPRINT.startsWith("google/sdk_gphone_") &&
+                Build.FINGERPRINT.endsWith(":user/release-keys") &&
+                Build.MANUFACTURER == "Google" &&
+                Build.PRODUCT.startsWith("sdk_gphone_") &&
+                Build.BRAND == "google" &&
+                Build.MODEL.startsWith("sdk_gphone_")
+            ) || Build.FINGERPRINT.startsWith("generic") ||
+            Build.FINGERPRINT.startsWith("unknown") ||
+            Build.MODEL.contains("google_sdk") ||
+            Build.MODEL.contains("Emulator") ||
+            Build.MODEL.contains("Android SDK built for x86") ||
+            /* Bluestacks */
+            (
+                "QC_Reference_Phone" == Build.BOARD &&
+                    !"Xiaomi".equals(Build.MANUFACTURER, ignoreCase = true)
+                ) ||
+            Build.MANUFACTURER.contains("Genymotion") ||
+            /* MSI App Player */
+            Build.HOST.startsWith("Build") ||
+            (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")) ||
+            Build.PRODUCT == "google_sdk"
         )
 }

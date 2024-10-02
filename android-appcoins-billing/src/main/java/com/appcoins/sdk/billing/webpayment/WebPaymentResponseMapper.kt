@@ -16,7 +16,10 @@ class WebPaymentResponseMapper {
             )
 
         if (!isSuccess(response.responseCode) || response.response == null) {
-            logError("Failed to obtain WebPaymentUrl Response. ResponseCode: ${response.responseCode} | Cause: ${response.exception}")
+            logError(
+                "Failed to obtain WebPaymentUrl Response. " +
+                    "ResponseCode: ${response.responseCode} | Cause: ${response.exception}"
+            )
             return WebPaymentResponse(response.responseCode)
         }
 

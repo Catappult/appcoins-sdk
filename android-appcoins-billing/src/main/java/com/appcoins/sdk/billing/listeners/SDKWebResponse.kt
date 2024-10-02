@@ -20,16 +20,18 @@ data class SDKWebResponse(
     constructor(jsonObject: JSONObject) : this(
         jsonObject.optInt(RESPONSE_CODE),
         jsonObject.optString(PURCHASE_DATA)?.let {
-            if (it.isEmpty()) null
-            else PurchaseData(JSONObject(it))
+            if (it.isEmpty()) {
+                null
+            } else {
+                PurchaseData(JSONObject(it))
+            }
         },
         jsonObject.optString(DATA_SIGNATURE)?.let { it.ifEmpty { null } },
         jsonObject.optString(ORDER_REFERENCE)?.let { it.ifEmpty { null } },
     )
 
-    constructor(responseCode: Int) : this(
-        responseCode, null, null, null
-    )
+    constructor(responseCode: Int) :
+        this(responseCode, null, null, null)
 
     fun toSDKPaymentResponse(): SDKPaymentResponse =
         SDKPaymentResponse(
@@ -79,10 +81,18 @@ data class PurchaseData(
 ) {
     fun toJson(): String =
         """{"orderId":"$orderId","packageName":"$packageName","productId":"$productId","purchaseTime":$purchaseTime,"purchaseToken":"$purchaseToken","purchaseState":$purchaseState${
-            if (productType.equals(SkuType.subs.name, true))
+            if (productType.equals(SkuType.subs.name, true)) {
                 ""","isAutoRenewing":"$isAutoRenewing""""
-            else ""
-        }${if (developerPayload.isNullOrEmpty()) "" else ""","developerPayload":"$developerPayload""""}}"""
+            } else {
+                ""
+            }
+        }${
+            if (developerPayload.isNullOrEmpty()) {
+                ""
+            } else {
+                ""","developerPayload":"$developerPayload""""
+            }
+        }}"""
 
     constructor(jsonObject: JSONObject) : this(
         jsonObject.optString(ORDER_ID),

@@ -46,6 +46,8 @@ android {
         jvmTarget = TARGET_COMPATIBILITY
     }
 
+    check.dependsOn 'checkstyle', 'lint', 'detekt'
+
     lintOptions {
         abortOnError false
         warningsAsErrors true
@@ -58,6 +60,8 @@ android {
     checkstyle {
         toolVersion = "10.12.4"
         configFile = file("$rootDir/config/checkstyle/checkstyle.xml")
+        ignoreFailures = false
+        maxWarnings = 0
     }
 
     tasks.withType(Checkstyle).configureEach {

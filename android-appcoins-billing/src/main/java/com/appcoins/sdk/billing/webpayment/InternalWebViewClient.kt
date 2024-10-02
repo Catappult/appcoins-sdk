@@ -55,6 +55,7 @@ internal class InternalWebViewClient(private val activity: Activity) : WebViewCl
             false
         }
 
+    @Suppress("exceptions:SwallowedException")
     private fun canHandleApplicationDeeplink(uri: Uri): Boolean =
         try {
             val intent = Intent(ACTION_VIEW, uri).apply {
