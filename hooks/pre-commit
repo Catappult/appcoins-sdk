@@ -1,8 +1,6 @@
 #!/bin/sh
 
 echo "Running Codestyle verifications (Checkstyle, Lint & Detekt) on pre-commit..."
-echo "Current directory: $(pwd)"
-
 if ! make check; then
     echo "Code style checks failed. Commit aborted."
     exit 1
