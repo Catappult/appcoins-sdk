@@ -31,8 +31,8 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
         this.walletId = walletId;
     }
 
-    @Override public int isBillingSupported(int apiVersion, String packageName, String type)
-        throws RemoteException {
+    @Override
+    public int isBillingSupported(int apiVersion, String packageName, String type) throws RemoteException {
         pingConnection(apiVersion, packageName, type);
         return appcoinsBilling.isBillingSupported(apiVersion, packageName, type);
     }
@@ -44,12 +44,11 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
     }
 
     @Override
-    public Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type,
-        String developerPayload, String oemid, String guestWalletId) throws RemoteException {
+    public Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type, String developerPayload,
+        String oemid, String guestWalletId) throws RemoteException {
         Bundle bundle;
-        bundle =
-            WalletUtils.startServiceBind(appcoinsBilling, apiVersion, sku, type, developerPayload,
-                oemid, guestWalletId);
+        bundle = WalletUtils.startServiceBind(appcoinsBilling, apiVersion, sku, type, developerPayload, oemid,
+            guestWalletId);
         if (bundle == null) {
             bundle = new Bundle();
             bundle.putInt(RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.getValue());
@@ -57,48 +56,44 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
         return WalletUtils.startWalletPayment(bundle);
     }
 
-    @Override public Bundle getPurchases(int apiVersion, String packageName, String type,
-        String continuationToken) throws RemoteException {
-        Bundle bundle =
-            appcoinsBilling.getPurchases(apiVersion, packageName, type, continuationToken);
+    @Override
+    public Bundle getPurchases(int apiVersion, String packageName, String type, String continuationToken)
+        throws RemoteException {
+        Bundle bundle = appcoinsBilling.getPurchases(apiVersion, packageName, type, continuationToken);
         if (walletId != null) {
             ArrayList<String> idsList = bundle.getStringArrayList(INAPP_PURCHASE_ID_LIST);
             ArrayList<String> skuList = bundle.getStringArrayList(INAPP_PURCHASE_ITEM_LIST);
             ArrayList<String> dataList = bundle.getStringArrayList(INAPP_PURCHASE_DATA_LIST);
-            ArrayList<String> signatureDataList =
-                bundle.getStringArrayList(INAPP_DATA_SIGNATURE_LIST);
+            ArrayList<String> signatureDataList = bundle.getStringArrayList(INAPP_DATA_SIGNATURE_LIST);
             PurchasesResponse purchasesResponse =
                 ProductV2Manager.INSTANCE.getPurchasesSync(packageName, walletId, type);
             bundle =
-                new PurchasesBundleMapper().mapGuestPurchases(bundle, purchasesResponse, idsList,
-                    skuList, dataList, signatureDataList);
+                new PurchasesBundleMapper().mapGuestPurchases(bundle, purchasesResponse, idsList, skuList, dataList,
+                    signatureDataList);
         }
         return bundle;
     }
 
-    @Override public int consumePurchase(int apiVersion, String packageName, String purchaseToken)
-        throws RemoteException {
+    @Override
+    public int consumePurchase(int apiVersion, String packageName, String purchaseToken) throws RemoteException {
         int responseCode = appcoinsBilling.consumePurchase(apiVersion, packageName, purchaseToken);
-        int guestResponseCode =
-            consumeGuestPurchase(walletId, apiVersion, packageName, purchaseToken);
-        if (responseCode == ResponseCode.OK.getValue()
-            || guestResponseCode == ResponseCode.OK.getValue()) {
+        int guestResponseCode = consumeGuestPurchase(walletId, apiVersion, packageName, purchaseToken);
+        if (responseCode == ResponseCode.OK.getValue() || guestResponseCode == ResponseCode.OK.getValue()) {
             return ResponseCode.OK.getValue();
         } else {
             return ResponseCode.ERROR.getValue();
         }
     }
 
-    @Override public IBinder asBinder() {
+    @Override
+    public IBinder asBinder() {
         return appcoinsBilling.asBinder();
     }
 
-    private int consumeGuestPurchase(String walletId, int apiVersion, String packageName,
-        String purchaseToken) {
+    private int consumeGuestPurchase(String walletId, int apiVersion, String packageName, String purchaseToken) {
         int responseCode = ResponseCode.ERROR.getValue();
         if (walletId != null && apiVersion == 3) {
-            responseCode = ProductV2Manager.INSTANCE.consumePurchase(this.walletId, packageName,
-                purchaseToken);
+            responseCode = ProductV2Manager.INSTANCE.consumePurchase(this.walletId, packageName, purchaseToken);
         }
         return responseCode;
     }

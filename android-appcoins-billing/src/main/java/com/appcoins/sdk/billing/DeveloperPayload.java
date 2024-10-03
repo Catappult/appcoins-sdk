@@ -9,8 +9,7 @@ public class DeveloperPayload implements Serializable {
     private final String orderReference;
     private final String origin;
 
-    public DeveloperPayload(String rawPayload, String developerPayload, String orderReference,
-        String origin) {
+    public DeveloperPayload(String rawPayload, String developerPayload, String orderReference, String origin) {
 
         this.rawPayload = rawPayload;
         this.developerPayload = developerPayload;

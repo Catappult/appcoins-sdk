@@ -15,15 +15,14 @@ import static com.appcoins.sdk.core.logger.Logger.logInfo;
 public class CatapultBillingAppCoinsFactory {
 
     @SuppressWarnings("checkstyle:methodnamecheck")
-    public static AppcoinsBillingClient BuildAppcoinsBilling(Context context,
-        String base64PublicKey, PurchasesUpdatedListener purchaseFinishedListener) {
+    public static AppcoinsBillingClient BuildAppcoinsBilling(Context context, String base64PublicKey,
+        PurchasesUpdatedListener purchaseFinishedListener) {
 
         Logger.setupLogger(context);
         logInfo("Starting setup of AppcoinsBillingClient.");
         LogGeneralInformation.INSTANCE.invoke(context);
 
-        AppCoinsAndroidBillingRepository repository =
-            new AppCoinsAndroidBillingRepository(3, context.getPackageName());
+        AppCoinsAndroidBillingRepository repository = new AppCoinsAndroidBillingRepository(3, context.getPackageName());
 
         RepositoryServiceConnection connection =
             new RepositoryServiceConnection(context.getApplicationContext(), repository);
@@ -31,7 +30,7 @@ public class CatapultBillingAppCoinsFactory {
 
         byte[] base64DecodedPublicKey = Base64.decode(base64PublicKey, Base64.DEFAULT);
 
-        return new CatapultAppcoinsBilling(new AppCoinsBilling(repository, base64DecodedPublicKey),
-            connection, purchaseFinishedListener);
+        return new CatapultAppcoinsBilling(new AppCoinsBilling(repository, base64DecodedPublicKey), connection,
+            purchaseFinishedListener);
     }
 }

@@ -13,8 +13,7 @@ public class AnalyticsManagerProvider {
             IndicativeEventLogger indicativeEventLogger = new IndicativeEventLogger();
 
             analyticsManagerInstance =
-                new AnalyticsManager.Builder().addLogger(indicativeEventLogger,
-                        provideIndicativeEventList())
+                new AnalyticsManager.Builder().addLogger(indicativeEventLogger, provideIndicativeEventList())
                     .setAnalyticsNormalizer(new KeysNormalizer())
                     .build();
         }

@@ -12,34 +12,33 @@ public class SkuDetailsAsync implements Runnable {
     private final SkuDetailsResponseListener skuDetailsResponseListener;
     private final SkuDetailsParams skuDetailsParams;
 
-    public SkuDetailsAsync(SkuDetailsParams skuDetailsParams,
-        SkuDetailsResponseListener skuDetailsResponseListener, Repository repository) {
+    public SkuDetailsAsync(SkuDetailsParams skuDetailsParams, SkuDetailsResponseListener skuDetailsResponseListener,
+        Repository repository) {
         this.skuDetailsParams = skuDetailsParams;
         this.skuDetailsResponseListener = skuDetailsResponseListener;
         this.repository = repository;
     }
 
-    @Override public void run() {
+    @Override
+    public void run() {
         try {
             SkuDetailsResult response = getSkuDetails();
 
             if (response.getSkuDetailsList() == null || response.getSkuDetailsList()
                 .isEmpty()) {
-                skuDetailsResponseListener.onSkuDetailsResponse(response.getResponseCode(),
-                    new ArrayList<>());
+                skuDetailsResponseListener.onSkuDetailsResponse(response.getResponseCode(), new ArrayList<>());
             } else {
                 skuDetailsResponseListener.onSkuDetailsResponse(response.getResponseCode(),
                     response.getSkuDetailsList());
             }
         } catch (ServiceConnectionException e) {
             logError("Service is not ready to request SkuDetails: " + e);
-            skuDetailsResponseListener.onSkuDetailsResponse(
-                ResponseCode.SERVICE_UNAVAILABLE.getValue(), new ArrayList<>());
+            skuDetailsResponseListener.onSkuDetailsResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(),
+                new ArrayList<>());
         }
     }
 
     private SkuDetailsResult getSkuDetails() throws ServiceConnectionException {
-        return repository.querySkuDetailsAsync(skuDetailsParams.getItemType(),
-            skuDetailsParams.getMoreItemSkus());
+        return repository.querySkuDetailsAsync(skuDetailsParams.getItemType(), skuDetailsParams.getMoreItemSkus());
     }
 }

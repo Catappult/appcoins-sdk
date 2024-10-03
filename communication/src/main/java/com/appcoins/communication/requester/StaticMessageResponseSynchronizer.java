@@ -63,8 +63,7 @@ class StaticMessageResponseSynchronizer {
     private static void checkIfInitialized() throws IllegalStateException {
         if (messageReceivedListener == null) {
             throw new IllegalStateException(
-                "StaticMessageResponseSynchronizer class must be initialized before being "
-                    + "used.");
+                "StaticMessageResponseSynchronizer class must be initialized before being " + "used.");
         }
     }
 

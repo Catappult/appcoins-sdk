@@ -101,8 +101,7 @@ publishing {
             artifactId project.name
             version PUBLISH_VERSION
 
-            artifact(
-                "$buildDir/outputs/aar/${project.name}-${System.getenv('BUILD_TYPE_NAME')}.aar")
+            artifact("$buildDir/outputs/aar/${project.name}-${System.getenv('BUILD_TYPE_NAME')}.aar")
             artifact androidSourcesJar
 
             pom {

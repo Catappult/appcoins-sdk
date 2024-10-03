@@ -18,11 +18,9 @@ public class SkuDetails implements Serializable {
     private final String title;
     private final String description;
 
-    public SkuDetails(String itemType, String sku, String type, String price,
-        long priceAmountMicros, String priceCurrencyCode, String appcPrice,
-        long appcPriceAmountMicros, String appcPriceCurrencyCode, String fiatPrice,
-        long fiatPriceAmountMicros, String fiatPriceCurrencyCode, String title,
-        String description) {
+    public SkuDetails(String itemType, String sku, String type, String price, long priceAmountMicros,
+        String priceCurrencyCode, String appcPrice, long appcPriceAmountMicros, String appcPriceCurrencyCode,
+        String fiatPrice, long fiatPriceAmountMicros, String fiatPriceCurrencyCode, String title, String description) {
         this.itemType = itemType;
         this.sku = sku;
         this.type = type;
@@ -95,7 +93,8 @@ public class SkuDetails implements Serializable {
         return description;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "SkuDetails{"
             + "itemType='"
             + itemType

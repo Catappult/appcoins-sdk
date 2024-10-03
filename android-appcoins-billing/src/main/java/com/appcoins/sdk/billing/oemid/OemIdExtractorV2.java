@@ -27,7 +27,8 @@ public class OemIdExtractorV2 implements OemIdExtractor {
         this.context = context;
     }
 
-    @Override public String extract(String packageName) {
+    @Override
+    public String extract(String packageName) {
         String oemId = null;
         try {
             String sourceDir = getPackageName(context, packageName);
@@ -42,8 +43,7 @@ public class OemIdExtractorV2 implements OemIdExtractor {
         return null;
     }
 
-    private String getPackageName(Context context, String packageName)
-        throws PackageManager.NameNotFoundException {
+    private String getPackageName(Context context, String packageName) throws PackageManager.NameNotFoundException {
         return context.getPackageManager()
             .getPackageInfo(packageName, 0).applicationInfo.sourceDir;
     }
@@ -96,8 +96,7 @@ public class OemIdExtractorV2 implements OemIdExtractor {
         }
     }
 
-    private String readValue(int cdOffset, byte[] buffer, RandomAccessFile randomAccessFile)
-        throws IOException {
+    private String readValue(int cdOffset, byte[] buffer, RandomAccessFile randomAccessFile) throws IOException {
         ByteBuffer wrap = ByteBuffer.wrap(buffer);
         wrap.order(ByteOrder.LITTLE_ENDIAN);
         int blockSize = wrap.getInt();
@@ -107,8 +106,7 @@ public class OemIdExtractorV2 implements OemIdExtractor {
         randomAccessFile.readFully(byteArray);
         byteArray = Arrays.copyOfRange(byteArray, getPaddingStart(byteArray), byteArray.length);
         int headerIndex = getHeaderIndex(byteArray);
-        return headerIndex == -1 ? this.getOldOemidFormat(byteArray)
-            : this.getOemid(byteArray, headerIndex);
+        return headerIndex == -1 ? this.getOldOemidFormat(byteArray) : this.getOemid(byteArray, headerIndex);
     }
 
     private String getOldOemidFormat(byte[] bytes) {

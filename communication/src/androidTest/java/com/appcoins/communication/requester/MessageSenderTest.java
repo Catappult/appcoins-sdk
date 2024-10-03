@@ -21,13 +21,14 @@ public class MessageSenderTest {
     private MessageRequesterSender messageSender;
     private Context context;
 
-    @Before public void setUp() {
+    @Before
+    public void setUp() {
         context = Mockito.mock(Context.class);
-        messageSender =
-            new MessageRequesterSender(context, PACKAGE, TARGET_URI, RECEIVE_TARGET_URI);
+        messageSender = new MessageRequesterSender(context, PACKAGE, TARGET_URI, RECEIVE_TARGET_URI);
     }
 
-    @Test public void sendMessage() {
+    @Test
+    public void sendMessage() {
         ArgumentCaptor<Intent> argumentCaptor = ArgumentCaptor.forClass(Intent.class);
         Mockito.doNothing()
             .when(context)
@@ -46,13 +47,11 @@ public class MessageSenderTest {
         assertEquals("wrong target package", PACKAGE, intent.getPackage());
         assertEquals("wrong message id argument", MESSAGE_ID,
             intent.getLongExtra(MessageProcessorActivity.MESSAGE_ID, -1));
-        assertEquals("wrong method type argument", TYPE,
-            intent.getIntExtra(MessageProcessorActivity.METHOD_ID, -1));
+        assertEquals("wrong method type argument", TYPE, intent.getIntExtra(MessageProcessorActivity.METHOD_ID, -1));
         assertEquals("wrong sender package name", BuildConfig.APPLICATION_ID,
             intent.getStringExtra(MessageProcessorActivity.REQUESTER_PACKAGE_NAME));
         assertEquals("wrong sender package name", RECEIVE_TARGET_URI,
             intent.getStringExtra(MessageProcessorActivity.REQUESTER_ACTIVITY_URI));
-        assertEquals("wrong argument", arguments,
-            intent.getParcelableExtra(MessageProcessorActivity.ARGUMENTS));
+        assertEquals("wrong argument", arguments, intent.getParcelableExtra(MessageProcessorActivity.ARGUMENTS));
     }
 }

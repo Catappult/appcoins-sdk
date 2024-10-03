@@ -17,7 +17,8 @@ public class OemIdExtractorV1 implements OemIdExtractor {
         this.context = context;
     }
 
-    @Override public String extract(String packageName) {
+    @Override
+    public String extract(String packageName) {
         String oemId = null;
         try {
             String sourceDir = getPackageName(context, packageName);
@@ -37,8 +38,7 @@ public class OemIdExtractorV1 implements OemIdExtractor {
         return oemId;
     }
 
-    private String getPackageName(Context context, String packageName)
-        throws PackageManager.NameNotFoundException {
+    private String getPackageName(Context context, String packageName) throws PackageManager.NameNotFoundException {
         return context.getPackageManager()
             .getPackageInfo(packageName, 0).applicationInfo.sourceDir;
     }

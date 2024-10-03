@@ -33,11 +33,8 @@ public class Security {
      * @param signedData the signed JSON string (signed, not encrypted)
      * @param decodedSignature the Signature for the data, signed with the private key
      */
-    public static boolean verifyPurchase(byte[] base64DecodedPublicKey, String signedData,
-        byte[] decodedSignature) {
-        if (signedData.isEmpty()
-            || base64DecodedPublicKey.length <= 0
-            || decodedSignature.length <= 0) {
+    public static boolean verifyPurchase(byte[] base64DecodedPublicKey, String signedData, byte[] decodedSignature) {
+        if (signedData.isEmpty() || base64DecodedPublicKey.length <= 0 || decodedSignature.length <= 0) {
             return false;
         }
 

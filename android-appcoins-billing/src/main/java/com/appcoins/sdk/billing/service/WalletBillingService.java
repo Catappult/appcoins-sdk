@@ -20,29 +20,30 @@ public class WalletBillingService implements AppcoinsBilling {
         return service.getSkuDetails(apiVersion, packageName, type, skusBundle);
     }
 
-    @Override public int isBillingSupported(int apiVersion, String packageName, String type)
-        throws RemoteException {
+    @Override
+    public int isBillingSupported(int apiVersion, String packageName, String type) throws RemoteException {
         return service.isBillingSupported(apiVersion, packageName, type);
     }
 
     @Override
-    public Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type,
-        String developerPayload, String oemid, String guestWalletId) throws RemoteException {
-        return service.getBuyIntent(apiVersion, packageName, sku, type, developerPayload, oemid,
-            guestWalletId);
+    public Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type, String developerPayload,
+        String oemid, String guestWalletId) throws RemoteException {
+        return service.getBuyIntent(apiVersion, packageName, sku, type, developerPayload, oemid, guestWalletId);
     }
 
-    @Override public Bundle getPurchases(int apiVersion, String packageName, String skuType,
-        String continuationToken) throws RemoteException {
+    @Override
+    public Bundle getPurchases(int apiVersion, String packageName, String skuType, String continuationToken)
+        throws RemoteException {
         return service.getPurchases(apiVersion, packageName, skuType, continuationToken);
     }
 
-    @Override public int consumePurchase(int apiVersion, String packageName, String purchaseToken)
-        throws RemoteException {
+    @Override
+    public int consumePurchase(int apiVersion, String packageName, String purchaseToken) throws RemoteException {
         return service.consumePurchase(apiVersion, packageName, purchaseToken);
     }
 
-    @Override public IBinder asBinder() {
+    @Override
+    public IBinder asBinder() {
         return null;
     }
 }

@@ -76,10 +76,8 @@ public class AndroidBillingMapper {
                     }
                     //Base64 decoded string
                     byte[] decodedSignature = Base64.decode(signature, Base64.DEFAULT);
-                    list.add(
-                        new Purchase(orderId, skuType, purchaseData, decodedSignature, purchaseTime,
-                            purchaseState, developerPayload, token, packageName, sku,
-                            isAutoRenewing));
+                    list.add(new Purchase(orderId, skuType, purchaseData, decodedSignature, purchaseTime, purchaseState,
+                        developerPayload, token, packageName, sku, isAutoRenewing));
                 } catch (JSONException e) {
                     logError("Failed to map Purchase: " + e);
                 }
@@ -127,9 +125,9 @@ public class AndroidBillingMapper {
             String title = jsonElement.getString("title");
             String description = jsonElement.getString("description");
 
-            return new SkuDetails(skuType, sku, type, price, priceAmountMicros, priceCurrencyCode,
-                appcPrice, appcPriceAmountMicros, appcPriceCurrencyCode, fiatPrice,
-                fiatPriceAmountMicros, fiatPriceCurrencyCode, title, description);
+            return new SkuDetails(skuType, sku, type, price, priceAmountMicros, priceCurrencyCode, appcPrice,
+                appcPriceAmountMicros, appcPriceCurrencyCode, fiatPrice, fiatPriceAmountMicros, fiatPriceCurrencyCode,
+                title, description);
         } catch (JSONException e) {
             logError("Failed to parse SkuDetails: " + e);
         }
@@ -138,8 +136,7 @@ public class AndroidBillingMapper {
     }
 
     public static LaunchBillingFlowResult mapBundleToHashMapGetIntent(Bundle bundle) {
-        return new LaunchBillingFlowResult(bundle.getInt(RESPONSE_CODE),
-            bundle.getParcelable(KEY_BUY_INTENT));
+        return new LaunchBillingFlowResult(bundle.getInt(RESPONSE_CODE), bundle.getParcelable(KEY_BUY_INTENT));
     }
 
     public static String mapSkuDetailsResponse(SkuDetailsV2 skuDetails) {

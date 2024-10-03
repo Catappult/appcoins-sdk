@@ -17,6 +17,5 @@ public interface SyncIpcMessageRequester {
      * can't use main thread to send
      * messages, it would cause a deadlock
      */
-    Parcelable sendMessage(int methodId, Parcelable arguments)
-        throws InterruptedException, MainThreadException;
+    Parcelable sendMessage(int methodId, Parcelable arguments) throws InterruptedException, MainThreadException;
 }

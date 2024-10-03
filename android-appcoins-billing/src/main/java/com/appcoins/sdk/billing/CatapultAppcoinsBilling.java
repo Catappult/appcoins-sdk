@@ -25,8 +25,8 @@ import static com.appcoins.sdk.core.logger.Logger.logDebug;
 import static com.appcoins.sdk.core.logger.Logger.logError;
 import static com.appcoins.sdk.core.logger.Logger.logInfo;
 
-public class CatapultAppcoinsBilling implements AppcoinsBillingClient,
-    PendingPurchaseStream.Consumer<Pair<Activity, BuyItemProperties>> {
+public class CatapultAppcoinsBilling
+    implements AppcoinsBillingClient, PendingPurchaseStream.Consumer<Pair<Activity, BuyItemProperties>> {
 
     private final Billing billing;
     private final RepositoryConnection connection;
@@ -39,11 +39,13 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient,
         this.purchaseFinishedListener = purchaseFinishedListener;
     }
 
-    @Override public PurchasesResult queryPurchases(String skuType) {
+    @Override
+    public PurchasesResult queryPurchases(String skuType) {
         return billing.queryPurchases(skuType);
     }
 
-    @Override public void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
+    @Override
+    public void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
         SkuDetailsResponseListener onSkuDetailsResponseListener) {
         billing.querySkuDetailsAsync(skuDetailsParams, onSkuDetailsResponseListener);
     }
@@ -53,7 +55,8 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient,
         billing.consumeAsync(token, consumeResponseListener);
     }
 
-    @Override public int launchBillingFlow(Activity activity, BillingFlowParams billingFlowParams) {
+    @Override
+    public int launchBillingFlow(Activity activity, BillingFlowParams billingFlowParams) {
 
         int responseCode;
 
@@ -62,8 +65,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient,
                 .sendPurchaseIntentEvent(billingFlowParams.getSku());
             String payload = PayloadHelper.buildIntentPayload(billingFlowParams.getOrderReference(),
                 billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin());
-            AttributionSharedPreferences attributionSharedPreferences =
-                new AttributionSharedPreferences(activity);
+            AttributionSharedPreferences attributionSharedPreferences = new AttributionSharedPreferences(activity);
             String oemid = attributionSharedPreferences.getOemId();
             String guestWalletId = attributionSharedPreferences.getWalletId();
 
@@ -86,8 +88,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient,
 
             if (responseCode != ResponseCode.OK.getValue()) {
                 logError("Failed to launch billing flow. ResponseCode: " + responseCode);
-                SDKPaymentResponse sdkPaymentResponse =
-                    SDKPaymentResponse.Companion.createErrorTypeResponse();
+                SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
                 ApplicationUtils.handleActivityResult(billing, sdkPaymentResponse.getResultCode(),
                     sdkPaymentResponse.getIntent(), purchaseFinishedListener);
                 return responseCode;
@@ -111,14 +112,14 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient,
 
     private int handleErrorTypeResponse(int value, Exception e) {
         logError("Failed to launch billing flow.", e);
-        SDKPaymentResponse sdkPaymentResponse =
-            SDKPaymentResponse.Companion.createErrorTypeResponse();
+        SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
         ApplicationUtils.handleActivityResult(billing, sdkPaymentResponse.getResultCode(),
             sdkPaymentResponse.getIntent(), purchaseFinishedListener);
         return value;
     }
 
-    @Override public void startConnection(final AppCoinsBillingStateListener listener) {
+    @Override
+    public void startConnection(final AppCoinsBillingStateListener listener) {
         logInfo("Request to start connection of SDK.");
         if (!isReady()) {
             logInfo("Starting connection of SDK.");
@@ -128,7 +129,8 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient,
         }
     }
 
-    @Override public void endConnection() {
+    @Override
+    public void endConnection() {
         logInfo("Request to end connection of SDK.");
         if (isReady()) {
             logInfo("Ending connection of SDK.");
@@ -138,11 +140,13 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient,
         }
     }
 
-    @Override public boolean isReady() {
+    @Override
+    public boolean isReady() {
         return billing.isReady();
     }
 
-    @Override public boolean isAppUpdateAvailable() {
+    @Override
+    public boolean isAppUpdateAvailable() {
         logInfo("Request to verify AppUpdateAvailable.");
         if (Looper.myLooper() == Looper.getMainLooper()) {
             logInfo("Request from MainThread. Cancelling.");
@@ -152,7 +156,8 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient,
         }
     }
 
-    @Override public void launchAppUpdateStore(Context context) {
+    @Override
+    public void launchAppUpdateStore(Context context) {
         logInfo("Request to launch App Update Store.");
         Runnable runnable = () -> {
             if (isAppUpdateAvailable()) {
@@ -162,7 +167,8 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient,
         new Thread(runnable).start();
     }
 
-    @Override public void launchAppUpdateDialog(Context context) {
+    @Override
+    public void launchAppUpdateDialog(Context context) {
         logInfo("Request to launch App Update Dialog.");
         Runnable runnable = () -> {
             if (isAppUpdateAvailable()) {
@@ -176,7 +182,8 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient,
         new Thread(runnable).start();
     }
 
-    @Deprecated @Override
+    @Deprecated
+    @Override
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
         return true;
     }
@@ -189,7 +196,10 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient,
         return purchaseFinishedListener;
     }
 
-    @Override public void accept(@Nullable Pair<Activity, BuyItemProperties> value) {
+    @Override
+    public void accept(
+        @Nullable
+        Pair<Activity, BuyItemProperties> value) {
         Runnable runnable = () -> {
             Looper.prepare();
             resumeBillingFlow(value.component1(), value.component2()
@@ -205,8 +215,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient,
         try {
             String payload = PayloadHelper.buildIntentPayload(billingFlowParams.getOrderReference(),
                 billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin());
-            AttributionSharedPreferences attributionSharedPreferences =
-                new AttributionSharedPreferences(activity);
+            AttributionSharedPreferences attributionSharedPreferences = new AttributionSharedPreferences(activity);
             String oemid = attributionSharedPreferences.getOemId();
             String guestWalletId = attributionSharedPreferences.getWalletId();
 
@@ -229,8 +238,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient,
 
             if (responseCode != ResponseCode.OK.getValue()) {
                 logError("Failed to launch billing flow. ResponseCode: " + responseCode);
-                SDKPaymentResponse sdkPaymentResponse =
-                    SDKPaymentResponse.Companion.createErrorTypeResponse();
+                SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
                 ApplicationUtils.handleActivityResult(billing, sdkPaymentResponse.getResultCode(),
                     sdkPaymentResponse.getIntent(), purchaseFinishedListener);
                 return;

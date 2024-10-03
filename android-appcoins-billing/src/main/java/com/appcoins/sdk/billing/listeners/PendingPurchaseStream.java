@@ -13,7 +13,8 @@ public class PendingPurchaseStream {
 
     private Pair<Activity, BuyItemProperties> value = null;
 
-    @Nullable private Consumer<Pair<Activity, BuyItemProperties>> collector = null;
+    @Nullable
+    private Consumer<Pair<Activity, BuyItemProperties>> collector = null;
 
     private PendingPurchaseStream() {
     }
@@ -29,7 +30,9 @@ public class PendingPurchaseStream {
         return value;
     }
 
-    public void emit(@Nullable Pair<Activity, BuyItemProperties> value) {
+    public void emit(
+        @Nullable
+        Pair<Activity, BuyItemProperties> value) {
         logInfo("Emitting new value on PendingPurchaseStream.");
         notifyCollector(value);
     }
@@ -42,7 +45,9 @@ public class PendingPurchaseStream {
         this.collector = null;
     }
 
-    private void notifyCollector(@Nullable Pair<Activity, BuyItemProperties> value) {
+    private void notifyCollector(
+        @Nullable
+        Pair<Activity, BuyItemProperties> value) {
         this.value = value;
         if (collector != null) {
             collector.accept(value);
@@ -50,6 +55,8 @@ public class PendingPurchaseStream {
     }
 
     public interface Consumer<BuyItemProperties> {
-        void accept(@Nullable BuyItemProperties value);
+        void accept(
+            @Nullable
+            BuyItemProperties value);
     }
 }

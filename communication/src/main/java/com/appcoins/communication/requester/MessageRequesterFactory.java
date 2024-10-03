@@ -16,12 +16,10 @@ public class MessageRequesterFactory {
      * @return {@link SyncIpcMessageRequester} that allows you to communicate with the processor
      * application
      */
-    public static SyncIpcMessageRequester create(ActivityProvider activityProvider,
-        String processorPackage, String processorActivityUri, String requesterActivityUri,
-        int timeout) {
+    public static SyncIpcMessageRequester create(ActivityProvider activityProvider, String processorPackage,
+        String processorActivityUri, String requesterActivityUri, int timeout) {
         return new IntentSyncIpcMessageSender(
-            new MessageRequesterSender(activityProvider, processorPackage, processorActivityUri,
-                requesterActivityUri), new MessageRequesterSynchronizer(), new IdGenerator(),
-            new MessageSenderSynchronizer(timeout), timeout);
+            new MessageRequesterSender(activityProvider, processorPackage, processorActivityUri, requesterActivityUri),
+            new MessageRequesterSynchronizer(), new IdGenerator(), new MessageSenderSynchronizer(timeout), timeout);
     }
 }

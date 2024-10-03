@@ -7,8 +7,7 @@ public class WalletGenerationModel {
     private final String ewt;
     private final boolean error;
 
-    public WalletGenerationModel(String walletAddress, String signature, String ewt,
-        boolean error) {
+    public WalletGenerationModel(String walletAddress, String signature, String ewt, boolean error) {
         this.walletAddress = walletAddress;
         this.signature = signature;
         this.ewt = ewt;

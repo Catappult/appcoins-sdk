@@ -9,8 +9,7 @@ import static com.appcoins.sdk.core.logger.Logger.logError;
 
 public class RequestBuilderUtils {
 
-    public static String buildUrl(String baseUrl, String endPoint, List<String> paths,
-        Map<String, String> queries) {
+    public static String buildUrl(String baseUrl, String endPoint, List<String> paths, Map<String, String> queries) {
         boolean hasQueries = !queries.isEmpty();
         if (endPoint == null) {
             endPoint = "";
@@ -97,8 +96,6 @@ public class RequestBuilderUtils {
     }
 
     private static boolean isString(Object value) {
-        return value instanceof String
-            && !((String) value).contains("{")
-            && !((String) value).contains("[");
+        return value instanceof String && !((String) value).contains("{") && !((String) value).contains("[");
     }
 }

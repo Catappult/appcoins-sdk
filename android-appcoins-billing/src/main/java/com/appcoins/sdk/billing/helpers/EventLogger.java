@@ -75,8 +75,8 @@ public class EventLogger implements Runnable {
             int code = connection.getResponseCode();
             logDebug(String.valueOf(code));
 
-            BufferedReader br = new BufferedReader(
-                new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+            BufferedReader br =
+                new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
             StringBuilder response = new StringBuilder();
             String responseLine;
             while ((responseLine = br.readLine()) != null) {
@@ -92,7 +92,8 @@ public class EventLogger implements Runnable {
         }
     }
 
-    @Override public void run() {
+    @Override
+    public void run() {
         try {
             LogPurchaseEvent();
         } catch (JSONException e) {

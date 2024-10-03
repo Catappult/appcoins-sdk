@@ -12,8 +12,8 @@ class MessageRequesterSender {
     private final String targetUri;
     private final String requesterActivityUri;
 
-    MessageRequesterSender(ActivityProvider activityProvider, String targetPackage,
-        String targetUri, String requesterActivityUri) {
+    MessageRequesterSender(ActivityProvider activityProvider, String targetPackage, String targetUri,
+        String requesterActivityUri) {
         this.activityProvider = activityProvider;
         this.targetPackage = targetPackage;
         this.targetUri = targetUri;

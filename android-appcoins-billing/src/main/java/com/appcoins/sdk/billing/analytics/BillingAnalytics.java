@@ -20,8 +20,8 @@ public class BillingAnalytics implements EventSender {
     }
 
     @Override
-    public void sendPurchaseStartEvent(String packageName, String skuDetails, String value,
-        String transactionType, String context) {
+    public void sendPurchaseStartEvent(String packageName, String skuDetails, String value, String transactionType,
+        String context) {
         Map<String, Object> eventData = new HashMap<>();
 
         eventData.put(EVENT_PACKAGE_NAME, packageName);

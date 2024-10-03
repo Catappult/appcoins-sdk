@@ -21,8 +21,8 @@ public class IntentSyncIpcMessageSender implements SyncIpcMessageRequester {
         this.timeout = timeout;
     }
 
-    @Override public Parcelable sendMessage(int methodId, Parcelable arguments)
-        throws MainThreadException, InterruptedException {
+    @Override
+    public Parcelable sendMessage(int methodId, Parcelable arguments) throws MainThreadException, InterruptedException {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             throw new MainThreadException("sendMessage");
         }

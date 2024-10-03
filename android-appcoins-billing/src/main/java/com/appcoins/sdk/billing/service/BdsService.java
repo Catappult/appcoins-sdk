@@ -28,9 +28,8 @@ public class BdsService implements Service {
         this.timeoutInMillis = timeoutInMillis;
     }
 
-    RequestResponse createRequest(String baseUrl, String endPoint, String httpMethod,
-        List<String> paths, Map<String, String> queries, Map<String, String> header,
-        Map<String, Object> body) {
+    RequestResponse createRequest(String baseUrl, String endPoint, String httpMethod, List<String> paths,
+        Map<String, String> queries, Map<String, String> header, Map<String, Object> body) {
         HttpURLConnection urlConnection = null;
         try {
             String urlBuilder = RequestBuilderUtils.buildUrl(baseUrl, endPoint, paths, queries);
@@ -61,8 +60,8 @@ public class BdsService implements Service {
         }
     }
 
-    private void handlePostPatchRequests(HttpURLConnection urlConnection, String httpMethod,
-        Map<String, Object> body) throws IOException {
+    private void handlePostPatchRequests(HttpURLConnection urlConnection, String httpMethod, Map<String, Object> body)
+        throws IOException {
         if (isValidPostPatchRequest(httpMethod, body)) {
             if (httpMethod.equals("PATCH")) {
                 urlConnection.setRequestProperty("X-HTTP-Method-Override", "PATCH");
@@ -93,8 +92,7 @@ public class BdsService implements Service {
         return urlConnection;
     }
 
-    private RequestResponse readResponse(InputStream inputStream, int responseCode)
-        throws IOException {
+    private RequestResponse readResponse(InputStream inputStream, int responseCode) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
         String inputLine;
         StringBuilder response = new StringBuilder();
@@ -106,8 +104,7 @@ public class BdsService implements Service {
         return new RequestResponse(responseCode, response.toString(), null);
     }
 
-    private void setPostOutput(HttpURLConnection urlConnection, Map<String, Object> bodyKeys)
-        throws IOException {
+    private void setPostOutput(HttpURLConnection urlConnection, Map<String, Object> bodyKeys) throws IOException {
         urlConnection.setRequestProperty("Content-Type", "application/json");
         urlConnection.setRequestProperty("Accept", "application/json");
         urlConnection.setDoOutput(true);
@@ -117,8 +114,7 @@ public class BdsService implements Service {
         os.write(input, 0, input.length);
     }
 
-    private RequestResponse handleException(HttpURLConnection urlConnection,
-        Exception firstException) {
+    private RequestResponse handleException(HttpURLConnection urlConnection, Exception firstException) {
         logError("Failed to create backend request: " + firstException);
         int responseCode = 500;
         if (urlConnection != null) {
@@ -131,9 +127,8 @@ public class BdsService implements Service {
         return new RequestResponse(responseCode, null, firstException);
     }
 
-    public void makeRequest(String endPoint, String httpMethod, List<String> paths,
-        Map<String, String> queries, Map<String, String> header, Map<String, Object> body,
-        ServiceResponseListener serviceResponseListener) {
+    public void makeRequest(String endPoint, String httpMethod, List<String> paths, Map<String, String> queries,
+        Map<String, String> header, Map<String, Object> body, ServiceResponseListener serviceResponseListener) {
         if (paths == null) {
             paths = new ArrayList<>();
         }
@@ -141,8 +136,8 @@ public class BdsService implements Service {
             queries = new HashMap<>();
         }
         ServiceAsyncTaskExecutorAsync serviceAsyncTaskExecutorAsync =
-            new ServiceAsyncTaskExecutorAsync(this, baseUrl, endPoint, httpMethod, paths, queries,
-                header, body, serviceResponseListener);
+            new ServiceAsyncTaskExecutorAsync(this, baseUrl, endPoint, httpMethod, paths, queries, header, body,
+                serviceResponseListener);
         serviceAsyncTaskExecutorAsync.execute();
     }
 }

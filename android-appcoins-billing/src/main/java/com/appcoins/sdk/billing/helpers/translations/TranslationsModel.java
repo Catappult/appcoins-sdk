@@ -27,8 +27,7 @@ public class TranslationsModel {
             { //This list needs to be in the same order as the string xml file. If not the
                 // androidTests
                 // will fail.
-                put(iab_wallet_not_installed_popup_body,
-                    "To buy this item you first need to get the %s.");
+                put(iab_wallet_not_installed_popup_body, "To buy this item you first need to get the %s.");
                 put(appcoins_wallet, "AppCoins Wallet");
                 put(iab_wallet_not_installed_popup_close_button, "CLOSE");
                 put(iap_wallet_and_appstore_not_installed_popup_body,

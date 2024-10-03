@@ -17,12 +17,14 @@ public class MessageSenderTest {
     private ProcessedValueReturner messageSender;
     private Context context;
 
-    @Before public void setUp() {
+    @Before
+    public void setUp() {
         context = Mockito.mock(Context.class);
         messageSender = new ProcessedValueReturner(context, SENDER_URI);
     }
 
-    @Test public void sendMessage() {
+    @Test
+    public void sendMessage() {
         ArgumentCaptor<Intent> argumentCaptor = ArgumentCaptor.forClass(Intent.class);
         Mockito.doNothing()
             .when(context)

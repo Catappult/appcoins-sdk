@@ -14,12 +14,12 @@ public abstract class MessageProcessorActivity extends Activity {
     public static final String ARGUMENTS = "ARGUMENTS";
     public static final String REQUESTER_ACTIVITY_URI = "REQUESTER_ACTIVITY_URI";
 
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         String requesterUri = getIntent().getStringExtra(REQUESTER_ACTIVITY_URI);
-        final ProcessedValueReturner processedValueReturner =
-            new ProcessedValueReturner(this, requesterUri);
+        final ProcessedValueReturner processedValueReturner = new ProcessedValueReturner(this, requesterUri);
 
         new Thread(() -> {
             Intent intent = getIntent();

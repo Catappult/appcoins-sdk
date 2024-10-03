@@ -29,8 +29,7 @@ public class TaskQueueSynchronizer {
         workerThread.start();
     }
 
-    public Parcelable executeTask(Callable<Parcelable> task, long timeout, TimeUnit timeUnit)
-        throws Exception {
+    public Parcelable executeTask(Callable<Parcelable> task, long timeout, TimeUnit timeUnit) throws Exception {
         FutureTask<Parcelable> futureTask = new FutureTask<>(task);
         taskQueue.put(futureTask);
 
@@ -40,11 +39,13 @@ public class TaskQueueSynchronizer {
             logWarning("Task execution timed out.");
             futureTask.cancel(true);
             return new Parcelable() {
-                @Override public int describeContents() {
+                @Override
+                public int describeContents() {
                     return 0;
                 }
 
-                @Override public void writeToParcel(Parcel parcel, int i) {
+                @Override
+                public void writeToParcel(Parcel parcel, int i) {
                 }
             };
         }

@@ -14,7 +14,6 @@ public interface Service {
      * @param body Map of the key values to be added to the body.
      * @param serviceResponseListener Listener in which the response will be sent.
      */
-    void makeRequest(String endPoint, String httpMethod, List<String> paths,
-        Map<String, String> queries, Map<String, String> header, Map<String, Object> body,
-        ServiceResponseListener serviceResponseListener);
+    void makeRequest(String endPoint, String httpMethod, List<String> paths, Map<String, String> queries,
+        Map<String, String> header, Map<String, Object> body, ServiceResponseListener serviceResponseListener);
 }

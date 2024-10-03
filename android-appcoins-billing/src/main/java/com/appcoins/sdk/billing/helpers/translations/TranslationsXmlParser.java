@@ -13,8 +13,7 @@ import static com.appcoins.sdk.core.logger.Logger.logError;
 
 public class TranslationsXmlParser {
 
-    private static final String translationsRelativePath =
-        "appcoins-wallet/resources/translations/values-";
+    private static final String translationsRelativePath = "appcoins-wallet/resources/translations/values-";
     private static final String translationsFileName = "/external_strings.xml";
     private final Context context;
     private final List<String> requiredCountryCodes;
@@ -27,8 +26,7 @@ public class TranslationsXmlParser {
     List<String> parseTranslationXml(String language, String countryCode) {
         String translationXmlPath;
         if (isRequiredCountryCode(countryCode)) {
-            translationXmlPath =
-                translationsRelativePath + language + "-r" + countryCode + translationsFileName;
+            translationXmlPath = translationsRelativePath + language + "-r" + countryCode + translationsFileName;
         } else {
             translationXmlPath = translationsRelativePath + language + translationsFileName;
         }

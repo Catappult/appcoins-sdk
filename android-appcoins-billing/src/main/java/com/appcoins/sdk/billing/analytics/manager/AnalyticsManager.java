@@ -29,8 +29,7 @@ public class AnalyticsManager implements Serializable {
      * @param action The action done by the user.
      * @param context The context of where the event took place
      */
-    public void logEvent(Map<String, Object> data, String eventName, Action action,
-        String context) {
+    public void logEvent(Map<String, Object> data, String eventName, Action action, String context) {
         logDebug("Called with: "
             + "eventName = ["
             + eventName
@@ -61,8 +60,7 @@ public class AnalyticsManager implements Serializable {
      * <p>Possible actions, that were performed by the user, to log</p>
      */
     public enum Action {
-        CLICK, SCROLL, INPUT, AUTO, ROOT, VIEW, INSTALL, OPEN, IMPRESSION, PULL_REFRESH, DISMISS,
-        ENDLESS_SCROLL, ERROR
+        CLICK, SCROLL, INPUT, AUTO, ROOT, VIEW, INSTALL, OPEN, IMPRESSION, PULL_REFRESH, DISMISS, ENDLESS_SCROLL, ERROR
     }
 
     /**
