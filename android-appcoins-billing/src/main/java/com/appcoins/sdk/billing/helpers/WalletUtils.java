@@ -1,13 +1,16 @@
 package com.appcoins.sdk.billing.helpers;
 
 import static com.appcoins.sdk.billing.helpers.DeviceInformationHelperKt.getDeviceInfo;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.KEY_BUY_INTENT;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
+import static com.appcoins.sdk.core.logger.Logger.logError;
+import static com.appcoins.sdk.core.logger.Logger.logInfo;
+import static com.appcoins.sdk.core.logger.Logger.logWarning;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,15 +23,15 @@ import com.appcoins.billing.AppcoinsBilling;
 import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.sdk.billing.BuyItemProperties;
 import com.appcoins.sdk.billing.ResponseCode;
+import com.appcoins.sdk.billing.activities.BillingFlowActivity;
 import com.appcoins.sdk.billing.analytics.AnalyticsManagerProvider;
 import com.appcoins.sdk.billing.analytics.IndicativeAnalytics;
 import com.appcoins.sdk.billing.analytics.IndicativeLaunchCallback;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.managers.ApiKeysManager;
-import com.appcoins.sdk.billing.managers.WebPaymentSocketManager;
-import com.appcoins.sdk.billing.payasguest.IabActivity;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
+import com.appcoins.sdk.billing.webpayment.WebPaymentActivity;
 import com.indicative.client.android.Indicative;
 
 import org.jetbrains.annotations.Nullable;
@@ -58,9 +61,11 @@ public class WalletUtils {
       // temporary workaround for the possibility of the endpoint failing, with two hardcoded options
       // but the logic should be reused instead of this hardcoded solution
       if (paymentFlowMethods == null) {
+        logInfo("PaymentFlowMethods is null");
         if (Objects.equals(billingPackageName, BuildConfig.APPCOINS_WALLET_PACKAGE_NAME)
                 || Objects.equals(billingPackageName, BuildConfig.GAMESHUB_PACKAGE_NAME)
                 || Objects.equals(billingPackageName, BuildConfig.APTOIDE_GAMES_PACKAGE_NAME)) {
+          logInfo("billingPackageName: " + billingPackageName);
           return handleBindServiceAttempt(serviceAppcoinsBilling, packageToMethodName(), 1, apiVersion, sku,
               type, developerPayload, oemid, guestWalletId);
         }
@@ -69,6 +74,7 @@ public class WalletUtils {
           if (method instanceof PaymentFlowMethod.Wallet
                   || method instanceof PaymentFlowMethod.GamesHub
                   || method instanceof PaymentFlowMethod.AptoideGames) {
+            logInfo("PaymentFlowMethod found: " + method.getName());
             Bundle bundle = handleBindServiceAttempt(serviceAppcoinsBilling, method.getName(),
                 method.getPriority(), apiVersion, sku, type, developerPayload, oemid, guestWalletId);
             if (bundle != null) {
@@ -79,7 +85,8 @@ public class WalletUtils {
       }
       return null;
     } catch (Exception e) {
-      return handleBindServiceFail(e, packageToMethodName(), 1);
+      logError("Failure getting BuyIntent from any Billing Service.", e);
+      return handleBindServiceFail(packageToMethodName(), 1);
     }
   }
 
@@ -87,69 +94,63 @@ public class WalletUtils {
       String methodName, int methodPriority, int apiVersion, String sku, String type,
       String developerPayload, String oemid, String guestWalletId) {
     try {
+      logInfo("Getting BuyIntent from BillingApp.");
       sdkAnalytics.sendCallBindServiceAttemptEvent(methodName, methodPriority);
       return serviceAppcoinsBilling.getBuyIntent(apiVersion, context.getPackageName(), sku, type,
           developerPayload, oemid, guestWalletId);
     } catch (Exception e) {
-      return handleBindServiceFail(e, methodName, methodPriority);
+      logError("Failure getting BuyIntent from BillingApp.", e);
+      return handleBindServiceFail(methodName, methodPriority);
     }
   }
 
-  private static Bundle handleBindServiceFail(Exception e, String methodName, int methodPriority) {
+  private static Bundle handleBindServiceFail(String methodName, int methodPriority) {
     sdkAnalytics.sendCallBindServiceFailEvent(methodName, methodPriority);
-    e.printStackTrace();
     return null;
   }
 
-  public static Bundle startPayAsGuest(BuyItemProperties buyItemProperties) {
+  public static Bundle startWebFirstPayment(String sku, String paymentFlow) {
+    logInfo("Creating WebPayment bundle.");
     if (isMainThread()) {
-      return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
-    }
-    Intent intent = IabActivity.newIntent(context, buyItemProperties, sdkAnalytics);
-    return createIntentBundle(intent);
-  }
-
-  public static Bundle startWebFirstPayment() {
-    if (isMainThread()) {
+      logError("WebPayment is not available in MainThread.");
       return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
     }
     if (WalletUtils.getWebPaymentUrl() == null) {
+      logError("Failure obtaining WebPayment URL.");
       sdkAnalytics.sendWebPaymentUrlNotGeneratedEvent();
       return createBundleWithResponseCode(ResponseCode.ERROR.getValue());
     }
-    int port = WebPaymentSocketManager.getInstance().startServiceForPayment(context);
-    String paymentUrl = generatePaymentUrlWithPort(port);
 
-    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl));
-    return createWebIntentBundle(intent);
+    Intent intent = WebPaymentActivity.newIntent(context, WalletUtils.getWebPaymentUrl(), sku, paymentFlow);
+    Bundle intentBundle = createIntentBundle(intent, ResponseCode.OK.getValue());
+    logDebug("WebPayment intentBundle:" + intentBundle);
+    return intentBundle;
+  }
+
+  public static Bundle startWalletPayment(Bundle bundle) {
+    logInfo("Creating Wallet bundle.");
+    Intent intent = BillingFlowActivity.newIntent(context, bundle);
+    Bundle intentBundle = createIntentBundle(intent, bundle.getInt(RESPONSE_CODE));
+    logDebug("WalletPayment intentBundle:" + intentBundle);
+    return intentBundle;
   }
 
   public static Bundle startInstallFlow(BuyItemProperties buyItemProperties) {
+    logInfo("Creating InstallWallet bundle.");
     if (!WalletUtils.deviceSupportsWallet(Build.VERSION.SDK_INT)) {
+      logError("Wallet NOT Supported in this version: " + Build.VERSION.SDK_INT);
       return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
     }
     Intent intent = InstallDialogActivity.newIntent(context, buyItemProperties, sdkAnalytics);
-    return createIntentBundle(intent);
+    Bundle intentBundle =  createIntentBundle(intent, ResponseCode.OK.getValue());
+    logDebug("InstallWallet intentBundle:" + intentBundle);
+    return intentBundle;
   }
 
-  private static String generatePaymentUrlWithPort(int port) {
-    return WalletUtils.getWebPaymentUrl() + "&wsPort=" + port;
-  }
-
-  private static Bundle createWebIntentBundle(Intent intent) {
+  private static Bundle createIntentBundle(Intent intent, Integer responseCode) {
     Bundle bundle = new Bundle();
-    bundle.putParcelable("WEB_BUY_INTENT", intent);
-    bundle.putInt(RESPONSE_CODE, ResponseCode.OK.getValue());
-    return bundle;
-  }
-
-  private static Bundle createIntentBundle(Intent intent) {
-    PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
-        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-    Bundle bundle = new Bundle();
-    bundle.putParcelable("BUY_INTENT", pendingIntent);
-    bundle.putInt(RESPONSE_CODE, ResponseCode.OK.getValue());
+    bundle.putParcelable(KEY_BUY_INTENT, intent);
+    bundle.putInt(RESPONSE_CODE, responseCode);
     return bundle;
   }
 
@@ -161,7 +162,7 @@ public class WalletUtils {
         latch.await();
         return true;
       } catch (InterruptedException e) {
-        e.printStackTrace();
+        logWarning("Timeout verifying MainThread: " + e);
       }
     }
     return false;
@@ -246,11 +247,13 @@ public class WalletUtils {
   }
 
   private static void setWalletBillingInfo() {
+    logInfo("Setting Wallet Billing info.");
     billingPackageName = BuildConfig.APPCOINS_WALLET_PACKAGE_NAME;
     billingIabAction = BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION;
   }
 
   private static void setGamesHubBillingInfo() {
+    logInfo("Setting GamesHub Billing info.");
     boolean shouldUseAlternative =
         BuildConfig.DEBUG && !isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION);
     billingPackageName = shouldUseAlternative ? BuildConfig.GAMESHUB_PACKAGE_NAME_ALTERNATIVE
@@ -260,11 +263,13 @@ public class WalletUtils {
   }
 
   private static void setAptoideGamesBillingInfo() {
+    logInfo("Setting AptoideGames Billing info.");
       billingPackageName = BuildConfig.APTOIDE_GAMES_PACKAGE_NAME;
       billingIabAction = BuildConfig.APTOIDE_GAMES_IAB_BIND_ACTION;
   }
 
   private static void clearBillingServiceInfo() {
+    logInfo("Clearing Billing info.");
     billingPackageName = null;
     billingIabAction = null;
   }
@@ -324,8 +329,20 @@ public class WalletUtils {
   }
 
   public static void startIndicative(final String packageName) {
+    logInfo(String.format("Starting Indicative for %s", packageName));
     launchIndicative(() -> new Thread(() -> {
-      IndicativeAnalytics.INSTANCE.setInstanceId(getWalletIdForUserSession());
+      String walletId = getWalletIdForUserSession();
+        logDebug(
+                String.format("Parameters for indicative:" +
+                                " walletId: %s" +
+                                " packageName: %s" +
+                                " versionCode: %s",
+                        walletId,
+                        packageName,
+                        BuildConfig.VERSION_CODE
+                )
+        );
+      IndicativeAnalytics.INSTANCE.setInstanceId(walletId);
       IndicativeAnalytics.INSTANCE.setIndicativeSuperProperties(packageName, BuildConfig.VERSION_CODE, getDeviceInfo());
       SdkAnalytics sdkAnalytics = new SdkAnalytics(AnalyticsManagerProvider.provideAnalyticsManager());
       sdkAnalytics.sendStartConnetionEvent();
@@ -392,11 +409,7 @@ public class WalletUtils {
     }
     Display display = wm.getDefaultDisplay();
     DisplayMetrics displayMetrics = new DisplayMetrics();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      display.getRealMetrics(displayMetrics);
-    } else {
-      display.getMetrics(displayMetrics);
-    }
+    display.getRealMetrics(displayMetrics);
     return displayMetrics;
   }
 

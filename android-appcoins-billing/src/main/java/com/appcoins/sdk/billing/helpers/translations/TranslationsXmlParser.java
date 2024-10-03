@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing.helpers.translations;
 
+import static com.appcoins.sdk.core.logger.Logger.logError;
+
 import android.content.Context;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,8 +16,8 @@ public class TranslationsXmlParser {
   private static final String translationsRelativePath =
       "appcoins-wallet/resources/translations/values-";
   private static final String translationsFileName = "/external_strings.xml";
-  private Context context;
-  private List<String> requiredCountryCodes;
+  private final Context context;
+  private final List<String> requiredCountryCodes;
 
   public TranslationsXmlParser(Context context) {
     this.context = context;
@@ -39,7 +41,7 @@ public class TranslationsXmlParser {
       xmlContent = parseXml(inputStream);
       inputStream.close();
     } catch (IOException e) {
-      e.printStackTrace();
+      logError("Failed to parse translation xml: " + e);
     }
     return xmlContent;
   }
@@ -54,7 +56,7 @@ public class TranslationsXmlParser {
       xmlContent = parseXml(inputStream);
       inputStream.close();
     } catch (IOException e) {
-      e.printStackTrace();
+      logError("Failed to parse translation xml with path: " + e);
     }
     return xmlContent;
   }
@@ -78,7 +80,7 @@ public class TranslationsXmlParser {
       }
     } catch (Exception e) {
       inputStream.close();
-      e.printStackTrace();
+      logError("Failed to parse xml: " + e);
     }
     return xmlContent;
   }

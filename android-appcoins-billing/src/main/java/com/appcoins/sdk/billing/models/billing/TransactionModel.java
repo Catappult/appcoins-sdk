@@ -5,8 +5,8 @@ import com.appcoins.sdk.billing.models.Transaction;
 public class TransactionModel {
 
   private final Transaction transaction;
-  private boolean error;
-  private int responseCode;
+  private final boolean error;
+  private final int responseCode;
 
   public TransactionModel(Transaction transaction, boolean error, int responseCode) {
 

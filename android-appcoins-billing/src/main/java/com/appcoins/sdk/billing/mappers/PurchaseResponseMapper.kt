@@ -2,88 +2,61 @@ package com.appcoins.sdk.billing.mappers
 
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
+import com.appcoins.sdk.core.logger.Logger.logError
 import org.json.JSONObject
 
 class PurchaseResponseMapper {
     fun map(response: RequestResponse): PurchaseResponse {
-
         if (!isSuccess(response.responseCode) || response.response == null) {
+            logError("Failed to obtain Purchase Response. ResponseCode: ${response.responseCode} | Cause: ${response.exception}")
             return PurchaseResponse(response.responseCode)
         }
 
         runCatching {
-            val responseJSONObject = JSONObject(response.response)
-            val uid = responseJSONObject.optString("uid").takeIf { it.isNotEmpty() }
-            val sku = responseJSONObject.optString("sku").takeIf { it.isNotEmpty() }
-            val domain = responseJSONObject.optString("domain").takeIf { it.isNotEmpty() }
-            val type = responseJSONObject.optString("type").takeIf { it.isNotEmpty() }
-            val status = responseJSONObject.optString("status").takeIf { it.isNotEmpty() }
-            val state = responseJSONObject.optString("state").takeIf { it.isNotEmpty() }
-            val payload = responseJSONObject.optString("payload").takeIf { it.isNotEmpty() }
-            val created = responseJSONObject.optString("created").takeIf { it.isNotEmpty() }
+            try {
+                val itemJson = JSONObject(response.response)
 
-            val buyerJson = responseJSONObject.optJSONObject("buyer")
-            val buyer = buyerJson?.let { buyer ->
-                Buyer(
-                    type = buyer.optString("type").takeIf { it.isNotEmpty() },
-                    reference = buyer.optString("reference").takeIf { it.isNotEmpty() }
+                val uid = itemJson.optString("uid")
+                val sku = itemJson.optString("sku")
+                val state = itemJson.optString("state")
+                val orderUid =
+                    itemJson.optString("order_uid")
+                val payload = itemJson.optString("payload").takeIf { it.isNotEmpty() }
+                val created = itemJson.optString("created")
+
+                val verificationJson = itemJson.getJSONObject("verification")
+                val verification =
+                    Verification(
+                        type = verificationJson.optString("type"),
+                        data = verificationJson.optString("data"),
+                        signature = verificationJson.optString("signature"),
+                    )
+
+                return PurchaseResponse(
+                    responseCode = response.responseCode,
+                    purchase = Purchase(
+                        uid = uid,
+                        sku = sku,
+                        state = state,
+                        orderUid = orderUid,
+                        payload = payload,
+                        created = created,
+                        verification = verification
+                    )
                 )
+            } catch (e: Exception) {
+                logError("There was a an error mapping the Purchase response: $e")
             }
 
-            val orderJson = responseJSONObject.optJSONObject("order")
-            val order = orderJson?.let { order ->
-                Order(
-                    uid = order.optString("uid").takeIf { it.isNotEmpty() },
-                    gateway = order.optString("gateway").takeIf { it.isNotEmpty() },
-                    reference = order.optString("reference").takeIf { it.isNotEmpty() },
-                    status = order.optString("status").takeIf { it.isNotEmpty() },
-                    created = order.optString("created").takeIf { it.isNotEmpty() }
-                )
-            }
-
-            return PurchaseResponse(
-                responseCode = response.responseCode,
-                uid = uid,
-                sku = sku,
-                domain = domain,
-                type = type,
-                status = status,
-                state = state,
-                payload = payload,
-                created = created,
-                buyer = buyer,
-                order = order
-            )
+            return PurchaseResponse(response.responseCode)
         }.getOrElse {
-            it.printStackTrace()
+            logError("There was a an error mapping the List of Purchases response: " + Exception(it))
             return PurchaseResponse(response.responseCode)
         }
     }
 }
 
-data class Buyer(
-    val type: String? = null,
-    val reference: String? = null
-)
-
-data class Order(
-    val uid: String? = null,
-    val gateway: String? = null,
-    val reference: String? = null,
-    val status: String? = null,
-    val created: String? = null
-)
-
 data class PurchaseResponse(
-    val responseCode: Int?,
-    val uid: String? = null,
-    val sku: String? = null,
-    val domain: String? = null,
-    val type: String? = null,
-    val status: String? = null,
-    val state: String? = null,
-    val payload: String? = null,
-    val created: String? = null,
-    val buyer: Buyer? = null,
-    val order: Order? = null
+    val responseCode: Int,
+    val purchase: Purchase? = null
 )

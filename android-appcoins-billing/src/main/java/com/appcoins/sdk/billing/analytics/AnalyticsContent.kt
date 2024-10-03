@@ -21,11 +21,13 @@ object AnalyticsLabels {
   const val STORE_TYPE = "store_type"
   const val BACKEND_RESPONSE_CODE = "response_code"
   const val BACKEND_RESPONSE_MESSAGE = "response_message"
+  const val BACKEND_ERROR_MESSAGE = "error_message"
   const val BIND_SERVICE_METHOD = "bind_service"
   const val BIND_SERVICE_PRIORITY = "priority"
   const val PAYMENT_STATUS = "status"
   const val PAYMENT_STATUS_MESSAGE = "status_message"
   const val FAILURE_TYPE = "failure_type"
+  const val FAILURE_MESSAGE = "failure_message"
 }
 
 object SdkAnalyticsEvents {
@@ -63,13 +65,11 @@ object SdkBackendPayflowEvents {
 object SdkAnalyticsFailureLabels {
   const val SDK_WEB_PAYMENT_URL_GENERATION_FAILED = "sdk_web_payment_url_generation_failed"
   const val SDK_BACKEND_GUEST_UID_GENERATION_FAILED = "sdk_backend_guest_uid_generation_failed"
+  const val SDK_WEB_VIEW_RESULT_FAILED = "sdk_web_view_result_failed"
 }
 
 object SdkUpdateFlowActions {
   const val UPDATE_APP = "update_app"
   const val CANCEL = "cancel"
   const val BACK_PRESSED = "back_pressed"
-}
-
-object PayAsAGuestEvents {
 }

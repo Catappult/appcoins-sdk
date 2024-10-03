@@ -1,7 +1,7 @@
 package com.appcoins.sdk.billing.models.billing;
 
 public class RemoteProduct {
-  private String name;
+  private final String name;
 
   public RemoteProduct(String name) {
     this.name = name;

@@ -7,19 +7,24 @@ import android.net.Uri
 import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.managers.StoreDeepLinkManager
+import com.appcoins.sdk.billing.usecases.UseCase
+import com.appcoins.sdk.core.logger.Logger.logError
+import com.appcoins.sdk.core.logger.Logger.logInfo
 
-object LaunchAppUpdate {
+object LaunchAppUpdate : UseCase() {
 
-    fun invoke(context: Context) {
+    operator fun invoke(context: Context) {
+        super.invokeUseCase()
+        logInfo("LaunchAppUpdate")
         val storeDeeplink = StoreDeepLinkManager(context).getStoreDeepLink()
         launchDeeplink(context, storeDeeplink)
     }
 
     private fun launchDeeplink(context: Context, deeplink: String? = null) {
         val uriDeeplink = deeplink
-            ?: GetVanillaDeepLink.invoke(context.packageName)
-                .takeIf { IsAppInstalled.invoke(context, BuildConfig.APTOIDE_PACKAGE_NAME) }
-            ?: GetDefaultMarketDeepLink.invoke(context.packageName)
+            ?: GetVanillaDeepLink(context.packageName)
+                .takeIf { IsAppInstalled(context, BuildConfig.APTOIDE_PACKAGE_NAME) }
+            ?: GetDefaultMarketDeepLink(context.packageName)
 
         WalletUtils.getSdkAnalytics().appUpdateDeeplinkImpression(uriDeeplink)
 
@@ -32,7 +37,7 @@ object LaunchAppUpdate {
         try {
             context.startActivity(deeplinkIntent)
         } catch (e: ActivityNotFoundException) {
-            e.printStackTrace()
+            logError("Failed to launch App Update Deeplink: $e")
         }
     }
 }

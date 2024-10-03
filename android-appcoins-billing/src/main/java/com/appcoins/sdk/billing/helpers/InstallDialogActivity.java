@@ -8,14 +8,13 @@ import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_close_install;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iap_wallet_and_appstore_not_installed_popup_body;
 import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iap_wallet_and_appstore_not_installed_popup_button;
-import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
 import static com.appcoins.sdk.billing.utils.LayoutUtils.generateRandomId;
-import static com.appcoins.sdk.billing.utils.LayoutUtils.setBackground;
+import static com.appcoins.sdk.core.logger.Logger.logInfo;
+import static com.appcoins.sdk.core.logger.Logger.logWarning;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -30,7 +29,6 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.StyleSpan;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -46,7 +44,9 @@ import com.appcoins.sdk.billing.analytics.AnalyticsManagerProvider;
 import com.appcoins.sdk.billing.analytics.BillingAnalytics;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.helpers.translations.TranslationsRepository;
+import com.appcoins.sdk.billing.listeners.PaymentResponseStream;
 import com.appcoins.sdk.billing.listeners.PendingPurchaseStream;
+import com.appcoins.sdk.billing.listeners.SDKPaymentResponse;
 import com.appcoins.sdk.billing.usecases.GetAppInstalledVersion;
 
 import java.io.IOException;
@@ -57,12 +57,7 @@ import kotlin.Pair;
 
 public class InstallDialogActivity extends Activity {
 
-  public final static String KEY_BUY_INTENT = "BUY_INTENT";
-  public final static String LOADING_DIALOG_CARD = "loading_dialog_install";
-  public final static int REQUEST_CODE = 10001;
-  public final static int ERROR_RESULT_CODE = 6;
   private final static int MINIMUM_APTOIDE_VERSION = 9908;
-  private final static int RESULT_USER_CANCELED = 1;
   private static final String DIALOG_WALLET_INSTALL_GRAPHIC = "dialog_wallet_install_graphic";
   private static final String DIALOG_WALLET_INSTALL_EMPTY_IMAGE =
       "dialog_wallet_install_empty_image";
@@ -77,6 +72,8 @@ public class InstallDialogActivity extends Activity {
   public SdkAnalytics sdkAnalytics;
   private TranslationsRepository translations;
   private boolean firstImpression = true;
+
+  private boolean shouldSendCancelResult = true;
 
   public static Intent newIntent(Context context, BuyItemProperties buyItemProperties,
       SdkAnalytics sdkAnalytics) {
@@ -102,8 +99,7 @@ public class InstallDialogActivity extends Activity {
         + this.getPackageName();
 
     //This log is necessary for the automatic test that validates the wallet installation dialog
-    Log.d("InstallDialogActivity",
-        "com.appcoins.sdk.billing.helpers.InstallDialogActivity started");
+    logInfo("Starting InstallDialogActivity");
 
     RelativeLayout installationDialog = setupInstallationDialog(storeUrl);
 
@@ -117,9 +113,11 @@ public class InstallDialogActivity extends Activity {
   protected void onResume() {
       super.onResume();
       if (WalletUtils.hasBillingServiceInstalled()) {
-          showLoadingDialog();
-          sdkAnalytics.installWalletAptoideSuccess();
-          PendingPurchaseStream.getInstance().emit(new Pair<>(this, buyItemProperties));
+        shouldSendCancelResult = false;
+        showLoadingDialog();
+        sdkAnalytics.installWalletAptoideSuccess();
+        PendingPurchaseStream.getInstance().emit(new Pair<>(this, buyItemProperties));
+        finish();
       }
   }
 
@@ -129,19 +127,22 @@ public class InstallDialogActivity extends Activity {
   }
 
   @Override public void onBackPressed() {
+    logInfo("Pressed back_button on InstallDialogActivity.");
     sdkAnalytics.walletInstallClick("back_button");
-    Bundle response = new Bundle();
-    response.putInt(RESPONSE_CODE, RESULT_USER_CANCELED);
-    Intent intent = new Intent();
-    intent.putExtras(response);
-    setResult(Activity.RESULT_CANCELED, intent);
     finish();
     super.onBackPressed();
   }
 
-  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    Log.d("InstallDialogActivity", "onActivityResult: resultCode "+ resultCode);
-    finishActivity(resultCode, data);
+  @Override
+  protected void onDestroy() {
+    logInfo("InstallDialogActivity is being destroyed.");
+    if (shouldSendCancelResult) {
+      logInfo("Sending cancel event.");
+      PaymentResponseStream.getInstance().emit(
+              SDKPaymentResponse.Companion.createCanceledTypeResponse()
+      );
+    }
+    super.onDestroy();
   }
 
   private void handlePurchaseStartEvent(BillingAnalytics billingAnalytics) {
@@ -170,11 +171,6 @@ public class InstallDialogActivity extends Activity {
     progressBar.setLayoutParams(layoutParams);
     dialogLayout.addView(progressBar);
     showInstallationDialog(backgroundLayout);
-  }
-
-  private void finishActivity(int resultCode, Intent data) {
-    this.setResult(resultCode, data);
-    this.finish();
   }
 
   private RelativeLayout setupInstallationDialog(String storeUrl) {
@@ -232,18 +228,10 @@ public class InstallDialogActivity extends Activity {
     skipButton.setBackgroundColor(Color.TRANSPARENT);
     skipButton.setIncludeFontPadding(false);
     skipButton.setClickable(true);
-    skipButton.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-        sdkAnalytics.walletInstallClick("cancel");
-        Bundle response = new Bundle();
-        response.putInt(RESPONSE_CODE, RESULT_USER_CANCELED);
-
-        Intent intent = new Intent();
-        intent.putExtras(response);
-
-        setResult(Activity.RESULT_CANCELED, intent);
-        finish();
-      }
+    skipButton.setOnClickListener(v -> {
+      logInfo("Pressed cancel button on InstallDialogActivity.");
+      sdkAnalytics.walletInstallClick("cancel");
+      finish();
     });
     RelativeLayout.LayoutParams skipButtonParams =
         new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, dpToPx(36));
@@ -268,7 +256,7 @@ public class InstallDialogActivity extends Activity {
     GradientDrawable installButtonDrawable = new GradientDrawable();
     installButtonDrawable.setColor(Color.parseColor(INSTALL_BUTTON_COLOR));
     installButtonDrawable.setCornerRadius(dpToPx(16));
-    setBackground(installButton, installButtonDrawable);
+    installButton.setBackground(installButtonDrawable);
 
     RelativeLayout.LayoutParams installButtonParams =
         new RelativeLayout.LayoutParams(dpToPx(110), dpToPx(36));
@@ -276,11 +264,10 @@ public class InstallDialogActivity extends Activity {
     installButtonParams.addRule(RelativeLayout.ALIGN_RIGHT, dialogLayout.getId());
     installButtonParams.setMargins(0, 0, dpToPx(20), dpToPx(16));
     installButton.setLayoutParams(installButtonParams);
-    installButton.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-        sdkAnalytics.walletInstallClick("install_wallet");
-        redirectToRemainingStores(storeUrl);
-      }
+    installButton.setOnClickListener(v -> {
+      logInfo("Pressed install button on InstallDialogActivity.");
+      sdkAnalytics.walletInstallClick("install_wallet");
+      redirectToRemainingStores(storeUrl);
     });
     return installButton;
   }
@@ -288,11 +275,13 @@ public class InstallDialogActivity extends Activity {
   private void redirectToRemainingStores(String storeUrl) {
     Pair<Intent, Boolean> storeIntentPair = buildStoreViewIntent(storeUrl);
     if (isAbleToRedirect(storeIntentPair.getFirst())) {
+      logInfo("Sending to available Store storeUrl: " + storeUrl);
       sendInternalAppDownloadAnalytic(storeIntentPair.getSecond());
       startActivity(storeIntentPair.getFirst());
     } else {
+      logInfo("No store available. Sending to browser.");
       sdkAnalytics.downloadWalletFallbackImpression("browser");
-      startActivityForBrowser(BuildConfig.WALLET_APP_BROWSER_URL);
+      startActivityForBrowser();
     }
   }
 
@@ -304,8 +293,8 @@ public class InstallDialogActivity extends Activity {
     }
   }
 
-  private void startActivityForBrowser(String url) {
-    Intent browserIntent = buildBrowserIntent(url);
+  private void startActivityForBrowser() {
+    Intent browserIntent = buildBrowserIntent();
     if (isAbleToRedirect(browserIntent)) {
       startActivity(browserIntent);
     } else {
@@ -402,7 +391,7 @@ public class InstallDialogActivity extends Activity {
 
   private Pair<Intent, Boolean> buildStoreViewIntent(String storeUrl) {
     final Intent appStoreIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(storeUrl));
-    if (GetAppInstalledVersion.Companion.invoke(BuildConfig.APTOIDE_PACKAGE_NAME, context) >= MINIMUM_APTOIDE_VERSION) {
+    if (GetAppInstalledVersion.INSTANCE.invoke(BuildConfig.APTOIDE_PACKAGE_NAME, context) >= MINIMUM_APTOIDE_VERSION) {
       appStoreIntent.setPackage(BuildConfig.APTOIDE_PACKAGE_NAME);
       return new Pair<>(appStoreIntent, true);
     }
@@ -418,7 +407,7 @@ public class InstallDialogActivity extends Activity {
       icon = this.getPackageManager()
           .getApplicationIcon(packageName);
     } catch (PackageManager.NameNotFoundException e) {
-      e.printStackTrace();
+      logWarning("Failed to find Application Icon: " + e);
     }
     boolean hasImage = isAppBannerAvailable();
     Drawable appBannerDrawable;
@@ -447,7 +436,7 @@ public class InstallDialogActivity extends Activity {
       hasImage = Arrays.asList(getAssets().list(appBannerResourcePath))
           .contains(DIALOG_WALLET_INSTALL_GRAPHIC + ".png");
     } catch (IOException e) {
-      e.printStackTrace();
+      logWarning("Failed to add banner to Install Dialog: " + e);
       hasImage = false;
     }
     return hasImage;
@@ -460,7 +449,7 @@ public class InstallDialogActivity extends Activity {
           .getAssets()
           .open(path);
     } catch (IOException e) {
-      e.printStackTrace();
+      logWarning("Failed to add Graphic Drawable to Install Dialog: " + e);
     }
     return Drawable.createFromStream(inputStream, null);
   }
@@ -474,8 +463,8 @@ public class InstallDialogActivity extends Activity {
     return activityInfo != null;
   }
 
-  private Intent buildBrowserIntent(String url) {
-    return new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+  private Intent buildBrowserIntent() {
+    return new Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.WALLET_APP_BROWSER_URL));
   }
 
   private void buildAlertNoBrowserAndStores() {
@@ -485,16 +474,7 @@ public class InstallDialogActivity extends Activity {
         translations.getString(iap_wallet_and_appstore_not_installed_popup_button);
     alert.setMessage(value);
     alert.setCancelable(true);
-    alert.setPositiveButton(dismissValue, new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int id) {
-        Bundle response = new Bundle();
-        response.putInt(RESPONSE_CODE, RESULT_USER_CANCELED);
-        Intent intent = new Intent();
-        intent.putExtras(response);
-        setResult(Activity.RESULT_CANCELED, intent);
-        finish();
-      }
-    });
+    alert.setPositiveButton(dismissValue, (dialog, id) -> finish());
     AlertDialog alertDialog = alert.create();
     alertDialog.show();
   }

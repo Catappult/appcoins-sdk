@@ -5,11 +5,14 @@ import android.os.Build
 import com.appcoins.sdk.billing.managers.AppVersionManager
 import com.appcoins.sdk.billing.mappers.Version
 import com.appcoins.sdk.billing.usecases.GetAppInstalledVersion
+import com.appcoins.sdk.billing.usecases.UseCase
+import com.appcoins.sdk.core.logger.Logger.logError
 
-object IsUpdateAvailable {
+object IsUpdateAvailable : UseCase() {
 
-    fun invoke(context: Context): Boolean {
-        val currentVersion = GetAppInstalledVersion.invoke(context.packageName, context)
+    operator fun invoke(context: Context): Boolean {
+        super.invokeUseCase()
+        val currentVersion = GetAppInstalledVersion(context.packageName, context)
 
         val latestVersion =
             getLatestAppVersionForCurrentSDK(AppVersionManager(context).getAppVersions())
@@ -19,7 +22,7 @@ object IsUpdateAvailable {
                 currentVersion < latestVersion
             } ?: false
         } catch (e: Exception) {
-            e.printStackTrace()
+            logError("Failed to verify if update available: $e")
             false
         }
     }

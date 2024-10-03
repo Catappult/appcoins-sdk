@@ -32,12 +32,14 @@
     <activity
         android:name="com.appcoins.sdk.billing.helpers.UpdateDialogActivity"
         android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
-    <activity
-        android:name="com.appcoins.sdk.billing.payasguest.IabActivity"
-        android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
-    <activity
-        android:name="com.appcoins.sdk.billing.WebViewActivity"
-        android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
+      <activity
+          android:name="com.appcoins.sdk.billing.webpayment.WebPaymentActivity"
+          android:configChanges="orientation|screenSize"
+          android:theme="@style/Theme.AppCompat.Transparent.FitAppWindow" />
+      <activity
+          android:name="com.appcoins.sdk.billing.activities.BillingFlowActivity"
+          android:configChanges="orientation|screenSize"
+          android:theme="@style/Theme.AppCompat.Transparent.FitAppWindow" />
     <activity android:name="com.appcoins.sdk.billing.UriCommunicationActivity"
         android:exported="true">
       <intent-filter>
@@ -49,6 +51,5 @@
         <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>
     </activity>
-    <service android:name="com.appcoins.sdk.billing.service.WebPaymentWebSocketService"/>
   </application>
 </manifest>

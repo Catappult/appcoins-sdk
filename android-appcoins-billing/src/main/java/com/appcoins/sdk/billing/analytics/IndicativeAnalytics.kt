@@ -1,6 +1,8 @@
 package com.appcoins.sdk.billing.analytics
 
 import com.appcoins.sdk.billing.helpers.DeviceInformation
+import com.appcoins.sdk.core.logger.Logger.logDebug
+import com.appcoins.sdk.core.logger.Logger.logInfo
 import java.io.Serializable
 
 object IndicativeAnalytics : Serializable {
@@ -27,7 +29,19 @@ object IndicativeAnalytics : Serializable {
     }
 
     fun updateInstanceId(instanceId: String) {
+        logInfo("Update IndicativeID for User.")
+        logDebug("New Id: $instanceId")
         this.instanceId = instanceId
         superProperties[AnalyticsSuperLabels.INSTANCE_ID] = instanceId
     }
+
+    fun getLoggableSuperProperties(): String =
+        "{probably_emulator=${superProperties[AnalyticsSuperLabels.IS_EMULATOR]}" +
+                ", device_model=${superProperties[AnalyticsSuperLabels.MODEL]}" +
+                ", device_brand=${superProperties[AnalyticsSuperLabels.BRAND]}" +
+                ", os_version=${superProperties[AnalyticsSuperLabels.OS_VERSION]}" +
+                ", package_name=${superProperties[AnalyticsSuperLabels.GAME_PACKAGE_NAME]}" +
+                ", version_code=${superProperties[AnalyticsSuperLabels.SDK_VERSION_CODE]}" +
+                ", sdk_package=${superProperties[AnalyticsSuperLabels.SDK_PACKAGE]}" +
+                ", language=${superProperties[AnalyticsSuperLabels.LANGUAGE]}}"
 }

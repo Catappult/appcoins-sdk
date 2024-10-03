@@ -1,6 +1,7 @@
 package com.appcoins.sdk.billing;
 
-import android.util.Log;
+import static com.appcoins.sdk.core.logger.Logger.logError;
+import static com.appcoins.sdk.core.logger.Logger.logWarning;
 
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
@@ -9,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class AppCoinsBilling implements Billing {
-  private static final String TAG = "AppCoinsBilling";
   private final Repository repository;
   private final byte[] base64DecodedPublicKey;
 
@@ -25,10 +25,10 @@ public class AppCoinsBilling implements Billing {
       PurchasesResult purchasesResult = repository.getPurchases(skuType);
 
       if (purchasesResult.getResponseCode() != ResponseCode.OK.getValue()) {
-        return new PurchasesResult(new ArrayList<Purchase>(), purchasesResult.getResponseCode());
+        return new PurchasesResult(new ArrayList<>(), purchasesResult.getResponseCode());
       }
 
-      ArrayList<Purchase> invalidPurchase = new ArrayList<Purchase>();
+      ArrayList<Purchase> invalidPurchase = new ArrayList<>();
       for (Purchase purchase : purchasesResult.getPurchases()) {
         String purchaseData = purchase.getOriginalJson();
         byte[] decodeSignature = purchase.getSignature();
@@ -39,7 +39,7 @@ public class AppCoinsBilling implements Billing {
         }
       }
 
-      if (invalidPurchase.size() > 0) {
+      if (!invalidPurchase.isEmpty()) {
         purchasesResult.getPurchases()
             .removeAll(invalidPurchase);
       }
@@ -67,7 +67,7 @@ public class AppCoinsBilling implements Billing {
     try {
       querySkuDetailsThread.stop();
     } catch (Exception e){
-      Log.d(TAG, "Failed to stop previous SkuDetails Request Thread: " + e.getMessage());
+      logWarning("Failed to stop previous SkuDetails Request Thread: " + e);
     }
   }
 
@@ -82,12 +82,9 @@ public class AppCoinsBilling implements Billing {
       throws ServiceConnectionException {
     try {
 
-      LaunchBillingFlowResult result =
-          repository.launchBillingFlow(params.getSkuType(), params.getSku(), payload, oemid, guestWalletId);
-
-      return result;
+      return repository.launchBillingFlow(params.getSkuType(), params.getSku(), payload, oemid, guestWalletId);
     } catch (ServiceConnectionException e) {
-      e.printStackTrace();
+      logError("Service is not ready to launch billing flow. " + e);
       throw new ServiceConnectionException(e.getMessage());
     }
   }

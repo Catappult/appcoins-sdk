@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing;
 
+import static com.appcoins.sdk.core.logger.Logger.logError;
+
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -19,16 +21,13 @@ import java.security.spec.X509EncodedKeySpec;
  * purchases as verified.
  */
 public class Security {
-  private static final String TAG = "IABUtil/Security";
-
   private static final String KEY_FACTORY_ALGORITHM = "RSA";
   private static final String SIGNATURE_ALGORITHM = "SHA1withRSA";
 
   /**
    * Verifies that the data was signed with the given Signature, and returns
    * the verified purchase. The data is in JSON format and signed
-   * with a private key. The data also contains the {@link PurchaseState}
-   * and product ID of the purchase.
+   * with a private key.
    *
    * @param base64DecodedPublicKey the base64-decoded public key to use for verifying.
    * @param signedData the signed JSON string (signed, not encrypted)
@@ -65,11 +64,8 @@ public class Security {
       KeyFactory keyFactory = KeyFactory.getInstance(KEY_FACTORY_ALGORITHM);
 
       return keyFactory.generatePublic(new X509EncodedKeySpec(base64DecodedPublicKey));
-    } catch (NoSuchAlgorithmException e) {
-      e.printStackTrace();
-      return null;
-    } catch (InvalidKeySpecException e) {
-      e.printStackTrace();
+    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+      logError("Failed to generate public key: " + e);
       return null;
     }
   }
@@ -90,16 +86,16 @@ public class Security {
       sig.initVerify(publicKey);
       sig.update(signedData.getBytes());
       if (!sig.verify(decodedSignature)) {
-        //Log.e(TAG, "Signature verification failed.");
+        logError("Signature verification failed.");
         return false;
       }
       return true;
     } catch (NoSuchAlgorithmException e) {
-      //Log.e(TAG, "NoSuchAlgorithmException.");
+      logError("NoSuchAlgorithmException.", e);
     } catch (InvalidKeyException e) {
-      //Log.e(TAG, "Invalid key specification.");
+      logError("Invalid key specification.", e);
     } catch (SignatureException e) {
-      //Log.e(TAG, "Signature exception.");
+      logError("Signature exception.", e);
     }
     return false;
   }

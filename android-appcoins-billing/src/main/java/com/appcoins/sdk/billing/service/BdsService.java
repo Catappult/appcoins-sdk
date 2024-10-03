@@ -1,8 +1,11 @@
 package com.appcoins.sdk.billing.service;
 
-import android.os.AsyncTask;
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
+import static com.appcoins.sdk.core.logger.Logger.logError;
+
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.utils.RequestBuilderUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,15 +21,12 @@ import java.util.Map;
 public class BdsService implements Service {
 
   public final static int TIME_OUT_IN_MILLIS = 30000;
-  private String baseUrl;
-  private int timeoutInMillis;
-  private List<ServiceAsyncTask> asyncTasks;
+  private final String baseUrl;
+  private final int timeoutInMillis;
 
   public BdsService(String baseUrl, int timeoutInMillis) {
-
     this.baseUrl = baseUrl;
     this.timeoutInMillis = timeoutInMillis;
-    this.asyncTasks = new ArrayList<>();
   }
 
   RequestResponse createRequest(String baseUrl, String endPoint, String httpMethod,
@@ -35,6 +35,7 @@ public class BdsService implements Service {
     HttpURLConnection urlConnection = null;
     try {
       String urlBuilder = RequestBuilderUtils.buildUrl(baseUrl, endPoint, paths, queries);
+      logDebug("Url -> " + urlBuilder);
       URL url = new URL(urlBuilder);
       urlConnection = openUrlConnection(url, httpMethod);
 
@@ -53,7 +54,6 @@ public class BdsService implements Service {
       }
       return readResponse(inputStream, responseCode);
     } catch (Exception firstException) {
-      firstException.printStackTrace();
       return handleException(urlConnection, firstException);
     } finally {
       if (urlConnection != null) {
@@ -120,13 +120,13 @@ public class BdsService implements Service {
 
   private RequestResponse handleException(HttpURLConnection urlConnection,
       Exception firstException) {
-    firstException.printStackTrace();
+    logError("Failed to create backend request: " + firstException);
     int responseCode = 500;
     if (urlConnection != null) {
       try {
         responseCode = urlConnection.getResponseCode();
       } catch (IOException ioException) {
-        ioException.printStackTrace();
+        logError("Failed to read response code from request: " + ioException);
       }
     }
     return new RequestResponse(responseCode, null, firstException);
@@ -141,16 +141,10 @@ public class BdsService implements Service {
     if (queries == null) {
       queries = new HashMap<>();
     }
-    ServiceAsyncTask serviceAsyncTask =
-        new ServiceAsyncTask(this, baseUrl, endPoint, httpMethod, paths, queries, header, body,
+    ServiceAsyncTaskExecutorAsync serviceAsyncTaskExecutorAsync =
+        new ServiceAsyncTaskExecutorAsync(
+                this, baseUrl, endPoint, httpMethod, paths, queries, header, body,
             serviceResponseListener);
-    serviceAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    asyncTasks.add(serviceAsyncTask);
-  }
-
-  @Override public void cancelRequests() {
-    for (ServiceAsyncTask asyncTask : asyncTasks) {
-      asyncTask.cancel(true);
-    }
+    serviceAsyncTaskExecutorAsync.execute();
   }
 }

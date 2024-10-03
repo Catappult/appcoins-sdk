@@ -8,7 +8,7 @@ import com.appcoins.sdk.billing.helpers.AppcoinsBillingStubHelper;
 
 public class WalletBillingService implements AppcoinsBilling {
 
-  private AppcoinsBilling service;
+  private final AppcoinsBilling service;
 
   public WalletBillingService(IBinder service, String componentName) {
     this.service = AppcoinsBillingStubHelper.Stub.asInterface(service);

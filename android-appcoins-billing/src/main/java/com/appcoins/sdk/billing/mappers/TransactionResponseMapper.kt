@@ -2,12 +2,14 @@ package com.appcoins.sdk.billing.mappers
 
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
+import com.appcoins.sdk.core.logger.Logger.logError
 import org.json.JSONObject
 
 class TransactionResponseMapper {
     fun map(response: RequestResponse): TransactionResponse {
 
         if (!isSuccess(response.responseCode) || response.response == null) {
+            logError("Failed to obtain Transaction. ResponseCode: ${response.responseCode} | Cause: ${response.exception}")
             return TransactionResponse(response.responseCode)
         }
 
@@ -75,7 +77,7 @@ class TransactionResponseMapper {
                 channel = channel
             )
         }.getOrElse {
-            it.printStackTrace()
+            logError("There was a an error mapping the response.", Exception(it))
             return TransactionResponse(response.responseCode)
         }
     }
