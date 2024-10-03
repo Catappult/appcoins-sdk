@@ -13,7 +13,6 @@ fun getDeviceInfo(): DeviceInformation {
     )
 }
 
-@Suppress("formatting:Filename")
 class DeviceInformation(
     val osVersion: String,
     val brand: String,

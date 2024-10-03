@@ -10,15 +10,14 @@ import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
 import com.appcoins.sdk.billing.usecases.GetOemIdForPackage
 import com.appcoins.sdk.billing.usecases.SaveAttributionResultOnPrefs
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.TIMEOUT_30_SECS
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
 object AttributionManager {
-    private const val TIMEOUT_IN_MILLIS = 30000
-
     private val packageName by lazy { WalletUtils.context.packageName }
     private val attributionRepository by lazy {
-        AttributionRepository(BdsService(BuildConfig.MMP_BASE_HOST, TIMEOUT_IN_MILLIS))
+        AttributionRepository(BdsService(BuildConfig.MMP_BASE_HOST, TIMEOUT_30_SECS))
     }
     private val attributionSharedPreferences by lazy {
         AttributionSharedPreferences(WalletUtils.context)
