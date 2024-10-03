@@ -7,13 +7,14 @@ import android.view.WindowManager;
 
 public abstract class MessageRequesterActivity extends Activity {
 
-  @Override protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-    long requestCode = getIntent().getLongExtra("REQUEST_CODE", -1);
-    Parcelable returnValue = getIntent().getParcelableExtra("RETURN_VALUE");
-    StaticMessageResponseSynchronizer.getMessageListener()
-        .onMessageReceived(requestCode, returnValue);
-    finish();
-  }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        long requestCode = getIntent().getLongExtra("REQUEST_CODE", -1);
+        Parcelable returnValue = getIntent().getParcelableExtra("RETURN_VALUE");
+        StaticMessageResponseSynchronizer.getMessageListener()
+            .onMessageReceived(requestCode, returnValue);
+        finish();
+    }
 }

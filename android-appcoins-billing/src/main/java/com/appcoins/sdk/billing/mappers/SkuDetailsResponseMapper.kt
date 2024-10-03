@@ -10,9 +10,11 @@ import org.json.JSONObject
 
 class SkuDetailsResponseMapper {
     fun map(response: RequestResponse): SkuDetailsResponse {
-
         if (!isSuccess(response.responseCode) || response.response == null) {
-            logError("Failed to obtain Sku Details Response. ResponseCode: ${response.responseCode} | Cause: ${response.exception}")
+            logError(
+                "Failed to obtain Sku Details Response. " +
+                    "ResponseCode: ${response.responseCode} | Cause: ${response.exception}"
+            )
             return SkuDetailsResponse(response.responseCode)
         }
 

@@ -16,7 +16,10 @@ class StoreLinkResponseMapper {
             )
 
         if (!isSuccess(response.responseCode) || response.response == null) {
-            logError("Failed to obtain StoreLink Response. ResponseCode: ${response.responseCode} | Cause: ${response.exception}")
+            logError(
+                "Failed to obtain StoreLink Response. " +
+                    "ResponseCode: ${response.responseCode} | Cause: ${response.exception}"
+            )
             return StoreLinkResponse(response.responseCode)
         }
 

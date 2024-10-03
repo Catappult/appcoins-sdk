@@ -1,14 +1,11 @@
 package com.appcoins.sdk.billing.listeners;
 
-import static com.appcoins.sdk.core.logger.Logger.logInfo;
-
 import android.app.Activity;
-
 import com.appcoins.sdk.billing.BuyItemProperties;
-
+import kotlin.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import kotlin.Pair;
+import static com.appcoins.sdk.core.logger.Logger.logInfo;
 
 public class PendingPurchaseStream {
 
@@ -33,7 +30,9 @@ public class PendingPurchaseStream {
         return value;
     }
 
-    public void emit(@Nullable Pair<Activity, BuyItemProperties> value) {
+    public void emit(
+        @Nullable
+        Pair<Activity, BuyItemProperties> value) {
         logInfo("Emitting new value on PendingPurchaseStream.");
         notifyCollector(value);
     }
@@ -46,7 +45,9 @@ public class PendingPurchaseStream {
         this.collector = null;
     }
 
-    private void notifyCollector(@Nullable Pair<Activity, BuyItemProperties> value) {
+    private void notifyCollector(
+        @Nullable
+        Pair<Activity, BuyItemProperties> value) {
         this.value = value;
         if (collector != null) {
             collector.accept(value);
@@ -54,6 +55,8 @@ public class PendingPurchaseStream {
     }
 
     public interface Consumer<BuyItemProperties> {
-        void accept(@Nullable BuyItemProperties value);
+        void accept(
+            @Nullable
+            BuyItemProperties value);
     }
 }

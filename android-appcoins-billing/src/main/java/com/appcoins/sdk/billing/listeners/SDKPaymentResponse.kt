@@ -14,11 +14,13 @@ data class SDKPaymentResponse(
         fun createCanceledTypeResponse() =
             SDKPaymentResponse(
                 RESULT_CANCELED,
-                Intent().apply { putExtra(RESPONSE_CODE, ResponseCode.USER_CANCELED.value) })
+                Intent().apply { putExtra(RESPONSE_CODE, ResponseCode.USER_CANCELED.value) }
+            )
 
         fun createErrorTypeResponse() =
             SDKPaymentResponse(
                 RESULT_OK,
-                Intent().apply { putExtra(RESPONSE_CODE, ResponseCode.ERROR.value) })
+                Intent().apply { putExtra(RESPONSE_CODE, ResponseCode.ERROR.value) }
+            )
     }
 }

@@ -2,5 +2,5 @@ package com.appcoins.sdk.billing.service;
 
 public interface ServiceResponseListener {
 
-  void onResponseReceived(RequestResponse requestResponse);
+    void onResponseReceived(RequestResponse requestResponse);
 }

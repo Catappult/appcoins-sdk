@@ -1,24 +1,22 @@
 package com.appcoins.sdk.billing;
 
-import static com.appcoins.sdk.core.logger.Logger.logDebug;
-import static com.appcoins.sdk.core.logger.Logger.logInfo;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.listeners.PayflowPriorityStream;
 import com.appcoins.sdk.billing.managers.BillingLifecycleManager;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
-
+import java.util.ArrayList;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
+import static com.appcoins.sdk.core.logger.Logger.logInfo;
 
-public class RepositoryServiceConnection implements ServiceConnection, RepositoryConnection, PayflowPriorityStream.Consumer<ArrayList<PaymentFlowMethod>> {
+public class RepositoryServiceConnection
+    implements ServiceConnection, RepositoryConnection, PayflowPriorityStream.Consumer<ArrayList<PaymentFlowMethod>> {
     private final Context context;
     private final ConnectionLifeCycle connectionLifeCycle;
     private AppCoinsBillingStateListener listener;
@@ -67,19 +65,23 @@ public class RepositoryServiceConnection implements ServiceConnection, Repositor
 
     private void initializeObservableForPayflowPriorityChanges() {
         logInfo("Setup collector for PayflowPriorityStream.");
-        PayflowPriorityStream.getInstance().collect(this);
+        PayflowPriorityStream.getInstance()
+            .collect(this);
     }
 
     @Override
     public void endConnection() {
         logInfo("Ending connection.");
         BillingLifecycleManager.finishBillingService(context);
-        PayflowPriorityStream.getInstance().stopCollecting();
+        PayflowPriorityStream.getInstance()
+            .stopCollecting();
         WalletBinderUtil.finishBillingRepository(context, this);
     }
 
     @Override
-    public void accept(@Nullable ArrayList<PaymentFlowMethod> paymentFlowMethods) {
+    public void accept(
+        @Nullable
+        ArrayList<PaymentFlowMethod> paymentFlowMethods) {
         logInfo("New result received from PayflowPriorityStream.");
         if (paymentFlowMethods != null) {
             logInfo(String.format("PaymentFlowMethods size: %s", paymentFlowMethods.size()));
@@ -92,14 +94,8 @@ public class RepositoryServiceConnection implements ServiceConnection, Repositor
                 if (paymentFlowMethod.getPaymentFlow() != null) {
                     paymentFlow = paymentFlowMethod.getPaymentFlow();
                 }
-                logInfo(
-                        String.format(
-                                "PaymentFlowMethod: name:%s priority:%s version:%s paymentFlow:%s",
-                                paymentFlowMethod.getName(),
-                                paymentFlowMethod.getPriority(),
-                                version,
-                                paymentFlow
-                        ));
+                logInfo(String.format("PaymentFlowMethod: name:%s priority:%s version:%s paymentFlow:%s",
+                    paymentFlowMethod.getName(), paymentFlowMethod.getPriority(), version, paymentFlow));
             }
         } else {
             logInfo("PaymentFlowMethods is null.");

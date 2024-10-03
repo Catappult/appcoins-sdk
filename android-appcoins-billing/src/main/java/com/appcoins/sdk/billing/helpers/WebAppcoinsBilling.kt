@@ -32,7 +32,7 @@ import java.util.concurrent.CountDownLatch
 class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
 
     init {
-        webAppcoinsBilling = this
+        webAppcoinsBillingInstance = this
     }
 
     override fun asBinder(): IBinder? = null
@@ -106,7 +106,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
             }
         }
 
-        //Fallback to WalletInstallation Activity if something fails
+        // Fallback to WalletInstallation Activity if something fails
         logInfo("Failed to find available Payflow Method. Using fallback of install Wallet.")
         setBuyItemPropertiesForPayflow(packageName, apiVersion, sku, type, developerPayload)
         return WalletUtils.startInstallFlow(buyItemProperties)
@@ -121,11 +121,11 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
     ) {
         logDebug(
             "Saving Buy Item Properties:" +
-                    " packageName: $packageName" +
-                    " apiVersion: $apiVersion" +
-                    " sku: $sku" +
-                    " type: $type" +
-                    " developerPayload: $developerPayload"
+                " packageName: $packageName" +
+                " apiVersion: $apiVersion" +
+                " sku: $sku" +
+                " type: $type" +
+                " developerPayload: $developerPayload"
         )
         if (Looper.myLooper() == Looper.getMainLooper()) {
             Handler(Looper.getMainLooper()).post {
@@ -137,7 +137,8 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
 
         val developerPayloadObject =
             DeveloperPayload(
-                developerPayload, PayloadHelper.getPayload(developerPayload),
+                developerPayload,
+                PayloadHelper.getPayload(developerPayload),
                 PayloadHelper.getOrderReference(developerPayload),
                 PayloadHelper.getOrigin(developerPayload)
             )
@@ -231,7 +232,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         val skuSendList: ArrayList<String> = ArrayList()
         val skuDetailsList = ArrayList<SkuDetailsV2>()
 
-        if (sku != null)
+        if (sku != null) {
             for (i in 1..sku.size) {
                 skuSendList.add(sku[i - 1])
                 if (i % MAX_SKUS_SEND_WS == 0 || i == sku.size) {
@@ -244,6 +245,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
                     skuSendList.clear()
                 }
             }
+        }
         return skuDetailsList
     }
 
@@ -299,14 +301,14 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         private var skuDetails: SkuDetails? = null
         private var buyItemProperties: BuyItemProperties? = null
 
-        private var webAppcoinsBilling: WebAppcoinsBilling? = null
+        private var webAppcoinsBillingInstance: WebAppcoinsBilling? = null
 
         val instance: WebAppcoinsBilling?
             get() {
-                if (webAppcoinsBilling == null) {
-                    webAppcoinsBilling = WebAppcoinsBilling()
+                if (webAppcoinsBillingInstance == null) {
+                    webAppcoinsBillingInstance = WebAppcoinsBilling()
                 }
-                return webAppcoinsBilling
+                return webAppcoinsBillingInstance
             }
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 
+@Suppress("complexity:TooManyFunctions")
 abstract class SharedPreferencesRepository(context: Context) {
     private val sharedPreferences: SharedPreferences =
         PreferenceManager.getDefaultSharedPreferences(context)

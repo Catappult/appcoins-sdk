@@ -16,7 +16,10 @@ class AttributionResponseMapper {
             )
 
         if (!isSuccess(response.responseCode) || response.response == null) {
-            logError("Failed to obtain Attribution Response. ResponseCode: ${response.responseCode} | Cause: ${response.exception}")
+            logError(
+                "Failed to obtain Attribution Response. " +
+                    "ResponseCode: ${response.responseCode} | Cause: ${response.exception}"
+            )
             return AttributionResponse(response.responseCode)
         }
 

@@ -7,9 +7,11 @@ import org.json.JSONObject
 
 class InappPurchaseResponseMapper {
     fun map(response: RequestResponse): InappPurchaseResponse {
-
         if (!isSuccess(response.responseCode) || response.response == null) {
-            logError("Failed to obtain Purchase Response. ResponseCode: ${response.responseCode} | Cause: ${response.exception}")
+            logError(
+                "Failed to obtain Purchase Response. " +
+                    "ResponseCode: ${response.responseCode} | Cause: ${response.exception}"
+            )
             return InappPurchaseResponse(response.responseCode)
         }
 

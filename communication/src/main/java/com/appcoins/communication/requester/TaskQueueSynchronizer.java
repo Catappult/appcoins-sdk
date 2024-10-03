@@ -1,16 +1,15 @@
 package com.appcoins.communication.requester;
 
-import static com.appcoins.sdk.core.logger.Logger.logWarning;
-
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import static com.appcoins.sdk.core.logger.Logger.logWarning;
 
 public class TaskQueueSynchronizer {
     private final BlockingQueue<FutureTask<Parcelable>> taskQueue = new LinkedBlockingQueue<>();
@@ -23,7 +22,8 @@ public class TaskQueueSynchronizer {
                     task.run();
                 }
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                Thread.currentThread()
+                    .interrupt();
             }
         });
         workerThread.start();

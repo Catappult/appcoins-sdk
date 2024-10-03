@@ -1,7 +1,6 @@
 package com.appcoins.sdk.billing;
 
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
-
 import java.util.Random;
 
 public class WalletInteract {

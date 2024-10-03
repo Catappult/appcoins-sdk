@@ -8,10 +8,11 @@ import com.appcoins.sdk.billing.helpers.WalletUtils.setWebPaymentUrl
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
 import com.appcoins.sdk.billing.usecases.GetOemIdForPackage
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.TIMEOUT_3_SECS
 
 class WebPaymentManager(val packageName: String) {
     private val webPaymentRepository =
-        WebPaymentRepository(BdsService(BuildConfig.PAYFLOW_HOST, 3000))
+        WebPaymentRepository(BdsService(BuildConfig.PAYFLOW_HOST, TIMEOUT_3_SECS))
 
     fun getWebPaymentUrl(billingFlowParams: BillingFlowParams?) {
         val attributionSharedPreferences = AttributionSharedPreferences(WalletUtils.context)

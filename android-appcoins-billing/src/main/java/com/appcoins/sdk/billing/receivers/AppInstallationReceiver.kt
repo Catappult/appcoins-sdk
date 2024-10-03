@@ -7,7 +7,6 @@ import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.payflow.PayflowManager
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
-
 class AppInstallationReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {

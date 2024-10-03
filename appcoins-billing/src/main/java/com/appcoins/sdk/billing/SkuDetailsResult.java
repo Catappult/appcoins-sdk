@@ -4,20 +4,20 @@ import java.util.List;
 
 public class SkuDetailsResult {
 
-  private final List<SkuDetails> skuDetailsList;
+    private final List<SkuDetails> skuDetailsList;
 
-  private final int responseCode;
+    private final int responseCode;
 
-  public SkuDetailsResult(List<SkuDetails> skuDetailsList, int responseCode) {
-    this.skuDetailsList = skuDetailsList;
-    this.responseCode = responseCode;
-  }
+    public SkuDetailsResult(List<SkuDetails> skuDetailsList, int responseCode) {
+        this.skuDetailsList = skuDetailsList;
+        this.responseCode = responseCode;
+    }
 
-  public List<SkuDetails> getSkuDetailsList() {
-    return skuDetailsList;
-  }
+    public List<SkuDetails> getSkuDetailsList() {
+        return skuDetailsList;
+    }
 
-  public int getResponseCode() {
-    return responseCode;
-  }
+    public int getResponseCode() {
+        return responseCode;
+    }
 }

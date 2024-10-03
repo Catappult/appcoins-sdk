@@ -8,29 +8,29 @@ import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
 
 public interface AppcoinsBillingClient {
-  PurchasesResult queryPurchases(String skuType);
+    PurchasesResult queryPurchases(String skuType);
 
-  void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
-      SkuDetailsResponseListener onSkuDetailsResponseListener);
+    void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
+        SkuDetailsResponseListener onSkuDetailsResponseListener);
 
-  void consumeAsync(String token, ConsumeResponseListener consumeResponseListener);
+    void consumeAsync(String token, ConsumeResponseListener consumeResponseListener);
 
-  /**
-   * This method can't run on the main thread
-   */
-  int launchBillingFlow(Activity activity, BillingFlowParams billingFlowParams);
+    /**
+     * This method can't run on the main thread
+     */
+    int launchBillingFlow(Activity activity, BillingFlowParams billingFlowParams);
 
-  void startConnection(AppCoinsBillingStateListener listener);
+    void startConnection(AppCoinsBillingStateListener listener);
 
-  void endConnection();
+    void endConnection();
 
-  boolean isReady();
+    boolean isReady();
 
-  boolean onActivityResult(int requestCode, int resultCode, Intent data);
+    boolean onActivityResult(int requestCode, int resultCode, Intent data);
 
-  boolean isAppUpdateAvailable();
+    boolean isAppUpdateAvailable();
 
-  void launchAppUpdateStore(Context context);
+    void launchAppUpdateStore(Context context);
 
-  void launchAppUpdateDialog(Context context);
+    void launchAppUpdateDialog(Context context);
 }

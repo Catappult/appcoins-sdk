@@ -2,6 +2,7 @@ package com.appcoins.sdk.billing.sharedpreferences
 
 import android.content.Context
 
+@Suppress("complexity:TooManyFunctions")
 class AttributionSharedPreferences(context: Context) : SharedPreferencesRepository(context) {
 
     fun getWalletId(): String? = getString(WALLET_ID_KEY)

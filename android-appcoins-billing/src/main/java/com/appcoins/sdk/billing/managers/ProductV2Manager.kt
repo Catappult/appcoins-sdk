@@ -8,10 +8,12 @@ import com.appcoins.sdk.billing.mappers.PurchasesResponse
 import com.appcoins.sdk.billing.mappers.SkuDetailsResponse
 import com.appcoins.sdk.billing.repositories.ProductV2Repository
 import com.appcoins.sdk.billing.service.BdsService
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.TIMEOUT_3_SECS
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
 object ProductV2Manager {
-    private val productV2Repository = ProductV2Repository(BdsService(BuildConfig.HOST_WS, 3000))
+    private val productV2Repository =
+        ProductV2Repository(BdsService(BuildConfig.HOST_WS, TIMEOUT_3_SECS))
 
     fun getInappPurchase(purchaseToken: String): InappPurchaseResponse? {
         logInfo("Getting InappPurchase value.")
