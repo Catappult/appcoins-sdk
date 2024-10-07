@@ -10,11 +10,14 @@ import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.KEY_BUY_INTENT_RAW
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESULT_CODE
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.SKU_TYPE
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
 class BillingFlowActivity : Activity() {
+
+    private var skuType: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +37,8 @@ class BillingFlowActivity : Activity() {
                 finish()
                 return
             }
+
+            saveSkuTypeFromIntent()
 
             val intent = getBuyIntentFromBundle(bundle)
 
@@ -69,12 +74,17 @@ class BillingFlowActivity : Activity() {
             bundle.getParcelable(KEY_BUY_INTENT_RAW)
         }
 
+    private fun saveSkuTypeFromIntent() {
+        intent.getStringExtra(SKU_TYPE)?.let { skuType = it }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         logInfo(
             "Received response from Billing Flow.\nRequest Code: $requestCode\nResult Code: $resultCode"
         )
         logDebug("Extras: " + data?.extras)
+        data?.putExtra(SKU_TYPE, skuType)
         PaymentResponseStream.getInstance().emit(SDKPaymentResponse(resultCode, data))
         finish()
     }
@@ -83,9 +93,10 @@ class BillingFlowActivity : Activity() {
         private const val BUY_BUNDLE = "BUY_BUNDLE"
 
         @JvmStatic
-        fun newIntent(context: Context, bundle: Bundle): Intent {
+        fun newIntent(context: Context, bundle: Bundle, skuType: String): Intent {
             val intent = Intent(context, BillingFlowActivity::class.java)
             intent.putExtra(BUY_BUNDLE, bundle)
+            intent.putExtra(SKU_TYPE, skuType)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION
             return intent
         }

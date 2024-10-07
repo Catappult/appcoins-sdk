@@ -6,6 +6,7 @@ import com.appcoins.sdk.billing.types.SkuType
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ID
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.SKU_TYPE
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import org.json.JSONObject
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.ORDER_REFERENCE as ORDER_REFERENCE_EXTRA
@@ -33,13 +34,13 @@ data class SDKWebResponse(
     constructor(responseCode: Int) :
         this(responseCode, null, null, null)
 
-    fun toSDKPaymentResponse(): SDKPaymentResponse =
+    fun toSDKPaymentResponse(skuType: String? = null): SDKPaymentResponse =
         SDKPaymentResponse(
             createActivityResultFromResponseCode(responseCode),
-            createPaymentResponseBundle()
+            createPaymentResponseBundle(skuType)
         )
 
-    private fun createPaymentResponseBundle() =
+    private fun createPaymentResponseBundle(skuType: String?) =
         Intent().apply {
             logDebug("Putting RESPONSE_CODE_EXTRA with -> $responseCode")
             logDebug("Putting INAPP_PURCHASE_DATA with -> ${purchaseData?.toJson()}")
@@ -51,6 +52,7 @@ data class SDKWebResponse(
             dataSignature?.let { putExtra(INAPP_DATA_SIGNATURE, it) }
             purchaseData?.purchaseToken?.let { putExtra(INAPP_PURCHASE_ID, it) }
             orderReference?.let { putExtra(ORDER_REFERENCE_EXTRA, it) }
+            skuType?.let { putExtra(SKU_TYPE, it) }
         }
 
     private fun createActivityResultFromResponseCode(responseCode: Int) =

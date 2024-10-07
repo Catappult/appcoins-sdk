@@ -2,7 +2,6 @@ package com.appcoins.sdk.billing.usecases
 
 import com.appcoins.sdk.billing.ResponseCode
 import com.appcoins.sdk.billing.helpers.WalletUtils
-import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.PurchaseData
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
 import com.appcoins.sdk.billing.listeners.WalletPaymentDeeplinkResponseStream
@@ -39,24 +38,21 @@ object HandlePurchaseResultFromWalletDeeplink : UseCase() {
             requireNotNull(purchaseResponse)
             requireNotNull(purchaseResponse.purchase)
 
-            PaymentResponseStream.getInstance()
-                .emit(
-                    SDKWebResponse(
-                        responseCode,
-                        PurchaseData(JSONObject(purchaseResponse.purchase.verification.data)),
-                        purchaseResponse.purchase.verification.signature,
-                        // TODO Handle correctly the orderReference
-                        null,
-                    ).toSDKPaymentResponse()
+            WalletPaymentDeeplinkResponseStream.getInstance().emit(
+                SDKWebResponse(
+                    responseCode,
+                    PurchaseData(JSONObject(purchaseResponse.purchase.verification.data)),
+                    purchaseResponse.purchase.verification.signature,
+                    null,
                 )
-            WalletPaymentDeeplinkResponseStream.getInstance().emit(responseCode)
+            )
         } catch (e: Exception) {
             logError("There was a failure parsing the Purchase Result from the Wallet Deeplink.", e)
-            WalletPaymentDeeplinkResponseStream.getInstance().emit(ResponseCode.ERROR.value)
+            WalletPaymentDeeplinkResponseStream.getInstance().emit(SDKWebResponse(ResponseCode.ERROR.value))
         }
     }
 
     private fun handleFailureResult(responseCode: Int) {
-        WalletPaymentDeeplinkResponseStream.getInstance().emit(responseCode)
+        WalletPaymentDeeplinkResponseStream.getInstance().emit(SDKWebResponse(responseCode))
     }
 }

@@ -53,7 +53,7 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
             bundle = new Bundle();
             bundle.putInt(RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.getValue());
         }
-        return WalletUtils.startWalletPayment(bundle);
+        return WalletUtils.startWalletPayment(bundle, type);
     }
 
     @Override
