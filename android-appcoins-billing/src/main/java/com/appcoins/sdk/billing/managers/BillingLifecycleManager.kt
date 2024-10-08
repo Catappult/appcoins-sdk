@@ -15,16 +15,17 @@ object BillingLifecycleManager {
     @JvmStatic
     fun setupBillingService(context: Context) {
         Thread {
-            AttributionManager.getAttributionForUser()
-            PayflowManager.getPayflowPriorityAsync()
-            val receiverIntentFilter = IntentFilter()
-            receiverIntentFilter.addAction(Intent.ACTION_PACKAGE_ADDED)
-            receiverIntentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED)
-            receiverIntentFilter.addDataScheme(PACKAGE_SCHEME)
-            context.applicationContext.registerReceiver(
-                appInstallationReceiver,
-                receiverIntentFilter
-            )
+            AttributionManager.getAttributionForUser {
+                PayflowManager.getPayflowPriorityAsync()
+                val receiverIntentFilter = IntentFilter()
+                receiverIntentFilter.addAction(Intent.ACTION_PACKAGE_ADDED)
+                receiverIntentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED)
+                receiverIntentFilter.addDataScheme(PACKAGE_SCHEME)
+                context.applicationContext.registerReceiver(
+                    appInstallationReceiver,
+                    receiverIntentFilter
+                )
+            }
         }.start()
     }
 

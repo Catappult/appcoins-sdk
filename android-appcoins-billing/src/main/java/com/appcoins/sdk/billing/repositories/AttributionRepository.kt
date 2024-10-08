@@ -15,6 +15,7 @@ class AttributionRepository(private val bdsService: BdsService) {
         packageName: String,
         oemId: String?,
         guestWalletId: String?,
+        initialAttributionTimestamp: Long,
     ): AttributionResponse? {
         val countDownLatch = CountDownLatch(1)
         var attributionResponse: AttributionResponse? = null
@@ -23,6 +24,7 @@ class AttributionRepository(private val bdsService: BdsService) {
         queries["package_name"] = packageName
         oemId?.let { queries["oemid"] = it }
         guestWalletId?.let { queries["guest_uid"] = it }
+        queries["timestamp"] = initialAttributionTimestamp.toString()
 
         val serviceResponseListener =
             ServiceResponseListener { requestResponse ->
