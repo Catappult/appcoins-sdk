@@ -2,6 +2,8 @@ package com.appcoins.sdk.core.retrymechanism
 
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
+import com.appcoins.sdk.core.retrymechanism.exceptions.IncompleteCircularFunctionExecutionException
+import com.appcoins.sdk.core.retrymechanism.exceptions.MaxAttemptsReachedException
 
 fun <T> retryUntilSuccess(
     retries: Int? = null,
@@ -34,5 +36,5 @@ fun <T> retryUntilSuccess(
         }
     }
 
-    throw Exception("Max retries exhausted")
+    throw MaxAttemptsReachedException()
 }

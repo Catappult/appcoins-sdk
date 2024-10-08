@@ -15,7 +15,7 @@ import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.TIMEOUT_30_SECS
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
-import com.appcoins.sdk.core.retrymechanism.IncompleteCircularFunctionExecutionException
+import com.appcoins.sdk.core.retrymechanism.exceptions.IncompleteCircularFunctionExecutionException
 import com.appcoins.sdk.core.retrymechanism.retryUntilSuccess
 
 object AttributionManager {
