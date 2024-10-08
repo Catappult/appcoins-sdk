@@ -98,7 +98,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
                                 PayloadHelper.getOrigin(developerPayload)
                             )
                         )
-                    bundle = WalletUtils.startWebFirstPayment(sku, method.paymentFlow)
+                    bundle = WalletUtils.startWebFirstPayment(sku, type, method.paymentFlow)
                 }
                 if (bundle != null) {
                     return bundle

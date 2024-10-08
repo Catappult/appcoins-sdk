@@ -8,6 +8,7 @@ import com.appcoins.sdk.billing.usecases.mmp.SendSuccessfulPurchaseResponseEvent
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.SKU_TYPE
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
@@ -34,6 +35,7 @@ internal object ApplicationUtils {
         val responseCode = getResponseCodeFromIntent(data)
         val purchaseData = data.getStringExtra(INAPP_PURCHASE_DATA)
         val dataSignature = data.getStringExtra(INAPP_DATA_SIGNATURE)
+        val skuType = data.getStringExtra(SKU_TYPE)
 
         if (resultCode == Activity.RESULT_OK && responseCode == ResponseCode.OK.value) {
             sdkAnalytics.sendPurchaseStatusEvent("success", getResponseDesc(responseCode))
@@ -58,7 +60,7 @@ internal object ApplicationUtils {
                     val purchase =
                         Purchase(
                             getObjectFromJson(purchaseDataJSON, "orderId"),
-                            "inapp",
+                            skuType ?: "inapp",
                             purchaseData,
                             Base64.decode(dataSignature, Base64.DEFAULT),
                             getObjectFromJson(purchaseDataJSON, "purchaseTime").toLong(),

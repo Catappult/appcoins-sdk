@@ -9,7 +9,7 @@ public class WalletPaymentDeeplinkResponseStream {
 
     private static WalletPaymentDeeplinkResponseStream instance;
 
-    private final List<Consumer<Integer>> collectors = new ArrayList<>();
+    private final List<Consumer<SDKWebResponse>> collectors = new ArrayList<>();
 
     private WalletPaymentDeeplinkResponseStream() {
     }
@@ -21,28 +21,32 @@ public class WalletPaymentDeeplinkResponseStream {
         return instance;
     }
 
-    public void emit(Integer value) {
+    public void emit(SDKWebResponse value) {
         logInfo("Emitting new value on WalletPaymentDeeplinkResponseStream.");
         notifyCollectors(value);
     }
 
-    public void collect(Consumer<Integer> collector) {
+    public void collect(Consumer<SDKWebResponse> collector) {
         if (!collectors.contains(collector)) {
             collectors.add(collector);
         }
     }
 
-    public void removeCollector(Consumer<Integer> collector) {
+    public void removeCollector(Consumer<SDKWebResponse> collector) {
         collectors.remove(collector);
     }
 
-    private void notifyCollectors(Integer value) {
-        for (Consumer<Integer> collector : collectors) {
+    public Boolean hasCollectors() {
+        return !collectors.isEmpty();
+    }
+
+    private void notifyCollectors(SDKWebResponse value) {
+        for (Consumer<SDKWebResponse> collector : collectors) {
             collector.accept(value);
         }
     }
 
-    public interface Consumer<Integer> {
-        void accept(Integer value);
+    public interface Consumer<SDKWebResponse> {
+        void accept(SDKWebResponse value);
     }
 }
