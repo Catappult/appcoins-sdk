@@ -11,6 +11,7 @@ import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
 import com.appcoins.sdk.billing.usecases.GetOemIdForPackage
 import com.appcoins.sdk.billing.usecases.SaveAttributionResultOnPrefs
 import com.appcoins.sdk.billing.usecases.SaveInitialAttributionTimestamp
+import com.appcoins.sdk.billing.usecases.SendAttributionRetryAttempt
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.TIMEOUT_30_SECS
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import com.appcoins.sdk.core.logger.Logger.logError
@@ -36,9 +37,18 @@ object AttributionManager {
             val oemid = GetOemIdForPackage(packageName, WalletUtils.context)
             val guestWalletId = getWalletId()
 
-            retryUntilSuccess(initialInterval = 1000, exponentialBackoff = true, maxInterval = 65000) {
-                startAttributionRequest(oemid, guestWalletId, onSuccessfulAttribution)
-            }
+            retryUntilSuccess(
+                initialInterval = 1000,
+                exponentialBackoff = true,
+                maxInterval = 65000,
+                runningBlock = { startAttributionRequest(oemid, guestWalletId, onSuccessfulAttribution) },
+                onRetryBlock = {
+                    SendAttributionRetryAttempt(
+                        it,
+                        attributionSharedPreferences.getInitialAttributionTimestamp()
+                    )
+                }
+            )
         }
     }
 

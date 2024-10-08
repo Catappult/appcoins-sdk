@@ -232,6 +232,12 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
         )
     }
 
+    fun sendAttributionRetryAttemptEvent(failureMessage: String) =
+        sendEmptyUnexpectedFailureEvent(
+            SdkAnalyticsFailureLabels.ATTRIBUTION_RETRY_ATTEMPT,
+            failureMessage
+        )
+
     fun sendUnsuccessfulWebViewResultEvent(failureMessage: String) =
         sendEmptyUnexpectedFailureEvent(
             SdkAnalyticsFailureLabels.SDK_WEB_VIEW_RESULT_FAILED,

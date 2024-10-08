@@ -10,7 +10,8 @@ fun <T> retryUntilSuccess(
     initialInterval: Long = 1000,
     exponentialBackoff: Boolean = false,
     maxInterval: Long = Long.MAX_VALUE,
-    block: () -> T
+    runningBlock: () -> T,
+    onRetryBlock: (attempts: Int) -> Unit
 ): T? {
     var retriesLeft = retries
     var interval = initialInterval
@@ -18,7 +19,7 @@ fun <T> retryUntilSuccess(
 
     while (retriesLeft?.let { it > 0 } != false) {
         try {
-            return block()
+            return runningBlock()
         } catch (e: IncompleteCircularFunctionExecutionException) {
             attempt++
             if (retriesLeft != null) {
@@ -27,6 +28,8 @@ fun <T> retryUntilSuccess(
 
             logError("Attempt $attempt failed: ${e.message}")
             logInfo("Retrying in $interval milliseconds...")
+
+            onRetryBlock(attempt)
 
             Thread.sleep(interval)
 
