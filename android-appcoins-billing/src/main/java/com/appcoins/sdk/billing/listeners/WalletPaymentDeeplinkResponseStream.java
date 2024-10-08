@@ -36,6 +36,10 @@ public class WalletPaymentDeeplinkResponseStream {
         collectors.remove(collector);
     }
 
+    public Boolean hasCollectors() {
+        return !collectors.isEmpty();
+    }
+
     private void notifyCollectors(SDKWebResponse value) {
         for (Consumer<SDKWebResponse> collector : collectors) {
             collector.accept(value);
