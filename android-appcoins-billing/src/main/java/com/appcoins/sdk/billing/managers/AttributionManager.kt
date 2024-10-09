@@ -37,18 +37,33 @@ object AttributionManager {
             val oemid = GetOemIdForPackage(packageName, WalletUtils.context)
             val guestWalletId = getWalletId()
 
-            retryUntilSuccess(
-                initialInterval = 1000,
-                exponentialBackoff = true,
-                maxInterval = 65000,
-                runningBlock = { startAttributionRequest(oemid, guestWalletId, onSuccessfulAttribution) },
-                onRetryBlock = {
+            try {
+                startAttributionRequest(oemid, guestWalletId, onSuccessfulAttribution)
+            } catch (ex: IncompleteCircularFunctionExecutionException) {
+                logError("Attribution failed. Requesting again.", ex)
+                onSuccessfulAttribution()
+                Thread {
                     SendAttributionRetryAttempt(
-                        it,
+                        1,
                         attributionSharedPreferences.getInitialAttributionTimestamp()
                     )
-                }
-            )
+                    retryUntilSuccess(
+                        initialInterval = 1000,
+                        exponentialBackoff = true,
+                        maxInterval = 65000,
+                        runningBlock = { startAttributionRequest(oemid, guestWalletId, onSuccessfulAttribution) },
+                        onRetryBlock = {
+                            SendAttributionRetryAttempt(
+                                it,
+                                attributionSharedPreferences.getInitialAttributionTimestamp()
+                            )
+                        }
+                    )
+                }.start()
+            }
+        } else {
+            logInfo("Attribution already complete.")
+            onSuccessfulAttribution()
         }
     }
 
@@ -57,20 +72,13 @@ object AttributionManager {
         val attributionResponse =
             attributionRepository.getAttributionForUser(packageName, oemid, guestWalletId, initialAttributionTimestamp)
 
-        processAttributionResult(
-            attributionResponse = attributionResponse,
-            onSuccessfulAttribution = onSuccessfulAttribution,
-            onFailedAttribution = {
-                throw IncompleteCircularFunctionExecutionException("Attribution failed. Repeating request.")
-            }
-        )
+        processAttributionResult(attributionResponse, onSuccessfulAttribution)
     }
 
     @Suppress("complexity:CyclomaticComplexMethod")
     private fun processAttributionResult(
         attributionResponse: AttributionResponse?,
-        onSuccessfulAttribution: () -> Unit,
-        onFailedAttribution: () -> Unit
+        onSuccessfulAttribution: () -> Unit
     ) {
         logInfo("Saving Attribution values.")
         if (attributionResponse.isSuccessfulAttributionResponse()) {
@@ -82,8 +90,7 @@ object AttributionManager {
             updateIndicativeUserId(attributionResponse?.walletId)
             onSuccessfulAttribution()
         } else {
-            logError("Attribution failed. Requesting again.")
-            onFailedAttribution()
+            throw IncompleteCircularFunctionExecutionException("Attribution failed. Repeating request.")
         }
     }
 
