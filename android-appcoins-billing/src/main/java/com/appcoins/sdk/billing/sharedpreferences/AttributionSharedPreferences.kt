@@ -13,6 +13,7 @@ class AttributionSharedPreferences(context: Context) : SharedPreferencesReposito
     fun getUtmTerm(): String? = getString(UTM_TERM_KEY)
     fun getUtmContent(): String? = getString(UTM_CONTENT_KEY)
     fun isAttributionComplete(): Boolean = getBoolean(ATTRIBUTION_COMPLETE_KEY)
+    fun getInitialAttributionTimestamp(): Long = getLong(INITIAL_ATTRIBUTION_TIMESTAMP_KEY)
 
     fun setWalletId(value: String? = null) = setString(WALLET_ID_KEY, value)
     fun setOemId(value: String? = null) = setString(OEM_ID_KEY, value)
@@ -22,6 +23,7 @@ class AttributionSharedPreferences(context: Context) : SharedPreferencesReposito
     fun setUtmTerm(value: String? = null) = setString(UTM_TERM_KEY, value)
     fun setUtmContent(value: String? = null) = setString(UTM_CONTENT_KEY, value)
     fun completeAttribution() = setBoolean(ATTRIBUTION_COMPLETE_KEY, true)
+    fun setInitialAttributionTimestamp(value: Long) = setLong(INITIAL_ATTRIBUTION_TIMESTAMP_KEY, value)
 
     private companion object {
         const val WALLET_ID_KEY = "WALLET_ID"
@@ -32,5 +34,6 @@ class AttributionSharedPreferences(context: Context) : SharedPreferencesReposito
         const val UTM_TERM_KEY = "UTM_TERM"
         const val UTM_CONTENT_KEY = "UTM_CONTENT"
         const val ATTRIBUTION_COMPLETE_KEY = "ATTRIBUTION_COMPLETE"
+        const val INITIAL_ATTRIBUTION_TIMESTAMP_KEY = "INITIAL_ATTRIBUTION_TIMESTAMP"
     }
 }

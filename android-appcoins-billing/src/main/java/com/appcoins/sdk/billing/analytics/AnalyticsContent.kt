@@ -66,6 +66,7 @@ object SdkAnalyticsFailureLabels {
     const val SDK_WEB_PAYMENT_URL_GENERATION_FAILED = "sdk_web_payment_url_generation_failed"
     const val SDK_BACKEND_GUEST_UID_GENERATION_FAILED = "sdk_backend_guest_uid_generation_failed"
     const val SDK_WEB_VIEW_RESULT_FAILED = "sdk_web_view_result_failed"
+    const val ATTRIBUTION_RETRY_ATTEMPT = "attribution_retry_attempt"
 }
 
 object SdkUpdateFlowActions {
