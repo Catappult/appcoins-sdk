@@ -86,5 +86,13 @@ data class VoidedPurchase(
     val voidedQuantity: Double,
 ) {
     fun toJson(): String =
-        """{"kind":"$kind","purchaseToken":"$purchaseToken","orderId":"$orderId","purchaseTimeMillis":$purchaseTimeMillis,"voidedTimeMillis":$voidedTimeMillis,"voidedSource":$voidedSource,"voidedReason":$voidedReason,"voidedQuantity":$voidedQuantity}""".trimMargin()
+        """{"kind":"$kind"""" +
+            ""","purchaseToken":"$purchaseToken"""" +
+            ""","orderId":"$orderId"""" +
+            ""","purchaseTimeMillis":$purchaseTimeMillis""" +
+            ""","voidedTimeMillis":$voidedTimeMillis""" +
+            ""","voidedSource":$voidedSource""" +
+            ""","voidedReason":$voidedReason""" +
+            ""","voidedQuantity":$voidedQuantity""" +
+            """}"""
 }

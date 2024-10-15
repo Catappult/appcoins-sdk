@@ -9,7 +9,9 @@ package com.appcoins.sdk.billing
  * @param voidedTimeMillis Time in millis for when the Purchase was voided.
  * @param voidedSource Source that Voided the Purchase.
  * Possible values are:
- * 0 - Aptoide.
+ * 0 - User.
+ * 1 - Developer.
+ * 2 - Aptoide.
  * @param voidedReason Reason of the Voiding of the Purchase.
  * Possible values are:
  * 0 - REFUNDED
