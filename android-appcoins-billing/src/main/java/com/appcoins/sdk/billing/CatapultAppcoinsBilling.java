@@ -45,6 +45,11 @@ public class CatapultAppcoinsBilling
     }
 
     @Override
+    public VoidedPurchasesResult queryVoidedPurchases(Long startTimeInMillis) {
+        return billing.queryVoidedPurchases(startTimeInMillis);
+    }
+
+    @Override
     public void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
         SkuDetailsResponseListener onSkuDetailsResponseListener) {
         billing.querySkuDetailsAsync(skuDetailsParams, onSkuDetailsResponseListener);

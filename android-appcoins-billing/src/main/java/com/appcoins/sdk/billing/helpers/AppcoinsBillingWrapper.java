@@ -6,8 +6,11 @@ import android.os.RemoteException;
 import com.appcoins.billing.AppcoinsBilling;
 import com.appcoins.sdk.billing.ResponseCode;
 import com.appcoins.sdk.billing.managers.ProductV2Manager;
+import com.appcoins.sdk.billing.managers.VoidedPurchasesManager;
 import com.appcoins.sdk.billing.mappers.PurchasesBundleMapper;
 import com.appcoins.sdk.billing.mappers.PurchasesResponse;
+import com.appcoins.sdk.billing.mappers.VoidedPurchasesBundleMapper;
+import com.appcoins.sdk.billing.mappers.VoidedPurchasesResponse;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
@@ -18,6 +21,7 @@ import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ID_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ITEM_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_VOIDED_PURCHASE_DATA_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
 import static com.appcoins.sdk.core.logger.Logger.logWarning;
 
@@ -70,6 +74,25 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
             bundle =
                 new PurchasesBundleMapper().mapGuestPurchases(bundle, purchasesResponse, idsList, skuList, dataList,
                     signatureDataList);
+        }
+        return bundle;
+    }
+
+    @Override
+    public Bundle getVoidedPurchases(int apiVersion, String packageName, String startTime) throws RemoteException {
+        Bundle bundle = appcoinsBilling.getVoidedPurchases(apiVersion, packageName, startTime);
+        if (walletId != null) {
+            ArrayList<String> dataList = new ArrayList<>();
+            if (bundle != null && bundle.containsKey(INAPP_VOIDED_PURCHASE_DATA_LIST)) {
+                dataList = bundle.getStringArrayList(INAPP_VOIDED_PURCHASE_DATA_LIST);
+            }
+            if (bundle == null) {
+                bundle = new Bundle();
+            }
+            VoidedPurchasesResponse voidedPurchasesResponse =
+                VoidedPurchasesManager.INSTANCE.getVoidedPurchasesSync(packageName, walletId, startTime);
+            bundle =
+                new VoidedPurchasesBundleMapper().mapGuestVoidedPurchases(bundle, voidedPurchasesResponse, dataList);
         }
         return bundle;
     }

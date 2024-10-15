@@ -8,6 +8,8 @@ import com.appcoins.sdk.billing.PurchasesResult;
 import com.appcoins.sdk.billing.SkuDetails;
 import com.appcoins.sdk.billing.SkuDetailsResult;
 import com.appcoins.sdk.billing.SkuDetailsV2;
+import com.appcoins.sdk.billing.VoidedPurchase;
+import com.appcoins.sdk.billing.VoidedPurchasesResult;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONException;
@@ -17,6 +19,7 @@ import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.GET_SKU_DE
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ID_LIST;
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_VOIDED_PURCHASE_DATA_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.KEY_BUY_INTENT;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
 import static com.appcoins.sdk.core.logger.Logger.logDebug;
@@ -177,5 +180,37 @@ public class AndroidBillingMapper {
             + "\",\"description\" : \""
             + skuDetails.getDescription()
             + "\"}";
+    }
+
+    public static VoidedPurchasesResult mapVoidedPurchases(Bundle bundle) {
+        int responseCode = bundle.getInt(RESPONSE_CODE);
+        List<VoidedPurchase> list = new ArrayList<>();
+        ArrayList<String> voidedPurchaseDataList = bundle.getStringArrayList(INAPP_VOIDED_PURCHASE_DATA_LIST);
+
+        if (voidedPurchaseDataList != null) {
+            for (int i = 0; i < voidedPurchaseDataList.size(); ++i) {
+                String voidedPurchaseData = voidedPurchaseDataList.get(i);
+
+                JSONObject jsonElement;
+                try {
+                    jsonElement = new JSONObject(voidedPurchaseData);
+
+                    String kind = jsonElement.getString("kind");
+                    String purchaseToken = jsonElement.getString("purchaseToken");
+                    String orderId = jsonElement.getString("orderId");
+                    long purchaseTimeMillis = jsonElement.getLong("purchaseTimeMillis");
+                    long voidedTimeMillis = jsonElement.getLong("voidedTimeMillis");
+                    int voidedSource = jsonElement.getInt("voidedSource");
+                    int voidedReason = jsonElement.getInt("voidedReason");
+                    double voidedQuantity = jsonElement.getDouble("voidedQuantity");
+
+                    list.add(new VoidedPurchase(kind, purchaseToken, orderId, purchaseTimeMillis, voidedTimeMillis,
+                        voidedSource, voidedReason, voidedQuantity));
+                } catch (JSONException e) {
+                    logError("Failed to map Voided Purchase: " + e);
+                }
+            }
+        }
+        return new VoidedPurchasesResult(list, responseCode);
     }
 }

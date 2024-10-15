@@ -8,6 +8,8 @@ public interface Billing {
 
     PurchasesResult queryPurchases(String skuType);
 
+    VoidedPurchasesResult queryVoidedPurchases(Long startTimeInMillis);
+
     void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
         SkuDetailsResponseListener onSkuDetailsResponseListener);
 
