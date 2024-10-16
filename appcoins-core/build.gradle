@@ -18,8 +18,6 @@ android {
         versionCode VERSION_CODE
         versionName VERSION_NAME
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
         consumerProguardFiles 'proguard-rules.pro'
 
         buildConfigField 'int', 'VERSION_CODE', "${defaultConfig.versionCode}"
@@ -39,7 +37,7 @@ android {
         }
     }
 
-    check.dependsOn 'checkstyle', 'lint', 'detekt'
+    check.dependsOn 'checkstyle', 'lint', 'detekt', 'test'
 
     lintOptions {
         abortOnError false
@@ -74,11 +72,10 @@ android {
 }
 
 dependencies {
-    testImplementation libs.junit
-    testImplementation libs.mockito.core
-    testImplementation libs.json
-    androidTestImplementation libs.android.support.test.runner
-    androidTestImplementation libs.android.support.test.espresso.core
+    testImplementation libs.mockk
+    testImplementation libs.robolectric
+    testImplementation libs.kotlin.test.junit
+
     detektPlugins libs.detekt.formatting
 
     implementation libs.kotlin.stdlib
