@@ -205,7 +205,7 @@ public class AndroidBillingMapper {
                     double voidedQuantity = jsonElement.getDouble("voidedQuantity");
 
                     list.add(new VoidedPurchase(kind, purchaseToken, orderId, purchaseTimeMillis, voidedTimeMillis,
-                        voidedSource, voidedReason, voidedQuantity));
+                        voidedSource, voidedReason, voidedQuantity, null));
                 } catch (JSONException e) {
                     logError("Failed to map Voided Purchase: " + e);
                 }

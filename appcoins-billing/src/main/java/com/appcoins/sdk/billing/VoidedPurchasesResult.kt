@@ -5,7 +5,7 @@ package com.appcoins.sdk.billing
  * @param responseCode Response code of the Voided Purchases request result
  * Possible values are in the .
  */
-class VoidedPurchasesResult(
+data class VoidedPurchasesResult(
     val voidedPurchases: List<VoidedPurchase>,
     val responseCode: Int
 )

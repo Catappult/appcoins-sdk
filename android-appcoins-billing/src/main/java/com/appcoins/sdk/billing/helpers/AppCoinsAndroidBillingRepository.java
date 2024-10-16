@@ -15,6 +15,7 @@ import com.appcoins.sdk.billing.VoidedPurchasesResult;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.service.WalletBillingService;
+import com.appcoins.sdk.billing.usecases.AddPurchaseDataToVoidedPurchases;
 import com.appcoins.sdk.billing.usecases.IsStartTimeValid;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,6 +102,10 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
 
             VoidedPurchasesResult voidedPurchasesResult = AndroidBillingMapper.mapVoidedPurchases(voidedPurchases);
             logInfo("VoidedPurchasesResult code: " + voidedPurchasesResult.getResponseCode());
+            logDebug("VoidedPurchasesResult: " + voidedPurchasesResult);
+
+            AddPurchaseDataToVoidedPurchases.INSTANCE.invoke(voidedPurchasesResult);
+            logDebug("VoidedPurchasesResult after adding Purchase Data: " + voidedPurchasesResult);
 
             return voidedPurchasesResult;
         } catch (RemoteException e) {

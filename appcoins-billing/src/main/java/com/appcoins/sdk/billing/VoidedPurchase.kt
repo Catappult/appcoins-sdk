@@ -17,8 +17,10 @@ package com.appcoins.sdk.billing
  * 0 - REFUNDED
  * 7 - CHARGEDBACK
  * @param voidedQuantity The voided quantity.
+ * @param voidedPurchaseData The Purchase Data of a Voided Purchase that contains important
+ * data for the developer.
  */
-class VoidedPurchase(
+data class VoidedPurchase(
     val kind: String,
     val purchaseToken: String,
     val orderId: String,
@@ -27,4 +29,5 @@ class VoidedPurchase(
     val voidedSource: Int,
     val voidedReason: Int,
     val voidedQuantity: Double,
+    var voidedPurchaseData: VoidedPurchaseData? = null,
 )
