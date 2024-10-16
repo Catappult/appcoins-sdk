@@ -11,7 +11,7 @@ object AddPurchaseDataToVoidedPurchases : UseCase() {
         voidedPurchasesResult.voidedPurchases.forEach { voidedPurchase ->
             val inAppPurchase = ProductV2Manager.getInappPurchase(voidedPurchase.purchaseToken)
             inAppPurchase?.let {
-                voidedPurchase.voidedPurchaseData = VoidedPurchaseData(it.sku, it.payload)
+                voidedPurchase.voidedPurchaseData = VoidedPurchaseData(it.sku, it.mapType(), it.payload)
             }
         }
     }

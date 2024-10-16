@@ -7,5 +7,6 @@ package com.appcoins.sdk.billing
  */
 data class VoidedPurchaseData(
     val sku: String?,
+    val skuType: String?,
     val developerPayload: String?,
 )
