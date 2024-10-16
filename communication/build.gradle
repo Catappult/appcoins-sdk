@@ -12,7 +12,6 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
 
@@ -51,10 +50,12 @@ android {
 }
 
 dependencies {
-    testImplementation libs.junit
-    androidTestImplementation libs.mockito.android
+    testImplementation libs.mockk
+    testImplementation libs.robolectric
+    testImplementation libs.kotlin.test.junit
     androidTestImplementation libs.android.support.test.runner
     androidTestImplementation libs.android.support.test.espresso.core
+
     detektPlugins libs.detekt.formatting
 
     api project(':appcoins-core')

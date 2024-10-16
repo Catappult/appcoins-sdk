@@ -158,11 +158,12 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 
-    testImplementation libs.junit
-    testImplementation libs.mockito.core
-    testImplementation libs.json
+    testImplementation libs.mockk
+    testImplementation libs.robolectric
+    testImplementation libs.kotlin.test.junit
     androidTestImplementation libs.android.support.test.runner
     androidTestImplementation libs.android.support.test.espresso.core
+
     detektPlugins libs.detekt.formatting
 
     implementation libs.kotlin.stdlib
