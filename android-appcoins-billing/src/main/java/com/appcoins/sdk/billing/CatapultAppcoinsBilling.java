@@ -46,7 +46,10 @@ public class CatapultAppcoinsBilling
 
     @Override
     public VoidedPurchasesResult queryVoidedPurchases(Long startTimeInMillis) {
-        return billing.queryVoidedPurchases(startTimeInMillis);
+        AttributionSharedPreferences attributionSharedPreferences =
+            new AttributionSharedPreferences(WalletUtils.context);
+        String guestWalletId = attributionSharedPreferences.getWalletId();
+        return billing.queryVoidedPurchases(guestWalletId, startTimeInMillis);
     }
 
     @Override

@@ -78,7 +78,8 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
     }
 
     @Override
-    public VoidedPurchasesResult getVoidedPurchases(Long startTimeInMillis) throws ServiceConnectionException {
+    public VoidedPurchasesResult getVoidedPurchases(String guestWalletId, Long startTimeInMillis)
+        throws ServiceConnectionException {
         logInfo("Executing getVoidedPurchases.");
 
         if (!isReady()) {
@@ -97,7 +98,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
         }
 
         try {
-            Bundle voidedPurchases = service.getVoidedPurchases(apiVersion, packageName, startTime);
+            Bundle voidedPurchases = service.getVoidedPurchases(apiVersion, packageName, guestWalletId, startTime);
             logDebug("Voided Purchases received: " + voidedPurchases.toString());
 
             VoidedPurchasesResult voidedPurchasesResult = AndroidBillingMapper.mapVoidedPurchases(voidedPurchases);

@@ -79,8 +79,9 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
     }
 
     @Override
-    public Bundle getVoidedPurchases(int apiVersion, String packageName, String startTime) throws RemoteException {
-        Bundle bundle = appcoinsBilling.getVoidedPurchases(apiVersion, packageName, startTime);
+    public Bundle getVoidedPurchases(int apiVersion, String packageName, String guestWalletId, String startTime)
+        throws RemoteException {
+        Bundle bundle = appcoinsBilling.getVoidedPurchases(apiVersion, packageName, guestWalletId, startTime);
         if (walletId != null) {
             ArrayList<String> dataList = new ArrayList<>();
             if (bundle != null && bundle.containsKey(INAPP_VOIDED_PURCHASE_DATA_LIST)) {

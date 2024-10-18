@@ -38,8 +38,9 @@ public class WalletBillingService implements AppcoinsBilling {
     }
 
     @Override
-    public Bundle getVoidedPurchases(int apiVersion, String packageName, String startTime) throws RemoteException {
-        return service.getVoidedPurchases(apiVersion, packageName, startTime);
+    public Bundle getVoidedPurchases(int apiVersion, String packageName, String guestWalletId, String startTime)
+        throws RemoteException {
+        return service.getVoidedPurchases(apiVersion, packageName, guestWalletId, startTime);
     }
 
     @Override

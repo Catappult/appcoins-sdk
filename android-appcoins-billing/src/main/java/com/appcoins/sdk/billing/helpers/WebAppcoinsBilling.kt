@@ -179,13 +179,14 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
     override fun getVoidedPurchases(
         apiVersion: Int,
         packageName: String,
+        guestWalletId: String?,
         startTime: String?
     ): Bundle {
         logInfo("Getting Voided Purchases from startTime: $startTime")
         var bundleResponse = buildEmptyVoidedPurchasesBundle()
-        val walletId = walletId
 
-        val voidedPurchasesResponse = VoidedPurchasesManager.getVoidedPurchasesSync(packageName, walletId, startTime)
+        val voidedPurchasesResponse =
+            VoidedPurchasesManager.getVoidedPurchasesSync(packageName, guestWalletId, startTime)
         bundleResponse =
             VoidedPurchasesBundleMapper().mapGuestVoidedPurchases(bundleResponse, voidedPurchasesResponse)
 

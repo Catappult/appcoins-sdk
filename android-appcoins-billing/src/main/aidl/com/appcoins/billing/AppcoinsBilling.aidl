@@ -138,13 +138,14 @@ interface AppcoinsBilling {
         * This will return all Voided Purchases from the Beggining of the StartTime provided.
         * @param apiVersion billing API version that the app is using
         * @param packageName package name of the calling app
+        * @param guestWalletId guestWalletId to use for the Voided Purchases request
         * @param startTime timestamp, in milliseconds, of the oldest voided purchase that should be
-        * taken into consideration when making the request.
+        * taken into consideration when making the request
         * @return Bundle containing the following key-value pairs
         *         "RESPONSE_CODE" with int value, RESULT_OK(0) if success, appropriate response codes
                                   on failures.
         *         "INAPP_VOIDED_PURCHASE_DATA_LIST" - StringArrayList containing the voided
                                   purchase information.
         */
-       Bundle getVoidedPurchases(int apiVersion, String packageName, String startTime);
+       Bundle getVoidedPurchases(int apiVersion, String packageName, String guestWalletId, String startTime);
 }

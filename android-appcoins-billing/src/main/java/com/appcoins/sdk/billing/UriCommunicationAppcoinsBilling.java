@@ -61,10 +61,12 @@ public class UriCommunicationAppcoinsBilling implements AppcoinsBilling, Seriali
     }
 
     @Override
-    public Bundle getVoidedPurchases(int apiVersion, String packageName, String startTime) throws RemoteException {
+    public Bundle getVoidedPurchases(int apiVersion, String packageName, String guestWalletId, String startTime)
+        throws RemoteException {
         Bundle arguments = new Bundle();
         arguments.putInt("API_VERSION", apiVersion);
         arguments.putString("PACKAGE_NAME", packageName);
+        arguments.putString("GUEST_WALLET_ID", guestWalletId);
         arguments.putString("START_TIME", startTime);
         return callMethod(5, arguments).getBundle("RESULT_VALUE");
     }

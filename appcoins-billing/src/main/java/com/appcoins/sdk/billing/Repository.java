@@ -7,7 +7,8 @@ public interface Repository {
 
     PurchasesResult getPurchases(String skuType) throws ServiceConnectionException;
 
-    VoidedPurchasesResult getVoidedPurchases(Long startTimeInMillis) throws ServiceConnectionException;
+    VoidedPurchasesResult getVoidedPurchases(String guestWalletId, Long startTimeInMillis)
+        throws ServiceConnectionException;
 
     SkuDetailsResult querySkuDetailsAsync(String skuType, List<String> sku) throws ServiceConnectionException;
 

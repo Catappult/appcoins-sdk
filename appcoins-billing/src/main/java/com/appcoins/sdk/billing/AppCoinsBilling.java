@@ -51,9 +51,10 @@ public class AppCoinsBilling implements Billing {
     }
 
     @Override
-    public VoidedPurchasesResult queryVoidedPurchases(Long startTimeInMillis) {
+    public VoidedPurchasesResult queryVoidedPurchases(String guestWalletId, Long startTimeInMillis) {
         try {
-            VoidedPurchasesResult voidedPurchasesResult = repository.getVoidedPurchases(startTimeInMillis);
+            VoidedPurchasesResult voidedPurchasesResult =
+                repository.getVoidedPurchases(guestWalletId, startTimeInMillis);
 
             if (voidedPurchasesResult.getResponseCode() != ResponseCode.OK.getValue()) {
                 return new VoidedPurchasesResult(new ArrayList<>(), voidedPurchasesResult.getResponseCode());
