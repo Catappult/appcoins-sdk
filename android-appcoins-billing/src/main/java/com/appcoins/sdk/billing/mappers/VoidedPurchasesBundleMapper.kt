@@ -23,10 +23,10 @@ internal class VoidedPurchasesBundleMapper {
     private fun buildPurchaseBundle(
         bundle: Bundle,
         voidedPurchasesResponse: VoidedPurchasesResponse,
-        dataList: ArrayList<String>? = ArrayList(),
+        dataList: ArrayList<String>,
     ) {
         for (voidedPurchase in voidedPurchasesResponse.voidedPurchases) {
-            (dataList ?: arrayListOf()).add(voidedPurchase.toJson())
+            dataList.add(voidedPurchase.toJson())
         }
         bundle.putInt(RESPONSE_CODE, ResponseCode.OK.value)
         bundle.putStringArrayList(INAPP_VOIDED_PURCHASE_DATA_LIST, dataList)
