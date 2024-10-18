@@ -6,6 +6,6 @@ package com.appcoins.sdk.billing
  * Possible values are in the .
  */
 data class VoidedPurchasesResult(
-    val voidedPurchases: List<VoidedPurchase>,
+    var voidedPurchases: List<VoidedPurchase>,
     val responseCode: Int
 )

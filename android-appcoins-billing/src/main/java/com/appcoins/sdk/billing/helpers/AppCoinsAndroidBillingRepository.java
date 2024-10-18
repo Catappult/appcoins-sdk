@@ -17,6 +17,7 @@ import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.service.WalletBillingService;
 import com.appcoins.sdk.billing.usecases.AddPurchaseDataToVoidedPurchases;
 import com.appcoins.sdk.billing.usecases.IsStartTimeValid;
+import com.appcoins.sdk.billing.usecases.RemoveDuplicatedVoidedPurchases;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,6 +106,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
             logInfo("VoidedPurchasesResult code: " + voidedPurchasesResult.getResponseCode());
             logDebug("VoidedPurchasesResult: " + voidedPurchasesResult);
 
+            RemoveDuplicatedVoidedPurchases.INSTANCE.invoke(voidedPurchasesResult);
             AddPurchaseDataToVoidedPurchases.INSTANCE.invoke(voidedPurchasesResult);
             logDebug("VoidedPurchasesResult after adding Purchase Data: " + voidedPurchasesResult);
 
