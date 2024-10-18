@@ -82,7 +82,7 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
     public Bundle getVoidedPurchases(int apiVersion, String packageName, String guestWalletId, String startTime)
         throws RemoteException {
         Bundle bundle = appcoinsBilling.getVoidedPurchases(apiVersion, packageName, guestWalletId, startTime);
-        if (walletId != null) {
+        if (guestWalletId != null) {
             ArrayList<String> dataList = new ArrayList<>();
             if (bundle != null && bundle.containsKey(INAPP_VOIDED_PURCHASE_DATA_LIST)) {
                 dataList = bundle.getStringArrayList(INAPP_VOIDED_PURCHASE_DATA_LIST);
@@ -91,7 +91,7 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
                 bundle = new Bundle();
             }
             VoidedPurchasesResponse voidedPurchasesResponse =
-                VoidedPurchasesManager.INSTANCE.getVoidedPurchasesSync(packageName, walletId, startTime);
+                VoidedPurchasesManager.INSTANCE.getVoidedPurchasesSync(packageName, guestWalletId, startTime);
             bundle =
                 new VoidedPurchasesBundleMapper().mapGuestVoidedPurchases(bundle, voidedPurchasesResponse, dataList);
         }
