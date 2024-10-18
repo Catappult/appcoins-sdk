@@ -58,5 +58,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name="com.appcoins.sdk.billing.WebIapCommunicationActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="web-iap-result" android:host="${applicationId}"/>
+            </intent-filter>
+        </activity>
     </application>
 </manifest>
