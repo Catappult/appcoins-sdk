@@ -16,8 +16,7 @@ import static com.appcoins.sdk.core.logger.Logger.logError;
 
 public class EventLogger implements Runnable {
 
-    private final String BASE_URL = "https://ws75.aptoide.com/api/7/";
-    private final String SERVICE_PATH = "user/addEvent/action=CLICK/context=BILLING_SDK/name=";
+    private final String SERVICE_PATH = "/user/addEvent/action=CLICK/context=BILLING_SDK/name=";
     private final String purchaseEventName = "PURCHASE_INTENT";
     private final String sku;
     private final String appPackage;
@@ -48,7 +47,7 @@ public class EventLogger implements Runnable {
 
         jsonObj.put("data", dataObj);
 
-        String finalURL = BASE_URL + SERVICE_PATH + purchaseEventName;
+        String finalURL = BuildConfig.WS75_BASE_HOST + SERVICE_PATH + purchaseEventName;
 
         postDataToURL(finalURL, jsonObj);
     }
