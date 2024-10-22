@@ -33,12 +33,6 @@ class VoidedPurchasesResponseMapper {
                             val voidedTimeMillis = itemJson.getLong("voidedTimeMillis")
                             val voidedSource = itemJson.getInt("voidedSource")
                             val voidedReason = itemJson.getInt("voidedReason")
-                            val voidedQuantity =
-                                if (itemJson.has("voidedQuantity")) {
-                                    itemJson.optDouble("voidedQuantity")
-                                } else {
-                                    0.0
-                                }
 
                             items.add(
                                 VoidedPurchase(
@@ -49,7 +43,6 @@ class VoidedPurchasesResponseMapper {
                                     voidedTimeMillis = voidedTimeMillis,
                                     voidedSource = voidedSource,
                                     voidedReason = voidedReason,
-                                    voidedQuantity = voidedQuantity,
                                 )
                             )
                         }
@@ -83,7 +76,6 @@ data class VoidedPurchase(
     val voidedTimeMillis: Long,
     val voidedSource: Int,
     val voidedReason: Int,
-    val voidedQuantity: Double,
 ) {
     fun toJson(): String =
         """{"kind":"$kind"""" +
@@ -93,6 +85,5 @@ data class VoidedPurchase(
             ""","voidedTimeMillis":$voidedTimeMillis""" +
             ""","voidedSource":$voidedSource""" +
             ""","voidedReason":$voidedReason""" +
-            ""","voidedQuantity":$voidedQuantity""" +
             """}"""
 }

@@ -29,12 +29,6 @@ class VoidedPurchaseResponseMapper {
                     val voidedTimeMillis = itemJson.getLong("voidedTimeMillis")
                     val voidedSource = itemJson.getInt("voidedSource")
                     val voidedReason = itemJson.getInt("voidedReason")
-                    val voidedQuantity =
-                        if (itemJson.has("voidedQuantity")) {
-                            itemJson.optDouble("voidedQuantity")
-                        } else {
-                            0.0
-                        }
 
                     return VoidedPurchaseResponse(
                         responseCode = response.responseCode,
@@ -46,7 +40,6 @@ class VoidedPurchaseResponseMapper {
                             voidedTimeMillis = voidedTimeMillis,
                             voidedSource = voidedSource,
                             voidedReason = voidedReason,
-                            voidedQuantity = voidedQuantity,
                         )
                     )
                 }
