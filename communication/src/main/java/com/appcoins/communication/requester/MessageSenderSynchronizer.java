@@ -1,11 +1,10 @@
 package com.appcoins.communication.requester;
 
-import static com.appcoins.sdk.core.logger.Logger.logError;
-
 import android.os.Parcelable;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+
+import static com.appcoins.sdk.core.logger.Logger.logError;
 
 public class MessageSenderSynchronizer {
     private final int timeout;

@@ -1,13 +1,11 @@
 package com.appcoins.sdk.billing.listeners;
 
-import static com.appcoins.sdk.core.logger.Logger.logInfo;
-
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
-
+import java.util.ArrayList;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
+import static com.appcoins.sdk.core.logger.Logger.logInfo;
 
 public class PayflowPriorityStream {
 
@@ -35,7 +33,9 @@ public class PayflowPriorityStream {
         return value;
     }
 
-    public void emit(@Nullable ArrayList<PaymentFlowMethod> value) {
+    public void emit(
+        @Nullable
+        ArrayList<PaymentFlowMethod> value) {
         logInfo("Emitting new value on PayflowPriorityStream.");
         if (valueHasChanged(value) || isFirstValue) {
             logInfo("Value of PayflowPriorityStream changed or isFirstValue.");
@@ -44,7 +44,9 @@ public class PayflowPriorityStream {
         }
     }
 
-    private boolean valueHasChanged(@Nullable ArrayList<PaymentFlowMethod> newValue) {
+    private boolean valueHasChanged(
+        @Nullable
+        ArrayList<PaymentFlowMethod> newValue) {
         if (value != null) {
             return value.equals(newValue);
         } else {
@@ -65,7 +67,9 @@ public class PayflowPriorityStream {
         isFirstValue = true;
     }
 
-    private void notifyCollectors(@Nullable ArrayList<PaymentFlowMethod> value) {
+    private void notifyCollectors(
+        @Nullable
+        ArrayList<PaymentFlowMethod> value) {
         this.value = value;
         if (collector != null) {
             collector.accept(value);
@@ -73,6 +77,8 @@ public class PayflowPriorityStream {
     }
 
     public interface Consumer<Any> {
-        void accept(@Nullable Any value);
+        void accept(
+            @Nullable
+            Any value);
     }
 }

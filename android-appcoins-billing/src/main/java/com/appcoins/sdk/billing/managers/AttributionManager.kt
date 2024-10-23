@@ -9,97 +9,88 @@ import com.appcoins.sdk.billing.repositories.AttributionRepository
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
 import com.appcoins.sdk.billing.usecases.GetOemIdForPackage
-import com.appcoins.sdk.core.logger.Logger.logDebug
+import com.appcoins.sdk.billing.usecases.SaveAttributionResultOnPrefs
+import com.appcoins.sdk.billing.usecases.SaveInitialAttributionTimestamp
+import com.appcoins.sdk.billing.usecases.SendAttributionRetryAttempt
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.TIMEOUT_30_SECS
+import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
+import com.appcoins.sdk.core.retrymechanism.exceptions.IncompleteCircularFunctionExecutionException
+import com.appcoins.sdk.core.retrymechanism.retryUntilSuccess
 
 object AttributionManager {
-
     private val packageName by lazy { WalletUtils.context.packageName }
     private val attributionRepository by lazy {
-        AttributionRepository(BdsService(BuildConfig.MMP_BASE_HOST, 30000))
+        AttributionRepository(BdsService(BuildConfig.MMP_BASE_HOST, TIMEOUT_30_SECS))
     }
     private val attributionSharedPreferences by lazy {
         AttributionSharedPreferences(WalletUtils.context)
     }
 
-    fun getAttributionForUser() {
+    fun getAttributionForUser(onSuccessfulAttribution: () -> Unit) {
         logInfo("Verifying new Attribution flow.")
         if (!attributionSharedPreferences.isAttributionComplete()) {
             logInfo("Getting Attribution for User.")
+            SaveInitialAttributionTimestamp()
+
             val oemid = GetOemIdForPackage(packageName, WalletUtils.context)
             val guestWalletId = getWalletId()
 
-            val attributionResponse =
-                attributionRepository.getAttributionForUser(packageName, oemid, guestWalletId)
-            saveAttributionResult(attributionResponse)
-            updateIndicativeUserId(attributionResponse?.walletId)
+            try {
+                startAttributionRequest(oemid, guestWalletId, onSuccessfulAttribution)
+            } catch (ex: IncompleteCircularFunctionExecutionException) {
+                logError("Attribution failed. Requesting again.", ex)
+                onSuccessfulAttribution()
+                Thread {
+                    SendAttributionRetryAttempt(
+                        1,
+                        attributionSharedPreferences.getInitialAttributionTimestamp()
+                    )
+                    retryUntilSuccess(
+                        initialInterval = 1000,
+                        exponentialBackoff = true,
+                        maxInterval = 65000,
+                        runningBlock = { startAttributionRequest(oemid, guestWalletId, onSuccessfulAttribution) },
+                        onRetryBlock = {
+                            SendAttributionRetryAttempt(
+                                it,
+                                attributionSharedPreferences.getInitialAttributionTimestamp()
+                            )
+                        }
+                    )
+                }.start()
+            }
+        } else {
+            logInfo("Attribution already complete.")
+            onSuccessfulAttribution()
         }
     }
 
-    private fun updateIndicativeUserId(walletId: String?) =
-        walletId?.let { IndicativeAnalytics.updateInstanceId(it) }
+    private fun startAttributionRequest(oemid: String?, guestWalletId: String?, onSuccessfulAttribution: () -> Unit) {
+        val initialAttributionTimestamp = attributionSharedPreferences.getInitialAttributionTimestamp()
+        val attributionResponse =
+            attributionRepository.getAttributionForUser(packageName, oemid, guestWalletId, initialAttributionTimestamp)
 
-    private fun saveAttributionResult(attributionResponse: AttributionResponse?) {
+        processAttributionResult(attributionResponse, onSuccessfulAttribution)
+    }
+
+    @Suppress("complexity:CyclomaticComplexMethod")
+    private fun processAttributionResult(
+        attributionResponse: AttributionResponse?,
+        onSuccessfulAttribution: () -> Unit
+    ) {
         logInfo("Saving Attribution values.")
-        if (attributionResponse?.packageName == packageName) {
+        if (attributionResponse.isSuccessfulAttributionResponse()) {
             logInfo("Completing Attribution flow.")
             attributionSharedPreferences.completeAttribution()
             attributionResponse?.apply {
-                oemId?.let {
-                    if (it.isNotEmpty()) {
-                        logInfo("Setting new OEMID.")
-                        logDebug("OEMID: $it")
-                        attributionSharedPreferences.setOemId(it)
-                    }
-                }
-                utmSource?.let {
-                    if (it.isNotEmpty()) {
-                        logInfo("Setting new UtmSource.")
-                        logDebug("UtmSource: $it")
-                        attributionSharedPreferences.setUtmSource(it)
-                    }
-                }
-                utmMedium?.let {
-                    if (it.isNotEmpty()) {
-                        logInfo("Setting new UtmMedium.")
-                        logDebug("UtmMedium: $it")
-                        attributionSharedPreferences.setUtmMedium(it)
-                    }
-                }
-                utmCampaign?.let {
-                    if (it.isNotEmpty()) {
-                        logInfo("Setting new UtmCampaign.")
-                        logDebug("UtmCampaign: $it")
-                        attributionSharedPreferences.setUtmCampaign(it)
-                    }
-                }
-                utmTerm?.let {
-                    if (it.isNotEmpty()) {
-                        logInfo("Setting new UtmTerm.")
-                        logDebug("UtmTerm: $it")
-                        attributionSharedPreferences.setUtmTerm(it)
-                    }
-                }
-                utmContent?.let {
-                    if (it.isNotEmpty()) {
-                        logInfo("Setting new UtmContent.")
-                        logDebug("UtmContent: $it")
-                        attributionSharedPreferences.setUtmContent(it)
-                    }
-                }
-                walletId?.let {
-                    if (it.isNotEmpty()) {
-                        logInfo("Setting new WalletId.")
-                        logDebug("WalletId: $it")
-                        attributionSharedPreferences.setWalletId(it)
-                    } else {
-                        sendBackendGuestUidGenerationFailedEvent()
-                    }
-                } ?: sendBackendGuestUidGenerationFailedEvent()
+                SaveAttributionResultOnPrefs(this)
             }
+            updateIndicativeUserId(attributionResponse?.walletId)
+            onSuccessfulAttribution()
         } else {
-            logError("Package name: ${attributionResponse?.packageName} is not the same as the current used: $packageName ")
+            throw IncompleteCircularFunctionExecutionException("Attribution failed. Repeating request.")
         }
     }
 
@@ -109,8 +100,11 @@ object AttributionManager {
         return walletInteract.retrieveWalletId()
     }
 
-    private fun sendBackendGuestUidGenerationFailedEvent() {
-        logError("Failure to get GuestUid for User from Attribution.")
-        WalletUtils.getSdkAnalytics().sendBackendGuestUidGenerationFailedEvent()
-    }
+    private fun AttributionResponse?.isSuccessfulAttributionResponse() =
+        this?.responseCode?.let { isSuccess(it) } ?: false &&
+            this?.packageName == this@AttributionManager.packageName &&
+            !this?.walletId.isNullOrEmpty()
+
+    private fun updateIndicativeUserId(walletId: String?) =
+        walletId?.let { IndicativeAnalytics.updateInstanceId(it) }
 }

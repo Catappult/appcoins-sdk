@@ -16,9 +16,12 @@ object AppcoinsBillingConstants {
     const val INAPP_DATA_SIGNATURE = "INAPP_DATA_SIGNATURE"
 
     const val ORDER_REFERENCE = "order_reference"
+    const val SKU_TYPE = "SKU_TYPE"
 
     const val GET_SKU_DETAILS_ITEM_LIST = "ITEM_ID_LIST"
 
     const val RESULT_CODE = 51
 
+    const val TIMEOUT_3_SECS = 3000
+    const val TIMEOUT_30_SECS = 30000
 }

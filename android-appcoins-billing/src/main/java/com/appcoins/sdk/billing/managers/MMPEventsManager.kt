@@ -6,13 +6,13 @@ import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.repositories.MMPEventsRepository
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.TIMEOUT_30_SECS
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
 object MMPEventsManager {
-
     private val packageName by lazy { WalletUtils.context.packageName }
     private val mmpEventsRepository by lazy {
-        MMPEventsRepository(BdsService(BuildConfig.MMP_BASE_HOST, 30000))
+        MMPEventsRepository(BdsService(BuildConfig.MMP_BASE_HOST, TIMEOUT_30_SECS))
     }
     private val attributionSharedPreferences by lazy {
         AttributionSharedPreferences(WalletUtils.context)

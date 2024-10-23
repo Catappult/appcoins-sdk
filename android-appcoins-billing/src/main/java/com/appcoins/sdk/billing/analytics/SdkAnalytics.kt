@@ -4,6 +4,7 @@ import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
 import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager.Action
 import java.io.Serializable
 
+@Suppress("complexity:TooManyFunctions")
 class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializable {
 
     companion object {
@@ -230,6 +231,12 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
             Action.CLICK
         )
     }
+
+    fun sendAttributionRetryAttemptEvent(failureMessage: String) =
+        sendEmptyUnexpectedFailureEvent(
+            SdkAnalyticsFailureLabels.ATTRIBUTION_RETRY_ATTEMPT,
+            failureMessage
+        )
 
     fun sendUnsuccessfulWebViewResultEvent(failureMessage: String) =
         sendEmptyUnexpectedFailureEvent(

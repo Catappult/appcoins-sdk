@@ -28,8 +28,10 @@ import com.appcoins.sdk.core.ui.floatToPxs
 import com.appcoins.sdk.core.ui.getScreenHeightInDp
 import org.json.JSONObject
 
-class WebPaymentActivity : Activity(), SDKWebPaymentInterface,
-    WalletPaymentDeeplinkResponseStream.Consumer<Int> {
+class WebPaymentActivity :
+    Activity(),
+    SDKWebPaymentInterface,
+    WalletPaymentDeeplinkResponseStream.Consumer<SDKWebResponse> {
 
     private var webView: WebView? = null
     private var webViewContainer: LinearLayout? = null
@@ -38,6 +40,8 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface,
     private var responseReceived = false
 
     private var walletDeeplinkResponseCode: Int? = null
+
+    private var skuType: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +63,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface,
             return
         }
 
+        skuType = intent.getStringExtra(SKU_TYPE)
         val sku = intent.getStringExtra(SKU)
         WalletUtils.getSdkAnalytics().sendPurchaseViaWebEvent(sku ?: "")
 
@@ -87,15 +92,18 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface,
             try {
                 val jsonObject = JSONObject(this)
                 val sdkWebResponse = SDKWebResponse(jsonObject)
-                logInfo("Received Payment Result with responseCode: ${sdkWebResponse.responseCode} for sku: ${sdkWebResponse.purchaseData?.productId}")
-                val paymentResponse = sdkWebResponse.toSDKPaymentResponse()
+                logInfo(
+                    "Received Payment Result with " +
+                        "responseCode: ${sdkWebResponse.responseCode} " +
+                        "for sku: ${sdkWebResponse.purchaseData?.productId}"
+                )
+                val paymentResponse = sdkWebResponse.toSDKPaymentResponse(skuType)
                 logInfo("Sending Payment Result with resultCode: ${paymentResponse.resultCode}")
                 PaymentResponseStream.getInstance().emit(paymentResponse)
             } catch (e: Exception) {
                 logError("There was a failure receiving the purchase result from the WebView.", e)
                 WalletUtils.getSdkAnalytics().sendUnsuccessfulWebViewResultEvent(e.toString())
-                PaymentResponseStream.getInstance()
-                    .emit(SDKPaymentResponse.createErrorTypeResponse())
+                PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
             }
         } ?: PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
     }
@@ -111,15 +119,19 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface,
         super.onDestroy()
     }
 
-    override fun accept(value: Int) {
-        logInfo("Received response from WalletPaymentDeeplinkResponseStream $value.")
-        if (value == ResponseCode.OK.value) {
+    override fun accept(value: SDKWebResponse) {
+        logInfo("Received response from WalletPaymentDeeplinkResponseStream with responseCode: ${value.responseCode}.")
+        if (value.responseCode == ResponseCode.OK.value) {
+            logInfo(
+                "Response code successful. " +
+                    "Sending Purchase Result and finishing WebPaymentActivity."
+            )
             responseReceived = true
-            logInfo("Response code successful. Finishing WebPaymentActivity.")
+            PaymentResponseStream.getInstance().emit(value.toSDKPaymentResponse(skuType))
             finish()
             return
         }
-        walletDeeplinkResponseCode = value
+        walletDeeplinkResponseCode = value.responseCode
     }
 
     private fun connectViews() {
@@ -233,8 +245,11 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface,
     private fun applyPortraitConstraints(webViewContainerParams: ViewGroup.LayoutParams) {
         val screenMaxHeight = getScreenHeightInDp(this)
         val heightToSet =
-            if (screenMaxHeight < PORTRAIT_MAX_HEIGHT_DP) LinearLayout.LayoutParams.MATCH_PARENT
-            else floatToPxs(PORTRAIT_MAX_HEIGHT_DP, this).toInt()
+            if (screenMaxHeight < PORTRAIT_MAX_HEIGHT_DP) {
+                LinearLayout.LayoutParams.MATCH_PARENT
+            } else {
+                floatToPxs(PORTRAIT_MAX_HEIGHT_DP, this).toInt()
+            }
         webViewContainerParams.width = LinearLayout.LayoutParams.MATCH_PARENT
         webViewContainerParams.height = heightToSet
     }
@@ -250,6 +265,7 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface,
     companion object {
         private const val URL = "URL"
         private const val SKU = "SKU"
+        private const val SKU_TYPE = "SKU_TYPE"
         private const val PAYMENT_FLOW = "PAYMENT_FLOW"
 
         // Tablet Constants
@@ -270,11 +286,13 @@ class WebPaymentActivity : Activity(), SDKWebPaymentInterface,
             context: Context,
             url: String,
             sku: String,
-            paymentFlow: String?
+            skuType: String,
+            paymentFlow: String?,
         ): Intent {
             val intent = Intent(context, WebPaymentActivity::class.java)
             intent.putExtra(URL, url)
             intent.putExtra(SKU, sku)
+            intent.putExtra(SKU_TYPE, skuType)
             paymentFlow?.let { intent.putExtra(PAYMENT_FLOW, it) }
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             return intent

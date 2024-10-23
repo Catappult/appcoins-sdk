@@ -21,10 +21,6 @@ local.properties
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-.idea
-
 # Solidity contracts
 deploy/build/
 deploy/node_modules/
@@ -43,8 +39,8 @@ build
 release
 
 # IDEA
-.idea
-!.idea/codeStyleSettings.xml
+.idea/*
+!.idea/codeStyles
 *.iml
 *.iws
 

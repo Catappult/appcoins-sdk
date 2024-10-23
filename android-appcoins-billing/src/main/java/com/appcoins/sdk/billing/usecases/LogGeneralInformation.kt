@@ -11,14 +11,14 @@ object LogGeneralInformation : UseCase() {
 
         logInfo(
             "GeneralSDKInformation [ " +
-                    "Package Name: ${context.packageName} " +
-                    "| OSVersion: ${deviceInformation.osVersion} " +
-                    "| Brand: ${deviceInformation.brand} " +
-                    "| Model: ${deviceInformation.model} " +
-                    "| Language: ${deviceInformation.language} " +
-                    "| Is Probably Emulator: ${deviceInformation.isProbablyEmulator} " +
-                    "| SDK Version: ${BuildConfig.VERSION_CODE} " +
-                    "]"
+                "Package Name: ${context.packageName} " +
+                "| OSVersion: ${deviceInformation.osVersion} " +
+                "| Brand: ${deviceInformation.brand} " +
+                "| Model: ${deviceInformation.model} " +
+                "| Language: ${deviceInformation.language} " +
+                "| Is Probably Emulator: ${deviceInformation.isProbablyEmulator} " +
+                "| SDK Version: ${BuildConfig.VERSION_CODE} " +
+                "]"
         )
     }
 }

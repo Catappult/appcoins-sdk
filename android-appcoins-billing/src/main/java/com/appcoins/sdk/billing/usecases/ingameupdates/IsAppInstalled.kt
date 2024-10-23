@@ -6,6 +6,7 @@ import com.appcoins.sdk.billing.usecases.UseCase
 
 object IsAppInstalled : UseCase() {
 
+    @Suppress("exceptions:SwallowedException")
     operator fun invoke(context: Context, packageName: String): Boolean {
         super.invokeUseCase()
         return try {

@@ -187,7 +187,8 @@ class ProductV2Repository(private val bdsService: BdsService) {
     }
 
     private fun handleConsumeResponse(
-        requestResponse: RequestResponse, countDownLatch: CountDownLatch,
+        requestResponse: RequestResponse,
+        countDownLatch: CountDownLatch,
         responseCode: IntArray
     ) {
         if (ServiceUtils.isSuccess(requestResponse.responseCode)) {

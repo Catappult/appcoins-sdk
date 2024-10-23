@@ -17,7 +17,6 @@ import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
-
 internal class InternalWebViewClient(private val activity: Activity) : WebViewClient() {
 
     @Deprecated("Deprecated in Java")
@@ -56,6 +55,7 @@ internal class InternalWebViewClient(private val activity: Activity) : WebViewCl
             false
         }
 
+    @Suppress("exceptions:SwallowedException")
     private fun canHandleApplicationDeeplink(uri: Uri): Boolean =
         try {
             val intent = Intent(ACTION_VIEW, uri).apply {
@@ -72,7 +72,6 @@ internal class InternalWebViewClient(private val activity: Activity) : WebViewCl
         } catch (e: ActivityNotFoundException) {
             false
         }
-
 
     private companion object {
         const val WEB_DEEPLINK_SCHEME = "web-iap-result"

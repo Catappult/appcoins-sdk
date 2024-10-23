@@ -6,6 +6,7 @@ import com.appcoins.sdk.billing.types.SkuType
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ID
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.SKU_TYPE
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import org.json.JSONObject
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.ORDER_REFERENCE as ORDER_REFERENCE_EXTRA
@@ -20,24 +21,26 @@ data class SDKWebResponse(
     constructor(jsonObject: JSONObject) : this(
         jsonObject.optInt(RESPONSE_CODE),
         jsonObject.optString(PURCHASE_DATA)?.let {
-            if (it.isEmpty()) null
-            else PurchaseData(JSONObject(it))
+            if (it.isEmpty()) {
+                null
+            } else {
+                PurchaseData(JSONObject(it))
+            }
         },
         jsonObject.optString(DATA_SIGNATURE)?.let { it.ifEmpty { null } },
         jsonObject.optString(ORDER_REFERENCE)?.let { it.ifEmpty { null } },
     )
 
-    constructor(responseCode: Int) : this(
-        responseCode, null, null, null
-    )
+    constructor(responseCode: Int) :
+        this(responseCode, null, null, null)
 
-    fun toSDKPaymentResponse(): SDKPaymentResponse =
+    fun toSDKPaymentResponse(skuType: String? = null): SDKPaymentResponse =
         SDKPaymentResponse(
             createActivityResultFromResponseCode(responseCode),
-            createPaymentResponseBundle()
+            createPaymentResponseBundle(skuType)
         )
 
-    private fun createPaymentResponseBundle() =
+    private fun createPaymentResponseBundle(skuType: String?) =
         Intent().apply {
             logDebug("Putting RESPONSE_CODE_EXTRA with -> $responseCode")
             logDebug("Putting INAPP_PURCHASE_DATA with -> ${purchaseData?.toJson()}")
@@ -49,6 +52,7 @@ data class SDKWebResponse(
             dataSignature?.let { putExtra(INAPP_DATA_SIGNATURE, it) }
             purchaseData?.purchaseToken?.let { putExtra(INAPP_PURCHASE_ID, it) }
             orderReference?.let { putExtra(ORDER_REFERENCE_EXTRA, it) }
+            skuType?.let { putExtra(SKU_TYPE, it) }
         }
 
     private fun createActivityResultFromResponseCode(responseCode: Int) =
@@ -79,10 +83,18 @@ data class PurchaseData(
 ) {
     fun toJson(): String =
         """{"orderId":"$orderId","packageName":"$packageName","productId":"$productId","purchaseTime":$purchaseTime,"purchaseToken":"$purchaseToken","purchaseState":$purchaseState${
-            if (productType.equals(SkuType.subs.name, true))
+            if (productType.equals(SkuType.subs.name, true)) {
                 ""","isAutoRenewing":"$isAutoRenewing""""
-            else ""
-        }${if (developerPayload.isNullOrEmpty()) "" else ""","developerPayload":"$developerPayload""""}}"""
+            } else {
+                ""
+            }
+        }${
+            if (developerPayload.isNullOrEmpty()) {
+                ""
+            } else {
+                ""","developerPayload":"$developerPayload""""
+            }
+        }}"""
 
     constructor(jsonObject: JSONObject) : this(
         jsonObject.optString(ORDER_ID),

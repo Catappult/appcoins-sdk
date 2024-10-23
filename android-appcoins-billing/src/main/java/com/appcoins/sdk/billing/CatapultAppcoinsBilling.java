@@ -1,15 +1,10 @@
 package com.appcoins.sdk.billing;
 
-import static com.appcoins.sdk.core.logger.Logger.logDebug;
-import static com.appcoins.sdk.core.logger.Logger.logError;
-import static com.appcoins.sdk.core.logger.Logger.logInfo;
-
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
-
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.helpers.EventLogger;
 import com.appcoins.sdk.billing.helpers.PayloadHelper;
@@ -23,19 +18,22 @@ import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
 import com.appcoins.sdk.billing.usecases.ingameupdates.IsUpdateAvailable;
 import com.appcoins.sdk.billing.usecases.ingameupdates.LaunchAppUpdate;
-
+import kotlin.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import kotlin.Pair;
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
+import static com.appcoins.sdk.core.logger.Logger.logError;
+import static com.appcoins.sdk.core.logger.Logger.logInfo;
 
-public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPurchaseStream.Consumer<Pair<Activity, BuyItemProperties>> {
+public class CatapultAppcoinsBilling
+    implements AppcoinsBillingClient, PendingPurchaseStream.Consumer<Pair<Activity, BuyItemProperties>> {
 
     private final Billing billing;
     private final RepositoryConnection connection;
     private final PurchasesUpdatedListener purchaseFinishedListener;
 
     public CatapultAppcoinsBilling(Billing billing, RepositoryConnection connection,
-                                   PurchasesUpdatedListener purchaseFinishedListener) {
+        PurchasesUpdatedListener purchaseFinishedListener) {
         this.billing = billing;
         this.connection = connection;
         this.purchaseFinishedListener = purchaseFinishedListener;
@@ -48,7 +46,7 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
 
     @Override
     public void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
-                                     SkuDetailsResponseListener onSkuDetailsResponseListener) {
+        SkuDetailsResponseListener onSkuDetailsResponseListener) {
         billing.querySkuDetailsAsync(skuDetailsParams, onSkuDetailsResponseListener);
     }
 
@@ -63,41 +61,43 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
         int responseCode;
 
         try {
-            WalletUtils.getSdkAnalytics().sendPurchaseIntentEvent(billingFlowParams.getSku());
+            WalletUtils.getSdkAnalytics()
+                .sendPurchaseIntentEvent(billingFlowParams.getSku());
             String payload = PayloadHelper.buildIntentPayload(billingFlowParams.getOrderReference(),
-                    billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin());
-            AttributionSharedPreferences attributionSharedPreferences =
-                    new AttributionSharedPreferences(activity);
+                billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin());
+            AttributionSharedPreferences attributionSharedPreferences = new AttributionSharedPreferences(activity);
             String oemid = attributionSharedPreferences.getOemId();
             String guestWalletId = attributionSharedPreferences.getWalletId();
 
-            logDebug("Launching billing flow with payload: " + payload + " oemid: " + oemid + " guestWalletId: " + guestWalletId);
+            logDebug("Launching billing flow with payload: "
+                + payload
+                + " oemid: "
+                + oemid
+                + " guestWalletId: "
+                + guestWalletId);
 
             Thread eventLoggerThread = new Thread(new EventLogger(billingFlowParams.getSku(),
-                    activity.getApplicationContext()
-                            .getPackageName()));
+                activity.getApplicationContext()
+                    .getPackageName()));
             eventLoggerThread.start();
 
             LaunchBillingFlowResult launchBillingFlowResult =
-                    billing.launchBillingFlow(billingFlowParams, payload, oemid, guestWalletId);
+                billing.launchBillingFlow(billingFlowParams, payload, oemid, guestWalletId);
 
             responseCode = launchBillingFlowResult.getResponseCode();
 
             if (responseCode != ResponseCode.OK.getValue()) {
                 logError("Failed to launch billing flow. ResponseCode: " + responseCode);
                 SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
-                ApplicationUtils.handleActivityResult(
-                        billing,
-                        sdkPaymentResponse.getResultCode(),
-                        sdkPaymentResponse.getIntent(),
-                        purchaseFinishedListener
-                );
+                ApplicationUtils.handleActivityResult(billing, sdkPaymentResponse.getResultCode(),
+                    sdkPaymentResponse.getIntent(), purchaseFinishedListener);
                 return responseCode;
             }
 
             Intent buyIntent = launchBillingFlowResult.getBuyIntent();
 
-            PaymentsResultsManager.getInstance().collectPaymentResult(this);
+            PaymentsResultsManager.getInstance()
+                .collectPaymentResult(this);
 
             if (buyIntent != null) {
                 activity.startActivity(buyIntent);
@@ -113,12 +113,8 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
     private int handleErrorTypeResponse(int value, Exception e) {
         logError("Failed to launch billing flow.", e);
         SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
-        ApplicationUtils.handleActivityResult(
-                billing,
-                sdkPaymentResponse.getResultCode(),
-                sdkPaymentResponse.getIntent(),
-                purchaseFinishedListener
-        );
+        ApplicationUtils.handleActivityResult(billing, sdkPaymentResponse.getResultCode(),
+            sdkPaymentResponse.getIntent(), purchaseFinishedListener);
         return value;
     }
 
@@ -127,7 +123,8 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
         logInfo("Request to start connection of SDK.");
         if (!isReady()) {
             logInfo("Starting connection of SDK.");
-            PendingPurchaseStream.getInstance().collect(this);
+            PendingPurchaseStream.getInstance()
+                .collect(this);
             connection.startConnection(listener);
         }
     }
@@ -137,7 +134,8 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
         logInfo("Request to end connection of SDK.");
         if (isReady()) {
             logInfo("Ending connection of SDK.");
-            PendingPurchaseStream.getInstance().stopCollecting();
+            PendingPurchaseStream.getInstance()
+                .stopCollecting();
             connection.endConnection();
         }
     }
@@ -175,9 +173,10 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
         Runnable runnable = () -> {
             if (isAppUpdateAvailable()) {
                 Intent updateDialogActivityIntent =
-                        new Intent(context.getApplicationContext(), UpdateDialogActivity.class);
+                    new Intent(context.getApplicationContext(), UpdateDialogActivity.class);
                 updateDialogActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.getApplicationContext().startActivity(updateDialogActivityIntent);
+                context.getApplicationContext()
+                    .startActivity(updateDialogActivityIntent);
             }
         };
         new Thread(runnable).start();
@@ -198,10 +197,13 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
     }
 
     @Override
-    public void accept(@Nullable Pair<Activity, BuyItemProperties> value) {
+    public void accept(
+        @Nullable
+        Pair<Activity, BuyItemProperties> value) {
         Runnable runnable = () -> {
             Looper.prepare();
-            resumeBillingFlow(value.component1(), value.component2().toBillingFlowParams());
+            resumeBillingFlow(value.component1(), value.component2()
+                .toBillingFlowParams());
             Looper.loop();
         };
         new Thread(runnable).start();
@@ -211,48 +213,41 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
         logInfo("Resuming Billing Flow after Wallet Installation.");
         int responseCode;
         try {
-            String payload =
-                    PayloadHelper.buildIntentPayload(
-                            billingFlowParams.getOrderReference(),
-                            billingFlowParams.getDeveloperPayload(),
-                            billingFlowParams.getOrigin()
-                    );
-            AttributionSharedPreferences attributionSharedPreferences =
-                    new AttributionSharedPreferences(activity);
+            String payload = PayloadHelper.buildIntentPayload(billingFlowParams.getOrderReference(),
+                billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin());
+            AttributionSharedPreferences attributionSharedPreferences = new AttributionSharedPreferences(activity);
             String oemid = attributionSharedPreferences.getOemId();
             String guestWalletId = attributionSharedPreferences.getWalletId();
 
-            logDebug("Launching billing flow with payload: " + payload + " oemid: " + oemid + " guestWalletId: " + guestWalletId);
+            logDebug("Launching billing flow with payload: "
+                + payload
+                + " oemid: "
+                + oemid
+                + " guestWalletId: "
+                + guestWalletId);
 
-            Thread eventLoggerThread =
-                    new Thread(
-                            new EventLogger(
-                                    billingFlowParams.getSku(),
-                                    activity.getApplicationContext().getPackageName()
-                            )
-                    );
+            Thread eventLoggerThread = new Thread(new EventLogger(billingFlowParams.getSku(),
+                activity.getApplicationContext()
+                    .getPackageName()));
             eventLoggerThread.start();
 
             LaunchBillingFlowResult launchBillingFlowResult =
-                    billing.launchBillingFlow(billingFlowParams, payload, oemid, guestWalletId);
+                billing.launchBillingFlow(billingFlowParams, payload, oemid, guestWalletId);
 
             responseCode = launchBillingFlowResult.getResponseCode();
 
             if (responseCode != ResponseCode.OK.getValue()) {
                 logError("Failed to launch billing flow. ResponseCode: " + responseCode);
                 SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
-                ApplicationUtils.handleActivityResult(
-                        billing,
-                        sdkPaymentResponse.getResultCode(),
-                        sdkPaymentResponse.getIntent(),
-                        purchaseFinishedListener
-                );
+                ApplicationUtils.handleActivityResult(billing, sdkPaymentResponse.getResultCode(),
+                    sdkPaymentResponse.getIntent(), purchaseFinishedListener);
                 return;
             }
 
             Intent buyIntent = launchBillingFlowResult.getBuyIntent();
 
-            PaymentsResultsManager.getInstance().collectPaymentResult(this);
+            PaymentsResultsManager.getInstance()
+                .collectPaymentResult(this);
             if (buyIntent != null) {
                 activity.startActivity(buyIntent);
             }
@@ -263,6 +258,3 @@ public class CatapultAppcoinsBilling implements AppcoinsBillingClient, PendingPu
         }
     }
 }
-
-
-

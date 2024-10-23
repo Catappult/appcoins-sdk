@@ -8,40 +8,43 @@ import com.appcoins.sdk.billing.helpers.AppcoinsBillingStubHelper;
 
 public class WalletBillingService implements AppcoinsBilling {
 
-  private final AppcoinsBilling service;
+    private final AppcoinsBilling service;
 
-  public WalletBillingService(IBinder service, String componentName) {
-    this.service = AppcoinsBillingStubHelper.Stub.asInterface(service);
-  }
+    public WalletBillingService(IBinder service, String componentName) {
+        this.service = AppcoinsBillingStubHelper.Stub.asInterface(service);
+    }
 
-  @Override
-  public Bundle getSkuDetails(int apiVersion, String packageName, String type, Bundle skusBundle)
-      throws RemoteException {
-    return service.getSkuDetails(apiVersion, packageName, type, skusBundle);
-  }
+    @Override
+    public Bundle getSkuDetails(int apiVersion, String packageName, String type, Bundle skusBundle)
+        throws RemoteException {
+        return service.getSkuDetails(apiVersion, packageName, type, skusBundle);
+    }
 
-  @Override public int isBillingSupported(int apiVersion, String packageName, String type)
-      throws RemoteException {
-    return service.isBillingSupported(apiVersion, packageName, type);
-  }
+    @Override
+    public int isBillingSupported(int apiVersion, String packageName, String type) throws RemoteException {
+        return service.isBillingSupported(apiVersion, packageName, type);
+    }
 
-  @Override public Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type,
-      String developerPayload, String oemid, String guestWalletId) throws RemoteException {
-    return service.getBuyIntent(apiVersion, packageName, sku, type, developerPayload, oemid, guestWalletId);
-  }
+    @Override
+    public Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type, String developerPayload,
+        String oemid, String guestWalletId) throws RemoteException {
+        return service.getBuyIntent(apiVersion, packageName, sku, type, developerPayload, oemid, guestWalletId);
+    }
 
-  @Override public Bundle getPurchases(int apiVersion, String packageName, String skuType,
-      String continuationToken) throws RemoteException {
-    return service.getPurchases(apiVersion, packageName, skuType, continuationToken);
-  }
+    @Override
+    public Bundle getPurchases(int apiVersion, String packageName, String skuType, String continuationToken)
+        throws RemoteException {
+        return service.getPurchases(apiVersion, packageName, skuType, continuationToken);
+    }
 
-  @Override public int consumePurchase(int apiVersion, String packageName, String purchaseToken)
-      throws RemoteException {
-    return service.consumePurchase(apiVersion, packageName, purchaseToken);
-  }
+    @Override
+    public int consumePurchase(int apiVersion, String packageName, String purchaseToken) throws RemoteException {
+        return service.consumePurchase(apiVersion, packageName, purchaseToken);
+    }
 
-  @Override public IBinder asBinder() {
-    return null;
-  }
+    @Override
+    public IBinder asBinder() {
+        return null;
+    }
 }
 

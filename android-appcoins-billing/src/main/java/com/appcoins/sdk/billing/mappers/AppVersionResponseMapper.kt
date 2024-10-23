@@ -9,7 +9,10 @@ import org.json.JSONObject
 class AppVersionResponseMapper {
     fun map(response: RequestResponse): AppVersionResponse {
         if (!isSuccess(response.responseCode) || response.response == null) {
-            logError("Failed to obtain AppVersion Response. ResponseCode: ${response.responseCode} | Cause: ${response.exception}")
+            logError(
+                "Failed to obtain AppVersion Response. " +
+                    "ResponseCode: ${response.responseCode} | Cause: ${response.exception}"
+            )
             WalletUtils.getSdkAnalytics()
                 .sendCallBackendAppVersionEvent(
                     response.responseCode,

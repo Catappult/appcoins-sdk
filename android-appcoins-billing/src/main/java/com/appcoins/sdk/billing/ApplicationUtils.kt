@@ -8,6 +8,7 @@ import com.appcoins.sdk.billing.usecases.mmp.SendSuccessfulPurchaseResponseEvent
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.SKU_TYPE
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
@@ -15,6 +16,7 @@ import org.json.JSONObject
 
 internal object ApplicationUtils {
 
+    @Suppress("CyclomaticComplexMethod", "LongMethod")
     @JvmStatic
     fun handleActivityResult(
         billing: Billing,
@@ -33,6 +35,7 @@ internal object ApplicationUtils {
         val responseCode = getResponseCodeFromIntent(data)
         val purchaseData = data.getStringExtra(INAPP_PURCHASE_DATA)
         val dataSignature = data.getStringExtra(INAPP_DATA_SIGNATURE)
+        val skuType = data.getStringExtra(SKU_TYPE)
 
         if (resultCode == Activity.RESULT_OK && responseCode == ResponseCode.OK.value) {
             sdkAnalytics.sendPurchaseStatusEvent("success", getResponseDesc(responseCode))
@@ -57,7 +60,7 @@ internal object ApplicationUtils {
                     val purchase =
                         Purchase(
                             getObjectFromJson(purchaseDataJSON, "orderId"),
-                            "inapp",
+                            skuType ?: "inapp",
                             purchaseData,
                             Base64.decode(dataSignature, Base64.DEFAULT),
                             getObjectFromJson(purchaseDataJSON, "purchaseTime").toLong(),
@@ -87,7 +90,7 @@ internal object ApplicationUtils {
             // result code was OK, but in-app billing response was not OK.
             logError(
                 "Result code was OK but in-app billing response was not OK: " +
-                        getResponseDesc(responseCode)
+                    getResponseDesc(responseCode)
             )
             logDebug("Bundle: $data")
             sdkAnalytics.sendPurchaseStatusEvent("error", getResponseDesc(responseCode))
@@ -101,7 +104,7 @@ internal object ApplicationUtils {
         } else {
             logError(
                 "Purchase failed. Result code: $resultCode. Response: " +
-                        getResponseDesc(responseCode)
+                    getResponseDesc(responseCode)
             )
             logDebug("Bundle: $data")
             sdkAnalytics.sendPurchaseStatusEvent("error", getResponseDesc(responseCode))
@@ -116,34 +119,39 @@ internal object ApplicationUtils {
         data.optString(objectId)
 
     private fun getResponseDesc(code: Int): String {
-        val iabMsgs = ("0:OK/1:User Canceled/2:Unknown/"
-                + "3:Billing Unavailable/4:Item unavailable/"
-                + "5:Developer Error/6:Error/7:Item Already Owned/"
-                + "8:Item not owned").split("/".toRegex()).dropLastWhile { it.isEmpty() }
-            .toTypedArray()
-        val iabHelperMsgs = ("0:OK/-1001:Remote exception during initialization/"
-                + "-1002:Bad response received/"
-                + "-1003:Purchase signature verification failed/"
-                + "-1004:Send intent failed/"
-                + "-1005:User cancelled/"
-                + "-1006:Unknown purchase response/"
-                + "-1007:Missing token/"
-                + "-1008:Unknown error/"
-                + "-1009:Subscriptions not available/"
-                + "-1010:Invalid consumption attempt").split("/".toRegex())
-            .dropLastWhile { it.isEmpty() }.toTypedArray()
+        val iabMsgs = (
+            "0:OK/1:User Canceled/2:Unknown/" +
+                "3:Billing Unavailable/4:Item unavailable/" +
+                "5:Developer Error/6:Error/7:Item Already Owned/" +
+                "8:Item not owned"
+            ).split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val iabHelperMsgs = (
+            "0:OK/-1001:Remote exception during initialization/" +
+                "-1002:Bad response received/" +
+                "-1003:Purchase signature verification failed/" +
+                "-1004:Send intent failed/" +
+                "-1005:User cancelled/" +
+                "-1006:Unknown purchase response/" +
+                "-1007:Missing token/" +
+                "-1008:Unknown error/" +
+                "-1009:Subscriptions not available/" +
+                "-1010:Invalid consumption attempt"
+            ).split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
-        return if (code <= -1000) {
-            val index = -1000 - code
+        return if (code <= minimumErrorLevel) {
+            val index = minimumErrorLevel - code
             if (index < iabHelperMsgs.size) {
                 iabHelperMsgs[index]
             } else {
                 "$code:Unknown IAB Helper Error"
             }
-        } else if (code < 0 || code >= iabMsgs.size) {
+        } else if (code < startingErrorCode || code >= iabMsgs.size) {
             "$code:Unknown"
         } else {
             iabMsgs[code]
         }
     }
+
+    private const val startingErrorCode = 0
+    private const val minimumErrorLevel = -1000
 }

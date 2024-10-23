@@ -39,24 +39,26 @@ object HandlePurchaseResultFromWalletDeeplink : UseCase() {
             requireNotNull(purchaseResponse)
             requireNotNull(purchaseResponse.purchase)
 
-            PaymentResponseStream.getInstance()
-                .emit(
-                    SDKWebResponse(
-                        responseCode,
-                        PurchaseData(JSONObject(purchaseResponse.purchase.verification.data)),
-                        purchaseResponse.purchase.verification.signature,
-                        // TODO Handle correctly the orderReference
-                        null,
-                    ).toSDKPaymentResponse()
+            val sdkWebResponse =
+                SDKWebResponse(
+                    responseCode,
+                    PurchaseData(JSONObject(purchaseResponse.purchase.verification.data)),
+                    purchaseResponse.purchase.verification.signature,
+                    null,
                 )
-            WalletPaymentDeeplinkResponseStream.getInstance().emit(responseCode)
+
+            if (WalletPaymentDeeplinkResponseStream.getInstance().hasCollectors()) {
+                WalletPaymentDeeplinkResponseStream.getInstance().emit(sdkWebResponse)
+            } else {
+                PaymentResponseStream.getInstance().emit(sdkWebResponse.toSDKPaymentResponse())
+            }
         } catch (e: Exception) {
             logError("There was a failure parsing the Purchase Result from the Wallet Deeplink.", e)
-            WalletPaymentDeeplinkResponseStream.getInstance().emit(ResponseCode.ERROR.value)
+            WalletPaymentDeeplinkResponseStream.getInstance().emit(SDKWebResponse(ResponseCode.ERROR.value))
         }
     }
 
     private fun handleFailureResult(responseCode: Int) {
-        WalletPaymentDeeplinkResponseStream.getInstance().emit(responseCode)
+        WalletPaymentDeeplinkResponseStream.getInstance().emit(SDKWebResponse(responseCode))
     }
 }

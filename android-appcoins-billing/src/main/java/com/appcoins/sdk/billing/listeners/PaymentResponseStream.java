@@ -1,9 +1,9 @@
 package com.appcoins.sdk.billing.listeners;
 
-import static com.appcoins.sdk.core.logger.Logger.logInfo;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.appcoins.sdk.core.logger.Logger.logInfo;
 
 public class PaymentResponseStream {
 

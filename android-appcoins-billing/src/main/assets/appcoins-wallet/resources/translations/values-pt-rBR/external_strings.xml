@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <!-- SDK - Purchasing when wallet is not installed -->
-  <string name="iab_wallet_not_installed_popup_body">Para comprar este item, você primeiro precisa obter a %s.</string>
-  <string name="appcoins_wallet">AppCoins Wallet</string>
-  <string name="iab_wallet_not_installed_popup_close_button">FECHAR</string>
-  <!-- SDK - Purchasing when neither wallet or app store are installed -->
-  <string name="iap_wallet_and_appstore_not_installed_popup_body">Você precisa da AppCoins Wallet para fazer esta compra. Faça o download na Aptoide ou na Play Store e retorne para completar sua compra!</string>
-  <string name="iap_wallet_and_appstore_not_installed_popup_button">ENTENDI!</string>
-  <!-- SDK - Common -->
-  <string name="iab_wallet_not_installed_popup_close_install">INSTALAR WALLET</string>
+    <!-- SDK - Purchasing when wallet is not installed -->
+    <string name="iab_wallet_not_installed_popup_body">Para comprar este item, você primeiro precisa obter a %s.</string>
+    <string name="appcoins_wallet">AppCoins Wallet</string>
+    <string name="iab_wallet_not_installed_popup_close_button">FECHAR</string>
+    <!-- SDK - Purchasing when neither wallet or app store are installed -->
+    <string name="iap_wallet_and_appstore_not_installed_popup_body">Você precisa da AppCoins Wallet para fazer esta compra. Faça o download na Aptoide ou na Play Store e retorne para completar sua compra!</string>
+    <string name="iap_wallet_and_appstore_not_installed_popup_button">ENTENDI!</string>
+    <!-- SDK - Common -->
+    <string name="iab_wallet_not_installed_popup_close_install">INSTALAR WALLET</string>
 </resources>
