@@ -1,6 +1,5 @@
 package com.appcoins.sdk.billing
 
-import android.content.Context
 import android.content.Intent
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException
 import io.mockk.every
@@ -15,6 +14,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class AppCoinsBillingTest {
 
     private lateinit var appCoinsBilling: AppCoinsBilling
@@ -294,6 +294,5 @@ class AppCoinsBillingTest {
         val SUCCESSFUL_LAUNCH_BILLING_FLOW_RESULT = LaunchBillingFlowResult(ResponseCode.OK.value, Intent())
         val DEVELOPER_ERROR_LAUNCH_BILLING_FLOW_RESULT =
             LaunchBillingFlowResult(ResponseCode.DEVELOPER_ERROR.value, Intent())
-
     }
 }

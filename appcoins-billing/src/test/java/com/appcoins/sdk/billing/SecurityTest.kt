@@ -21,6 +21,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class SecurityTest {
 
     @Before
