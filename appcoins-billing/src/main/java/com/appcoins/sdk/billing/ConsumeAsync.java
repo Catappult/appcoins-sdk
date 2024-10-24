@@ -17,9 +17,9 @@ public class ConsumeAsync implements Runnable {
 
     @Override
     public void run() {
-
         if (token == null || token.isEmpty()) {
             listener.onConsumeResponse(ResponseCode.DEVELOPER_ERROR.getValue(), null);
+            return;
         }
 
         try {
