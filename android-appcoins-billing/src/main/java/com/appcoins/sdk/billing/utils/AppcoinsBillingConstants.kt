@@ -15,6 +15,8 @@ object AppcoinsBillingConstants {
     const val INAPP_DATA_SIGNATURE_LIST = "INAPP_DATA_SIGNATURE_LIST"
     const val INAPP_DATA_SIGNATURE = "INAPP_DATA_SIGNATURE"
 
+    const val INAPP_VOIDED_PURCHASE_DATA_LIST = "INAPP_VOIDED_PURCHASE_DATA_LIST"
+
     const val ORDER_REFERENCE = "order_reference"
     const val SKU_TYPE = "SKU_TYPE"
 

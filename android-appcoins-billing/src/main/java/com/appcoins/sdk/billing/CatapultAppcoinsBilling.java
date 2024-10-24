@@ -45,6 +45,14 @@ public class CatapultAppcoinsBilling
     }
 
     @Override
+    public VoidedPurchasesResult queryVoidedPurchases(Long startTimeInMillis) {
+        AttributionSharedPreferences attributionSharedPreferences =
+            new AttributionSharedPreferences(WalletUtils.context);
+        String guestWalletId = attributionSharedPreferences.getWalletId();
+        return billing.queryVoidedPurchases(guestWalletId, startTimeInMillis);
+    }
+
+    @Override
     public void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
         SkuDetailsResponseListener onSkuDetailsResponseListener) {
         billing.querySkuDetailsAsync(skuDetailsParams, onSkuDetailsResponseListener);
