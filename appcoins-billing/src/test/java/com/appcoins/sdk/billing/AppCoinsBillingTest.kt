@@ -17,10 +17,9 @@ import kotlin.test.assertTrue
 @RunWith(RobolectricTestRunner::class)
 class AppCoinsBillingTest {
 
-    private val mockkRepository = mockk<Repository>()
-    private val mockkContext = mockk<Context>()
-
     private lateinit var appCoinsBilling: AppCoinsBilling
+
+    private val mockkRepository = mockk<Repository>()
 
     @Before
     fun setup() {
