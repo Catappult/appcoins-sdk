@@ -21,6 +21,7 @@ import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
 import com.appcoins.sdk.billing.listeners.WalletPaymentDeeplinkResponseStream
+import com.appcoins.sdk.billing.usecases.HandleDeeplinkFromWebView
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
@@ -106,6 +107,11 @@ class WebPaymentActivity :
                 PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
             }
         } ?: PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
+    }
+
+    @JavascriptInterface
+    override fun openDeeplink(url: String): Boolean {
+        return HandleDeeplinkFromWebView(url, this)
     }
 
     override fun onDestroy() {
