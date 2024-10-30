@@ -12,6 +12,7 @@ import android.os.Build
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
+@Suppress("SwallowedException")
 object HandleDeeplinkFromWebView : UseCase() {
     operator fun invoke(url: String, activity: Activity): Boolean {
         super.invokeUseCase()
