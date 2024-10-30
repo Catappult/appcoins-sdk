@@ -82,19 +82,20 @@ data class PurchaseData(
     val developerPayload: String?
 ) {
     fun toJson(): String =
-        """{"orderId":"$orderId","packageName":"$packageName","productId":"$productId","purchaseTime":$purchaseTime,"purchaseToken":"$purchaseToken","purchaseState":$purchaseState${
+        JSONObject().apply {
+            put("orderId", orderId)
+            put("packageName", packageName)
+            put("productId", productId)
+            put("purchaseTime", purchaseTime)
+            put("purchaseToken", purchaseToken)
+            put("purchaseState", purchaseState)
             if (productType.equals(SkuType.subs.name, true)) {
-                ""","isAutoRenewing":"$isAutoRenewing""""
-            } else {
-                ""
+                put("isAutoRenewing", isAutoRenewing)
             }
-        }${
-            if (developerPayload.isNullOrEmpty()) {
-                ""
-            } else {
-                ""","developerPayload":"$developerPayload""""
+            if (!developerPayload.isNullOrEmpty()) {
+                put("developerPayload", developerPayload)
             }
-        }}"""
+        }.toString()
 
     constructor(jsonObject: JSONObject) : this(
         jsonObject.optString(ORDER_ID),
