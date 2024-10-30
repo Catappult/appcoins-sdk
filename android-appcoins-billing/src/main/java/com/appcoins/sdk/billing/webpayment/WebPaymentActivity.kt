@@ -4,11 +4,13 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
+import android.view.Surface
 import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
@@ -21,11 +23,15 @@ import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
 import com.appcoins.sdk.billing.listeners.WalletPaymentDeeplinkResponseStream
+import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.SCREEN_ORIENTATION_LANDSCAPE
+import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.SCREEN_ORIENTATION_PORTRAIT
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 import com.appcoins.sdk.core.ui.floatToPxs
 import com.appcoins.sdk.core.ui.getScreenHeightInDp
+import com.appcoins.sdk.core.ui.getScreenOrientation
+import com.appcoins.sdk.core.ui.getScreenRotation
 import org.json.JSONObject
 
 class WebPaymentActivity :
@@ -67,10 +73,39 @@ class WebPaymentActivity :
         val sku = intent.getStringExtra(SKU)
         WalletUtils.getSdkAnalytics().sendPurchaseViaWebEvent(sku ?: "")
 
+        setupOrientation()
         setupBackgroundToClose()
         setupWebView(url)
-        adjustWebViewSize(resources.configuration.orientation)
+        adjustWebViewSize(getScreenOrientation(this))
         observeWalletPurchaseResultDeeplinkStream()
+    }
+
+    private fun setupOrientation() {
+        val forcedOrientation = intent.getIntExtra(WEB_VIEW_ORIENTATION, 0)
+        requestedOrientation
+        val rotation = getScreenRotation(this)
+        val orientation: Int? =
+            when (forcedOrientation) {
+                SCREEN_ORIENTATION_PORTRAIT ->
+                    if (rotation == Surface.ROTATION_180) {
+                        ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
+                    } else {
+                        ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                    }
+
+                SCREEN_ORIENTATION_LANDSCAPE ->
+                    if (rotation == Surface.ROTATION_270) {
+                        ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+                    } else {
+                        ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                    }
+
+                else -> null
+            }
+
+        orientation?.let {
+            requestedOrientation = orientation
+        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -266,7 +301,9 @@ class WebPaymentActivity :
         private const val URL = "URL"
         private const val SKU = "SKU"
         private const val SKU_TYPE = "SKU_TYPE"
-        private const val PAYMENT_FLOW = "PAYMENT_FLOW"
+        private const val WEB_VIEW_SIZE_HEIGHT = "WEB_VIEW_SIZE_HEIGHT"
+        private const val WEB_VIEW_SIZE_WIDTH = "WEB_VIEW_SIZE_WIDTH"
+        private const val WEB_VIEW_ORIENTATION = "WEB_VIEW_ORIENTATION"
 
         // Tablet Constants
         private const val TABLET_MAX_HEIGHT_DP = 480f
@@ -287,13 +324,17 @@ class WebPaymentActivity :
             url: String,
             sku: String,
             skuType: String,
-            paymentFlow: String?,
+            webViewSizeHeight: Int?,
+            webViewSizeWidth: Int?,
+            webViewOrientation: Int?,
         ): Intent {
             val intent = Intent(context, WebPaymentActivity::class.java)
             intent.putExtra(URL, url)
             intent.putExtra(SKU, sku)
             intent.putExtra(SKU_TYPE, skuType)
-            paymentFlow?.let { intent.putExtra(PAYMENT_FLOW, it) }
+            webViewSizeHeight?.let { intent.putExtra(WEB_VIEW_SIZE_HEIGHT, it) }
+            webViewSizeWidth?.let { intent.putExtra(WEB_VIEW_SIZE_WIDTH, it) }
+            webViewOrientation?.let { intent.putExtra(WEB_VIEW_ORIENTATION, it) }
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             return intent
         }
