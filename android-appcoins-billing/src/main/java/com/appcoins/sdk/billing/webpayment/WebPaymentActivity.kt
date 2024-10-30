@@ -188,14 +188,16 @@ class WebPaymentActivity :
 
             if (webViewContainerParams != null) {
                 when {
-                    webViewDetails?.hasLandscapeDetails() ?: false && orientation == Configuration.ORIENTATION_LANDSCAPE ->
+                    webViewDetails?.hasLandscapeDetails() ?: false &&
+                        orientation == Configuration.ORIENTATION_LANDSCAPE ->
                         applyDynamicLandscapeConstraints(
                             mBaseConstraintLayout,
                             webViewContainerParams,
                             webViewDetails!!
                         )
 
-                    webViewDetails?.hasPortraitDetails() ?: false && orientation == Configuration.ORIENTATION_PORTRAIT ->
+                    webViewDetails?.hasPortraitDetails() ?: false &&
+                        orientation == Configuration.ORIENTATION_PORTRAIT ->
                         applyDynamicPortraitConstraints(this, webViewContainerParams, webViewDetails!!)
 
                     resources.getBoolean(R.bool.isTablet) ->
