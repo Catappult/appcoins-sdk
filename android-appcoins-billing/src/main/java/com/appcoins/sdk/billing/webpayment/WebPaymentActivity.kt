@@ -212,7 +212,7 @@ class WebPaymentActivity :
                     orientation == Configuration.ORIENTATION_LANDSCAPE ->
                         applyDefaultLandscapeConstraints(mBaseConstraintLayout, webViewContainerParams)
 
-                    else -> applyDefaultPortraitConstraints(this, webViewContainerParams)
+                    else -> applyDefaultPortraitConstraints(this, mBaseConstraintLayout, webViewContainerParams)
                 }
 
                 webViewContainer?.layoutParams = webViewContainerParams

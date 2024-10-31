@@ -106,7 +106,7 @@ sealed class PaymentFlowMethod(
                 var heightDp: Int?,
                 var widthPercentage: Double?,
                 var heightPercentage: Double?,
-            )
+            ) : Serializable
 
             class LandscapeScreenDimensions(
                 widthDp: Int?,
@@ -146,6 +146,20 @@ sealed class PaymentFlowMethod(
                         ?.takeIf { it.isNotEmpty() && it != DEFAULT_PAYMENT_FLOW }
 
                 var webViewDetails: WebViewDetails? = null
+                /*WebViewDetails(
+                    portraitScreenDimensions = WebViewDetails.PortraitScreenDimensions(
+                        heightDp = null,
+                        widthDp = null,
+                        heightPercentage = 1.0,
+                        widthPercentage = 1.1,
+                    ),
+                    landscapeScreenDimensions = WebViewDetails.LandscapeScreenDimensions(
+                        heightDp = null,
+                        widthDp = null,
+                        heightPercentage = 0.7,
+                        widthPercentage = 0.7,
+                    )
+                )*/
                 paymentMethodsJsonObject?.optJSONObject("screen_details")?.let { screenDetailsJSONObject ->
                     val forcedScreenOrientation =
                         screenDetailsJSONObject.optInt("force_screen_orientation").takeIf { it != 0 }

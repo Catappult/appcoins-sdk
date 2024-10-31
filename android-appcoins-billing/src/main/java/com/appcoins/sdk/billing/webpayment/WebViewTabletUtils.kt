@@ -5,6 +5,7 @@ import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.view.ViewGroup
 import com.appcoins.billing.sdk.R
+import com.appcoins.sdk.billing.webpayment.WebViewGeneralUIUtils.resetConstraintsAndSize
 import com.appcoins.sdk.core.ui.floatToPxs
 
 internal object WebViewTabletUtils {
@@ -14,11 +15,10 @@ internal object WebViewTabletUtils {
         mBaseConstraintLayout: ConstraintLayout,
         webViewContainerParams: ViewGroup.LayoutParams
     ) {
-        webViewContainerParams.width = 0
-        webViewContainerParams.height = 0
-
         val mConstraintSet = ConstraintSet()
         mConstraintSet.clone(mBaseConstraintLayout)
+
+        resetConstraintsAndSize(mConstraintSet, mBaseConstraintLayout, webViewContainerParams)
 
         mConstraintSet.constrainPercentHeight(
             R.id.container_for_web_view,
