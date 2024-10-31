@@ -88,26 +88,18 @@ sealed class PaymentFlowMethod(
             fun hasLandscapeDetails(): Boolean =
                 landscapeScreenDimensions != null &&
                     (
-                        (
-                            landscapeScreenDimensions?.heightDp != null &&
-                                landscapeScreenDimensions?.widthDp != null
-                            ) || (
-                            landscapeScreenDimensions?.heightPercentage != null &&
-                                landscapeScreenDimensions?.widthPercentage != null
-                            )
-                        )
+                        landscapeScreenDimensions?.heightDp != null ||
+                            landscapeScreenDimensions?.heightPercentage != null
+                        ) &&
+                    (landscapeScreenDimensions?.widthDp != null || landscapeScreenDimensions?.widthPercentage != null)
 
             fun hasPortraitDetails(): Boolean =
                 portraitScreenDimensions != null &&
                     (
-                        (
-                            portraitScreenDimensions?.heightDp != null &&
-                                portraitScreenDimensions?.widthDp != null
-                            ) || (
-                            portraitScreenDimensions?.heightPercentage != null &&
-                                portraitScreenDimensions?.widthPercentage != null
-                            )
-                        )
+                        portraitScreenDimensions?.heightDp != null ||
+                            portraitScreenDimensions?.heightPercentage != null
+                        ) &&
+                    (portraitScreenDimensions?.widthDp != null || portraitScreenDimensions?.widthPercentage != null)
 
             sealed class OrientedScreenDimensions(
                 var widthDp: Int?,
