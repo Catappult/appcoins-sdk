@@ -77,7 +77,7 @@ class WebPaymentActivity :
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 intent.getSerializableExtra(WEB_VIEW_DETAILS, PaymentFlowMethod.WebPayment.WebViewDetails::class.java)
             } else {
-                intent.getSerializableExtra(WEB_VIEW_DETAILS) as PaymentFlowMethod.WebPayment.WebViewDetails
+                intent.getSerializableExtra(WEB_VIEW_DETAILS) as PaymentFlowMethod.WebPayment.WebViewDetails?
             }
 
         setupOrientation(this, webViewDetails)
