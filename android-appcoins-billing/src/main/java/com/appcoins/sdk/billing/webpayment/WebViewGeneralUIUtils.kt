@@ -1,9 +1,16 @@
 package com.appcoins.sdk.billing.webpayment
 
+import android.app.Activity
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.view.ViewGroup
 import com.appcoins.billing.sdk.R
+import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
+import com.appcoins.sdk.core.logger.Logger.logInfo
+import com.appcoins.sdk.core.logger.Logger.logWarning
+import com.appcoins.sdk.core.ui.floatToPxs
+import com.appcoins.sdk.core.ui.getScreenOrientedHeightInDp
+import com.appcoins.sdk.core.ui.getScreenOrientedWidthInDp
 
 internal object WebViewGeneralUIUtils {
 
@@ -51,5 +58,135 @@ internal object WebViewGeneralUIUtils {
             ConstraintSet.TOP,
             0
         )
+    }
+
+    fun applyDynamicConstraints(
+        activity: Activity,
+        mBaseConstraintLayout: ConstraintLayout,
+        webViewContainerParams: ViewGroup.LayoutParams,
+        webViewDetailsDimensions: PaymentFlowMethod.WebPayment.WebViewDetails.OrientedScreenDimensions?,
+        defaultFallback: () -> Unit
+    ) {
+        val mConstraintSet = ConstraintSet()
+        mConstraintSet.clone(mBaseConstraintLayout)
+
+        resetConstraintsAndSize(mConstraintSet, mBaseConstraintLayout, webViewContainerParams)
+
+        var isHeightSet: Boolean
+        var isWidthSet: Boolean
+        val screenHeight = getScreenOrientedHeightInDp(activity)
+        val screenWidth = getScreenOrientedWidthInDp(activity)
+
+        isHeightSet = handleExactHeight(activity, mConstraintSet, webViewDetailsDimensions, screenHeight)
+
+        isWidthSet = handleExactWidth(activity, mConstraintSet, webViewDetailsDimensions, screenWidth)
+
+        if (isHeightSet && isWidthSet) {
+            logInfo("Height and Width set on 1st condition.")
+            mConstraintSet.applyTo(mBaseConstraintLayout)
+            return
+        }
+
+        isHeightSet =
+            handlePercentageHeight(mConstraintSet, mBaseConstraintLayout, webViewDetailsDimensions, isHeightSet)
+
+        if (isHeightSet && isWidthSet) {
+            logInfo("Height and Width set on 2nd condition.")
+            mConstraintSet.applyTo(mBaseConstraintLayout)
+            return
+        }
+
+        isWidthSet = handlePercentageWidth(mConstraintSet, webViewDetailsDimensions, isWidthSet)
+
+        if (isHeightSet && isWidthSet) {
+            logInfo("Height and Width set on 3rd condition.")
+            mConstraintSet.applyTo(mBaseConstraintLayout)
+            return
+        }
+
+        defaultFallback()
+    }
+
+    private fun handleExactHeight(
+        activity: Activity,
+        mConstraintSet: ConstraintSet,
+        webViewDetailsDimensions: PaymentFlowMethod.WebPayment.WebViewDetails.OrientedScreenDimensions?,
+        screenHeight: Int
+    ): Boolean {
+        val heightDp = webViewDetailsDimensions?.heightDp
+        if (heightDp != null && heightDp < screenHeight) {
+            logInfo("Handling exact Height.")
+            mConstraintSet.constrainHeight(
+                R.id.container_for_web_view,
+                floatToPxs(heightDp.toFloat(), activity).toInt()
+            )
+            return true
+        }
+        logWarning("Failed to handle exact Height.")
+        return false
+    }
+
+    private fun handleExactWidth(
+        activity: Activity,
+        mConstraintSet: ConstraintSet,
+        webViewDetailsDimensions: PaymentFlowMethod.WebPayment.WebViewDetails.OrientedScreenDimensions?,
+        screenWidth: Int
+    ): Boolean {
+        val widthDp = webViewDetailsDimensions?.widthDp
+        if (widthDp != null && widthDp < screenWidth) {
+            logInfo("Handling exact Width.")
+            mConstraintSet.constrainWidth(
+                R.id.container_for_web_view,
+                floatToPxs(widthDp.toFloat(), activity).toInt()
+            )
+            return true
+        }
+        logWarning("Failed to handle exact Width.")
+        return false
+    }
+
+    private fun handlePercentageHeight(
+        mConstraintSet: ConstraintSet,
+        mBaseConstraintLayout: ConstraintLayout,
+        webViewDetailsDimensions: PaymentFlowMethod.WebPayment.WebViewDetails.OrientedScreenDimensions?,
+        isHeightSet: Boolean
+    ): Boolean {
+        if (isHeightSet) {
+            logInfo("Height already set.")
+            return true
+        }
+
+        val heightPercentage = webViewDetailsDimensions?.heightPercentage
+        if (heightPercentage != null && heightPercentage in 0.0..1.0) {
+            logInfo("Handling percentage Height.")
+            if (heightPercentage == 1.0) {
+                setMaxHeightForWebView(mConstraintSet, mBaseConstraintLayout)
+            } else {
+                mConstraintSet.constrainPercentHeight(R.id.container_for_web_view, heightPercentage.toFloat())
+            }
+            return true
+        }
+        logWarning("Failed to handle percentage Height.")
+        return false
+    }
+
+    private fun handlePercentageWidth(
+        mConstraintSet: ConstraintSet,
+        webViewDetailsDimensions: PaymentFlowMethod.WebPayment.WebViewDetails.OrientedScreenDimensions?,
+        isWidthSet: Boolean
+    ): Boolean {
+        if (isWidthSet) {
+            logInfo("Width already set.")
+            return true
+        }
+
+        val widthPercentage = webViewDetailsDimensions?.widthPercentage
+        if (widthPercentage != null && widthPercentage in 0.0..1.0) {
+            logInfo("Handling percentage Width.")
+            mConstraintSet.constrainPercentWidth(R.id.container_for_web_view, widthPercentage.toFloat())
+            return true
+        }
+        logWarning("Failed to handle percentage Width.")
+        return false
     }
 }

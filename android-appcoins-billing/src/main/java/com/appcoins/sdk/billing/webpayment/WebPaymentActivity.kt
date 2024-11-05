@@ -194,7 +194,7 @@ class WebPaymentActivity :
                             this,
                             mBaseConstraintLayout,
                             webViewContainerParams,
-                            webViewDetails!!
+                            webViewDetails!!.landscapeScreenDimensions
                         )
 
                     webViewDetails?.hasPortraitDetails() ?: false &&
@@ -203,7 +203,7 @@ class WebPaymentActivity :
                             this,
                             mBaseConstraintLayout,
                             webViewContainerParams,
-                            webViewDetails!!
+                            webViewDetails!!.portraitScreenDimensions
                         )
 
                     resources.getBoolean(R.bool.isTablet) ->

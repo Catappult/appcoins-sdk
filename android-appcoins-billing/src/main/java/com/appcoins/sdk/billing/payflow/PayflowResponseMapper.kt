@@ -61,8 +61,6 @@ data class PayflowMethodResponse(
 sealed class PaymentFlowMethod(
     val name: String,
     val priority: Int,
-    val version: String? = null,
-    val paymentFlow: String? = null,
 ) {
     class Wallet(name: String, priority: Int) : PaymentFlowMethod(name, priority)
     class GamesHub(name: String, priority: Int) : PaymentFlowMethod(name, priority)
@@ -70,19 +68,15 @@ sealed class PaymentFlowMethod(
     class WebPayment(
         name: String,
         priority: Int,
-        version: String?,
-        paymentFlow: String?,
+        val version: String?,
+        val paymentFlow: String?,
         val webViewDetails: WebViewDetails?
-    ) : PaymentFlowMethod(
-        name,
-        priority,
-        version
-    ) {
+    ) : PaymentFlowMethod(name, priority) {
 
-        class WebViewDetails(
+        data class WebViewDetails(
             var forcedScreenOrientation: Int? = null,
-            var landscapeScreenDimensions: LandscapeScreenDimensions? = null,
-            var portraitScreenDimensions: PortraitScreenDimensions? = null
+            var landscapeScreenDimensions: OrientedScreenDimensions? = null,
+            var portraitScreenDimensions: OrientedScreenDimensions? = null
         ) : Serializable {
 
             fun hasLandscapeDetails(): Boolean =
@@ -101,36 +95,12 @@ sealed class PaymentFlowMethod(
                         ) &&
                     (portraitScreenDimensions?.widthDp != null || portraitScreenDimensions?.widthPercentage != null)
 
-            sealed class OrientedScreenDimensions(
+            data class OrientedScreenDimensions(
                 var widthDp: Int?,
                 var heightDp: Int?,
                 var widthPercentage: Double?,
                 var heightPercentage: Double?,
             ) : Serializable
-
-            class LandscapeScreenDimensions(
-                widthDp: Int?,
-                heightDp: Int?,
-                widthPercentage: Double?,
-                heightPercentage: Double?
-            ) : OrientedScreenDimensions(
-                widthDp,
-                heightDp,
-                widthPercentage,
-                heightPercentage
-            )
-
-            class PortraitScreenDimensions(
-                widthDp: Int?,
-                heightDp: Int?,
-                widthPercentage: Double?,
-                heightPercentage: Double?
-            ) : OrientedScreenDimensions(
-                widthDp,
-                heightDp,
-                widthPercentage,
-                heightPercentage
-            )
         }
 
         companion object {
@@ -146,25 +116,11 @@ sealed class PaymentFlowMethod(
                         ?.takeIf { it.isNotEmpty() && it != DEFAULT_PAYMENT_FLOW }
 
                 var webViewDetails: WebViewDetails? = null
-                /*WebViewDetails(
-                    portraitScreenDimensions = WebViewDetails.PortraitScreenDimensions(
-                        heightDp = null,
-                        widthDp = null,
-                        heightPercentage = 1.0,
-                        widthPercentage = 1.1,
-                    ),
-                    landscapeScreenDimensions = WebViewDetails.LandscapeScreenDimensions(
-                        heightDp = null,
-                        widthDp = null,
-                        heightPercentage = 0.7,
-                        widthPercentage = 0.7,
-                    )
-                )*/
                 paymentMethodsJsonObject?.optJSONObject("screen_details")?.let { screenDetailsJSONObject ->
                     val forcedScreenOrientation =
                         screenDetailsJSONObject.optInt("force_screen_orientation").takeIf { it != 0 }
 
-                    var landscapeScreenDimensions: WebViewDetails.LandscapeScreenDimensions? = null
+                    var landscapeScreenDimensions: WebViewDetails.OrientedScreenDimensions? = null
                     screenDetailsJSONObject.optJSONObject("landscape")?.let { jsonObject ->
                         val widthDp = jsonObject.optInt("width_dp").takeIf { it != 0 }
                         val heightDp = jsonObject.optInt("height_dp").takeIf { it != 0 }
@@ -174,7 +130,7 @@ sealed class PaymentFlowMethod(
                             jsonObject.optDouble("height_percentage")
                                 .takeIf { !it.isNaN() }
                         landscapeScreenDimensions =
-                            WebViewDetails.LandscapeScreenDimensions(
+                            WebViewDetails.OrientedScreenDimensions(
                                 widthDp,
                                 heightDp,
                                 widthPercentage,
@@ -182,7 +138,7 @@ sealed class PaymentFlowMethod(
                             )
                     }
 
-                    var portraitScreenDimensions: WebViewDetails.PortraitScreenDimensions? = null
+                    var portraitScreenDimensions: WebViewDetails.OrientedScreenDimensions? = null
                     screenDetailsJSONObject.optJSONObject("portrait")?.let { jsonObject ->
                         val widthDp = jsonObject.optInt("width_dp").takeIf { it != 0 }
                         val heightDp = jsonObject.optInt("height_dp").takeIf { it != 0 }
@@ -192,7 +148,7 @@ sealed class PaymentFlowMethod(
                             jsonObject.optDouble("height_percentage")
                                 .takeIf { !it.isNaN() }
                         portraitScreenDimensions =
-                            WebViewDetails.PortraitScreenDimensions(
+                            WebViewDetails.OrientedScreenDimensions(
                                 widthDp,
                                 heightDp,
                                 widthPercentage,
@@ -212,16 +168,37 @@ sealed class PaymentFlowMethod(
                 )
             }
         }
+
+        override fun toString(): String =
+            "${this.javaClass.name}: [name: $name, " +
+                "priority: $priority, " +
+                "version: $version, " +
+                "paymentFlow: $paymentFlow, " +
+                "webViewDetails: $webViewDetails]"
+
+        override fun equals(other: Any?): Boolean {
+            if (other != null) {
+                if (other::class.java == this::class.java) {
+                    other as WebPayment
+                    return other.name == name &&
+                        other.priority == priority &&
+                        other.paymentFlow == paymentFlow &&
+                        other.version == version &&
+                        other.webViewDetails == webViewDetails
+                }
+            }
+            return false
+        }
     }
+
+    override fun toString(): String =
+        "${this.javaClass.name}: [name: $name, priority: $priority]"
 
     override fun equals(other: Any?): Boolean {
         if (other != null) {
             if (other::class.java == this::class.java) {
                 other as PaymentFlowMethod
-                return other.paymentFlow == paymentFlow &&
-                    other.name == name &&
-                    other.priority == priority &&
-                    other.version == version
+                return other.name == name && other.priority == priority
             }
         }
         return false
@@ -237,11 +214,11 @@ sealed class PaymentFlowMethod(
         fun getPaymentUrlVersionFromPayflowMethod(
             payflowMethodsList: MutableList<PaymentFlowMethod>
         ): String? =
-            payflowMethodsList.firstOrNull { it is WebPayment }?.version
+            (payflowMethodsList.firstOrNull { it is WebPayment } as WebPayment?)?.version
 
         fun getPaymentFlowFromPayflowMethod(
             payflowMethodsList: MutableList<PaymentFlowMethod>
         ): String? =
-            payflowMethodsList.firstOrNull { it is WebPayment }?.paymentFlow
+            (payflowMethodsList.firstOrNull { it is WebPayment } as WebPayment?)?.paymentFlow
     }
 }
