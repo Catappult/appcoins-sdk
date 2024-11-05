@@ -188,8 +188,8 @@ class WebPaymentActivity :
 
             if (webViewContainerParams != null) {
                 when {
-                    webViewDetails?.hasLandscapeDetails() ?: false &&
-                        orientation == Configuration.ORIENTATION_LANDSCAPE ->
+                    orientation == Configuration.ORIENTATION_LANDSCAPE &&
+                        webViewDetails?.hasLandscapeDetails() ?: false ->
                         applyDynamicLandscapeConstraints(
                             this,
                             mBaseConstraintLayout,
@@ -197,8 +197,8 @@ class WebPaymentActivity :
                             webViewDetails!!.landscapeScreenDimensions
                         )
 
-                    webViewDetails?.hasPortraitDetails() ?: false &&
-                        orientation == Configuration.ORIENTATION_PORTRAIT ->
+                    orientation == Configuration.ORIENTATION_PORTRAIT &&
+                        webViewDetails?.hasPortraitDetails() ?: false ->
                         applyDynamicPortraitConstraints(
                             this,
                             mBaseConstraintLayout,
