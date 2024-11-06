@@ -4,6 +4,8 @@ import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.helpers.UserCountryUtils
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
+import com.appcoins.sdk.core.ui.getScreenHeightInDp
+import com.appcoins.sdk.core.ui.getScreenWidthInDp
 
 object GetQueriesListForPayflowPriority : UseCase() {
     operator fun invoke(): MutableMap<String, String> {
@@ -30,6 +32,9 @@ object GetQueriesListForPayflowPriority : UseCase() {
             GetOemIdForPackage(WalletUtils.context.packageName, WalletUtils.context)
         val walletId = attributionSharedPreferences.getWalletId()
 
+        val screenWidthInDp = getScreenWidthInDp(WalletUtils.context)
+        val screenHeightInDp = getScreenHeightInDp(WalletUtils.context)
+
         val queries: MutableMap<String, String> = LinkedHashMap()
 
         queries["package"] = WalletUtils.context.packageName
@@ -44,6 +49,8 @@ object GetQueriesListForPayflowPriority : UseCase() {
         UserCountryUtils.getUserCountry(WalletUtils.context)?.let { queries["locale"] = it }
         oemId?.let { queries["oemid"] = it }
         walletId?.let { queries["guest_id"] = it }
+        queries["screen_width_dp"] = screenWidthInDp.toString()
+        queries["screen_height_dp"] = screenHeightInDp.toString()
 
         return queries
     }

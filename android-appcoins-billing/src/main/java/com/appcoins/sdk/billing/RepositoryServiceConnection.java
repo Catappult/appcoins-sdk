@@ -86,16 +86,7 @@ public class RepositoryServiceConnection
         if (paymentFlowMethods != null) {
             logInfo(String.format("PaymentFlowMethods size: %s", paymentFlowMethods.size()));
             for (PaymentFlowMethod paymentFlowMethod : paymentFlowMethods) {
-                String version = "null";
-                String paymentFlow = "null";
-                if (paymentFlowMethod.getVersion() != null) {
-                    version = paymentFlowMethod.getVersion();
-                }
-                if (paymentFlowMethod.getPaymentFlow() != null) {
-                    paymentFlow = paymentFlowMethod.getPaymentFlow();
-                }
-                logInfo(String.format("PaymentFlowMethod: name:%s priority:%s version:%s paymentFlow:%s",
-                    paymentFlowMethod.getName(), paymentFlowMethod.getPriority(), version, paymentFlow));
+                logInfo(paymentFlowMethod.toString());
             }
         } else {
             logInfo("PaymentFlowMethods is null.");
