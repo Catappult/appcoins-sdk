@@ -1,7 +1,6 @@
 package com.appcoins.sdk.billing.mappers
 
 import com.appcoins.sdk.billing.service.RequestResponse
-import com.appcoins.sdk.billing.types.SkuType
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import com.appcoins.sdk.core.logger.Logger.logError
 import org.json.JSONObject
@@ -91,11 +90,4 @@ data class InappPurchaseResponse(
     val created: String? = null,
     val buyer: Buyer? = null,
     val order: Order? = null
-) {
-    fun mapType(): String =
-        when (type) {
-            "CONSUMABLE" -> SkuType.inapp.name
-            "SUBSCRIPTION" -> SkuType.subs.name
-            else -> SkuType.inapp.name
-        }
-}
+)
