@@ -13,9 +13,7 @@ import com.appcoins.sdk.billing.SkuDetails
 import com.appcoins.sdk.billing.SkuDetailsResultV2
 import com.appcoins.sdk.billing.SkuDetailsV2
 import com.appcoins.sdk.billing.managers.ProductV2Manager
-import com.appcoins.sdk.billing.managers.VoidedPurchasesManager
 import com.appcoins.sdk.billing.mappers.PurchasesBundleMapper
-import com.appcoins.sdk.billing.mappers.VoidedPurchasesBundleMapper
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.getPaymentFlowFromPayflowMethod
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.WebPayment
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
@@ -23,7 +21,6 @@ import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.GET_SKU_DETAILS_I
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE_LIST
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ITEM_LIST
-import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_VOIDED_PURCHASE_DATA_LIST
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
 import com.appcoins.sdk.billing.webpayment.WebPaymentManager
 import com.appcoins.sdk.core.logger.Logger.logDebug
@@ -176,23 +173,6 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         return bundleResponse
     }
 
-    override fun getVoidedPurchases(
-        apiVersion: Int,
-        packageName: String,
-        guestWalletId: String?,
-        startTime: String?
-    ): Bundle {
-        logInfo("Getting Voided Purchases from startTime: $startTime")
-        var bundleResponse = buildEmptyVoidedPurchasesBundle()
-
-        val voidedPurchasesResponse =
-            VoidedPurchasesManager.getVoidedPurchasesSync(packageName, guestWalletId, startTime)
-        bundleResponse =
-            VoidedPurchasesBundleMapper().mapGuestVoidedPurchases(bundleResponse, voidedPurchasesResponse)
-
-        return bundleResponse
-    }
-
     override fun consumePurchase(apiVersion: Int, packageName: String, purchaseToken: String): Int {
         logInfo("Consuming Purchase.")
         logDebug("Purchase Token: $purchaseToken")
@@ -220,13 +200,6 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         bundleResponse.putStringArrayList(INAPP_PURCHASE_ITEM_LIST, ArrayList())
         bundleResponse.putStringArrayList(INAPP_PURCHASE_DATA_LIST, ArrayList())
         bundleResponse.putStringArrayList(INAPP_DATA_SIGNATURE_LIST, ArrayList())
-        return bundleResponse
-    }
-
-    private fun buildEmptyVoidedPurchasesBundle(): Bundle {
-        val bundleResponse = Bundle()
-        bundleResponse.putInt(RESPONSE_CODE, ResponseCode.OK.value)
-        bundleResponse.putStringArrayList(INAPP_VOIDED_PURCHASE_DATA_LIST, ArrayList())
         return bundleResponse
     }
 

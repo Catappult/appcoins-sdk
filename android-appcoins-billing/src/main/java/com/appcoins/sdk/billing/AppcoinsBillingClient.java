@@ -10,8 +10,6 @@ import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
 public interface AppcoinsBillingClient {
     PurchasesResult queryPurchases(String skuType);
 
-    VoidedPurchasesResult queryVoidedPurchases(Long startTimeInMillis);
-
     void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
         SkuDetailsResponseListener onSkuDetailsResponseListener);
 
