@@ -131,49 +131,6 @@ class AppCoinsBillingTest {
     }
 
     @Test
-    fun `queryVoidedPurchases should return OK on VoidedPurchasesResult if successful`() {
-        val guestWalletId = "guestWalletId"
-        val startTime = null
-
-        every {
-            mockkRepository.getVoidedPurchases(guestWalletId, startTime)
-        } returns SUCCESSFUL_VOIDED_PURCHASES_RESULT
-
-        val result = appCoinsBilling.queryVoidedPurchases(guestWalletId, startTime)
-
-        assertEquals(ResponseCode.OK.value, result.responseCode)
-        assertTrue(result.voidedPurchases.isNotEmpty())
-    }
-
-    @Test
-    fun `queryVoidedPurchases should return SERVICE_UNAVAILABLE on VoidedPurchasesResult if repository throws ServiceConnectionException`() {
-        val guestWalletId = "guestWalletId"
-        val startTime = null
-
-        every { mockkRepository.getVoidedPurchases(guestWalletId, startTime) } throws ServiceConnectionException()
-
-        val result = appCoinsBilling.queryVoidedPurchases(guestWalletId, startTime)
-
-        assertEquals(ResponseCode.SERVICE_UNAVAILABLE.value, result.responseCode)
-        assertTrue(result.voidedPurchases.isEmpty())
-    }
-
-    @Test
-    fun `queryVoidedPurchases should return same responseCode of VoidedPurchasesResult if response not successful`() {
-        val guestWalletId = "guestWalletId"
-        val startTime = null
-
-        every {
-            mockkRepository.getVoidedPurchases(guestWalletId, startTime)
-        } returns DEVELOPER_ERROR_VOIDED_PURCHASES_RESULT
-
-        val result = appCoinsBilling.queryVoidedPurchases(guestWalletId, startTime)
-
-        assertEquals(ResponseCode.DEVELOPER_ERROR.value, result.responseCode)
-        assertTrue(result.voidedPurchases.isEmpty())
-    }
-
-    @Test
     fun `launchBillingFlow should return OK on LaunchBillingFlowResult if successful`() {
         val payload = "payload"
         val oemid = "oemid"
@@ -272,22 +229,6 @@ class AppCoinsBillingTest {
         )
         val SUCCESSFUL_PURCHASES_RESULT = PurchasesResult(PURCHASES_LIST, ResponseCode.OK.value)
         val DEVELOPER_ERROR_PURCHASES_RESULT = PurchasesResult(PURCHASES_LIST, ResponseCode.DEVELOPER_ERROR.value)
-
-        val VOIDED_PURCHASES_LIST = listOf(
-            VoidedPurchase(
-                "kind",
-                "purchaseToken",
-                "orderId",
-                0,
-                0,
-                0,
-                0,
-                null,
-            )
-        )
-        val SUCCESSFUL_VOIDED_PURCHASES_RESULT = VoidedPurchasesResult(VOIDED_PURCHASES_LIST, ResponseCode.OK.value)
-        val DEVELOPER_ERROR_VOIDED_PURCHASES_RESULT =
-            VoidedPurchasesResult(VOIDED_PURCHASES_LIST, ResponseCode.DEVELOPER_ERROR.value)
 
         val BILLING_FLOW_PARAMS =
             BillingFlowParams("sku", "inapp", "order123", "user12345", "BDS")
