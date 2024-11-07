@@ -11,14 +11,9 @@ import com.appcoins.sdk.billing.PurchasesResult;
 import com.appcoins.sdk.billing.Repository;
 import com.appcoins.sdk.billing.ResponseCode;
 import com.appcoins.sdk.billing.SkuDetailsResult;
-import com.appcoins.sdk.billing.VoidedPurchasesResult;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.service.WalletBillingService;
-import com.appcoins.sdk.billing.usecases.AddPurchaseDataToVoidedPurchases;
-import com.appcoins.sdk.billing.usecases.IsStartTimeValid;
-import com.appcoins.sdk.billing.usecases.RemoveDuplicatedVoidedPurchases;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.appcoins.sdk.core.logger.Logger.logDebug;
@@ -74,45 +69,6 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
             return purchasesResult;
         } catch (RemoteException e) {
             logError("Error getting purchases. ", e);
-            throw new ServiceConnectionException(e.getMessage());
-        }
-    }
-
-    @Override
-    public VoidedPurchasesResult getVoidedPurchases(String guestWalletId, Long startTimeInMillis)
-        throws ServiceConnectionException {
-        logInfo("Executing getVoidedPurchases.");
-
-        if (!isReady()) {
-            logError("Service is not ready. Throwing ServiceConnectionException.");
-            throw new ServiceConnectionException();
-        }
-
-        if (!IsStartTimeValid.INSTANCE.invoke(startTimeInMillis)) {
-            logError("StartTime invalid: " + startTimeInMillis);
-            return new VoidedPurchasesResult(new ArrayList<>(), ResponseCode.DEVELOPER_ERROR.getValue());
-        }
-
-        String startTime = null;
-        if (startTimeInMillis != null) {
-            startTime = String.valueOf(startTimeInMillis);
-        }
-
-        try {
-            Bundle voidedPurchases = service.getVoidedPurchases(apiVersion, packageName, guestWalletId, startTime);
-            logDebug("Voided Purchases received: " + voidedPurchases.toString());
-
-            VoidedPurchasesResult voidedPurchasesResult = AndroidBillingMapper.mapVoidedPurchases(voidedPurchases);
-            logInfo("VoidedPurchasesResult code: " + voidedPurchasesResult.getResponseCode());
-            logDebug("VoidedPurchasesResult: " + voidedPurchasesResult);
-
-            RemoveDuplicatedVoidedPurchases.INSTANCE.invoke(voidedPurchasesResult);
-            AddPurchaseDataToVoidedPurchases.INSTANCE.invoke(voidedPurchasesResult);
-            logDebug("VoidedPurchasesResult after adding Purchase Data: " + voidedPurchasesResult);
-
-            return voidedPurchasesResult;
-        } catch (RemoteException e) {
-            logError("Error getting voided purchases. ", e);
             throw new ServiceConnectionException(e.getMessage());
         }
     }

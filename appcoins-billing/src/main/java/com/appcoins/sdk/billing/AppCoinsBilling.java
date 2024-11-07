@@ -50,22 +50,6 @@ public class AppCoinsBilling implements Billing {
         }
     }
 
-    @Override
-    public VoidedPurchasesResult queryVoidedPurchases(String guestWalletId, Long startTimeInMillis) {
-        try {
-            VoidedPurchasesResult voidedPurchasesResult =
-                repository.getVoidedPurchases(guestWalletId, startTimeInMillis);
-
-            if (voidedPurchasesResult.getResponseCode() != ResponseCode.OK.getValue()) {
-                return new VoidedPurchasesResult(new ArrayList<>(), voidedPurchasesResult.getResponseCode());
-            }
-
-            return voidedPurchasesResult;
-        } catch (ServiceConnectionException e) {
-            return new VoidedPurchasesResult(Collections.emptyList(), ResponseCode.SERVICE_UNAVAILABLE.getValue());
-        }
-    }
-
     public boolean verifyPurchase(String purchaseData, byte[] decodeSignature) {
         return Security.verifyPurchase(base64DecodedPublicKey, purchaseData, decodeSignature);
     }
