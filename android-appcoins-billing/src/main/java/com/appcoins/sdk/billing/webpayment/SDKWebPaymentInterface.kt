@@ -9,4 +9,7 @@ interface SDKWebPaymentInterface {
 
     @JavascriptInterface
     fun openDeeplink(url: String): Boolean
+
+    @JavascriptInterface
+    fun startExternalPayment(url: String): Boolean
 }

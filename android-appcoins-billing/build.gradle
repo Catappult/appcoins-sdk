@@ -156,6 +156,8 @@ dependencies {
 
     implementation libs.kotlin.stdlib
 
+    api libs.androidx.browser
+
     api libs.indicative
     api libs.app.compat.contraint.layout
 
