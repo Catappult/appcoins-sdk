@@ -18,13 +18,13 @@ class ExternalPaymentActivity : Activity(), ExternalPaymentResponseStream.Consum
     private var customTabLaunched = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        logInfo("onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.transparent_activity)
 
         val shouldCloseActivity = intent.getBooleanExtra(SHOULD_CLOSE_ACTIVITY, false)
 
         if (shouldCloseActivity) {
+            logInfo("Closing External Payment Method on shouldCloseActivity.")
             finish()
             return
         }
@@ -39,6 +39,8 @@ class ExternalPaymentActivity : Activity(), ExternalPaymentResponseStream.Consum
         }
 
         if (savedInstanceState != null) {
+            logInfo("SavedInstanceState is not null. Closing External Payment Method.")
+            finish()
             return
         }
 
@@ -47,7 +49,6 @@ class ExternalPaymentActivity : Activity(), ExternalPaymentResponseStream.Consum
     }
 
     override fun onResume() {
-        logInfo("onResume")
         super.onResume()
         if (customTabLaunched) {
             finish()
@@ -64,13 +65,11 @@ class ExternalPaymentActivity : Activity(), ExternalPaymentResponseStream.Consum
 
     override fun onDestroy() {
         removeExternalPaymentResponseStreamCollector()
-        logInfo("onDestroy")
         setResult(RESULT_OK)
         super.onDestroy()
     }
 
     override fun accept() {
-        logInfo("accept")
         startActivity(newIntent(this, null, true))
     }
 
