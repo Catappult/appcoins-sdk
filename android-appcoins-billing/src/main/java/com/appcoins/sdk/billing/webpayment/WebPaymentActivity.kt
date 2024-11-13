@@ -20,6 +20,7 @@ import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
 import com.appcoins.sdk.billing.listeners.WalletPaymentDeeplinkResponseStream
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
+import com.appcoins.sdk.billing.usecases.HandleDeeplinkFromWebView
 import com.appcoins.sdk.billing.webpayment.WebViewLandscapeUtils.applyDefaultLandscapeConstraints
 import com.appcoins.sdk.billing.webpayment.WebViewLandscapeUtils.applyDynamicLandscapeConstraints
 import com.appcoins.sdk.billing.webpayment.WebViewOrientationUtils.setupOrientation
@@ -120,6 +121,11 @@ class WebPaymentActivity :
                 PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
             }
         } ?: PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
+    }
+
+    @JavascriptInterface
+    override fun openDeeplink(url: String): Boolean {
+        return HandleDeeplinkFromWebView(url, this)
     }
 
     override fun onDestroy() {

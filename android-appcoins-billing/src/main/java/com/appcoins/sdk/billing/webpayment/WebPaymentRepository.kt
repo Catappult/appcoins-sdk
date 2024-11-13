@@ -1,5 +1,6 @@
 package com.appcoins.sdk.billing.webpayment
 
+import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.BillingFlowParams
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
@@ -28,6 +29,7 @@ class WebPaymentRepository(private val bdsService: BdsService) {
 
         val queries: MutableMap<String, String> = LinkedHashMap()
         queries["package"] = packageName
+        queries["sdk_vercode"] = BuildConfig.VERSION_CODE.toString()
         locale?.let { queries["locale"] = it }
         oemId?.let { queries["oemid"] = it }
         walletId?.let { queries["guest_id"] = it }

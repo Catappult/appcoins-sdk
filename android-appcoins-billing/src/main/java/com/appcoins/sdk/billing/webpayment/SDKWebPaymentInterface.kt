@@ -6,4 +6,7 @@ interface SDKWebPaymentInterface {
 
     @JavascriptInterface
     fun onPurchaseResult(result: String?)
+
+    @JavascriptInterface
+    fun openDeeplink(url: String): Boolean
 }
