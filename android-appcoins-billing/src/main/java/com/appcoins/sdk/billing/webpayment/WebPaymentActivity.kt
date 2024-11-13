@@ -253,7 +253,6 @@ class WebPaymentActivity :
     }
 
     private fun notifyWebViewOfExternalPaymentResult() {
-        logInfo("notifyWebViewOfExternalPaymentResult")
         webView?.loadUrl("javascript:onPaymentStateUpdated()")
     }
 
