@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
+apply plugin: 'kotlin-android'
 apply plugin: 'checkstyle'
 
 android {
@@ -15,7 +16,7 @@ android {
         consumerProguardFiles "consumer-rules.pro"
     }
 
-    check.dependsOn 'checkstyle', 'lint', 'detekt'
+    check.dependsOn 'checkstyle', 'lint', 'detekt', 'test'
 
     lintOptions {
         abortOnError false
@@ -47,6 +48,14 @@ android {
                 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility SOURCE_COMPATIBILITY
+        targetCompatibility TARGET_COMPATIBILITY
+    }
+    kotlinOptions {
+        jvmTarget = TARGET_COMPATIBILITY
+    }
 }
 
 dependencies {
@@ -59,6 +68,8 @@ dependencies {
     detektPlugins libs.detekt.formatting
 
     api project(':appcoins-core')
+
+    implementation libs.kotlin.stdlib
 }
 
 //Publish configuration

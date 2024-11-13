@@ -8,8 +8,6 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
-import android.support.constraint.ConstraintSet
-import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
@@ -21,11 +19,18 @@ import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
 import com.appcoins.sdk.billing.listeners.WalletPaymentDeeplinkResponseStream
+import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
+import com.appcoins.sdk.billing.usecases.HandleDeeplinkFromWebView
+import com.appcoins.sdk.billing.webpayment.WebViewLandscapeUtils.applyDefaultLandscapeConstraints
+import com.appcoins.sdk.billing.webpayment.WebViewLandscapeUtils.applyDynamicLandscapeConstraints
+import com.appcoins.sdk.billing.webpayment.WebViewOrientationUtils.setupOrientation
+import com.appcoins.sdk.billing.webpayment.WebViewPortraitUtils.applyDefaultPortraitConstraints
+import com.appcoins.sdk.billing.webpayment.WebViewPortraitUtils.applyDynamicPortraitConstraints
+import com.appcoins.sdk.billing.webpayment.WebViewTabletUtils.applyTabletConstraints
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
-import com.appcoins.sdk.core.ui.floatToPxs
-import com.appcoins.sdk.core.ui.getScreenHeightInDp
+import com.appcoins.sdk.core.ui.getScreenOrientation
 import org.json.JSONObject
 
 class WebPaymentActivity :
@@ -42,6 +47,8 @@ class WebPaymentActivity :
     private var walletDeeplinkResponseCode: Int? = null
 
     private var skuType: String? = null
+
+    private var webViewDetails: PaymentFlowMethod.WebPayment.WebViewDetails? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,9 +74,17 @@ class WebPaymentActivity :
         val sku = intent.getStringExtra(SKU)
         WalletUtils.getSdkAnalytics().sendPurchaseViaWebEvent(sku ?: "")
 
+        webViewDetails =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                intent.getSerializableExtra(WEB_VIEW_DETAILS, PaymentFlowMethod.WebPayment.WebViewDetails::class.java)
+            } else {
+                intent.getSerializableExtra(WEB_VIEW_DETAILS) as PaymentFlowMethod.WebPayment.WebViewDetails?
+            }
+
+        setupOrientation(this, webViewDetails)
         setupBackgroundToClose()
         setupWebView(url)
-        adjustWebViewSize(resources.configuration.orientation)
+        adjustWebViewSize(getScreenOrientation(this))
         observeWalletPurchaseResultDeeplinkStream()
     }
 
@@ -106,6 +121,11 @@ class WebPaymentActivity :
                 PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
             }
         } ?: PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
+    }
+
+    @JavascriptInterface
+    override fun openDeeplink(url: String): Boolean {
+        return HandleDeeplinkFromWebView(url, this)
     }
 
     override fun onDestroy() {
@@ -174,84 +194,36 @@ class WebPaymentActivity :
 
             if (webViewContainerParams != null) {
                 when {
+                    orientation == Configuration.ORIENTATION_LANDSCAPE &&
+                        webViewDetails?.hasLandscapeDetails() ?: false ->
+                        applyDynamicLandscapeConstraints(
+                            this,
+                            mBaseConstraintLayout,
+                            webViewContainerParams,
+                            webViewDetails!!.landscapeScreenDimensions
+                        )
+
+                    orientation == Configuration.ORIENTATION_PORTRAIT &&
+                        webViewDetails?.hasPortraitDetails() ?: false ->
+                        applyDynamicPortraitConstraints(
+                            this,
+                            mBaseConstraintLayout,
+                            webViewContainerParams,
+                            webViewDetails!!.portraitScreenDimensions
+                        )
+
                     resources.getBoolean(R.bool.isTablet) ->
-                        applyTabletConstraints(mBaseConstraintLayout, webViewContainerParams)
+                        applyTabletConstraints(this, mBaseConstraintLayout, webViewContainerParams)
 
                     orientation == Configuration.ORIENTATION_LANDSCAPE ->
-                        applyLandscapeConstraints(mBaseConstraintLayout, webViewContainerParams)
+                        applyDefaultLandscapeConstraints(mBaseConstraintLayout, webViewContainerParams)
 
-                    else -> applyPortraitConstraints(webViewContainerParams)
+                    else -> applyDefaultPortraitConstraints(this, mBaseConstraintLayout, webViewContainerParams)
                 }
 
                 webViewContainer?.layoutParams = webViewContainerParams
             }
         }
-    }
-
-    private fun applyTabletConstraints(
-        mBaseConstraintLayout: ConstraintLayout,
-        webViewContainerParams: ViewGroup.LayoutParams
-    ) {
-        webViewContainerParams.width = 0
-        webViewContainerParams.height = 0
-
-        val mConstraintSet = ConstraintSet()
-        mConstraintSet.clone(mBaseConstraintLayout)
-
-        mConstraintSet.constrainPercentHeight(
-            R.id.container_for_web_view,
-            TABLET_MAX_HEIGHT_PERCENT
-        )
-        mConstraintSet.constrainPercentWidth(
-            R.id.container_for_web_view,
-            TABLET_MAX_WIDTH_PERCENT
-        )
-        mConstraintSet.constrainMaxHeight(
-            R.id.container_for_web_view,
-            floatToPxs(TABLET_MAX_HEIGHT_DP, this).toInt()
-        )
-        mConstraintSet.constrainMaxWidth(
-            R.id.container_for_web_view,
-            floatToPxs(TABLET_MAX_WIDTH_DP, this).toInt()
-        )
-
-        mConstraintSet.applyTo(mBaseConstraintLayout)
-    }
-
-    private fun applyLandscapeConstraints(
-        mBaseConstraintLayout: ConstraintLayout,
-        webViewContainerParams: ViewGroup.LayoutParams
-    ) {
-        webViewContainerParams.width = 0
-        webViewContainerParams.height = 0
-
-        val mConstraintSet = ConstraintSet()
-        mConstraintSet.clone(mBaseConstraintLayout)
-
-        mConstraintSet.constrainPercentHeight(
-            R.id.container_for_web_view,
-            LANDSCAPE_MAX_HEIGHT_PERCENT
-        )
-        mConstraintSet.constrainPercentWidth(
-            R.id.container_for_web_view,
-            LANDSCAPE_MAX_WIDTH_PERCENT
-        )
-        mConstraintSet.constrainMaxHeight(R.id.container_for_web_view, 0)
-        mConstraintSet.constrainMaxWidth(R.id.container_for_web_view, 0)
-
-        mConstraintSet.applyTo(mBaseConstraintLayout)
-    }
-
-    private fun applyPortraitConstraints(webViewContainerParams: ViewGroup.LayoutParams) {
-        val screenMaxHeight = getScreenHeightInDp(this)
-        val heightToSet =
-            if (screenMaxHeight < PORTRAIT_MAX_HEIGHT_DP) {
-                LinearLayout.LayoutParams.MATCH_PARENT
-            } else {
-                floatToPxs(PORTRAIT_MAX_HEIGHT_DP, this).toInt()
-            }
-        webViewContainerParams.width = LinearLayout.LayoutParams.MATCH_PARENT
-        webViewContainerParams.height = heightToSet
     }
 
     private fun observeWalletPurchaseResultDeeplinkStream() {
@@ -266,20 +238,7 @@ class WebPaymentActivity :
         private const val URL = "URL"
         private const val SKU = "SKU"
         private const val SKU_TYPE = "SKU_TYPE"
-        private const val PAYMENT_FLOW = "PAYMENT_FLOW"
-
-        // Tablet Constants
-        private const val TABLET_MAX_HEIGHT_DP = 480f
-        private const val TABLET_MAX_WIDTH_DP = 688f
-        private const val TABLET_MAX_HEIGHT_PERCENT = 0.9f
-        private const val TABLET_MAX_WIDTH_PERCENT = 0.9f
-
-        // Landscape Constants
-        private const val LANDSCAPE_MAX_HEIGHT_PERCENT = 0.9f
-        private const val LANDSCAPE_MAX_WIDTH_PERCENT = 0.9f
-
-        // Portrait Constants
-        private const val PORTRAIT_MAX_HEIGHT_DP = 560f
+        private const val WEB_VIEW_DETAILS = "WEB_VIEW_DETAILS"
 
         @JvmStatic
         fun newIntent(
@@ -287,13 +246,13 @@ class WebPaymentActivity :
             url: String,
             sku: String,
             skuType: String,
-            paymentFlow: String?,
+            webViewDetails: PaymentFlowMethod.WebPayment.WebViewDetails?
         ): Intent {
             val intent = Intent(context, WebPaymentActivity::class.java)
             intent.putExtra(URL, url)
             intent.putExtra(SKU, sku)
             intent.putExtra(SKU_TYPE, skuType)
-            paymentFlow?.let { intent.putExtra(PAYMENT_FLOW, it) }
+            webViewDetails?.let { intent.putExtra(WEB_VIEW_DETAILS, it) }
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             return intent
         }

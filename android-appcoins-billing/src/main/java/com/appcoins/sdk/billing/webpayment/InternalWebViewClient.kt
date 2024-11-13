@@ -2,12 +2,6 @@ package com.appcoins.sdk.billing.webpayment
 
 import android.annotation.TargetApi
 import android.app.Activity
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.content.Intent.ACTION_VIEW
-import android.content.Intent.CATEGORY_BROWSABLE
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-import android.content.Intent.FLAG_ACTIVITY_REQUIRE_NON_BROWSER
 import android.net.Uri
 import android.os.Build
 import android.webkit.WebResourceRequest
@@ -38,7 +32,6 @@ internal class InternalWebViewClient(private val activity: Activity) : WebViewCl
             logInfo(uri.scheme.toString())
 
             if (canHandleWebDeeplinkScheme(uri)) return true
-            if (canHandleApplicationDeeplink(uri)) return true
         } catch (e: Exception) {
             logError("There was a failure with the URL to Override.", e)
         }
@@ -52,24 +45,6 @@ internal class InternalWebViewClient(private val activity: Activity) : WebViewCl
             activity.finish()
             true
         } else {
-            false
-        }
-
-    @Suppress("exceptions:SwallowedException")
-    private fun canHandleApplicationDeeplink(uri: Uri): Boolean =
-        try {
-            val intent = Intent(ACTION_VIEW, uri).apply {
-                addCategory(CATEGORY_BROWSABLE)
-                flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_REQUIRE_NON_BROWSER
-                } else {
-                    FLAG_ACTIVITY_NEW_TASK
-                }
-            }
-            logInfo("Handling Application Deeplink.")
-            activity.startActivity(intent)
-            true
-        } catch (e: ActivityNotFoundException) {
             false
         }
 

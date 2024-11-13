@@ -109,7 +109,9 @@ public class WalletUtils {
         return null;
     }
 
-    public static Bundle startWebFirstPayment(String sku, String skuType, String paymentFlow) {
+    public static Bundle startWebFirstPayment(String sku, String skuType,
+        @Nullable
+        PaymentFlowMethod.WebPayment.WebViewDetails webViewDetails) {
         logInfo("Creating WebPayment bundle.");
         if (isMainThread()) {
             logError("WebPayment is not available in MainThread.");
@@ -121,7 +123,8 @@ public class WalletUtils {
             return createBundleWithResponseCode(ResponseCode.ERROR.getValue());
         }
 
-        Intent intent = WebPaymentActivity.newIntent(context, WalletUtils.getWebPaymentUrl(), sku, skuType, paymentFlow);
+        Intent intent =
+            WebPaymentActivity.newIntent(context, WalletUtils.getWebPaymentUrl(), sku, skuType, webViewDetails);
         Bundle intentBundle = createIntentBundle(intent, ResponseCode.OK.getValue());
         logDebug("WebPayment intentBundle:" + intentBundle);
         return intentBundle;
