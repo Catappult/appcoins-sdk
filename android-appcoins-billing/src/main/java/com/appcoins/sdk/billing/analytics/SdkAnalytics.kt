@@ -250,6 +250,14 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
     fun sendBackendGuestUidGenerationFailedEvent() =
         sendEmptyUnexpectedFailureEvent(SdkAnalyticsFailureLabels.SDK_BACKEND_GUEST_UID_GENERATION_FAILED)
 
+    fun sendUnsuccessfulBackendRequestEvent(endpoint: String, failureMessage: String) {
+        val message = "Failed to make request to the endpoint - $endpoint. Cause - $failureMessage"
+        sendEmptyUnexpectedFailureEvent(
+            SdkAnalyticsFailureLabels.SDK_BACKEND_REQUEST_FAILED,
+            message
+        )
+    }
+
     private fun sendEmptyUnexpectedFailureEvent(
         failureType: String,
         failureMessage: String? = null

@@ -21,7 +21,7 @@ class BdsRetryService(
             ServiceAsyncTaskExecutorAsync(
                 bdsService,
                 bdsService.baseUrl,
-                endPoint + "ss",
+                endPoint,
                 httpMethod,
                 paths,
                 queries,

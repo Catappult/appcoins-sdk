@@ -47,11 +47,16 @@ public class BdsService implements Service {
             InputStream inputStream;
             if (responseCode >= 400) {
                 inputStream = urlConnection.getErrorStream();
+                WalletUtils.getSdkAnalytics()
+                    .sendUnsuccessfulBackendRequestEvent(baseUrl + endPoint,
+                        urlConnection.getResponseCode() + " " + urlConnection.getResponseMessage());
             } else {
                 inputStream = urlConnection.getInputStream();
             }
             return readResponse(inputStream, responseCode);
         } catch (Exception firstException) {
+            WalletUtils.getSdkAnalytics()
+                .sendUnsuccessfulBackendRequestEvent(baseUrl + endPoint, firstException.toString());
             return handleException(urlConnection, firstException);
         } finally {
             if (urlConnection != null) {
