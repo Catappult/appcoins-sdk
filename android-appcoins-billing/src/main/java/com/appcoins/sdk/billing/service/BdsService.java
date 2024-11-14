@@ -20,8 +20,8 @@ import static com.appcoins.sdk.core.logger.Logger.logError;
 public class BdsService implements Service {
 
     public static final int TIME_OUT_IN_MILLIS = 30000;
-    private final String baseUrl;
-    private final int timeoutInMillis;
+    public final String baseUrl;
+    public final int timeoutInMillis;
 
     public BdsService(String baseUrl, int timeoutInMillis) {
         this.baseUrl = baseUrl;

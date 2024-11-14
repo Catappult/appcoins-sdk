@@ -1,8 +1,8 @@
 package com.appcoins.sdk.billing.repositories
 
-import com.appcoins.sdk.billing.service.BdsService
+import com.appcoins.sdk.billing.service.BdsRetryService
 
-class MMPEventsRepository(private val bdsService: BdsService) {
+class MMPEventsRepository(private val bdsRetryService: BdsRetryService) {
 
     fun sendSuccessfulPurchaseResultEvent(
         packageName: String,
@@ -30,13 +30,13 @@ class MMPEventsRepository(private val bdsService: BdsService) {
         utmTerm?.let { queries["utm_term"] = it }
         utmContent?.let { queries["utm_content"] = it }
 
-        bdsService.makeRequest(
+        bdsRetryService.makeRequest(
             "/purchase",
             "GET",
-            emptyList(),
+            mutableListOf(),
             queries,
-            emptyMap(),
-            emptyMap(),
+            mutableMapOf(),
+            mutableMapOf(),
             null
         )
     }
