@@ -24,6 +24,7 @@ class MMPEventsRepository(private val bdsRetryService: BdsRetryService) {
         queries["sku"] = sku
         queries["order_id"] = orderId
         queries["purchase_amount"] = purchaseAmount
+        queries["timestamp"] = System.currentTimeMillis().toString()
         utmSource?.let { queries["utm_source"] = it }
         utmMedium?.let { queries["utm_medium"] = it }
         utmCampaign?.let { queries["utm_campaign"] = it }

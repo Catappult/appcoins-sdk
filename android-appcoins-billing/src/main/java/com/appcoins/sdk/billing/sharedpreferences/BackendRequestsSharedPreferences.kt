@@ -27,6 +27,10 @@ class BackendRequestsSharedPreferences(context: Context) : SharedPreferencesRepo
     }
 
     fun setFailedRequests(value: List<RequestData>? = null) {
+        if (value.isNullOrEmpty()) {
+            setString(FAILED_REQUESTS_KEY, null)
+            return
+        }
         try {
             val byteArrayOutputStream = ByteArrayOutputStream()
             ObjectOutputStream(byteArrayOutputStream).use { it.writeObject(value) }
