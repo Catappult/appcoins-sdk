@@ -136,6 +136,16 @@ class WebPaymentActivity :
         }
     }
 
+    override fun onBackPressed() {
+        if (webView?.canGoBack() == true) {
+            logInfo("Going back in WebView.")
+            webView?.goBack()
+        } else {
+            logInfo("WebView already at initial page. Exiting activity.")
+            super.onBackPressed()
+        }
+    }
+
     @JavascriptInterface
     override fun onPurchaseResult(result: String?) {
         responseReceived = true
