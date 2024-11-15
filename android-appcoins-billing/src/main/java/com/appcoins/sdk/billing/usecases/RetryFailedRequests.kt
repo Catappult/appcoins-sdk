@@ -1,14 +1,20 @@
 package com.appcoins.sdk.billing.usecases
 
+import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.sharedpreferences.BackendRequestsSharedPreferences
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 
 object RetryFailedRequests : UseCase() {
-    operator fun invoke(sharedPreferences: BackendRequestsSharedPreferences) {
+
+    private val backendRequestsSharedPreferences: BackendRequestsSharedPreferences by lazy {
+        BackendRequestsSharedPreferences(WalletUtils.context)
+    }
+
+    operator fun invoke() {
         super.invokeUseCase()
 
-        val failedRequests = sharedPreferences.getFailedRequests()?.toMutableList()
+        val failedRequests = backendRequestsSharedPreferences.getFailedRequests()?.toMutableList()
 
         failedRequests?.iterator()?.let { iterator ->
             while (iterator.hasNext()) {
@@ -24,7 +30,7 @@ object RetryFailedRequests : UseCase() {
                 ) { requestResponse ->
                     if (isSuccess(requestResponse.responseCode)) {
                         failedRequests.remove(request)
-                        sharedPreferences.setFailedRequests(failedRequests)
+                        backendRequestsSharedPreferences.setFailedRequests(failedRequests)
                     }
                 }
             }
