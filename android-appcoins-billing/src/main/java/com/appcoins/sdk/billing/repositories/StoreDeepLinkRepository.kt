@@ -13,12 +13,14 @@ class StoreDeepLinkRepository(private val bdsService: BdsService) {
     fun getStoreDeepLink(
         packageName: String,
         appInstallerPackageName: String?,
+        oemid: String?,
     ): String? {
         val countDownLatch = CountDownLatch(1)
         var storeDeepLink: String? = null
 
         val queries: MutableMap<String, String> = LinkedHashMap()
         appInstallerPackageName?.let { queries["store-package"] = it }
+        oemid?.let { queries["oemid"] = it }
 
         val serviceResponseListener =
             ServiceResponseListener { requestResponse ->
