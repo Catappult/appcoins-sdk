@@ -20,8 +20,8 @@ import static com.appcoins.sdk.core.logger.Logger.logError;
 public class BdsService implements Service {
 
     public static final int TIME_OUT_IN_MILLIS = 30000;
-    private final String baseUrl;
-    private final int timeoutInMillis;
+    public final String baseUrl;
+    public final int timeoutInMillis;
 
     public BdsService(String baseUrl, int timeoutInMillis) {
         this.baseUrl = baseUrl;
@@ -47,11 +47,16 @@ public class BdsService implements Service {
             InputStream inputStream;
             if (responseCode >= 400) {
                 inputStream = urlConnection.getErrorStream();
+                WalletUtils.getSdkAnalytics()
+                    .sendUnsuccessfulBackendRequestEvent(baseUrl + endPoint,
+                        urlConnection.getResponseCode() + " " + urlConnection.getResponseMessage());
             } else {
                 inputStream = urlConnection.getInputStream();
             }
             return readResponse(inputStream, responseCode);
         } catch (Exception firstException) {
+            WalletUtils.getSdkAnalytics()
+                .sendUnsuccessfulBackendRequestEvent(baseUrl + endPoint, firstException.toString());
             return handleException(urlConnection, firstException);
         } finally {
             if (urlConnection != null) {

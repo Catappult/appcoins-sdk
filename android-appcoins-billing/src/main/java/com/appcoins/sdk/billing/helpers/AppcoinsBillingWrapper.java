@@ -77,12 +77,14 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
     @Override
     public int consumePurchase(int apiVersion, String packageName, String purchaseToken) throws RemoteException {
         int responseCode = appcoinsBilling.consumePurchase(apiVersion, packageName, purchaseToken);
-        int guestResponseCode = consumeGuestPurchase(walletId, apiVersion, packageName, purchaseToken);
-        if (responseCode == ResponseCode.OK.getValue() || guestResponseCode == ResponseCode.OK.getValue()) {
+        if (responseCode == ResponseCode.OK.getValue()) {
             return ResponseCode.OK.getValue();
-        } else {
-            return ResponseCode.ERROR.getValue();
         }
+        int guestResponseCode = consumeGuestPurchase(walletId, apiVersion, packageName, purchaseToken);
+        if (guestResponseCode == ResponseCode.OK.getValue()) {
+            return ResponseCode.OK.getValue();
+        }
+        return ResponseCode.ERROR.getValue();
     }
 
     @Override
