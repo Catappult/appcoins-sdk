@@ -39,16 +39,20 @@
             android:name="com.appcoins.sdk.billing.helpers.UpdateDialogActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
         <activity
+            android:configChanges="orientation|screenSize"
             android:name="com.appcoins.sdk.billing.webpayment.WebPaymentActivity"
-            android:configChanges="orientation|screenSize"
             android:theme="@style/Theme.AppCompat.Transparent.FitAppWindow" />
         <activity
+            android:launchMode="singleTask"
+            android:name="com.appcoins.sdk.billing.webpayment.ExternalPaymentActivity"
+            android:theme="@style/Theme.AppCompat.Transparent.FitAppWindow" />
+        <activity
+            android:configChanges="orientation|screenSize"
             android:name="com.appcoins.sdk.billing.activities.BillingFlowActivity"
-            android:configChanges="orientation|screenSize"
             android:theme="@style/Theme.AppCompat.Transparent.FitAppWindow" />
         <activity
-            android:name="com.appcoins.sdk.billing.UriCommunicationActivity"
-            android:exported="true">
+            android:exported="true"
+            android:name="com.appcoins.sdk.billing.UriCommunicationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <data
@@ -58,13 +62,18 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name="com.appcoins.sdk.billing.WebIapCommunicationActivity"
-            android:exported="true">
+        <activity
+            android:exported="true"
+            android:name="com.appcoins.sdk.billing.WebIapCommunicationActivity">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="web-iap-result" android:host="${applicationId}"/>
+
+                <data
+                    android:host="${applicationId}"
+                    android:scheme="web-iap-result" />
             </intent-filter>
         </activity>
     </application>
