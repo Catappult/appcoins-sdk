@@ -14,6 +14,7 @@ import com.appcoins.sdk.billing.SkuDetailsResult;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.service.WalletBillingService;
+import com.appcoins.sdk.billing.usecases.RetryFailedRequests;
 import java.util.List;
 
 import static com.appcoins.sdk.core.logger.Logger.logDebug;
@@ -38,6 +39,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
             .getCanonicalName()));
         this.service = new WalletBillingService(service, name.getClassName());
         isServiceReady = true;
+        RetryFailedRequests.INSTANCE.invoke();
         logInfo("Billing Connected, notifying client onBillingSetupFinished(ResponseCode.OK)");
         listener.onBillingSetupFinished(ResponseCode.OK.getValue());
     }
