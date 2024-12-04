@@ -3,4 +3,13 @@
     <string name="igu_app_new_version_available_popup_body">Bu uygulamanın yeni bir sürümü mevcut.\nLütfen yeni sürüme güncelle.</string>
     <string name="igu_app_new_version_available_popup_update_button">GÜNCELLE</string>
     <string name="igu_app_new_version_available_popup_close_button">KAPAT</string>
+    <!-- SDK - Purchasing when wallet is not installed -->
+    <string name="iab_wallet_not_installed_popup_body">Bu ürünü satın almak için öncelikle %s edinmeniz gerekiyor.</string>
+    <string name="appcoins_wallet">AppCoins Wallet</string>
+    <string name="iab_wallet_not_installed_popup_close_button">KAPAT</string>
+    <!-- SDK - Purchasing when neither wallet or app store are installed -->
+    <string name="iap_wallet_and_appstore_not_installed_popup_body">Bu satın alma işlemini gerçekleştirmek için AppCoins Wallet\'a ihtiyacınız var. Aptoide veya Play Store\'dan indirin ve satın alma işleminizi tamamlamak için tekrar buraya dönün!</string>
+    <string name="iap_wallet_and_appstore_not_installed_popup_button">ANLADIM!</string>
+    <!-- SDK - Common -->
+    <string name="iab_wallet_not_installed_popup_close_install">CÜZDANI YÜKLE</string>
 </resources>

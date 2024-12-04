@@ -3,4 +3,16 @@
     <string name="igu_app_new_version_available_popup_body">Для цього додатка доступна нова версія.\nОновіть, будь ласка, додаток.</string>
     <string name="igu_app_new_version_available_popup_update_button">ОНОВИТИ</string>
     <string name="igu_app_new_version_available_popup_close_button">ЗАКРИТИ</string>
+
+    <!-- SDK - Purchasing when wallet is not installed -->
+    <string name="iab_wallet_not_installed_popup_body">Щоб купити цей товар, вам спочатку потрібно отримати %s.</string>
+    <string name="appcoins_wallet">AppCoins Wallet</string>
+    <string name="iab_wallet_not_installed_popup_close_button">ЗАКРИТИ</string>
+
+    <!-- SDK - Purchasing when neither wallet or app store are installed -->
+    <string name="iap_wallet_and_appstore_not_installed_popup_body">Для здійснення цієї покупки вам потрібен AppCoins Wallet. Завантажте його з Aptoide або Play Store і поверніться, щоб завершити покупку!</string>
+    <string name="iap_wallet_and_appstore_not_installed_popup_button">ЗРОЗУМІВ!</string>
+
+    <!-- SDK - Common -->
+    <string name="iab_wallet_not_installed_popup_close_install">ВСТАНОВИТИ WALLET</string>
 </resources>

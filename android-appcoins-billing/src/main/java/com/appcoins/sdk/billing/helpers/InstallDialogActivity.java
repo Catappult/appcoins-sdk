@@ -26,26 +26,17 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.appcoins.billing.sdk.BuildConfig;
+import com.appcoins.billing.sdk.R;
 import com.appcoins.sdk.billing.BuyItemProperties;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
-import com.appcoins.sdk.billing.helpers.translations.TranslationsRepository;
 import com.appcoins.sdk.billing.listeners.PaymentResponseStream;
 import com.appcoins.sdk.billing.listeners.PendingPurchaseStream;
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse;
 import com.appcoins.sdk.billing.usecases.GetAppInstalledVersion;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
 import kotlin.Pair;
 
 import static android.graphics.Typeface.BOLD;
 import static com.appcoins.sdk.billing.helpers.WalletUtils.context;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.appcoins_wallet;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_body;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_close_button;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iab_wallet_not_installed_popup_close_install;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iap_wallet_and_appstore_not_installed_popup_body;
-import static com.appcoins.sdk.billing.helpers.translations.TranslationsKeys.iap_wallet_and_appstore_not_installed_popup_button;
 import static com.appcoins.sdk.billing.utils.LayoutUtils.generateRandomId;
 import static com.appcoins.sdk.core.logger.Logger.logInfo;
 import static com.appcoins.sdk.core.logger.Logger.logWarning;
@@ -55,15 +46,11 @@ public class InstallDialogActivity extends Activity {
     private static final int MINIMUM_APTOIDE_VERSION = 9908;
     private static final String BUY_ITEM_PROPERTIES = "buy_item_properties";
 
-    private static final String DIALOG_WALLET_INSTALL_GRAPHIC = "dialog_wallet_install_graphic";
-    private static final String DIALOG_WALLET_INSTALL_EMPTY_IMAGE = "dialog_wallet_install_empty_image";
     private static final String INSTALL_BUTTON_COLOR = "#ffffbb33";
     private static final String INSTALL_BUTTON_TEXT_COLOR = "#ffffffff";
-    private final String appBannerResourcePath = "appcoins-wallet/resources/app-banner";
 
     public BuyItemProperties buyItemProperties;
     public SdkAnalytics sdkAnalytics;
-    private TranslationsRepository translations;
 
     private boolean shouldSendCancelResult = true;
 
@@ -78,7 +65,6 @@ public class InstallDialogActivity extends Activity {
         super.onCreate(savedInstanceState);
         buyItemProperties = (BuyItemProperties) getIntent().getSerializableExtra(BUY_ITEM_PROPERTIES);
         sdkAnalytics = WalletUtils.getSdkAnalytics();
-        translations = TranslationsRepository.getInstance(this);
         String storeUrl = "market://details?id="
             + BuildConfig.APPCOINS_WALLET_PACKAGE_NAME
             + "&utm_source=appcoinssdk&app_source="
@@ -162,16 +148,13 @@ public class InstallDialogActivity extends Activity {
         TextView dialogBody = buildDialogBody(isLandscape, appIcon);
         backgroundLayout.addView(dialogBody);
 
-        Button installButton =
-            buildInstallButton(dialogLayout, translations.getString(iab_wallet_not_installed_popup_close_install),
-                storeUrl);
+        Button installButton = buildInstallButton(dialogLayout, storeUrl);
         backgroundLayout.addView(installButton);
 
-        Button skipButton =
-            buildSkipButton(installButton, translations.getString(iab_wallet_not_installed_popup_close_button));
+        Button skipButton = buildSkipButton(installButton);
         backgroundLayout.addView(skipButton);
 
-        showAppRelatedImagery(appIcon, appBanner, dialogBody);
+        showAppRelatedImagery(appIcon, appBanner);
 
         return backgroundLayout;
     }
@@ -191,10 +174,10 @@ public class InstallDialogActivity extends Activity {
         return backgroundLayout;
     }
 
-    private Button buildSkipButton(Button installButton, String skipButtonText) {
+    private Button buildSkipButton(Button installButton) {
         int skipButtonColor = Color.parseColor("#8f000000");
         Button skipButton = new Button(this);
-        skipButton.setText(skipButtonText);
+        skipButton.setText(getResources().getString(R.string.iab_wallet_not_installed_popup_close_button));
         skipButton.setTextSize(12);
         skipButton.setTextColor(skipButtonColor);
         skipButton.setGravity(Gravity.CENTER_VERTICAL | Gravity.END);
@@ -215,9 +198,9 @@ public class InstallDialogActivity extends Activity {
         return skipButton;
     }
 
-    private Button buildInstallButton(RelativeLayout dialogLayout, String installButtonText, final String storeUrl) {
+    private Button buildInstallButton(RelativeLayout dialogLayout, final String storeUrl) {
         Button installButton = new Button(this);
-        installButton.setText(installButtonText);
+        installButton.setText(getResources().getString(R.string.iab_wallet_not_installed_popup_close_install));
         installButton.setTextSize(12);
         installButton.setTextColor(Color.parseColor(INSTALL_BUTTON_TEXT_COLOR));
         installButton.setId(generateRandomId());
@@ -297,9 +280,9 @@ public class InstallDialogActivity extends Activity {
     }
 
     private SpannableStringBuilder setHighlightDialogBody() {
-        String highlightedString = translations.getString(appcoins_wallet);
+        String highlightedString = getResources().getString(R.string.appcoins_wallet);
         String dialogBody =
-            String.format(translations.getString(iab_wallet_not_installed_popup_body), highlightedString);
+            String.format(getResources().getString(R.string.iab_wallet_not_installed_popup_body), highlightedString);
         SpannableStringBuilder messageStylized = new SpannableStringBuilder(dialogBody);
         messageStylized.setSpan(new StyleSpan(BOLD), dialogBody.indexOf(highlightedString),
             dialogBody.indexOf(highlightedString) + highlightedString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
@@ -367,7 +350,7 @@ public class InstallDialogActivity extends Activity {
         return new Pair<>(appStoreIntent, false);
     }
 
-    private void showAppRelatedImagery(ImageView appIcon, ImageView appBanner, TextView dialogLayout) {
+    private void showAppRelatedImagery(ImageView appIcon, ImageView appBanner) {
         String packageName = getPackageName();
         Drawable icon = null;
 
@@ -377,48 +360,13 @@ public class InstallDialogActivity extends Activity {
         } catch (PackageManager.NameNotFoundException e) {
             logWarning("Failed to find Application Icon: " + e);
         }
-        boolean hasImage = isAppBannerAvailable();
-        Drawable appBannerDrawable;
 
-        if (hasImage) {
-            appIcon.setVisibility(View.INVISIBLE);
-            appBannerDrawable =
-                fetchAppGraphicDrawable(appBannerResourcePath + "/" + DIALOG_WALLET_INSTALL_GRAPHIC + ".png");
-            RelativeLayout.LayoutParams dialogParams = (RelativeLayout.LayoutParams) dialogLayout.getLayoutParams();
-            int textMarginTop = dpToPx(5);
-            dialogParams.setMargins(dpToPx(32), textMarginTop, dpToPx(32), 0);
-        } else {
-            appIcon.setVisibility(View.VISIBLE);
-            appIcon.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            appIcon.setImageDrawable(icon);
-            appBannerDrawable =
-                fetchAppGraphicDrawable(appBannerResourcePath + "/" + DIALOG_WALLET_INSTALL_EMPTY_IMAGE + ".png");
-        }
+        appIcon.setVisibility(View.VISIBLE);
+        appIcon.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        appIcon.setImageDrawable(icon);
+        Drawable appBannerDrawable = getResources().getDrawable(R.drawable.dialog_wallet_install_empty_image);
+
         appBanner.setImageDrawable(appBannerDrawable);
-    }
-
-    private boolean isAppBannerAvailable() {
-        boolean hasImage;
-        try {
-            hasImage = Arrays.asList(getAssets().list(appBannerResourcePath))
-                .contains(DIALOG_WALLET_INSTALL_GRAPHIC + ".png");
-        } catch (IOException e) {
-            logWarning("Failed to add banner to Install Dialog: " + e);
-            hasImage = false;
-        }
-        return hasImage;
-    }
-
-    private Drawable fetchAppGraphicDrawable(String path) {
-        InputStream inputStream = null;
-        try {
-            inputStream = this.getResources()
-                .getAssets()
-                .open(path);
-        } catch (IOException e) {
-            logWarning("Failed to add Graphic Drawable to Install Dialog: " + e);
-        }
-        return Drawable.createFromStream(inputStream, null);
     }
 
     private int getLayoutOrientation() {
@@ -436,8 +384,8 @@ public class InstallDialogActivity extends Activity {
 
     private void buildAlertNoBrowserAndStores() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        String value = translations.getString(iap_wallet_and_appstore_not_installed_popup_body);
-        String dismissValue = translations.getString(iap_wallet_and_appstore_not_installed_popup_button);
+        String value = getResources().getString(R.string.iap_wallet_and_appstore_not_installed_popup_body);
+        String dismissValue = getResources().getString(R.string.iap_wallet_and_appstore_not_installed_popup_button);
         alert.setMessage(value);
         alert.setCancelable(true);
         alert.setPositiveButton(dismissValue, (dialog, id) -> finish());
