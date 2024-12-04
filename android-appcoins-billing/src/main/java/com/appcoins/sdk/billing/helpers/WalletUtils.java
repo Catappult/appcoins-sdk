@@ -43,7 +43,6 @@ public class WalletUtils {
     private static String billingPackageName;
     private static String billingIabAction;
     private static String userAgent = null;
-    private static LifecycleActivityProvider lifecycleActivityProvider;
     private static List<PaymentFlowMethod> paymentFlowMethods;
     private static String webPaymentUrl;
     private static SdkAnalytics sdkAnalytics;
@@ -306,15 +305,7 @@ public class WalletUtils {
     }
 
     public static void initIap(Context context) {
-        Context applicationContext = context.getApplicationContext();
-        WalletUtils.context = applicationContext;
-        if (lifecycleActivityProvider == null) {
-            lifecycleActivityProvider = new LifecycleActivityProvider(applicationContext);
-        }
-    }
-
-    public static LifecycleActivityProvider getLifecycleActivityProvider() {
-        return lifecycleActivityProvider;
+        WalletUtils.context = context.getApplicationContext();
     }
 
     public static Context getContext() {

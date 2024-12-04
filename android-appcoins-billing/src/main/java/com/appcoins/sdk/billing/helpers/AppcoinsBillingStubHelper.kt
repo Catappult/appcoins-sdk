@@ -28,7 +28,7 @@ object AppcoinsBillingStubHelper {
                     logInfo("AppcoinsBilling of type UriCommunicationAppcoinsBilling.")
                     val messageRequester =
                         MessageRequesterFactory.create(
-                            WalletUtils.getLifecycleActivityProvider(),
+                            WalletUtils.context,
                             BuildConfig.APPCOINS_WALLET_PACKAGE_NAME,
                             "appcoins://billing/communication/processor/1",
                             "appcoins://billing/communication/requester/1",
