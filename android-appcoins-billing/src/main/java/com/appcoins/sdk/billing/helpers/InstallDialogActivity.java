@@ -27,8 +27,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.sdk.billing.BuyItemProperties;
-import com.appcoins.sdk.billing.analytics.AnalyticsManagerProvider;
-import com.appcoins.sdk.billing.analytics.BillingAnalytics;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.helpers.translations.TranslationsRepository;
 import com.appcoins.sdk.billing.listeners.PaymentResponseStream;
@@ -56,39 +54,31 @@ public class InstallDialogActivity extends Activity {
 
     private static final int MINIMUM_APTOIDE_VERSION = 9908;
     private static final String BUY_ITEM_PROPERTIES = "buy_item_properties";
-    private static final String SDK_ANALYTICS = "sdk_analytics";
 
     private static final String DIALOG_WALLET_INSTALL_GRAPHIC = "dialog_wallet_install_graphic";
     private static final String DIALOG_WALLET_INSTALL_EMPTY_IMAGE = "dialog_wallet_install_empty_image";
     private static final String INSTALL_BUTTON_COLOR = "#ffffbb33";
     private static final String INSTALL_BUTTON_TEXT_COLOR = "#ffffffff";
-    private static final String FIRST_IMPRESSION_KEY = "first_impression";
     private final String appBannerResourcePath = "appcoins-wallet/resources/app-banner";
 
     public BuyItemProperties buyItemProperties;
     public SdkAnalytics sdkAnalytics;
     private TranslationsRepository translations;
-    private boolean firstImpression = true;
 
     private boolean shouldSendCancelResult = true;
 
-    public static Intent newIntent(Context context, BuyItemProperties buyItemProperties, SdkAnalytics sdkAnalytics) {
+    public static Intent newIntent(Context context, BuyItemProperties buyItemProperties) {
         Intent intent = new Intent(context, InstallDialogActivity.class);
         intent.putExtra(BUY_ITEM_PROPERTIES, buyItemProperties);
-        intent.putExtra(SDK_ANALYTICS, sdkAnalytics);
         return intent;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        BillingAnalytics billingAnalytics = new BillingAnalytics(AnalyticsManagerProvider.provideAnalyticsManager());
         buyItemProperties = (BuyItemProperties) getIntent().getSerializableExtra(BUY_ITEM_PROPERTIES);
-        sdkAnalytics = (SdkAnalytics) getIntent().getSerializableExtra(SDK_ANALYTICS);
+        sdkAnalytics = WalletUtils.getSdkAnalytics();
         translations = TranslationsRepository.getInstance(this);
-        if (savedInstanceState != null) {
-            firstImpression = savedInstanceState.getBoolean(FIRST_IMPRESSION_KEY, true);
-        }
         String storeUrl = "market://details?id="
             + BuildConfig.APPCOINS_WALLET_PACKAGE_NAME
             + "&utm_source=appcoinssdk&app_source="
@@ -100,7 +90,6 @@ public class InstallDialogActivity extends Activity {
         RelativeLayout installationDialog = setupInstallationDialog(storeUrl);
 
         showInstallationDialog(installationDialog);
-        handlePurchaseStartEvent(billingAnalytics);
 
         sdkAnalytics.walletInstallImpression();
     }
@@ -116,12 +105,6 @@ public class InstallDialogActivity extends Activity {
                 .emit(new Pair<>(this, buyItemProperties));
             finish();
         }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(FIRST_IMPRESSION_KEY, firstImpression);
     }
 
     @Override
@@ -141,14 +124,6 @@ public class InstallDialogActivity extends Activity {
                 .emit(SDKPaymentResponse.Companion.createCanceledTypeResponse());
         }
         super.onDestroy();
-    }
-
-    private void handlePurchaseStartEvent(BillingAnalytics billingAnalytics) {
-        if (firstImpression) {
-            billingAnalytics.sendPurchaseStartEvent(buyItemProperties.getPackageName(), buyItemProperties.getSku(),
-                "0.0", buyItemProperties.getType(), BillingAnalytics.START_INSTALL);
-            firstImpression = false;
-        }
     }
 
     private void showLoadingDialog() {

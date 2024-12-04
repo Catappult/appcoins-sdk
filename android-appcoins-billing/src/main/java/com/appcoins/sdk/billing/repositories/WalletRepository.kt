@@ -1,6 +1,5 @@
 package com.appcoins.sdk.billing.repositories
 
-import com.appcoins.sdk.billing.analytics.WalletAddressProvider
 import com.appcoins.sdk.billing.mappers.WalletGenerationMapper
 import com.appcoins.sdk.billing.models.WalletGenerationModel
 import com.appcoins.sdk.billing.service.BdsService
@@ -11,10 +10,7 @@ import com.appcoins.sdk.core.logger.Logger.logError
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-class WalletRepository(
-    private val service: Service,
-    private val walletAddressProvider: WalletAddressProvider
-) {
+class WalletRepository(private val service: Service) {
 
     fun requestWalletSync(id: String): WalletGenerationModel {
         val countDownLatch = CountDownLatch(1)
@@ -32,7 +28,6 @@ class WalletRepository(
                     walletGenerationResponse.ewt,
                     walletGenerationResponse.hasError()
                 )
-            saveWalletAddress(walletGenerationModel)
             countDownLatch.countDown()
         }
 
@@ -52,11 +47,5 @@ class WalletRepository(
             logError("Timeout for Wallet Request: $e")
         }
         return walletGenerationModel
-    }
-
-    private fun saveWalletAddress(walletGenerationModel: WalletGenerationModel) {
-        if (!walletGenerationModel.hasError()) {
-            walletAddressProvider.saveWalletAddress(walletGenerationModel.walletAddress)
-        }
     }
 }

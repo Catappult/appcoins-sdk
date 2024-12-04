@@ -144,7 +144,7 @@ public class WalletUtils {
             logError("Wallet NOT Supported in this version: " + Build.VERSION.SDK_INT);
             return createBundleWithResponseCode(ResponseCode.BILLING_UNAVAILABLE.getValue());
         }
-        Intent intent = InstallDialogActivity.newIntent(context, buyItemProperties, sdkAnalytics);
+        Intent intent = InstallDialogActivity.newIntent(context, buyItemProperties);
         Bundle intentBundle = createIntentBundle(intent, ResponseCode.OK.getValue());
         logDebug("InstallWallet intentBundle:" + intentBundle);
         return intentBundle;
@@ -341,8 +341,8 @@ public class WalletUtils {
             IndicativeAnalytics.INSTANCE.setInstanceId(walletId);
             IndicativeAnalytics.INSTANCE.setIndicativeSuperProperties(packageName, BuildConfig.VERSION_CODE,
                 getDeviceInfo());
-            SdkAnalytics sdkAnalytics = new SdkAnalytics(AnalyticsManagerProvider.provideAnalyticsManager());
-            sdkAnalytics.sendStartConnetionEvent();
+            sdkAnalytics = new SdkAnalytics(AnalyticsManagerProvider.provideAnalyticsManager());
+            sdkAnalytics.sendStartConnectionEvent();
         }).start());
     }
 
