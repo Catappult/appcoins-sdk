@@ -8,6 +8,7 @@ import com.appcoins.sdk.billing.UriCommunicationAppcoinsBilling
 import com.appcoins.sdk.billing.WalletBinderUtil.bindType
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
+import com.appcoins.sdk.billing.webpayment.WebAppcoinsBilling
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
 object AppcoinsBillingStubHelper {

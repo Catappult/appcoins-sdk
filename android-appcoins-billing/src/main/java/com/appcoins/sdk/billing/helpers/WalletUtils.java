@@ -15,6 +15,7 @@ import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.sdk.billing.BuyItemProperties;
 import com.appcoins.sdk.billing.ResponseCode;
 import com.appcoins.sdk.billing.activities.BillingFlowActivity;
+import com.appcoins.sdk.billing.activities.InstallDialogActivity;
 import com.appcoins.sdk.billing.analytics.AnalyticsManagerProvider;
 import com.appcoins.sdk.billing.analytics.IndicativeAnalytics;
 import com.appcoins.sdk.billing.analytics.IndicativeLaunchCallback;

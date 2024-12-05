@@ -8,8 +8,8 @@ import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.helpers.BindType
 import com.appcoins.sdk.billing.helpers.IBinderWalletNotInstalled
 import com.appcoins.sdk.billing.helpers.WalletUtils
-import com.appcoins.sdk.billing.helpers.WebAppcoinsBilling
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
+import com.appcoins.sdk.billing.webpayment.WebAppcoinsBilling
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 

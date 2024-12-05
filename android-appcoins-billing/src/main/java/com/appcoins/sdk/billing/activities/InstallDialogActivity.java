@@ -1,4 +1,4 @@
-package com.appcoins.sdk.billing.helpers;
+package com.appcoins.sdk.billing.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -29,6 +29,7 @@ import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.billing.sdk.R;
 import com.appcoins.sdk.billing.BuyItemProperties;
 import com.appcoins.sdk.billing.analytics.SdkAnalytics;
+import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.PaymentResponseStream;
 import com.appcoins.sdk.billing.listeners.PendingPurchaseStream;
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse;

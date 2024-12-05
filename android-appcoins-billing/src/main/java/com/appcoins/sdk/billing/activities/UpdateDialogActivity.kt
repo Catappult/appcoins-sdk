@@ -1,10 +1,11 @@
-package com.appcoins.sdk.billing.helpers
+package com.appcoins.sdk.billing.activities
 
 import android.app.Activity
 import android.os.Bundle
 import android.widget.Button
 import com.appcoins.billing.sdk.R
 import com.appcoins.sdk.billing.analytics.SdkUpdateFlowActions
+import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.usecases.ingameupdates.LaunchAppUpdate
 import com.appcoins.sdk.core.logger.Logger.logInfo
 

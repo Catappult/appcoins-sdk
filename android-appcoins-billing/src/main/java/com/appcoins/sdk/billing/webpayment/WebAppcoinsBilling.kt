@@ -1,4 +1,4 @@
-package com.appcoins.sdk.billing.helpers
+package com.appcoins.sdk.billing.webpayment
 
 import android.os.Bundle
 import android.os.Handler
@@ -12,6 +12,9 @@ import com.appcoins.sdk.billing.ResponseCode
 import com.appcoins.sdk.billing.SkuDetails
 import com.appcoins.sdk.billing.SkuDetailsResultV2
 import com.appcoins.sdk.billing.SkuDetailsV2
+import com.appcoins.sdk.billing.helpers.AndroidBillingMapper
+import com.appcoins.sdk.billing.helpers.PayloadHelper
+import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.managers.ProductV2Manager
 import com.appcoins.sdk.billing.mappers.PurchasesBundleMapper
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.getPaymentFlowFromPayflowMethod
@@ -22,7 +25,6 @@ import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNAT
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ITEM_LIST
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
-import com.appcoins.sdk.billing.webpayment.WebPaymentManager
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo

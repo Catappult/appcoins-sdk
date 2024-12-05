@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.os.Looper;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.helpers.PayloadHelper;
-import com.appcoins.sdk.billing.helpers.UpdateDialogActivity;
+import com.appcoins.sdk.billing.activities.UpdateDialogActivity;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;

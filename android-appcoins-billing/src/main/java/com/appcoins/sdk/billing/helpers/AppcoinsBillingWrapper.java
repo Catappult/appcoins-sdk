@@ -3,6 +3,7 @@ package com.appcoins.sdk.billing.helpers;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import androidx.annotation.VisibleForTesting;
 import com.appcoins.billing.AppcoinsBilling;
 import com.appcoins.sdk.billing.ResponseCode;
 import com.appcoins.sdk.billing.managers.ProductV2Manager;
@@ -23,7 +24,8 @@ import static com.appcoins.sdk.core.logger.Logger.logWarning;
 
 class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
 
-    private final AppcoinsBilling appcoinsBilling;
+    @VisibleForTesting()
+    final AppcoinsBilling appcoinsBilling;
     private final String walletId;
 
     AppcoinsBillingWrapper(AppcoinsBilling appcoinsBilling, String walletId) {
