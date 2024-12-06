@@ -280,7 +280,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
 
     private fun buildResponse(skuDetailsResultV2: SkuDetailsResultV2): ArrayList<String> =
         ArrayList(
-            skuDetailsResultV2.skuDetailsList.map { AndroidBillingMapper.mapSkuDetailsResponse(it) }
+            skuDetailsResultV2.skuDetailsList.map { it.toSkuDetailsResponseString() }
         )
 
     private fun hasRequiredFields(type: String, sku: String?): Boolean =
