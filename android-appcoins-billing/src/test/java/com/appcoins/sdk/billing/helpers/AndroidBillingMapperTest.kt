@@ -163,7 +163,7 @@ class AndroidBillingMapperTest {
                 "description"
             )
 
-        val EXAMPLE_PURCHASE_JSON_DATA =
+        const val EXAMPLE_PURCHASE_JSON_DATA =
             """{"orderId":"orderId","packageName":"packageName","productId":"productId","productType":"inapp","purchaseTime":1723654956371,"purchaseToken":"purchaseToken","purchaseState":0,"isAutoRenewing":false,"developerPayload":"developerPayload"}"""
 
         fun SkuDetails.toJsonString() =
