@@ -56,7 +56,7 @@ public class RepositoryServiceConnection
     public void startConnection(final AppCoinsBillingStateListener listener) {
         logInfo("Starting connection to the BillingService.");
         this.listener = listener;
-        WalletUtils.startIndicative(context.getPackageName());
+        WalletUtils.INSTANCE.startIndicative(context.getPackageName());
 
         BillingLifecycleManager.setupBillingService(context);
 

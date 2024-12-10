@@ -8,12 +8,11 @@ import org.json.JSONObject
 
 class StoreLinkResponseMapper {
     fun map(response: RequestResponse): StoreLinkResponse {
-        WalletUtils.getSdkAnalytics()
-            .sendCallBackendStoreLinkEvent(
-                response.responseCode,
-                response.response,
-                response.exception?.toString()
-            )
+        WalletUtils.sdkAnalytics.sendCallBackendStoreLinkEvent(
+            response.responseCode,
+            response.response,
+            response.exception?.toString()
+        )
 
         if (!isSuccess(response.responseCode) || response.response == null) {
             logError(

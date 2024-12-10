@@ -41,7 +41,7 @@ class CatapultBillingAppCoinsFactoryTest {
         try {
             CatapultBillingAppCoinsFactory.BuildAppcoinsBilling(mockkContext, null, mockkPurchasesUpdatedListener)
         } catch (ex: NullPointerException) {
-            verify(exactly = 4) {
+            verify(exactly = 3) {
                 mockkContext.applicationContext
             }
             verify(exactly = 2) {
@@ -62,7 +62,7 @@ class CatapultBillingAppCoinsFactoryTest {
             mockkPurchasesUpdatedListener
         )
 
-        verify(exactly = 4) {
+        verify(exactly = 3) {
             mockkContext.applicationContext
         }
         verify(exactly = 2) {

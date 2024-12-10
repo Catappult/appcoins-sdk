@@ -20,6 +20,6 @@ object SendAttributionRetryAttempt : UseCase() {
                 "Initial date of Attribution: ${formatter.format(initialDate)}. " +
                 "Current date: ${formatter.format(currentDate)}."
 
-        WalletUtils.getSdkAnalytics().sendAttributionRetryAttemptEvent(message)
+        WalletUtils.sdkAnalytics.sendAttributionRetryAttemptEvent(message)
     }
 }

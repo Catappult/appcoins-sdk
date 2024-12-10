@@ -23,7 +23,7 @@ object AppcoinsBillingStubHelper {
                 return WebAppcoinsBilling.instance
             } else {
                 val attributionSharedPreferences =
-                    AttributionSharedPreferences(WalletUtils.getContext())
+                    AttributionSharedPreferences(WalletUtils.context)
                 val appcoinsBilling: AppcoinsBilling
                 if (bindType == BindType.URI_CONNECTION) {
                     logInfo("AppcoinsBilling of type UriCommunicationAppcoinsBilling.")

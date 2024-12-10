@@ -26,15 +26,11 @@ object HandlePurchaseResultFromWalletDeeplink : UseCase() {
     private fun handleSuccessResult(responseCode: Int, purchaseToken: String) {
         try {
             val attributionSharedPreferences =
-                AttributionSharedPreferences(WalletUtils.getContext())
+                AttributionSharedPreferences(WalletUtils.context)
             val walletId = attributionSharedPreferences.getWalletId()
 
             val purchaseResponse =
-                ProductV2Manager.getPurchaseSync(
-                    WalletUtils.getContext().packageName,
-                    walletId,
-                    purchaseToken
-                )
+                ProductV2Manager.getPurchaseSync(WalletUtils.context.packageName, walletId, purchaseToken)
 
             requireNotNull(purchaseResponse)
             requireNotNull(purchaseResponse.purchase)

@@ -11,7 +11,7 @@ import com.appcoins.sdk.core.logger.Logger.logInfo
 
 class UpdateDialogActivity : Activity() {
 
-    private val sdkAnalytics = WalletUtils.getSdkAnalytics()
+    private val sdkAnalytics = WalletUtils.sdkAnalytics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

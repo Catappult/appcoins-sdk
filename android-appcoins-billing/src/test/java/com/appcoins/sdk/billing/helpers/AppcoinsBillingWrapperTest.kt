@@ -11,7 +11,6 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
-import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.After
@@ -116,7 +115,7 @@ class AppcoinsBillingWrapperTest {
 
     @Test
     fun `getBuyIntent should return correct value when AppcoinsBilling returns valid value`() {
-        mockkStatic(WalletUtils::class)
+        mockkObject(WalletUtils)
         every {
             WalletUtils.startServiceBind(
                 mockkAppcoinsBilling,
@@ -159,7 +158,7 @@ class AppcoinsBillingWrapperTest {
 
     @Test(expected = RemoteException::class)
     fun `getBuyIntent should throw RemoteException when AppcoinsBilling is not available`() {
-        mockkStatic(WalletUtils::class)
+        mockkObject(WalletUtils)
         every {
             WalletUtils.startServiceBind(
                 mockkAppcoinsBilling,

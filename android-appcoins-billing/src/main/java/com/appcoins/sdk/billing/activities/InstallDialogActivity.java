@@ -37,7 +37,6 @@ import com.appcoins.sdk.billing.usecases.GetAppInstalledVersion;
 import kotlin.Pair;
 
 import static android.graphics.Typeface.BOLD;
-import static com.appcoins.sdk.billing.helpers.WalletUtils.context;
 import static com.appcoins.sdk.billing.utils.LayoutUtils.generateRandomId;
 import static com.appcoins.sdk.core.logger.Logger.logInfo;
 import static com.appcoins.sdk.core.logger.Logger.logWarning;
@@ -65,7 +64,7 @@ public class InstallDialogActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         buyItemProperties = (BuyItemProperties) getIntent().getSerializableExtra(BUY_ITEM_PROPERTIES);
-        sdkAnalytics = WalletUtils.getSdkAnalytics();
+        sdkAnalytics = WalletUtils.INSTANCE.getSdkAnalytics();
         String storeUrl = "market://details?id="
             + BuildConfig.APPCOINS_WALLET_PACKAGE_NAME
             + "&utm_source=appcoinssdk&app_source="
@@ -84,7 +83,7 @@ public class InstallDialogActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (WalletUtils.hasBillingServiceInstalled()) {
+        if (WalletUtils.INSTANCE.hasBillingServiceInstalled()) {
             shouldSendCancelResult = false;
             showLoadingDialog();
             sdkAnalytics.installWalletAptoideSuccess();
@@ -343,7 +342,7 @@ public class InstallDialogActivity extends Activity {
 
     private Pair<Intent, Boolean> buildStoreViewIntent(String storeUrl) {
         final Intent appStoreIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(storeUrl));
-        if (GetAppInstalledVersion.INSTANCE.invoke(BuildConfig.APTOIDE_PACKAGE_NAME, context)
+        if (GetAppInstalledVersion.INSTANCE.invoke(BuildConfig.APTOIDE_PACKAGE_NAME, WalletUtils.INSTANCE.getContext())
             >= MINIMUM_APTOIDE_VERSION) {
             appStoreIntent.setPackage(BuildConfig.APTOIDE_PACKAGE_NAME);
             return new Pair<>(appStoreIntent, true);

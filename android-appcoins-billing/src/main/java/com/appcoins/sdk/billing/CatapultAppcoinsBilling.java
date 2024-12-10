@@ -60,7 +60,7 @@ public class CatapultAppcoinsBilling
         int responseCode;
 
         try {
-            WalletUtils.getSdkAnalytics()
+            WalletUtils.INSTANCE.getSdkAnalytics()
                 .sendPurchaseIntentEvent(billingFlowParams.getSku());
             String payload = PayloadHelper.buildIntentPayload(billingFlowParams.getOrderReference(),
                 billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin());
@@ -146,7 +146,7 @@ public class CatapultAppcoinsBilling
             logInfo("Request from MainThread. Cancelling.");
             return false;
         } else {
-            return IsUpdateAvailable.INSTANCE.invoke(WalletUtils.context);
+            return IsUpdateAvailable.INSTANCE.invoke(WalletUtils.INSTANCE.getContext());
         }
     }
 

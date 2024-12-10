@@ -8,12 +8,11 @@ import org.json.JSONObject
 
 class WebPaymentResponseMapper {
     fun map(response: RequestResponse): WebPaymentResponse {
-        WalletUtils.getSdkAnalytics()
-            .sendCallBackendWebPaymentUrlEvent(
-                response.responseCode,
-                response.response,
-                response.exception?.toString()
-            )
+        WalletUtils.sdkAnalytics.sendCallBackendWebPaymentUrlEvent(
+            response.responseCode,
+            response.response,
+            response.exception?.toString()
+        )
 
         if (!isSuccess(response.responseCode) || response.response == null) {
             logError(

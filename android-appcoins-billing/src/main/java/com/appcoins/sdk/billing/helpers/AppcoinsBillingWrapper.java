@@ -49,13 +49,13 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
     public Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type, String developerPayload,
         String oemid, String guestWalletId) throws RemoteException {
         Bundle bundle;
-        bundle = WalletUtils.startServiceBind(appcoinsBilling, apiVersion, sku, type, developerPayload, oemid,
+        bundle = WalletUtils.INSTANCE.startServiceBind(appcoinsBilling, apiVersion, sku, type, developerPayload, oemid,
             guestWalletId);
         if (bundle == null) {
             bundle = new Bundle();
             bundle.putInt(RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.getValue());
         }
-        return WalletUtils.startWalletPayment(bundle, type);
+        return WalletUtils.INSTANCE.startWalletPayment(bundle, type);
     }
 
     @Override

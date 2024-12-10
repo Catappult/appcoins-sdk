@@ -78,15 +78,15 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         packageName: String,
         sku: String,
         type: String,
-        developerPayload: String,
+        developerPayload: String?,
         oemid: String?,
         guestWalletId: String?,
     ): Bundle {
         logInfo("Getting Buy Intent.")
         logDebug("BuyItemProperties = [$buyItemProperties]")
         var bundle: Bundle? = null
-        if (hasRequiredFields(type, sku) && WalletUtils.getPayflowMethodsList().isNotEmpty()) {
-            for (method in WalletUtils.getPayflowMethodsList()) {
+        if (hasRequiredFields(type, sku) && WalletUtils.paymentFlowMethods.isNotEmpty()) {
+            for (method in WalletUtils.paymentFlowMethods) {
                 logInfo("Payment Method ${method.name}.")
                 if (method is WebPayment) {
                     logInfo("Billing App is NOT installed. Starting WebPayment.")
@@ -119,7 +119,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         apiVersion: Int,
         sku: String,
         type: String,
-        developerPayload: String
+        developerPayload: String?
     ) {
         logDebug(
             "Saving Buy Item Properties:" +
@@ -241,7 +241,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
                     val skuDetailsResponse = ProductV2Manager.getSkuDetails(
                         packageName,
                         skuSendList,
-                        getPaymentFlowFromPayflowMethod(WalletUtils.getPayflowMethodsList())
+                        getPaymentFlowFromPayflowMethod(WalletUtils.paymentFlowMethods.toMutableList())
                     )
                     skuDetailsList.addAll(skuDetailsResponse?.items ?: emptyList())
                     skuSendList.clear()
@@ -266,7 +266,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         val skuDetailsResponse = ProductV2Manager.getSkuDetails(
             packageName,
             arrayListOf(sku.first()),
-            getPaymentFlowFromPayflowMethod(WalletUtils.getPayflowMethodsList())
+            getPaymentFlowFromPayflowMethod(WalletUtils.paymentFlowMethods.toMutableList())
         )
 
         return skuDetailsResponse?.items?.firstOrNull()?.toSkuDetails() ?: emptySkuDetails
@@ -288,8 +288,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
 
     private val walletId: String?
         get() {
-            val attributionSharedPreferences =
-                AttributionSharedPreferences(WalletUtils.getContext())
+            val attributionSharedPreferences = AttributionSharedPreferences(WalletUtils.context)
             return attributionSharedPreferences.getWalletId()
         }
 
