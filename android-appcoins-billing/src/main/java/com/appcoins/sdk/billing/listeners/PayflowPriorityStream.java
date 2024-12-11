@@ -33,13 +33,11 @@ public class PayflowPriorityStream {
         return value;
     }
 
-    public void emit(
-        @Nullable
-        ArrayList<PaymentFlowMethod> value) {
+    public void emit(ArrayList<PaymentFlowMethod> value) {
         logInfo("Emitting new value on PayflowPriorityStream.");
         if (valueHasChanged(value) || isFirstValue) {
             logInfo("Value of PayflowPriorityStream changed or isFirstValue.");
-            WalletUtils.setPayflowMethodsList(value);
+            WalletUtils.INSTANCE.setPaymentFlowMethods(value);
             notifyCollectors(value);
         }
     }

@@ -22,7 +22,7 @@ object PayflowManager {
                         sortedMethods?.sortBy { it.priority }
                         PayflowPriorityStream.getInstance().emit(sortedMethods)
                     } else {
-                        PayflowPriorityStream.getInstance().emit(null)
+                        PayflowPriorityStream.getInstance().emit(arrayListOf())
                     }
                 }
             }

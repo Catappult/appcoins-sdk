@@ -22,7 +22,7 @@ public class IntentSyncIpcMessageSender implements SyncIpcMessageRequester {
     }
 
     @Override
-    public Parcelable sendMessage(int methodId, Parcelable arguments) throws MainThreadException, InterruptedException {
+    public Parcelable sendMessage(int methodId, Parcelable arguments) throws MainThreadException {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             throw new MainThreadException("sendMessage");
         }

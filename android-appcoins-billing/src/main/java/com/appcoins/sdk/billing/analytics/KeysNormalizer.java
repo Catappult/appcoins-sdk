@@ -13,7 +13,7 @@ class KeysNormalizer implements KeyValueNormalizer, Serializable {
             if (entrySet.getValue() != null) {
                 if (entrySet.getValue()
                     .getClass()
-                    .isInstance(new HashMap())) {
+                    .equals(HashMap.class)) {
                     normalized.put(entrySet.getKey(), normalize((HashMap) entrySet.getValue()));
                 } else {
                     normalized.put(entrySet.getKey(), entrySet.getValue());

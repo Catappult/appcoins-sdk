@@ -47,7 +47,7 @@ public class BdsService implements Service {
             InputStream inputStream;
             if (responseCode >= 400) {
                 inputStream = urlConnection.getErrorStream();
-                WalletUtils.getSdkAnalytics()
+                WalletUtils.INSTANCE.getSdkAnalytics()
                     .sendUnsuccessfulBackendRequestEvent(baseUrl + endPoint,
                         urlConnection.getResponseCode() + " " + urlConnection.getResponseMessage());
             } else {
@@ -55,7 +55,7 @@ public class BdsService implements Service {
             }
             return readResponse(inputStream, responseCode);
         } catch (Exception firstException) {
-            WalletUtils.getSdkAnalytics()
+            WalletUtils.INSTANCE.getSdkAnalytics()
                 .sendUnsuccessfulBackendRequestEvent(baseUrl + endPoint, firstException.toString());
             return handleException(urlConnection, firstException);
         } finally {
@@ -80,7 +80,7 @@ public class BdsService implements Service {
     }
 
     private void setUserAgent(HttpURLConnection urlConnection) {
-        urlConnection.setRequestProperty("User-Agent", WalletUtils.getUserAgent());
+        urlConnection.setRequestProperty("User-Agent", WalletUtils.INSTANCE.getUserAgent());
     }
 
     private void setHeaders(HttpURLConnection urlConnection, Map<String, String> header) {

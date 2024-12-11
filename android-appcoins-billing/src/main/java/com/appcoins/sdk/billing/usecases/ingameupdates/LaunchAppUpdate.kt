@@ -26,7 +26,7 @@ object LaunchAppUpdate : UseCase() {
                 .takeIf { IsAppInstalled(context, BuildConfig.APTOIDE_PACKAGE_NAME) }
             ?: GetDefaultMarketDeepLink(context.packageName)
 
-        WalletUtils.getSdkAnalytics().appUpdateDeeplinkImpression(uriDeeplink)
+        WalletUtils.sdkAnalytics.appUpdateDeeplinkImpression(uriDeeplink)
 
         val deeplinkIntent =
             Intent(Intent.ACTION_VIEW, Uri.parse(uriDeeplink))

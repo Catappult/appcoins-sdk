@@ -8,6 +8,7 @@ import com.appcoins.sdk.billing.UriCommunicationAppcoinsBilling
 import com.appcoins.sdk.billing.WalletBinderUtil.bindType
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
+import com.appcoins.sdk.billing.webpayment.WebAppcoinsBilling
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
 object AppcoinsBillingStubHelper {
@@ -22,13 +23,13 @@ object AppcoinsBillingStubHelper {
                 return WebAppcoinsBilling.instance
             } else {
                 val attributionSharedPreferences =
-                    AttributionSharedPreferences(WalletUtils.getContext())
+                    AttributionSharedPreferences(WalletUtils.context)
                 val appcoinsBilling: AppcoinsBilling
                 if (bindType == BindType.URI_CONNECTION) {
                     logInfo("AppcoinsBilling of type UriCommunicationAppcoinsBilling.")
                     val messageRequester =
                         MessageRequesterFactory.create(
-                            WalletUtils.getLifecycleActivityProvider(),
+                            WalletUtils.context,
                             BuildConfig.APPCOINS_WALLET_PACKAGE_NAME,
                             "appcoins://billing/communication/processor/1",
                             "appcoins://billing/communication/requester/1",

@@ -6,8 +6,9 @@ import android.preference.PreferenceManager
 
 @Suppress("complexity:TooManyFunctions")
 abstract class SharedPreferencesRepository(context: Context) {
-    private val sharedPreferences: SharedPreferences =
+    private val sharedPreferences: SharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(context)
+    }
 
     fun getString(key: String, defaultValue: String? = null): String? =
         sharedPreferences.getString(key, defaultValue)

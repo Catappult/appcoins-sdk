@@ -8,12 +8,11 @@ import org.json.JSONObject
 
 class AttributionResponseMapper {
     fun map(response: RequestResponse): AttributionResponse {
-        WalletUtils.getSdkAnalytics()
-            .sendCallBackendAttributionEvent(
-                response.responseCode,
-                response.response,
-                response.exception?.toString()
-            )
+        WalletUtils.sdkAnalytics.sendCallBackendAttributionEvent(
+            response.responseCode,
+            response.response,
+            response.exception?.toString()
+        )
 
         if (!isSuccess(response.responseCode) || response.response == null) {
             logError(

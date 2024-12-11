@@ -3,4 +3,13 @@
     <string name="igu_app_new_version_available_popup_body">Er is een nieuwe versie voor deze applicatie.\nWerk de applicatie bij naar de nieuwe versie.</string>
     <string name="igu_app_new_version_available_popup_update_button">BIJWERKEN</string>
     <string name="igu_app_new_version_available_popup_close_button">SLUITEN</string>
+    <!-- SDK - Purchasing when wallet is not installed -->
+    <string name="iab_wallet_not_installed_popup_body">Om dit item te kopen, dien je eerst naar de %s te gaan.</string>
+    <string name="appcoins_wallet">AppCoins Wallet</string>
+    <string name="iab_wallet_not_installed_popup_close_button">SLUITEN</string>
+    <!-- SDK - Purchasing when neither wallet or app store are installed -->
+    <string name="iap_wallet_and_appstore_not_installed_popup_body">Je hebt de AppCoins Wallet nodig om deze aankoop te doen. Download de wallet via Aptoide of de Play Store en kom terug om je aankoop te voltooien!</string>
+    <string name="iap_wallet_and_appstore_not_installed_popup_button">BEGREPEN!</string>
+    <!-- SDK - Common -->
+    <string name="iab_wallet_not_installed_popup_close_install">WALLET INSTALLEREN</string>
 </resources>

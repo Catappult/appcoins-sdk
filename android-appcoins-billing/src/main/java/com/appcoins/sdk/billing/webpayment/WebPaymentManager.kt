@@ -4,7 +4,6 @@ import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.BillingFlowParams
 import com.appcoins.sdk.billing.helpers.UserCountryUtils.getUserCountry
 import com.appcoins.sdk.billing.helpers.WalletUtils
-import com.appcoins.sdk.billing.helpers.WalletUtils.setWebPaymentUrl
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
 import com.appcoins.sdk.billing.usecases.GetOemIdForPackage
@@ -27,6 +26,6 @@ class WebPaymentManager(val packageName: String) {
                 walletId,
                 billingFlowParams
             )
-        setWebPaymentUrl(webPaymentUrl)
+        WalletUtils.webPaymentUrl = webPaymentUrl
     }
 }

@@ -6,9 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
-import com.appcoins.sdk.billing.helpers.EventLogger;
 import com.appcoins.sdk.billing.helpers.PayloadHelper;
-import com.appcoins.sdk.billing.helpers.UpdateDialogActivity;
+import com.appcoins.sdk.billing.activities.UpdateDialogActivity;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
@@ -61,7 +60,7 @@ public class CatapultAppcoinsBilling
         int responseCode;
 
         try {
-            WalletUtils.getSdkAnalytics()
+            WalletUtils.INSTANCE.getSdkAnalytics()
                 .sendPurchaseIntentEvent(billingFlowParams.getSku());
             String payload = PayloadHelper.buildIntentPayload(billingFlowParams.getOrderReference(),
                 billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin());
@@ -75,11 +74,6 @@ public class CatapultAppcoinsBilling
                 + oemid
                 + " guestWalletId: "
                 + guestWalletId);
-
-            Thread eventLoggerThread = new Thread(new EventLogger(billingFlowParams.getSku(),
-                activity.getApplicationContext()
-                    .getPackageName()));
-            eventLoggerThread.start();
 
             LaunchBillingFlowResult launchBillingFlowResult =
                 billing.launchBillingFlow(billingFlowParams, payload, oemid, guestWalletId);
@@ -152,7 +146,7 @@ public class CatapultAppcoinsBilling
             logInfo("Request from MainThread. Cancelling.");
             return false;
         } else {
-            return IsUpdateAvailable.INSTANCE.invoke(WalletUtils.context);
+            return IsUpdateAvailable.INSTANCE.invoke(WalletUtils.INSTANCE.getContext());
         }
     }
 
@@ -225,11 +219,6 @@ public class CatapultAppcoinsBilling
                 + oemid
                 + " guestWalletId: "
                 + guestWalletId);
-
-            Thread eventLoggerThread = new Thread(new EventLogger(billingFlowParams.getSku(),
-                activity.getApplicationContext()
-                    .getPackageName()));
-            eventLoggerThread.start();
 
             LaunchBillingFlowResult launchBillingFlowResult =
                 billing.launchBillingFlow(billingFlowParams, payload, oemid, guestWalletId);
