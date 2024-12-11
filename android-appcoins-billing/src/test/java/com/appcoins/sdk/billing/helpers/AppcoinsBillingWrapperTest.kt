@@ -117,9 +117,9 @@ class AppcoinsBillingWrapperTest {
     fun `getBuyIntent should return correct value when AppcoinsBilling returns valid value`() {
         mockkObject(WalletUtils)
         every {
-            WalletUtils.startServiceBind(
-                mockkAppcoinsBilling,
+            mockkAppcoinsBilling.getBuyIntent(
                 API_VERSION,
+                EMPTY_STRING,
                 EMPTY_STRING,
                 EMPTY_STRING,
                 EMPTY_STRING,
@@ -142,9 +142,9 @@ class AppcoinsBillingWrapperTest {
         )
 
         verify(exactly = 1) {
-            WalletUtils.startServiceBind(
-                mockkAppcoinsBilling,
+            mockkAppcoinsBilling.getBuyIntent(
                 API_VERSION,
+                EMPTY_STRING,
                 EMPTY_STRING,
                 EMPTY_STRING,
                 EMPTY_STRING,
@@ -160,9 +160,9 @@ class AppcoinsBillingWrapperTest {
     fun `getBuyIntent should throw RemoteException when AppcoinsBilling is not available`() {
         mockkObject(WalletUtils)
         every {
-            WalletUtils.startServiceBind(
-                mockkAppcoinsBilling,
+            mockkAppcoinsBilling.getBuyIntent(
                 API_VERSION,
+                EMPTY_STRING,
                 EMPTY_STRING,
                 EMPTY_STRING,
                 EMPTY_STRING,
@@ -183,9 +183,9 @@ class AppcoinsBillingWrapperTest {
             )
         } catch (ex: RemoteException) {
             verify(exactly = 1) {
-                WalletUtils.startServiceBind(
-                    mockkAppcoinsBilling,
+                mockkAppcoinsBilling.getBuyIntent(
                     API_VERSION,
+                    EMPTY_STRING,
                     EMPTY_STRING,
                     EMPTY_STRING,
                     EMPTY_STRING,

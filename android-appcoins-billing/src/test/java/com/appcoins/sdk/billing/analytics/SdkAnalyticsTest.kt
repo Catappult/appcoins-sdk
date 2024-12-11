@@ -232,32 +232,6 @@ class SdkAnalyticsTest {
     }
 
     @Test
-    fun `sendCallBindServiceAttemptEvent should send event`() {
-        val priority = 0
-        val payflowMethod = "example_payflow_method"
-
-        every {
-            mockkAnalyticsManager.logEvent(
-                any(),
-                SdkBackendPayflowEvents.SDK_CALL_BINDSERVICE_ATTEMPT,
-                Action.IMPRESSION,
-                EVENT_CONTEXT
-            )
-        } just runs
-
-        sdkAnalytics.sendCallBindServiceAttemptEvent(payflowMethod, priority)
-
-        verify(exactly = 1) {
-            mockkAnalyticsManager.logEvent(
-                any(),
-                SdkBackendPayflowEvents.SDK_CALL_BINDSERVICE_ATTEMPT,
-                Action.IMPRESSION,
-                EVENT_CONTEXT
-            )
-        }
-    }
-
-    @Test
     fun `sendCallBindServiceFailEvent should send event`() {
         val priority = 0
         val payflowMethod = "example_payflow_method"

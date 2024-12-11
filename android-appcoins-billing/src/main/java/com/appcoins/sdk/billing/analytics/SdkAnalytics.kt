@@ -124,18 +124,6 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         )
     }
 
-    fun sendCallBindServiceAttemptEvent(payflowMethod: String, priority: Int) {
-        val eventData: MutableMap<String, Any> = HashMap()
-        eventData[AnalyticsLabels.BIND_SERVICE_METHOD] = payflowMethod
-        eventData[AnalyticsLabels.BIND_SERVICE_PRIORITY] = priority
-
-        logEvent(
-            eventData,
-            SdkBackendPayflowEvents.SDK_CALL_BINDSERVICE_ATTEMPT,
-            Action.IMPRESSION
-        )
-    }
-
     fun sendCallBindServiceFailEvent(payflowMethod: String, priority: Int) {
         val eventData: MutableMap<String, Any> = HashMap()
         eventData[AnalyticsLabels.BIND_SERVICE_METHOD] = payflowMethod

@@ -8,7 +8,6 @@ import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
 import android.view.WindowManager
-import com.appcoins.billing.AppcoinsBilling
 import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.BuyItemProperties
 import com.appcoins.sdk.billing.ResponseCode
@@ -45,8 +44,9 @@ object WalletUtils {
             setBillingServiceInfoToBind()
         }
     var webPaymentUrl: String? = null
-    var sdkAnalytics: SdkAnalytics = SdkAnalytics(AnalyticsManagerProvider.provideAnalyticsManager())
     lateinit var context: Context
+
+    val sdkAnalytics: SdkAnalytics by lazy { SdkAnalytics(AnalyticsManagerProvider.provideAnalyticsManager()) }
     val userAgent: String by lazy {
         val displayMetrics = getDisplayMetrics()
         val widthPixels = displayMetrics.widthPixels
@@ -56,68 +56,6 @@ object WalletUtils {
 
     fun hasBillingServiceInstalled(): Boolean =
         billingServicePackageName != null
-
-    @Suppress("NestedBlockDepth")
-    fun startServiceBind(
-        serviceAppcoinsBilling: AppcoinsBilling,
-        apiVersion: Int,
-        sku: String,
-        type: String,
-        developerPayload: String?,
-        oemid: String?,
-        guestWalletId: String?
-    ): Bundle? {
-        try {
-            // temporary workaround for the possibility of the endpoint failing, with two
-            // hardcoded options
-            // but the logic should be reused instead of this hardcoded solution
-            if (paymentFlowMethods.isEmpty()) {
-                logInfo("PaymentFlowMethods is null")
-                if (billingServicePackageName == BuildConfig.APPCOINS_WALLET_PACKAGE_NAME ||
-                    billingServicePackageName == BuildConfig.GAMESHUB_PACKAGE_NAME ||
-                    billingServicePackageName == BuildConfig.APTOIDE_GAMES_PACKAGE_NAME
-                ) {
-                    logInfo("billingPackageName: $billingServicePackageName")
-                    return handleBindServiceAttempt(
-                        serviceAppcoinsBilling,
-                        packageToMethodName(),
-                        1,
-                        apiVersion,
-                        sku,
-                        type,
-                        developerPayload,
-                        oemid,
-                        guestWalletId
-                    )
-                }
-            } else {
-                for (method in paymentFlowMethods) {
-                    if (method is Wallet || method is GamesHub || method is AptoideGames) {
-                        logInfo("PaymentFlowMethod found: " + method.name)
-                        val bundle =
-                            handleBindServiceAttempt(
-                                serviceAppcoinsBilling,
-                                method.name,
-                                method.priority,
-                                apiVersion,
-                                sku,
-                                type,
-                                developerPayload,
-                                oemid,
-                                guestWalletId
-                            )
-                        if (bundle != null) {
-                            return bundle
-                        }
-                    }
-                }
-            }
-            return null
-        } catch (e: Exception) {
-            logError("Failure getting BuyIntent from any Billing Service.", e)
-            return handleBindServiceFail(packageToMethodName(), 1)
-        }
-    }
 
     fun startWebFirstPayment(sku: String, skuType: String, webViewDetails: WebViewDetails?): Bundle {
         logInfo("Creating WebPayment bundle.")
@@ -169,7 +107,6 @@ object WalletUtils {
                 )
                 instanceId = walletId
                 setIndicativeSuperProperties(packageName, BuildConfig.VERSION_CODE, getDeviceInfo())
-                sdkAnalytics = SdkAnalytics(AnalyticsManagerProvider.provideAnalyticsManager())
                 sdkAnalytics.sendStartConnectionEvent()
             }.start()
         }
@@ -208,39 +145,6 @@ object WalletUtils {
         return displayMetrics
     }
 
-    private fun handleBindServiceAttempt(
-        serviceAppcoinsBilling: AppcoinsBilling,
-        methodName: String,
-        methodPriority: Int,
-        apiVersion: Int,
-        sku: String,
-        type: String,
-        developerPayload: String?,
-        oemid: String?,
-        guestWalletId: String?
-    ): Bundle? =
-        try {
-            logInfo("Getting BuyIntent from BillingApp.")
-            sdkAnalytics.sendCallBindServiceAttemptEvent(methodName, methodPriority)
-            serviceAppcoinsBilling.getBuyIntent(
-                apiVersion,
-                context.packageName,
-                sku,
-                type,
-                developerPayload,
-                oemid,
-                guestWalletId
-            )
-        } catch (e: Exception) {
-            logError("Failure getting BuyIntent from BillingApp.", e)
-            handleBindServiceFail(methodName, methodPriority)
-        }
-
-    private fun handleBindServiceFail(methodName: String, methodPriority: Int): Bundle? {
-        sdkAnalytics.sendCallBindServiceFailEvent(methodName, methodPriority)
-        return null
-    }
-
     private fun createIntentBundle(intent: Intent, responseCode: Int): Bundle =
         Bundle().apply {
             putParcelable(KEY_BUY_INTENT, intent)
@@ -255,10 +159,10 @@ object WalletUtils {
     @Suppress("NestedBlockDepth")
     private fun setBillingServiceInfoToBind() {
         clearBillingServiceInfo()
-        if (this.paymentFlowMethods.isEmpty()) {
+        if (paymentFlowMethods.isEmpty()) {
             setDefaultBillingServiceInfoToBind()
         } else {
-            for (method in this.paymentFlowMethods) {
+            for (method in paymentFlowMethods) {
                 when (method) {
                     is Wallet ->
                         if (isAppAvailableToBind(BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION)) {
@@ -327,26 +231,6 @@ object WalletUtils {
         logInfo("Clearing Billing info.")
         billingServicePackageName = null
         billingServiceIabAction = null
-    }
-
-    private fun packageToMethodName(): String {
-        val shouldUseAlternative = BuildConfig.DEBUG && !isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION)
-        val gamesHub =
-            if (shouldUseAlternative) {
-                BuildConfig.GAMESHUB_PACKAGE_NAME_ALTERNATIVE
-            } else {
-                BuildConfig.GAMESHUB_PACKAGE_NAME
-            }
-
-        return when {
-            billingServicePackageName.isNullOrEmpty() -> "unknown"
-            billingServicePackageName.equals(BuildConfig.APPCOINS_WALLET_PACKAGE_NAME, ignoreCase = true) -> "wallet"
-            billingServicePackageName.equals(gamesHub, ignoreCase = true) -> "games_hub_checkout"
-            billingServicePackageName.equals(BuildConfig.APTOIDE_GAMES_PACKAGE_NAME, ignoreCase = true) ->
-                "aptoide_games"
-
-            else -> "unknown"
-        }
     }
 
     private fun isAppAvailableToBind(action: String?): Boolean {

@@ -58,7 +58,6 @@ object SdkBackendPayflowEvents {
     const val SDK_CALL_BACKEND_ATTRIBUTION = "sdk_call_backend_attribution_response"
     const val SDK_CALL_BACKEND_APP_VERSION = "sdk_call_backend_app_version_response"
     const val SDK_CALL_BACKEND_STORE_LINK = "sdk_call_backend_store_link_response"
-    const val SDK_CALL_BINDSERVICE_ATTEMPT = "sdk_call_bindservice_attempt"
     const val SDK_CALL_BINDSERVICE_FAIL = "sdk_call_bindservice_fail"
 }
 
