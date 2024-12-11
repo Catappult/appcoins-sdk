@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="igu_app_new_version_available_popup_body">Há uma nova versão deste aplicativo.\nPor favor, atualize para a nova versão.</string>
     <string name="igu_app_new_version_available_popup_update_button">ATUALIZAR</string>
     <string name="igu_app_new_version_available_popup_close_button">FECHAR</string>
+    <!-- SDK - Purchasing when wallet is not installed -->
+    <string name="iab_wallet_not_installed_popup_body">To buy this item you first need to get the %s.</string>
+    <string name="appcoins_wallet">AppCoins Wallet</string>
+    <string name="iab_wallet_not_installed_popup_close_button">CLOSE</string>
+    <!-- SDK - Purchasing when neither wallet or app store are installed -->
+    <string name="iap_wallet_and_appstore_not_installed_popup_body">You need the AppCoins Wallet to make this purchase. Download it from Aptoide or Play Store and come back to complete your purchase!</string>
+    <string name="iap_wallet_and_appstore_not_installed_popup_button">GOT IT!</string>
+    <!-- SDK - Common -->
+    <string name="iab_wallet_not_installed_popup_close_install">INSTALL WALLET</string>
 </resources>
