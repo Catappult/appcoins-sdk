@@ -22,8 +22,9 @@ object SendSuccessfulPurchaseResponseEvent : UseCase() {
                 val transactionResponse = getTransaction(orderId)
 
                 val price = transactionResponse?.price?.appc ?: handleMissingPrice()
+                val paymentMethod = transactionResponse?.method ?: handleMissingPaymentMethod()
 
-                sendSuccessfulPurchaseResultEvent(purchase, orderId, price)
+                sendSuccessfulPurchaseResultEvent(purchase, orderId, price, paymentMethod)
             } catch (ex: NullPointerException) {
                 logError("There was an error creating the Successful Purchase event for MMP.", ex)
             }
@@ -32,7 +33,15 @@ object SendSuccessfulPurchaseResponseEvent : UseCase() {
     }
 
     private fun handleMissingPrice(): String {
-        logError("There was an error obtaining the Price. Using 0")
-        return "0"
+        logError("There was an error obtaining the Price. Using $DEFAULT_PRICE")
+        return DEFAULT_PRICE
     }
+
+    private fun handleMissingPaymentMethod(): String {
+        logError("There was an error obtaining the Method. Using $UNKNOWN_PAYMENT_METHOD")
+        return UNKNOWN_PAYMENT_METHOD
+    }
+
+    private const val DEFAULT_PRICE = "0"
+    private const val UNKNOWN_PAYMENT_METHOD = "unknown"
 }
