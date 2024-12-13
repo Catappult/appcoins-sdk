@@ -29,7 +29,6 @@ class StoreLinkResponseMapper {
                 for (i in 0 until storeLinkMethodJsonArray.length()) {
                     val storeLinkMethodJSONObject = storeLinkMethodJsonArray.optJSONObject(i)
 
-
                     val deeplink = storeLinkMethodJSONObject.optString("deeplink")
                     val priority = storeLinkMethodJSONObject.optInt("priority", -1)
 
@@ -41,7 +40,8 @@ class StoreLinkResponseMapper {
             logError("There was a an error mapping the response.", ex)
         }
         return StoreLinkResponse(
-            response.responseCode, storeLinkMethods.filter { it.priority >= 0 }.toCollection(arrayListOf())
+            response.responseCode,
+            storeLinkMethods.filter { it.priority >= 0 }.toCollection(arrayListOf())
         )
     }
 }
