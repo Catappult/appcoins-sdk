@@ -41,7 +41,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
         isServiceReady = true;
         RetryFailedRequests.INSTANCE.invoke();
         logInfo("Billing Connected, notifying client onBillingSetupFinished(ResponseCode.OK)");
-        listener.onBillingSetupFinished(ResponseCode.OK.getValue());
+        listener.onBillingSetupFinished(ResponseCode.OK.value);
     }
 
     @Override
@@ -102,11 +102,11 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
 
                 skuDetailsResult = AndroidBillingMapper.mapBundleToHashMapSkuDetails(skuType, response);
 
-                if (skuDetailsResult.getResponseCode() == ResponseCode.SERVICE_UNAVAILABLE.getValue()) {
+                if (skuDetailsResult.getResponseCode() == ResponseCode.SERVICE_UNAVAILABLE.value) {
                     logError("Failed to get SkuDetails request: " + skuDetailsResult.getResponseCode());
                     Thread.sleep(5000);
                 }
-            } while (skuDetailsResult.getResponseCode() == ResponseCode.SERVICE_UNAVAILABLE.getValue());
+            } while (skuDetailsResult.getResponseCode() == ResponseCode.SERVICE_UNAVAILABLE.value);
 
             logInfo("SkuDetailsResult code: " + skuDetailsResult.getResponseCode());
             return skuDetailsResult;

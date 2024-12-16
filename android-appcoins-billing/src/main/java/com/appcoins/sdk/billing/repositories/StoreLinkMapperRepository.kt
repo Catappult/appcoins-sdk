@@ -1,5 +1,8 @@
 package com.appcoins.sdk.billing.repositories
 
+import com.appcoins.sdk.billing.ResponseCode
+import com.appcoins.sdk.billing.mappers.ReferralDeeplinkResponse
+import com.appcoins.sdk.billing.mappers.ReferralDeeplinkResponseMapper
 import com.appcoins.sdk.billing.mappers.StoreLinkResponse
 import com.appcoins.sdk.billing.mappers.StoreLinkResponseMapper
 import com.appcoins.sdk.billing.service.BdsService
@@ -9,9 +12,9 @@ import com.appcoins.sdk.core.logger.Logger.logError
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-class StoreDeepLinkRepository(private val bdsService: BdsService) {
+class StoreLinkMapperRepository(private val bdsService: BdsService) {
 
-    fun getStoreDeepLink(
+    fun getStoreDeeplink(
         packageName: String,
         appInstallerPackageName: String?,
         oemid: String?,
@@ -21,6 +24,7 @@ class StoreDeepLinkRepository(private val bdsService: BdsService) {
 
         val queries: MutableMap<String, String> = LinkedHashMap()
         queries["version"] = "2"
+        queries["isReferral"] = "false"
         appInstallerPackageName?.let { queries["store-package"] = it }
         oemid?.let { queries["oemid"] = it }
 
@@ -49,6 +53,47 @@ class StoreDeepLinkRepository(private val bdsService: BdsService) {
 
         waitForCountDown(countDownLatch)
         return storeDeepLink
+    }
+
+    fun getReferralDeeplink(
+        packageName: String,
+        appInstallerPackageName: String?,
+        oemid: String?,
+    ): ReferralDeeplinkResponse {
+        val countDownLatch = CountDownLatch(1)
+        var referralDeeplink = ReferralDeeplinkResponse(ResponseCode.ERROR.value)
+
+        val queries: MutableMap<String, String> = LinkedHashMap()
+        queries["version"] = "2"
+        queries["isReferral"] = "true"
+        appInstallerPackageName?.let { queries["store-package"] = it }
+        oemid?.let { queries["oemid"] = it }
+
+        val serviceResponseListener =
+            ServiceResponseListener { requestResponse ->
+                requestResponse?.let {
+                    val referralDeeplinkResponse = ReferralDeeplinkResponseMapper().map(requestResponse)
+                    referralDeeplinkResponse.responseCode?.let { responseCode ->
+                        if (ServiceUtils.isSuccess(responseCode)) {
+                            referralDeeplink = referralDeeplinkResponse
+                        }
+                    }
+                }
+                countDownLatch.countDown()
+            }
+
+        bdsService.makeRequest(
+            "/deeplink/$packageName",
+            "GET",
+            emptyList(),
+            queries.toMap(),
+            emptyMap(),
+            emptyMap<String?, Any>(),
+            serviceResponseListener
+        )
+
+        waitForCountDown(countDownLatch)
+        return referralDeeplink
     }
 
     private fun waitForCountDown(countDownLatch: CountDownLatch) {

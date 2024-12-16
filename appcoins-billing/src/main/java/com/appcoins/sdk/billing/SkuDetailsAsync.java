@@ -33,7 +33,7 @@ public class SkuDetailsAsync implements Runnable {
             }
         } catch (ServiceConnectionException e) {
             logError("Service is not ready to request SkuDetails: " + e);
-            skuDetailsResponseListener.onSkuDetailsResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(),
+            skuDetailsResponseListener.onSkuDetailsResponse(ResponseCode.SERVICE_UNAVAILABLE.value,
                 new ArrayList<>());
         }
     }

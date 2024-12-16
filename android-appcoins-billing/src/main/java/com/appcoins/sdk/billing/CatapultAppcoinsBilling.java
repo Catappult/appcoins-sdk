@@ -5,9 +5,9 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
+import com.appcoins.sdk.billing.activities.UpdateDialogActivity;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.helpers.PayloadHelper;
-import com.appcoins.sdk.billing.activities.UpdateDialogActivity;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
@@ -15,6 +15,7 @@ import com.appcoins.sdk.billing.listeners.PendingPurchaseStream;
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
+import com.appcoins.sdk.billing.usecases.GetReferralDeeplink;
 import com.appcoins.sdk.billing.usecases.ingameupdates.IsUpdateAvailable;
 import com.appcoins.sdk.billing.usecases.ingameupdates.LaunchAppUpdate;
 import kotlin.Pair;
@@ -80,7 +81,7 @@ public class CatapultAppcoinsBilling
 
             responseCode = launchBillingFlowResult.getResponseCode();
 
-            if (responseCode != ResponseCode.OK.getValue()) {
+            if (responseCode != ResponseCode.OK.value) {
                 logError("Failed to launch billing flow. ResponseCode: " + responseCode);
                 SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
                 ApplicationUtils.handleActivityResult(billing, sdkPaymentResponse.getResultCode(),
@@ -97,11 +98,11 @@ public class CatapultAppcoinsBilling
                 activity.startActivity(buyIntent);
             }
         } catch (NullPointerException | ActivityNotFoundException e) {
-            return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e);
+            return handleErrorTypeResponse(ResponseCode.ERROR.value, e);
         } catch (ServiceConnectionException e) {
-            return handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e);
+            return handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.value, e);
         }
-        return ResponseCode.OK.getValue();
+        return ResponseCode.OK.value;
     }
 
     private int handleErrorTypeResponse(int value, Exception e) {
@@ -176,6 +177,17 @@ public class CatapultAppcoinsBilling
         new Thread(runnable).start();
     }
 
+    @Override
+    public ReferralDeeplink getReferralDeeplink() {
+        logInfo("Request to get Referral Deeplink.");
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            logInfo("Request from MainThread. Cancelling.");
+            return new ReferralDeeplink(ResponseCode.DEVELOPER_ERROR, null, null);
+        } else {
+            return GetReferralDeeplink.INSTANCE.invoke();
+        }
+    }
+
     @Deprecated
     @Override
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -225,7 +237,7 @@ public class CatapultAppcoinsBilling
 
             responseCode = launchBillingFlowResult.getResponseCode();
 
-            if (responseCode != ResponseCode.OK.getValue()) {
+            if (responseCode != ResponseCode.OK.value) {
                 logError("Failed to launch billing flow. ResponseCode: " + responseCode);
                 SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
                 ApplicationUtils.handleActivityResult(billing, sdkPaymentResponse.getResultCode(),
@@ -241,9 +253,9 @@ public class CatapultAppcoinsBilling
                 activity.startActivity(buyIntent);
             }
         } catch (NullPointerException | ActivityNotFoundException e) {
-            handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e);
+            handleErrorTypeResponse(ResponseCode.ERROR.value, e);
         } catch (ServiceConnectionException e) {
-            handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e);
+            handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.value, e);
         }
     }
 }

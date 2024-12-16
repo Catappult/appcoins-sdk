@@ -124,6 +124,23 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         )
     }
 
+    fun sendCallBackendReferralDeeplinkEvent(
+        responseCode: Int?,
+        responseMessage: String?,
+        errorMessage: String? = null
+    ) {
+        val eventData: MutableMap<String, Any> = HashMap()
+        eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
+        eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
+        eventData[AnalyticsLabels.BACKEND_ERROR_MESSAGE] = errorMessage ?: ""
+
+        logEvent(
+            eventData,
+            SdkBackendPayflowEvents.SDK_CALL_BACKEND_REFERRAL_DEEPLINK,
+            Action.IMPRESSION
+        )
+    }
+
     fun sendCallBindServiceFailEvent(payflowMethod: String, priority: Int) {
         val eventData: MutableMap<String, Any> = HashMap()
         eventData[AnalyticsLabels.BIND_SERVICE_METHOD] = payflowMethod

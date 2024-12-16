@@ -53,7 +53,7 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
 
         if (bundle == null) {
             bundle = new Bundle();
-            bundle.putInt(RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.getValue());
+            bundle.putInt(RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.value);
         }
 
         return WalletUtils.INSTANCE.startWalletPayment(bundle, type);
@@ -80,14 +80,14 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
     @Override
     public int consumePurchase(int apiVersion, String packageName, String purchaseToken) throws RemoteException {
         int responseCode = appcoinsBilling.consumePurchase(apiVersion, packageName, purchaseToken);
-        if (responseCode == ResponseCode.OK.getValue()) {
-            return ResponseCode.OK.getValue();
+        if (responseCode == ResponseCode.OK.value) {
+            return ResponseCode.OK.value;
         }
         int guestResponseCode = consumeGuestPurchase(walletId, apiVersion, packageName, purchaseToken);
-        if (guestResponseCode == ResponseCode.OK.getValue()) {
-            return ResponseCode.OK.getValue();
+        if (guestResponseCode == ResponseCode.OK.value) {
+            return ResponseCode.OK.value;
         }
-        return ResponseCode.ERROR.getValue();
+        return ResponseCode.ERROR.value;
     }
 
     @Override
@@ -96,7 +96,7 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
     }
 
     private int consumeGuestPurchase(String walletId, int apiVersion, String packageName, String purchaseToken) {
-        int responseCode = ResponseCode.ERROR.getValue();
+        int responseCode = ResponseCode.ERROR.value;
         if (walletId != null && apiVersion == 3) {
             responseCode = ProductV2Manager.INSTANCE.consumePurchase(this.walletId, packageName, purchaseToken);
         }

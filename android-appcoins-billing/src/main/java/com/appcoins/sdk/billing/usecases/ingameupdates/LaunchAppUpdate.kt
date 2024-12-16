@@ -6,7 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.helpers.WalletUtils
-import com.appcoins.sdk.billing.managers.StoreDeepLinkManager
+import com.appcoins.sdk.billing.managers.StoreLinkMapperManager
 import com.appcoins.sdk.billing.usecases.UseCase
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
@@ -16,7 +16,7 @@ object LaunchAppUpdate : UseCase() {
     operator fun invoke(context: Context) {
         super.invokeUseCase()
         logInfo("LaunchAppUpdate")
-        val storeDeeplink = StoreDeepLinkManager(context).getStoreDeepLink()
+        val storeDeeplink = StoreLinkMapperManager(context).getStoreDeepLink()
 
         val storeLinkMethods = storeDeeplink?.storeLinkMethods
         if (storeLinkMethods.isNullOrEmpty()) {
