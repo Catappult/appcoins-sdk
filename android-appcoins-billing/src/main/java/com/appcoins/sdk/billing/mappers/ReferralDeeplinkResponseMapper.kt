@@ -30,7 +30,7 @@ class ReferralDeeplinkResponseMapper {
 
             ReferralDeeplinkResponse(response.responseCode, storeDeeplink, fallbackDeeplink)
         } catch (ex: Exception) {
-            logError("There was a an error mapping the response.", ex)
+            logError("There was an error mapping the response.", ex)
             ReferralDeeplinkResponse(response.responseCode)
         }
     }

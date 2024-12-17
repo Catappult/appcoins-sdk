@@ -46,7 +46,7 @@ class AppVersionResponseMapper {
 
             AppVersionResponse(response.responseCode, mutableList)
         }.getOrElse {
-            logError("There was a an error mapping the response.", Exception(it))
+            logError("There was an error mapping the response.", Exception(it))
             AppVersionResponse(response.responseCode)
         }
 

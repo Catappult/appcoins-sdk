@@ -25,7 +25,7 @@ class WebPaymentResponseMapper {
         val webPaymentUrl = runCatching {
             JSONObject(response.response).getString("payment_url")
         }.getOrElse {
-            logError("There was a an error mapping the response.", Exception(it))
+            logError("There was an error mapping the response.", Exception(it))
             null
         }
         return WebPaymentResponse(response.responseCode, webPaymentUrl)

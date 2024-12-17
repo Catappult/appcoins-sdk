@@ -70,7 +70,7 @@ class SkuDetailsResponseMapper {
                 items = listOfItems
             )
         }.getOrElse {
-            logError("There was a an error mapping the response.", Exception(it))
+            logError("There was an error mapping the response.", Exception(it))
             return SkuDetailsResponse(response.responseCode)
         }
     }
