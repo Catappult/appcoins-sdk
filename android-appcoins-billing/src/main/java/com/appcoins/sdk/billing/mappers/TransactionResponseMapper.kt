@@ -79,7 +79,7 @@ class TransactionResponseMapper {
                 channel = channel
             )
         }.getOrElse {
-            logError("There was a an error mapping the response.", Exception(it))
+            logError("There was an error mapping the response.", Exception(it))
             return TransactionResponse(response.responseCode)
         }
     }

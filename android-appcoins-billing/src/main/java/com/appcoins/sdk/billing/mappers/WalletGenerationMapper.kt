@@ -24,7 +24,7 @@ class WalletGenerationMapper {
 
             return WalletGenerationResponse(walletAddress, signature, ewt, false)
         }.getOrElse {
-            logError("There was a an error mapping the response.", Exception(it))
+            logError("There was an error mapping the response.", Exception(it))
             return WalletGenerationResponse()
         }
     }

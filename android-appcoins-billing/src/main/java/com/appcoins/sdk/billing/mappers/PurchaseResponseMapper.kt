@@ -48,12 +48,12 @@ class PurchaseResponseMapper {
                     )
                 )
             } catch (e: Exception) {
-                logError("There was a an error mapping the Purchase response: $e")
+                logError("There was an error mapping the Purchase response: $e")
             }
 
             return PurchaseResponse(response.responseCode)
         }.getOrElse {
-            logError("There was a an error mapping the List of Purchases response: " + Exception(it))
+            logError("There was an error mapping the List of Purchases response: " + Exception(it))
             return PurchaseResponse(response.responseCode)
         }
     }

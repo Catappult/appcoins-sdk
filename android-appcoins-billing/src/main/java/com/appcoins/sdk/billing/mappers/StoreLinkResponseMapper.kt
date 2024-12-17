@@ -37,7 +37,7 @@ class StoreLinkResponseMapper {
                 storeLinkMethods.sortBy { it.priority }
             }
         } catch (ex: Exception) {
-            logError("There was a an error mapping the response.", ex)
+            logError("There was an error mapping the response.", ex)
         }
         return StoreLinkResponse(
             response.responseCode,
