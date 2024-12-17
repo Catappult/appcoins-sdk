@@ -213,7 +213,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         responseWs: Bundle
     ) {
         val sku = skusBundle.getStringArrayList(GET_SKU_DETAILS_ITEM_LIST)
-        val skuDetailsList = requestSkuDetails(sku, packageName)
+        val skuDetailsList = sku?.let { requestSkuDetails(sku, packageName) } ?: emptyList()
         val skuDetailsResult = SkuDetailsResultV2(skuDetailsList, 0)
         responseWs.putInt(RESPONSE_CODE, 0)
         val skuDetails = buildResponse(skuDetailsResult)
@@ -225,25 +225,20 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
         return requestSingleSkuDetails(sku, packageName)
     }
 
-    private fun requestSkuDetails(
-        sku: List<String>?,
-        packageName: String
-    ): ArrayList<SkuDetailsV2> {
-        val skuSendList: ArrayList<String> = ArrayList()
+    private fun requestSkuDetails(sku: List<String>, packageName: String): ArrayList<SkuDetailsV2> {
         val skuDetailsList = ArrayList<SkuDetailsV2>()
+        val skuSendList: ArrayList<String> = ArrayList()
 
-        if (sku != null) {
-            for (i in 1..sku.size) {
-                skuSendList.add(sku[i - 1])
-                if (i % MAX_SKUS_SEND_WS == 0 || i == sku.size) {
-                    val skuDetailsResponse = ProductV2Manager.getSkuDetails(
-                        packageName,
-                        skuSendList,
-                        getPaymentFlowFromPayflowMethod(WalletUtils.paymentFlowMethods.toMutableList())
-                    )
-                    skuDetailsList.addAll(skuDetailsResponse?.items ?: emptyList())
-                    skuSendList.clear()
-                }
+        for (i in 1..sku.size) {
+            skuSendList.add(sku[i - 1])
+            if (i % MAX_SKUS_SEND_WS == 0 || i == sku.size) {
+                val skuDetailsResponse = ProductV2Manager.getSkuDetails(
+                    packageName,
+                    skuSendList,
+                    getPaymentFlowFromPayflowMethod(WalletUtils.paymentFlowMethods.toMutableList())
+                )
+                skuDetailsList.addAll(skuDetailsResponse?.items ?: emptyList())
+                skuSendList.clear()
             }
         }
         return skuDetailsList

@@ -1,5 +1,6 @@
 package com.appcoins.sdk.billing.repositories
 
+import com.appcoins.sdk.billing.mappers.StoreLinkResponse
 import com.appcoins.sdk.billing.mappers.StoreLinkResponseMapper
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.service.ServiceResponseListener
@@ -14,21 +15,22 @@ class StoreDeepLinkRepository(private val bdsService: BdsService) {
         packageName: String,
         appInstallerPackageName: String?,
         oemid: String?,
-    ): String? {
+    ): StoreLinkResponse? {
         val countDownLatch = CountDownLatch(1)
-        var storeDeepLink: String? = null
+        var storeDeepLink: StoreLinkResponse? = null
 
         val queries: MutableMap<String, String> = LinkedHashMap()
+        queries["version"] = "2"
         appInstallerPackageName?.let { queries["store-package"] = it }
         oemid?.let { queries["oemid"] = it }
 
         val serviceResponseListener =
             ServiceResponseListener { requestResponse ->
                 requestResponse?.let {
-                    val webPaymentUrlResponse = StoreLinkResponseMapper().map(requestResponse)
-                    webPaymentUrlResponse.responseCode?.let { responseCode ->
+                    val storeLinkResponse = StoreLinkResponseMapper().map(requestResponse)
+                    storeLinkResponse.responseCode?.let { responseCode ->
                         if (ServiceUtils.isSuccess(responseCode)) {
-                            storeDeepLink = webPaymentUrlResponse.deeplink
+                            storeDeepLink = storeLinkResponse
                         }
                     }
                 }
