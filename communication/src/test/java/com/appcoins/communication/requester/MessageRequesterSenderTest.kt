@@ -1,6 +1,6 @@
 package com.appcoins.communication.requester
 
-import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import io.mockk.every
 import io.mockk.just
@@ -16,7 +16,7 @@ class MessageRequesterSenderTest {
 
     private lateinit var messageRequesterSender: MessageRequesterSender
 
-    private val mockkActivityProvider = mockk<ActivityProvider>()
+    private val mockkContext = mockk<Context>()
 
     @Test(expected = NullPointerException::class)
     fun `should throw NullPointerException if URI is null`() {
@@ -29,25 +29,21 @@ class MessageRequesterSenderTest {
     fun `should start activity with values for message`() {
         setup("", "", "")
 
-        val mockkActivity = mockk<Activity>()
-
-        every { mockkActivityProvider.activity } returns mockkActivity
-        every { mockkActivity.packageName } returns DEFAULT_PACKAGE_NAME
-        every { mockkActivity.startActivity(any()) } just runs
+        every { mockkContext.packageName } returns DEFAULT_PACKAGE_NAME
+        every { mockkContext.startActivity(any()) } just runs
 
         messageRequesterSender.sendMessage(DEFAULT_REQUEST_CODE, DEFAULT_METHOD_ID, DEFAULT_PARCELABLE)
 
         verify(exactly = 1) {
-            mockkActivityProvider.activity
-            mockkActivity.packageName
-            mockkActivity.startActivity(any())
+            mockkContext.packageName
+            mockkContext.startActivity(any())
         }
     }
 
     private fun setup(targetPackage: String?, targetUri: String?, requesterActivityUri: String?) {
         messageRequesterSender =
             MessageRequesterSender(
-                mockkActivityProvider,
+                mockkContext,
                 targetPackage,
                 targetUri,
                 requesterActivityUri

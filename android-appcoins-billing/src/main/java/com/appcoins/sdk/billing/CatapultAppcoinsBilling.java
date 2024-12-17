@@ -5,10 +5,9 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
+import com.appcoins.sdk.billing.activities.UpdateDialogActivity;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
-import com.appcoins.sdk.billing.helpers.EventLogger;
 import com.appcoins.sdk.billing.helpers.PayloadHelper;
-import com.appcoins.sdk.billing.helpers.UpdateDialogActivity;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
@@ -16,6 +15,7 @@ import com.appcoins.sdk.billing.listeners.PendingPurchaseStream;
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
+import com.appcoins.sdk.billing.usecases.GetReferralDeeplink;
 import com.appcoins.sdk.billing.usecases.ingameupdates.IsUpdateAvailable;
 import com.appcoins.sdk.billing.usecases.ingameupdates.LaunchAppUpdate;
 import kotlin.Pair;
@@ -61,7 +61,7 @@ public class CatapultAppcoinsBilling
         int responseCode;
 
         try {
-            WalletUtils.getSdkAnalytics()
+            WalletUtils.INSTANCE.getSdkAnalytics()
                 .sendPurchaseIntentEvent(billingFlowParams.getSku());
             String payload = PayloadHelper.buildIntentPayload(billingFlowParams.getOrderReference(),
                 billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin());
@@ -75,11 +75,6 @@ public class CatapultAppcoinsBilling
                 + oemid
                 + " guestWalletId: "
                 + guestWalletId);
-
-            Thread eventLoggerThread = new Thread(new EventLogger(billingFlowParams.getSku(),
-                activity.getApplicationContext()
-                    .getPackageName()));
-            eventLoggerThread.start();
 
             LaunchBillingFlowResult launchBillingFlowResult =
                 billing.launchBillingFlow(billingFlowParams, payload, oemid, guestWalletId);
@@ -152,7 +147,7 @@ public class CatapultAppcoinsBilling
             logInfo("Request from MainThread. Cancelling.");
             return false;
         } else {
-            return IsUpdateAvailable.INSTANCE.invoke(WalletUtils.context);
+            return IsUpdateAvailable.INSTANCE.invoke(WalletUtils.INSTANCE.getContext());
         }
     }
 
@@ -180,6 +175,17 @@ public class CatapultAppcoinsBilling
             }
         };
         new Thread(runnable).start();
+    }
+
+    @Override
+    public ReferralDeeplink getReferralDeeplink() {
+        logInfo("Request to get Referral Deeplink.");
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            logInfo("Request from MainThread. Cancelling.");
+            return new ReferralDeeplink(ResponseCode.DEVELOPER_ERROR, null, null);
+        } else {
+            return GetReferralDeeplink.INSTANCE.invoke();
+        }
     }
 
     @Deprecated
@@ -225,11 +231,6 @@ public class CatapultAppcoinsBilling
                 + oemid
                 + " guestWalletId: "
                 + guestWalletId);
-
-            Thread eventLoggerThread = new Thread(new EventLogger(billingFlowParams.getSku(),
-                activity.getApplicationContext()
-                    .getPackageName()));
-            eventLoggerThread.start();
 
             LaunchBillingFlowResult launchBillingFlowResult =
                 billing.launchBillingFlow(billingFlowParams, payload, oemid, guestWalletId);

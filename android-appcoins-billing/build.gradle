@@ -46,7 +46,7 @@ android {
         jvmTarget = TARGET_COMPATIBILITY
     }
 
-    check.dependsOn 'checkstyle', 'lint', 'detekt'
+    check.dependsOn 'checkstyle', 'lint', 'detekt', 'test'
 
     lintOptions {
         abortOnError false

@@ -24,7 +24,7 @@ internal object ApplicationUtils {
         data: Intent?,
         purchaseFinishedListener: PurchasesUpdatedListener
     ) {
-        val sdkAnalytics = WalletUtils.getSdkAnalytics()
+        val sdkAnalytics = WalletUtils.sdkAnalytics
 
         if (data == null) {
             logError("Null data in IAB activity result.")

@@ -31,7 +31,8 @@ object MMPEventsManager {
     fun sendSuccessfulPurchaseResultEvent(
         purchase: Purchase,
         orderId: String,
-        purchaseValue: String
+        purchaseValue: String,
+        paymentMethod: String
     ) {
         logInfo("Sending Successful Purchase Result Event to MMP.")
         val walletId = attributionSharedPreferences.getWalletId() ?: return
@@ -42,6 +43,7 @@ object MMPEventsManager {
             purchase.sku,
             orderId,
             purchaseValue,
+            paymentMethod,
             attributionSharedPreferences.getUtmSource(),
             attributionSharedPreferences.getUtmMedium(),
             attributionSharedPreferences.getUtmCampaign(),

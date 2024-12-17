@@ -11,6 +11,7 @@ class MMPEventsRepository(private val bdsRetryService: BdsRetryService) {
         sku: String,
         orderId: String,
         purchaseAmount: String,
+        paymentMethod: String,
         utmSource: String?,
         utmMedium: String?,
         utmCampaign: String?,
@@ -24,6 +25,7 @@ class MMPEventsRepository(private val bdsRetryService: BdsRetryService) {
         queries["sku"] = sku
         queries["order_id"] = orderId
         queries["purchase_amount"] = purchaseAmount
+        queries["payment_method"] = paymentMethod
         queries["timestamp"] = System.currentTimeMillis().toString()
         utmSource?.let { queries["utm_source"] = it }
         utmMedium?.let { queries["utm_medium"] = it }

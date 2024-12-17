@@ -25,7 +25,9 @@ class WebPaymentRepository(private val bdsService: BdsService) {
         var webPaymentUrl: String? = null
 
         val paymentFlow =
-            PaymentFlowMethod.getPaymentFlowFromPayflowMethod(WalletUtils.getPayflowMethodsList())
+            PaymentFlowMethod.getPaymentFlowFromPayflowMethod(
+                WalletUtils.paymentFlowMethods.toMutableList()
+            )
 
         val queries: MutableMap<String, String> = LinkedHashMap()
         queries["package"] = packageName
@@ -42,7 +44,7 @@ class WebPaymentRepository(private val bdsService: BdsService) {
         queries["lang_code"] = Locale.getDefault().language
 
         val paymentUrlVersion =
-            PaymentFlowMethod.getPaymentUrlVersionFromPayflowMethod(WalletUtils.getPayflowMethodsList())
+            PaymentFlowMethod.getPaymentUrlVersionFromPayflowMethod(WalletUtils.paymentFlowMethods.toMutableList())
 
         val serviceResponseListener =
             ServiceResponseListener { requestResponse ->

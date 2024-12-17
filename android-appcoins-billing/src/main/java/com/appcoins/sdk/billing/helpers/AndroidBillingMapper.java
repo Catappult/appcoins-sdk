@@ -5,14 +5,15 @@ import android.util.Base64;
 import com.appcoins.sdk.billing.LaunchBillingFlowResult;
 import com.appcoins.sdk.billing.Purchase;
 import com.appcoins.sdk.billing.PurchasesResult;
+import com.appcoins.sdk.billing.ResponseCode;
 import com.appcoins.sdk.billing.SkuDetails;
 import com.appcoins.sdk.billing.SkuDetailsResult;
-import com.appcoins.sdk.billing.SkuDetailsV2;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.DETAILS_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.GET_SKU_DETAILS_ITEM_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE_LIST;
 import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST;
@@ -95,19 +96,31 @@ public class AndroidBillingMapper {
     public static SkuDetailsResult mapBundleToHashMapSkuDetails(String skuType, Bundle bundle) {
         ArrayList<SkuDetails> arrayList = new ArrayList<>();
 
-        if (bundle.containsKey("DETAILS_LIST")) {
-            ArrayList<String> responseList = bundle.getStringArrayList("DETAILS_LIST");
-            for (String value : responseList) {
-                SkuDetails skuDetails = parseSkuDetails(skuType, value);
-                arrayList.add(skuDetails);
+        if (bundle.containsKey(DETAILS_LIST)) {
+            ArrayList<String> responseList = bundle.getStringArrayList(DETAILS_LIST);
+            if (responseList != null) {
+                for (String value : responseList) {
+                    SkuDetails skuDetails = parseSkuDetails(skuType, value);
+                    if (skuDetails != null) {
+                        arrayList.add(skuDetails);
+                    }
+                }
             }
         }
-        int responseCode = (int) bundle.get(RESPONSE_CODE);
+
+        int responseCode = ResponseCode.ERROR.getValue();
+        if (bundle.containsKey(RESPONSE_CODE)) {
+            responseCode = (int) bundle.get(RESPONSE_CODE);
+        }
 
         return new SkuDetailsResult(arrayList, responseCode);
     }
 
-    public static SkuDetails parseSkuDetails(String skuType, String skuDetailsData) {
+    public static LaunchBillingFlowResult mapBundleToHashMapGetIntent(Bundle bundle) {
+        return new LaunchBillingFlowResult(bundle.getInt(RESPONSE_CODE), bundle.getParcelable(KEY_BUY_INTENT));
+    }
+
+    private static SkuDetails parseSkuDetails(String skuType, String skuDetailsData) {
         try {
             JSONObject jsonElement = new JSONObject(skuDetailsData);
 
@@ -123,7 +136,10 @@ public class AndroidBillingMapper {
             long fiatPriceAmountMicros = jsonElement.getLong("fiat_price_amount_micros");
             String fiatPriceCurrencyCode = jsonElement.getString("fiat_price_currency_code");
             String title = jsonElement.getString("title");
-            String description = jsonElement.getString("description");
+            String description = null;
+            if (jsonElement.has("description")) {
+                description = jsonElement.getString("description");
+            }
 
             return new SkuDetails(skuType, sku, type, price, priceAmountMicros, priceCurrencyCode, appcPrice,
                 appcPriceAmountMicros, appcPriceCurrencyCode, fiatPrice, fiatPriceAmountMicros, fiatPriceCurrencyCode,
@@ -132,50 +148,6 @@ public class AndroidBillingMapper {
             logError("Failed to parse SkuDetails: " + e);
         }
 
-        return new SkuDetails(skuType, "", "", "", 0, "", "", 0, "", "", 0, "", "", "");
-    }
-
-    public static LaunchBillingFlowResult mapBundleToHashMapGetIntent(Bundle bundle) {
-        return new LaunchBillingFlowResult(bundle.getInt(RESPONSE_CODE), bundle.getParcelable(KEY_BUY_INTENT));
-    }
-
-    public static String mapSkuDetailsResponse(SkuDetailsV2 skuDetails) {
-        return "{\"productId\":\""
-            + skuDetails.getSku()
-            + "\",\"type\" : \""
-            + "INAPP"
-            + "\",\"price\" : \""
-            + skuDetails.getPrice()
-            .getLabel()
-            + "\",\"price_currency_code\": \""
-            + skuDetails.getPrice()
-            .getCurrency()
-            + "\",\"price_amount_micros\": "
-            + skuDetails.getPrice()
-            .getMicros()
-            + ",\"appc_price\" : \""
-            + skuDetails.getPrice()
-            .getAppc()
-            .getLabel()
-            + "\",\"appc_price_currency_code\": \""
-            + "APPC"
-            + "\",\"appc_price_amount_micros\": "
-            + skuDetails.getPrice()
-            .getAppc()
-            .getMicros()
-            + ",\"fiat_price\" : \""
-            + skuDetails.getPrice()
-            .getLabel()
-            + "\",\"fiat_price_currency_code\": \""
-            + skuDetails.getPrice()
-            .getCurrency()
-            + "\",\"fiat_price_amount_micros\": "
-            + skuDetails.getPrice()
-            .getMicros()
-            + ",\"title\" : \""
-            + skuDetails.getTitle()
-            + "\",\"description\" : \""
-            + skuDetails.getDescription()
-            + "\"}";
+        return null;
     }
 }

@@ -8,12 +8,11 @@ import org.json.JSONObject
 
 class WebPaymentResponseMapper {
     fun map(response: RequestResponse): WebPaymentResponse {
-        WalletUtils.getSdkAnalytics()
-            .sendCallBackendWebPaymentUrlEvent(
-                response.responseCode,
-                response.response,
-                response.exception?.toString()
-            )
+        WalletUtils.sdkAnalytics.sendCallBackendWebPaymentUrlEvent(
+            response.responseCode,
+            response.response,
+            response.exception?.toString()
+        )
 
         if (!isSuccess(response.responseCode) || response.response == null) {
             logError(
@@ -26,7 +25,7 @@ class WebPaymentResponseMapper {
         val webPaymentUrl = runCatching {
             JSONObject(response.response).getString("payment_url")
         }.getOrElse {
-            logError("There was a an error mapping the response.", Exception(it))
+            logError("There was an error mapping the response.", Exception(it))
             null
         }
         return WebPaymentResponse(response.responseCode, webPaymentUrl)

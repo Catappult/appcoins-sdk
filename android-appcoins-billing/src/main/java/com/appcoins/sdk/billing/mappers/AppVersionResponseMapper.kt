@@ -13,12 +13,11 @@ class AppVersionResponseMapper {
                 "Failed to obtain AppVersion Response. " +
                     "ResponseCode: ${response.responseCode} | Cause: ${response.exception}"
             )
-            WalletUtils.getSdkAnalytics()
-                .sendCallBackendAppVersionEvent(
-                    response.responseCode,
-                    null,
-                    response.exception?.toString()
-                )
+            WalletUtils.sdkAnalytics.sendCallBackendAppVersionEvent(
+                response.responseCode,
+                null,
+                response.exception?.toString()
+            )
             return AppVersionResponse(response.responseCode)
         }
 
@@ -47,12 +46,11 @@ class AppVersionResponseMapper {
 
             AppVersionResponse(response.responseCode, mutableList)
         }.getOrElse {
-            logError("There was a an error mapping the response.", Exception(it))
+            logError("There was an error mapping the response.", Exception(it))
             AppVersionResponse(response.responseCode)
         }
 
-        WalletUtils.getSdkAnalytics()
-            .sendCallBackendAppVersionEvent(response.responseCode, appVersionResponse.toString())
+        WalletUtils.sdkAnalytics.sendCallBackendAppVersionEvent(response.responseCode, appVersionResponse.toString())
 
         return appVersionResponse
     }

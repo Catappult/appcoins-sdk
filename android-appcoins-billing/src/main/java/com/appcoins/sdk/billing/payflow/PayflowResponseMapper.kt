@@ -9,12 +9,11 @@ import java.io.Serializable
 
 class PayflowResponseMapper {
     fun map(response: RequestResponse): PayflowMethodResponse {
-        WalletUtils.getSdkAnalytics()
-            .sendCallBackendPayflowEvent(
-                response.responseCode,
-                response.response,
-                response.exception?.toString()
-            )
+        WalletUtils.sdkAnalytics.sendCallBackendPayflowEvent(
+            response.responseCode,
+            response.response,
+            response.exception?.toString()
+        )
 
         if (!isSuccess(response.responseCode) || response.response == null) {
             logError(
@@ -46,7 +45,7 @@ class PayflowResponseMapper {
                     }.toCollection(arrayListOf())
                 } ?: arrayListOf()
         }.getOrElse {
-            logError("There was a an error mapping the response.", Exception(it))
+            logError("There was an error mapping the response.", Exception(it))
             arrayListOf()
         }
         return PayflowMethodResponse(response.responseCode, paymentFlowList)
@@ -211,14 +210,10 @@ sealed class PaymentFlowMethod(
         const val SCREEN_ORIENTATION_PORTRAIT = 1
         const val SCREEN_ORIENTATION_LANDSCAPE = 2
 
-        fun getPaymentUrlVersionFromPayflowMethod(
-            payflowMethodsList: MutableList<PaymentFlowMethod>
-        ): String? =
+        fun getPaymentUrlVersionFromPayflowMethod(payflowMethodsList: MutableList<PaymentFlowMethod>): String? =
             (payflowMethodsList.firstOrNull { it is WebPayment } as WebPayment?)?.version
 
-        fun getPaymentFlowFromPayflowMethod(
-            payflowMethodsList: MutableList<PaymentFlowMethod>
-        ): String? =
-            (payflowMethodsList.firstOrNull { it is WebPayment } as WebPayment?)?.paymentFlow
+        fun getPaymentFlowFromPayflowMethod(payflowMethodsList: MutableList<PaymentFlowMethod>?): String? =
+            (payflowMethodsList?.firstOrNull { it is WebPayment } as WebPayment?)?.paymentFlow
     }
 }

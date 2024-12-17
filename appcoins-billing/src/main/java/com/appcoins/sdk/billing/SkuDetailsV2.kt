@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing
 
+import org.json.JSONObject
+
 data class PriceV2(
     val currency: String,
     val label: String,
@@ -36,4 +38,21 @@ data class SkuDetailsV2(
             title,
             description
         )
+
+    fun toSkuDetailsResponseString(): String =
+        JSONObject().apply {
+            put("productId", sku)
+            put("type", "INAPP")
+            put("price", price.label)
+            put("price_currency_code", price.currency)
+            put("price_amount_micros", price.micros)
+            put("appc_price", price.appc.label)
+            put("appc_price_currency_code", "APPC")
+            put("appc_price_amount_micros", price.appc.micros)
+            put("fiat_price", price.label)
+            put("fiat_price_currency_code", price.currency)
+            put("fiat_price_amount_micros", price.micros)
+            put("title", title)
+            description?.let { put("description", it) }
+        }.toString()
 }

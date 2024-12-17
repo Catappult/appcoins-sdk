@@ -27,8 +27,7 @@ class SkuDetailsResponseMapper {
 
                     val sku = jsonObjectItem.getString("sku")
                     val title = jsonObjectItem.getString("title")
-                    val description =
-                        jsonObjectItem.optString("description").takeIf { it.isNotEmpty() } ?: ""
+                    val description = jsonObjectItem.optString("description").takeIf { it.isNotEmpty() }
 
                     val price =
                         jsonObjectItem.getJSONObject("price").let { price ->
@@ -70,7 +69,7 @@ class SkuDetailsResponseMapper {
                 items = listOfItems
             )
         }.getOrElse {
-            logError("There was a an error mapping the response.", Exception(it))
+            logError("There was an error mapping the response.", Exception(it))
             return SkuDetailsResponse(response.responseCode)
         }
     }

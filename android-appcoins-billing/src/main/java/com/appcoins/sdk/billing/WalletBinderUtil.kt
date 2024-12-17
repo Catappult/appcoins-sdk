@@ -8,8 +8,8 @@ import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.helpers.BindType
 import com.appcoins.sdk.billing.helpers.IBinderWalletNotInstalled
 import com.appcoins.sdk.billing.helpers.WalletUtils
-import com.appcoins.sdk.billing.helpers.WebAppcoinsBilling
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
+import com.appcoins.sdk.billing.webpayment.WebAppcoinsBilling
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
@@ -85,11 +85,10 @@ object WalletBinderUtil {
         paymentFlowMethod: PaymentFlowMethod?
     ): Boolean {
         logError("Failed to Bind to Billing App. Attempting URI Communication Protocol.")
-        WalletUtils.getSdkAnalytics()
-            .sendCallBindServiceFailEvent(
-                paymentFlowMethod?.javaClass?.simpleName ?: "unknown_billing_app",
-                paymentFlowMethod?.priority ?: 1
-            )
+        WalletUtils.sdkAnalytics.sendCallBindServiceFailEvent(
+            paymentFlowMethod?.javaClass?.simpleName ?: "unknown_billing_app",
+            paymentFlowMethod?.priority ?: 1
+        )
         if (BuildConfig.URI_COMMUNICATION) {
             logInfo("Establishing URI Communication Protocol with Wallet.")
             bindType = BindType.URI_CONNECTION
@@ -123,8 +122,8 @@ object WalletBinderUtil {
         paymentFlowMethod: PaymentFlowMethod? = null
     ): Boolean {
         logInfo("Attempting to bind to a Billing App: ${paymentFlowMethod?.name}")
-        val packageName = WalletUtils.getBillingServicePackageName()
-        val iabAction = WalletUtils.getBillingServiceIabAction()
+        val packageName = WalletUtils.billingServicePackageName
+        val iabAction = WalletUtils.billingServiceIabAction
         val serviceIntent = Intent(iabAction)
         serviceIntent.setPackage(packageName)
         return billingServiceInstalledBehaviour(

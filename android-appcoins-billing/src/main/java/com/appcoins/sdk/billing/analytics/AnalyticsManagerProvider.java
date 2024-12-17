@@ -40,7 +40,7 @@ public class AnalyticsManagerProvider {
         list.add(SdkBackendPayflowEvents.SDK_CALL_BACKEND_ATTRIBUTION);
         list.add(SdkBackendPayflowEvents.SDK_CALL_BACKEND_APP_VERSION);
         list.add(SdkBackendPayflowEvents.SDK_CALL_BACKEND_STORE_LINK);
-        list.add(SdkBackendPayflowEvents.SDK_CALL_BINDSERVICE_ATTEMPT);
+        list.add(SdkBackendPayflowEvents.SDK_CALL_BACKEND_REFERRAL_DEEPLINK);
         list.add(SdkBackendPayflowEvents.SDK_CALL_BINDSERVICE_FAIL);
         return list;
     }

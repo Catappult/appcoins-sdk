@@ -2,25 +2,24 @@ package com.appcoins.sdk.billing.analytics
 
 import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
 import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager.Action
-import java.io.Serializable
 
 @Suppress("complexity:TooManyFunctions")
-class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializable {
+class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
 
     companion object {
         private const val EVENT_CONTEXT = "AnalyticsSDK"
     }
 
-    fun sendStartConnetionEvent() {
+    fun sendStartConnectionEvent() {
         logEvent(
             eventName = SdkAnalyticsEvents.SDK_START_CONNECTION,
             action = Action.IMPRESSION
         )
     }
 
-    fun sendPurchaseIntentEvent(skuDetails: String) {
+    fun sendPurchaseIntentEvent(skuName: String) {
         val eventData: MutableMap<String, Any> = HashMap()
-        eventData[AnalyticsLabels.SKU_NAME] = skuDetails
+        eventData[AnalyticsLabels.SKU_NAME] = skuName
 
         logEvent(
             eventData,
@@ -29,9 +28,9 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
         )
     }
 
-    fun sendPurchaseViaWebEvent(skuDetails: String) {
+    fun sendPurchaseViaWebEvent(skuName: String) {
         val eventData: MutableMap<String, Any> = HashMap()
-        eventData[AnalyticsLabels.SKU_NAME] = skuDetails
+        eventData[AnalyticsLabels.SKU_NAME] = skuName
 
         logEvent(
             eventData,
@@ -125,14 +124,19 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) : Serializabl
         )
     }
 
-    fun sendCallBindServiceAttemptEvent(payflowMethod: String, priority: Int) {
+    fun sendCallBackendReferralDeeplinkEvent(
+        responseCode: Int?,
+        responseMessage: String?,
+        errorMessage: String? = null
+    ) {
         val eventData: MutableMap<String, Any> = HashMap()
-        eventData[AnalyticsLabels.BIND_SERVICE_METHOD] = payflowMethod
-        eventData[AnalyticsLabels.BIND_SERVICE_PRIORITY] = priority
+        eventData[AnalyticsLabels.BACKEND_RESPONSE_CODE] = responseCode?.toString() ?: ""
+        eventData[AnalyticsLabels.BACKEND_RESPONSE_MESSAGE] = responseMessage ?: ""
+        eventData[AnalyticsLabels.BACKEND_ERROR_MESSAGE] = errorMessage ?: ""
 
         logEvent(
             eventData,
-            SdkBackendPayflowEvents.SDK_CALL_BINDSERVICE_ATTEMPT,
+            SdkBackendPayflowEvents.SDK_CALL_BACKEND_REFERRAL_DEEPLINK,
             Action.IMPRESSION
         )
     }

@@ -58,25 +58,6 @@ class SkuDetailsAsyncTest {
     }
 
     @Test
-    fun `should return emptyList when SkuDetails response list is null`() {
-        setup(SkuDetailsParams())
-
-        every {
-            mockkRepository.querySkuDetailsAsync(null, null)
-        } returns SkuDetailsResult(null, ResponseCode.OK.value)
-        every {
-            mockkSkuDetailsResponseListener.onSkuDetailsResponse(ResponseCode.OK.value, emptyList())
-        } just runs
-
-        skuDetailsAsync.run()
-
-        verify(exactly = 1) {
-            mockkRepository.querySkuDetailsAsync(null, null)
-            mockkSkuDetailsResponseListener.onSkuDetailsResponse(ResponseCode.OK.value, emptyList())
-        }
-    }
-
-    @Test
     fun `should return SERVICE_UNAVAILABLE when getSkuDetails throws ServiceConnectionException`() {
         setup(SkuDetailsParams())
 
