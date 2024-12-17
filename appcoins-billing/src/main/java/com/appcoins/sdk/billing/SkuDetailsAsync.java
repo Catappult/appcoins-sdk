@@ -24,13 +24,7 @@ public class SkuDetailsAsync implements Runnable {
         try {
             SkuDetailsResult response = getSkuDetails();
 
-            if (response.getSkuDetailsList() == null || response.getSkuDetailsList()
-                .isEmpty()) {
-                skuDetailsResponseListener.onSkuDetailsResponse(response.getResponseCode(), new ArrayList<>());
-            } else {
-                skuDetailsResponseListener.onSkuDetailsResponse(response.getResponseCode(),
-                    response.getSkuDetailsList());
-            }
+            skuDetailsResponseListener.onSkuDetailsResponse(response.getResponseCode(), response.getSkuDetailsList());
         } catch (ServiceConnectionException e) {
             logError("Service is not ready to request SkuDetails: " + e);
             skuDetailsResponseListener.onSkuDetailsResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(),
