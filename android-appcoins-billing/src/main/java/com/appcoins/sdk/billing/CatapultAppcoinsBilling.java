@@ -81,7 +81,7 @@ public class CatapultAppcoinsBilling
 
             responseCode = launchBillingFlowResult.getResponseCode();
 
-            if (responseCode != ResponseCode.OK.value) {
+            if (responseCode != ResponseCode.OK.getValue()) {
                 logError("Failed to launch billing flow. ResponseCode: " + responseCode);
                 SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
                 ApplicationUtils.handleActivityResult(billing, sdkPaymentResponse.getResultCode(),
@@ -98,11 +98,11 @@ public class CatapultAppcoinsBilling
                 activity.startActivity(buyIntent);
             }
         } catch (NullPointerException | ActivityNotFoundException e) {
-            return handleErrorTypeResponse(ResponseCode.ERROR.value, e);
+            return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e);
         } catch (ServiceConnectionException e) {
-            return handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.value, e);
+            return handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e);
         }
-        return ResponseCode.OK.value;
+        return ResponseCode.OK.getValue();
     }
 
     private int handleErrorTypeResponse(int value, Exception e) {
@@ -237,7 +237,7 @@ public class CatapultAppcoinsBilling
 
             responseCode = launchBillingFlowResult.getResponseCode();
 
-            if (responseCode != ResponseCode.OK.value) {
+            if (responseCode != ResponseCode.OK.getValue()) {
                 logError("Failed to launch billing flow. ResponseCode: " + responseCode);
                 SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
                 ApplicationUtils.handleActivityResult(billing, sdkPaymentResponse.getResultCode(),
@@ -253,9 +253,9 @@ public class CatapultAppcoinsBilling
                 activity.startActivity(buyIntent);
             }
         } catch (NullPointerException | ActivityNotFoundException e) {
-            handleErrorTypeResponse(ResponseCode.ERROR.value, e);
+            handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e);
         } catch (ServiceConnectionException e) {
-            handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.value, e);
+            handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e);
         }
     }
 }

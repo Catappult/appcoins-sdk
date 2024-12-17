@@ -1,6 +1,6 @@
 package com.appcoins.sdk.billing
 
-enum class ResponseCode(@JvmField val value: Int) {
+enum class ResponseCode(val value: Int) {
     /**
      * Success
      */

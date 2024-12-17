@@ -25,7 +25,7 @@ public class AppCoinsBilling implements Billing {
         try {
             PurchasesResult purchasesResult = repository.getPurchases(skuType);
 
-            if (purchasesResult.getResponseCode() != ResponseCode.OK.value) {
+            if (purchasesResult.getResponseCode() != ResponseCode.OK.getValue()) {
                 return new PurchasesResult(new ArrayList<>(), purchasesResult.getResponseCode());
             }
 
@@ -36,7 +36,7 @@ public class AppCoinsBilling implements Billing {
 
                 if (!verifyPurchase(purchaseData, decodeSignature)) {
                     invalidPurchase.add(purchase);
-                    return new PurchasesResult(Collections.emptyList(), ResponseCode.ERROR.value);
+                    return new PurchasesResult(Collections.emptyList(), ResponseCode.ERROR.getValue());
                 }
             }
 
@@ -46,7 +46,7 @@ public class AppCoinsBilling implements Billing {
             }
             return purchasesResult;
         } catch (ServiceConnectionException e) {
-            return new PurchasesResult(Collections.emptyList(), ResponseCode.SERVICE_UNAVAILABLE.value);
+            return new PurchasesResult(Collections.emptyList(), ResponseCode.SERVICE_UNAVAILABLE.getValue());
         }
     }
 
