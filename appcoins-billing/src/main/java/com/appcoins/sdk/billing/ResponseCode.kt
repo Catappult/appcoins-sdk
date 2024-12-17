@@ -44,11 +44,5 @@ enum class ResponseCode(val value: Int) {
     /**
      * Failure to consume since item is not owned
      */
-    ITEM_NOT_OWNED(8);
-
-    companion object {
-        fun fromValue(value: Int?): ResponseCode? {
-            return ResponseCode.values().find { it.value == value }
-        }
-    }
+    ITEM_NOT_OWNED(8)
 }
