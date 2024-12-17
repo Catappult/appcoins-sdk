@@ -44,5 +44,5 @@ enum class ResponseCode(val value: Int) {
     /**
      * Failure to consume since item is not owned
      */
-    ITEM_NOT_OWNED(8);
+    ITEM_NOT_OWNED(8)
 }
