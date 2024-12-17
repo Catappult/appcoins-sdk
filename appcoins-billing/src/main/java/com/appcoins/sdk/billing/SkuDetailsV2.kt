@@ -53,6 +53,6 @@ data class SkuDetailsV2(
             put("fiat_price_currency_code", price.currency)
             put("fiat_price_amount_micros", price.micros)
             put("title", title)
-            put("description", description ?: "")
+            description?.let { put("description", it) }
         }.toString()
 }

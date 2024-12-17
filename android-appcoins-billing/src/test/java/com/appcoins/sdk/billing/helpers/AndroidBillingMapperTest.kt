@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.appcoins.sdk.billing.SkuDetails
 import com.appcoins.sdk.billing.types.SkuType
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.DETAILS_LIST
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.GET_SKU_DETAILS_ITEM_LIST
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE_LIST
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST
@@ -33,7 +34,7 @@ class AndroidBillingMapperTest {
     fun `mapBundleToHashMapSkuDetails should return correctly formed SkuDetailsResult`() {
         val bundle = Bundle().apply {
             putInt(RESPONSE_CODE, 0)
-            putStringArrayList("DETAILS_LIST", arrayListOf(EXAMPLE_SKU_DETAILS.toJsonString()))
+            putStringArrayList(DETAILS_LIST, arrayListOf(EXAMPLE_SKU_DETAILS.toJsonString()))
         }
         val result = AndroidBillingMapper.mapBundleToHashMapSkuDetails(SkuType.inapp.toString(), bundle)
 
@@ -180,7 +181,7 @@ class AndroidBillingMapperTest {
                 put("fiat_price_currency_code", fiatPriceCurrencyCode)
                 put("fiat_price_amount_micros", fiatPriceAmountMicros)
                 put("title", title)
-                put("description", description)
+                description?.let { put("description", it) }
             }.toString()
     }
 }

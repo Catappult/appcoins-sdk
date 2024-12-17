@@ -27,8 +27,7 @@ class SkuDetailsResponseMapper {
 
                     val sku = jsonObjectItem.getString("sku")
                     val title = jsonObjectItem.getString("title")
-                    val description =
-                        jsonObjectItem.optString("description").takeIf { it.isNotEmpty() } ?: ""
+                    val description = jsonObjectItem.optString("description").takeIf { it.isNotEmpty() }
 
                     val price =
                         jsonObjectItem.getJSONObject("price").let { price ->
