@@ -138,6 +138,7 @@ object WalletUtils {
         } else {
             context.packageManager.queryIntentServices(intent, 0)
         }
+        logInfo("Resolve Information list contains ${resolveInfoList.size} packages for action $action.")
         resolveInfoList.forEach {
             logInfo("Found following packages to bind: $it")
         }
