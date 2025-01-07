@@ -4,7 +4,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.helpers.BindType
 import com.appcoins.sdk.billing.helpers.IBinderWalletNotInstalled
 import com.appcoins.sdk.billing.helpers.WalletUtils
@@ -33,6 +32,7 @@ object WalletBinderUtil {
                     val successfullyBound =
                         bindBillingService(context, connection, paymentFlowMethod)
                     if (successfullyBound) return
+
                 }
 
                 is PaymentFlowMethod.WebPayment -> {
@@ -47,11 +47,24 @@ object WalletBinderUtil {
             }
         }
 
-        if (WalletUtils.hasBillingServiceInstalled()) {
-            logInfo("Billing App is installed but not used found in PaymentFlowMethods.")
-            val successfullyBound = bindBillingService(context, connection)
-            if (successfullyBound) return
+        if (paymentFlowMethods.isNullOrEmpty()) {
+            logInfo(
+                "Payment Flow methods from Payflow Service is $paymentFlowMethods. " +
+                    "Processing local Payment Flows list."
+            )
+            WalletUtils.localPaymentFlowMethods.forEach { paymentFlowMethod ->
+                when (paymentFlowMethod) {
+                    is PaymentFlowMethod.Wallet,
+                    is PaymentFlowMethod.GamesHub,
+                    is PaymentFlowMethod.AptoideGames -> {
+                        val successfullyBound =
+                            bindBillingService(context, connection, paymentFlowMethod)
+                        if (successfullyBound) return
+                    }
+                }
+            }
         }
+
         logInfo("Creating WebAppcoinsBilling service as a fallback.")
         bindType = BindType.BILLING_SERVICE_NOT_INSTALLED
         connection.onServiceConnected(
@@ -82,14 +95,14 @@ object WalletBinderUtil {
 
     private fun bindFailedBehaviour(
         connection: ServiceConnection,
-        paymentFlowMethod: PaymentFlowMethod?
+        paymentFlowMethod: PaymentFlowMethod
     ): Boolean {
         logError("Failed to Bind to Billing App. Attempting URI Communication Protocol.")
         WalletUtils.sdkAnalytics.sendCallBindServiceFailEvent(
-            paymentFlowMethod?.javaClass?.simpleName ?: "unknown_billing_app",
-            paymentFlowMethod?.priority ?: 1
+            paymentFlowMethod.javaClass.simpleName,
+            paymentFlowMethod.priority
         )
-        if (BuildConfig.URI_COMMUNICATION) {
+        if (WalletUtils.isUriBillingSupported()) {
             logInfo("Establishing URI Communication Protocol with Wallet.")
             bindType = BindType.URI_CONNECTION
             connection.onServiceConnected(
@@ -106,31 +119,35 @@ object WalletBinderUtil {
         context: Context,
         connection: ServiceConnection,
         serviceIntent: Intent,
-        paymentFlowMethod: PaymentFlowMethod?
+        paymentFlowMethod: PaymentFlowMethod
     ): Boolean =
         if (context.bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)) {
             logInfo("Binding to the wallet aidl.")
             bindType = BindType.AIDL
             true
         } else {
-            bindFailedBehaviour(connection, paymentFlowMethod)
+            if (paymentFlowMethod is PaymentFlowMethod.Wallet) {
+                bindFailedBehaviour(connection, paymentFlowMethod)
+            } else {
+                false
+            }
         }
 
     private fun bindBillingService(
         context: Context,
         connection: ServiceConnection,
-        paymentFlowMethod: PaymentFlowMethod? = null
+        paymentFlowMethod: PaymentFlowMethod
     ): Boolean {
-        logInfo("Attempting to bind to a Billing App: ${paymentFlowMethod?.name}")
-        val packageName = WalletUtils.billingServicePackageName
-        val iabAction = WalletUtils.billingServiceIabAction
+        logInfo("Attempting to bind to a Billing App: ${paymentFlowMethod.name}")
+
+        val iabAction = WalletUtils.getBillingIabActionNameFromPaymentFlowMethod(paymentFlowMethod)
+        if (!WalletUtils.isAppAvailableToBind(iabAction)) {
+            return false
+        }
+
+        val packageName = WalletUtils.getBillingPackageNameFromPaymentFlowMethod(paymentFlowMethod)
         val serviceIntent = Intent(iabAction)
         serviceIntent.setPackage(packageName)
-        return billingServiceInstalledBehaviour(
-            context,
-            connection,
-            serviceIntent,
-            paymentFlowMethod
-        )
+        return billingServiceInstalledBehaviour(context, connection, serviceIntent, paymentFlowMethod)
     }
 }
