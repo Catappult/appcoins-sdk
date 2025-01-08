@@ -17,6 +17,7 @@ import com.appcoins.sdk.billing.ResponseCode
 import com.appcoins.sdk.billing.UriCommunicationAppcoinsBilling
 import com.appcoins.sdk.billing.activities.BillingFlowActivity.Companion.newIntent
 import com.appcoins.sdk.billing.activities.InstallDialogActivity
+import com.appcoins.sdk.billing.activities.UnavailableBillingDialogActivity
 import com.appcoins.sdk.billing.analytics.AnalyticsManagerProvider
 import com.appcoins.sdk.billing.analytics.IndicativeAnalytics.instanceId
 import com.appcoins.sdk.billing.analytics.IndicativeAnalytics.setIndicativeSuperProperties
@@ -98,6 +99,13 @@ object WalletUtils {
         return intentBundle
     }
 
+    fun startServiceUnavailableDialog(message: String?): Bundle {
+        logInfo("Creating BillingUnavailableDialog bundle.")
+        val intent = UnavailableBillingDialogActivity.newIntent(context, message)
+        val intentBundle = createIntentBundle(intent, ResponseCode.OK.value)
+        return intentBundle
+    }
+
     fun startIndicative(packageName: String?) {
         logInfo("Starting Indicative for $packageName")
         launchIndicative {
@@ -162,6 +170,7 @@ object WalletUtils {
             val result = uriCommunicationAppcoinsBilling.isBillingSupported(3, context.packageName, SkuType.inapp.name)
             result == ResponseCode.OK.value
         } catch (ex: Exception) {
+            logError("Failed to verify if URI Communication Protocol is available.", ex)
             false
         }
     }

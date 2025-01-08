@@ -35,6 +35,9 @@
             android:name="com.appcoins.sdk.billing.activities.UpdateDialogActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
         <activity
+            android:name="com.appcoins.sdk.billing.activities.UnavailableBillingDialogActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+        <activity
             android:configChanges="orientation|screenSize"
             android:name="com.appcoins.sdk.billing.webpayment.WebPaymentActivity"
             android:theme="@style/Theme.AppCompat.Transparent.FitAppWindow" />

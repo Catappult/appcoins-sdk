@@ -8,6 +8,7 @@ import com.appcoins.sdk.billing.helpers.BindType
 import com.appcoins.sdk.billing.helpers.IBinderWalletNotInstalled
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
+import com.appcoins.sdk.billing.service.UnavailableBillingService
 import com.appcoins.sdk.billing.webpayment.WebAppcoinsBilling
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
@@ -24,27 +25,9 @@ object WalletBinderUtil {
         connection: ServiceConnection,
         paymentFlowMethods: List<PaymentFlowMethod>?,
     ) {
-        paymentFlowMethods?.forEach { paymentFlowMethod ->
-            when (paymentFlowMethod) {
-                is PaymentFlowMethod.Wallet,
-                is PaymentFlowMethod.GamesHub,
-                is PaymentFlowMethod.AptoideGames -> {
-                    val successfullyBound =
-                        bindBillingService(context, connection, paymentFlowMethod)
-                    if (successfullyBound) return
-
-                }
-
-                is PaymentFlowMethod.WebPayment -> {
-                    logInfo("Creating WebAppcoinsBilling service.")
-                    bindType = BindType.BILLING_SERVICE_NOT_INSTALLED
-                    connection.onServiceConnected(
-                        ComponentName("", WebAppcoinsBilling::class.java.simpleName),
-                        IBinderWalletNotInstalled()
-                    )
-                    return
-                }
-            }
+        val successfullyInitializedServiceFromPayflow = processPaymentMethods(context, connection, paymentFlowMethods)
+        if (successfullyInitializedServiceFromPayflow) {
+            return
         }
 
         if (paymentFlowMethods.isNullOrEmpty()) {
@@ -52,16 +35,10 @@ object WalletBinderUtil {
                 "Payment Flow methods from Payflow Service is $paymentFlowMethods. " +
                     "Processing local Payment Flows list."
             )
-            WalletUtils.localPaymentFlowMethods.forEach { paymentFlowMethod ->
-                when (paymentFlowMethod) {
-                    is PaymentFlowMethod.Wallet,
-                    is PaymentFlowMethod.GamesHub,
-                    is PaymentFlowMethod.AptoideGames -> {
-                        val successfullyBound =
-                            bindBillingService(context, connection, paymentFlowMethod)
-                        if (successfullyBound) return
-                    }
-                }
+            val successfullyInitializedServiceFromLocalMethods =
+                processPaymentMethods(context, connection, WalletUtils.localPaymentFlowMethods)
+            if (successfullyInitializedServiceFromLocalMethods) {
+                return
             }
         }
 
@@ -71,6 +48,45 @@ object WalletBinderUtil {
             ComponentName("", WebAppcoinsBilling::class.java.simpleName),
             IBinderWalletNotInstalled()
         )
+    }
+
+    private fun processPaymentMethods(
+        context: Context,
+        connection: ServiceConnection,
+        paymentFlowMethods: List<PaymentFlowMethod>?
+    ): Boolean {
+        paymentFlowMethods?.forEach { paymentFlowMethod ->
+            when (paymentFlowMethod) {
+                is PaymentFlowMethod.Wallet,
+                is PaymentFlowMethod.GamesHub,
+                is PaymentFlowMethod.AptoideGames -> {
+                    val successfullyBound =
+                        bindBillingService(context, connection, paymentFlowMethod)
+                    if (successfullyBound) return true
+                }
+
+                is PaymentFlowMethod.WebPayment -> {
+                    logInfo("Creating WebAppcoinsBilling service.")
+                    bindType = BindType.BILLING_SERVICE_NOT_INSTALLED
+                    connection.onServiceConnected(
+                        ComponentName("", WebAppcoinsBilling::class.java.simpleName),
+                        IBinderWalletNotInstalled()
+                    )
+                    return true
+                }
+
+                is PaymentFlowMethod.UnavailableBilling -> {
+                    logInfo("Creating UnavailableBillingService.")
+                    bindType = BindType.UNAVAILABLE_BILLING
+                    connection.onServiceConnected(
+                        ComponentName("", UnavailableBillingService::class.java.simpleName),
+                        IBinderWalletNotInstalled()
+                    )
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     @JvmStatic
@@ -87,6 +103,9 @@ object WalletBinderUtil {
                     connection.onServiceDisconnected(
                         ComponentName(context, UriCommunicationAppcoinsBilling::class.java)
                     )
+
+                BindType.UNAVAILABLE_BILLING ->
+                    connection.onServiceDisconnected(ComponentName(context, UnavailableBillingService::class.java))
             }
         } catch (e: IllegalArgumentException) {
             logError("Failed to finish Billing Repository: $e")
