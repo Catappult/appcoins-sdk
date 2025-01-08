@@ -4,12 +4,12 @@
     <string name="igu_app_new_version_available_popup_update_button">UPDATE</string>
     <string name="igu_app_new_version_available_popup_close_button">SCHLIESSEN</string>
     <!-- SDK - Purchasing when wallet is not installed -->
-    <string name="iab_wallet_not_installed_popup_body">To buy this item you first need to get the %s.</string>
+    <string name="iab_wallet_not_installed_popup_body">Um diesen Gegenstand kaufen zu können, benötigst du das %s.</string>
     <string name="appcoins_wallet">AppCoins Wallet</string>
-    <string name="iab_wallet_not_installed_popup_close_button">CLOSE</string>
+    <string name="iab_wallet_not_installed_popup_close_button">SCHLIESSEN</string>
     <!-- SDK - Purchasing when neither wallet or app store are installed -->
-    <string name="iap_wallet_and_appstore_not_installed_popup_body">You need the AppCoins Wallet to make this purchase. Download it from Aptoide or Play Store and come back to complete your purchase!</string>
-    <string name="iap_wallet_and_appstore_not_installed_popup_button">GOT IT!</string>
+    <string name="iap_wallet_and_appstore_not_installed_popup_body">Du benötigst die AppCoins Wallet, um diesen Einkauf tätigen zu können. Lade sie bei Aptoide oder im Google Play Store herunter und komme zurück, um den Einkauf abzuschließen!</string>
+    <string name="iap_wallet_and_appstore_not_installed_popup_button">GESCHAFFT!</string>
     <!-- SDK - Common -->
-    <string name="iab_wallet_not_installed_popup_close_install">INSTALL WALLET</string>
+    <string name="iab_wallet_not_installed_popup_close_install">WALLET INSTALLIEREN</string>
 </resources>
