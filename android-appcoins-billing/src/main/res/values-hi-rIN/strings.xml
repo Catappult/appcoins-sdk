@@ -2,14 +2,14 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="igu_app_new_version_available_popup_body">There is a new version for this application.\nPlease update to the new version.</string>
     <string name="igu_app_new_version_available_popup_update_button">UPDATE</string>
-    <string name="igu_app_new_version_available_popup_close_button">CLOSE</string>
+    <string name="igu_app_new_version_available_popup_close_button">बंद करें</string>
     <!-- SDK - Purchasing when wallet is not installed -->
-    <string name="iab_wallet_not_installed_popup_body">To buy this item you first need to get the %s.</string>
-    <string name="appcoins_wallet">AppCoins Wallet</string>
-    <string name="iab_wallet_not_installed_popup_close_button">CLOSE</string>
+    <string name="iab_wallet_not_installed_popup_body">यह आइटम खरीदने के लिए आपको सबसे पहले %s प्राप्त करना होगा।</string>
+    <string name="appcoins_wallet">AppCoins वॉलेट</string>
+    <string name="iab_wallet_not_installed_popup_close_button">बंद करें</string>
     <!-- SDK - Purchasing when neither wallet or app store are installed -->
-    <string name="iap_wallet_and_appstore_not_installed_popup_body">You need the AppCoins Wallet to make this purchase. Download it from Aptoide or Play Store and come back to complete your purchase!</string>
-    <string name="iap_wallet_and_appstore_not_installed_popup_button">GOT IT!</string>
+    <string name="iap_wallet_and_appstore_not_installed_popup_body">इस खरीद के लिए आपको AppCoins Wallet की जरूरत है। इसे Aptoide या प्ले स्टोर से डाउनलोड करें और अपनी खरीद पूरी करने के लिए वापस आएँ!</string>
+    <string name="iap_wallet_and_appstore_not_installed_popup_button">समझ गए!</string>
     <!-- SDK - Common -->
-    <string name="iab_wallet_not_installed_popup_close_install">INSTALL WALLET</string>
+    <string name="iab_wallet_not_installed_popup_close_install">वॉलेट स्थापित करें</string>
 </resources>
