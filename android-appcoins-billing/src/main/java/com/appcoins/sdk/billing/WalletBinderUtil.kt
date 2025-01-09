@@ -112,11 +112,11 @@ object WalletBinderUtil {
         }
     }
 
-    private fun bindFailedBehaviour(
+    private fun walletBindingFailedBehaviour(
         connection: ServiceConnection,
         paymentFlowMethod: PaymentFlowMethod
     ): Boolean {
-        logError("Failed to Bind to Billing App. Attempting URI Communication Protocol.")
+        logError("Attempting URI Communication Protocol.")
         WalletUtils.sdkAnalytics.sendCallBindServiceFailEvent(
             paymentFlowMethod.javaClass.simpleName,
             paymentFlowMethod.priority
@@ -140,13 +140,14 @@ object WalletBinderUtil {
         serviceIntent: Intent,
         paymentFlowMethod: PaymentFlowMethod
     ): Boolean =
-        if (context.bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)) {
+        if (false ){// context.bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)) {
             logInfo("Binding to the wallet aidl.")
             bindType = BindType.AIDL
             true
         } else {
+            logError("Failed to Bind to Billing App.")
             if (paymentFlowMethod is PaymentFlowMethod.Wallet) {
-                bindFailedBehaviour(connection, paymentFlowMethod)
+                walletBindingFailedBehaviour(connection, paymentFlowMethod)
             } else {
                 false
             }
