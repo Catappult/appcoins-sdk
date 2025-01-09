@@ -140,7 +140,7 @@ object WalletBinderUtil {
         serviceIntent: Intent,
         paymentFlowMethod: PaymentFlowMethod
     ): Boolean =
-        if (false ){// context.bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)) {
+        if (context.bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)) {
             logInfo("Binding to the wallet aidl.")
             bindType = BindType.AIDL
             true
