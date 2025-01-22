@@ -12,4 +12,10 @@
     <string name="iap_wallet_and_appstore_not_installed_popup_button">متوجه شدم!</string>
     <!-- SDK - Common -->
     <string name="iab_wallet_not_installed_popup_close_install">نصب کیف پول</string>
+    <!-- SDK - Unavailable
+     TODO - Add rest of translations-->
+    <string name="sdk_unavailable_description_body">Billing services are currently not supported.\nPlease contact the support channel.</string>
+    <!-- SDK General
+     TODO - Add rest of translations-->
+    <string name="sdk_general_close_button">CLOSE</string>
 </resources>
