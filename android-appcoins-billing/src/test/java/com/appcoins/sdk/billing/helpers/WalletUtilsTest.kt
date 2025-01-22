@@ -26,8 +26,6 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.util.ReflectionHelpers
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @Suppress("MaxLineLength")
@@ -47,22 +45,6 @@ class WalletUtilsTest {
     @After
     fun end() {
         unmockkAll()
-    }
-
-    @Test
-    fun `hasBillingServiceInstalled should return true when billingServicePackageName is not null`() {
-        WalletUtils.billingServicePackageName = EMPTY_STRING
-        val result = WalletUtils.hasBillingServiceInstalled()
-
-        assertTrue(result)
-    }
-
-    @Test
-    fun `hasBillingServiceInstalled should return false when billingServicePackageName is null`() {
-        WalletUtils.billingServicePackageName = null
-        val result = WalletUtils.hasBillingServiceInstalled()
-
-        assertFalse(result)
     }
 
     @Test

@@ -2,6 +2,8 @@ package com.appcoins.sdk.billing.webpayment
 
 import android.annotation.TargetApi
 import android.app.Activity
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.webkit.WebResourceRequest
@@ -12,6 +14,8 @@ import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
 internal class InternalWebViewClient(private val activity: Activity) : WebViewClient() {
+
+    var shouldAllowExternalApps = false
 
     @Deprecated("Deprecated in Java")
     override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean =
@@ -32,6 +36,7 @@ internal class InternalWebViewClient(private val activity: Activity) : WebViewCl
             logInfo(uri.scheme.toString())
 
             if (canHandleWebDeeplinkScheme(uri)) return true
+            if (canHandleExternalApps(uri)) return true
         } catch (e: Exception) {
             logError("There was a failure with the URL to Override.", e)
         }
@@ -47,6 +52,26 @@ internal class InternalWebViewClient(private val activity: Activity) : WebViewCl
         } else {
             false
         }
+
+    private fun canHandleExternalApps(uri: Uri): Boolean {
+        if (uri.scheme.isNullOrEmpty()) return false
+        return if (shouldAllowExternalApps) {
+            if (uri.scheme?.startsWith("http://") == true || uri.scheme?.startsWith("https://") == true) {
+                false
+            } else {
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, uri)
+                    activity.startActivity(intent)
+                    true
+                } catch (ex: ActivityNotFoundException) {
+                    logError("Failed to start URI: $uri", ex)
+                    true
+                }
+            }
+        } else {
+            return false
+        }
+    }
 
     private companion object {
         const val WEB_DEEPLINK_SCHEME = "web-iap-result"

@@ -92,6 +92,7 @@ public class RepositoryServiceConnection
             logInfo("PaymentFlowMethods is null.");
         }
         WalletBinderUtil.finishBillingRepository(context, this);
-        WalletBinderUtil.initializeBillingRepository(context, this, paymentFlowMethods);
+        Runnable runnable = () -> WalletBinderUtil.initializeBillingRepository(context, this, paymentFlowMethods);
+        new Thread(runnable).start();
     }
 }

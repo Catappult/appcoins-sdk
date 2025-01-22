@@ -40,6 +40,13 @@ class PayflowResponseMapper {
                                     priority
                                 )
 
+                            "unavailable_billing" ->
+                                PaymentFlowMethod.UnavailableBilling.fromJsonObject(
+                                    paymentMethodsObject.optJSONObject(methodName),
+                                    methodName,
+                                    priority
+                                )
+
                             else -> null
                         }
                     }.toCollection(arrayListOf())
@@ -190,6 +197,27 @@ sealed class PaymentFlowMethod(
         }
     }
 
+    class UnavailableBilling(
+        name: String,
+        priority: Int,
+        val errorMessage: String?
+    ) : PaymentFlowMethod(name, priority) {
+        companion object {
+            fun fromJsonObject(
+                paymentMethodsJsonObject: JSONObject?,
+                methodName: String,
+                priority: Int
+            ): UnavailableBilling {
+                val message =
+                    paymentMethodsJsonObject
+                        ?.optString("error_message")
+                        ?.takeIf { it.isNotEmpty() }
+
+                return UnavailableBilling(methodName, priority, message)
+            }
+        }
+    }
+
     override fun toString(): String =
         "${this.javaClass.name}: [name: $name, priority: $priority]"
 
@@ -215,5 +243,8 @@ sealed class PaymentFlowMethod(
 
         fun getPaymentFlowFromPayflowMethod(payflowMethodsList: MutableList<PaymentFlowMethod>?): String? =
             (payflowMethodsList?.firstOrNull { it is WebPayment } as WebPayment?)?.paymentFlow
+
+        fun getUnavailableBillingMessage(payflowMethodsList: MutableList<PaymentFlowMethod>): String? =
+            (payflowMethodsList.firstOrNull { it is UnavailableBilling } as UnavailableBilling?)?.errorMessage
     }
 }

@@ -40,6 +40,8 @@ class WebPaymentActivity :
     WalletPaymentDeeplinkResponseStream.Consumer<SDKWebResponse> {
 
     private var webView: WebView? = null
+    private val internalWebViewClient: InternalWebViewClient by lazy { InternalWebViewClient(this) }
+
     private var webViewContainer: LinearLayout? = null
     private var baseConstraintLayout: ConstraintLayout? = null
 
@@ -182,6 +184,11 @@ class WebPaymentActivity :
         return true
     }
 
+    @JavascriptInterface
+    override fun allowExternalApps(allow: Boolean) {
+        internalWebViewClient.shouldAllowExternalApps = allow
+    }
+
     private fun connectViews() {
         webView = findViewById(R.id.web_view)
         webViewContainer = findViewById(R.id.container_for_web_view)
@@ -207,7 +214,7 @@ class WebPaymentActivity :
         }
 
         webView?.addJavascriptInterface(this as SDKWebPaymentInterface, "SDKWebPaymentInterface")
-        webView?.webViewClient = InternalWebViewClient(this)
+        webView?.webViewClient = internalWebViewClient
         logDebug("Loading WebView for URL: $url")
         logInfo("Loading WebView to start Web Payment.")
         webView?.loadUrl(url)
