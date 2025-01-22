@@ -2,6 +2,8 @@ package com.appcoins.sdk.billing.helpers
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager.MATCH_ALL
+import android.content.pm.PackageManager.ResolveInfoFlags
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -9,10 +11,13 @@ import android.os.Looper
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import com.appcoins.billing.sdk.BuildConfig
+import com.appcoins.communication.requester.MessageRequesterFactory
 import com.appcoins.sdk.billing.BuyItemProperties
 import com.appcoins.sdk.billing.ResponseCode
+import com.appcoins.sdk.billing.UriCommunicationAppcoinsBilling
 import com.appcoins.sdk.billing.activities.BillingFlowActivity.Companion.newIntent
 import com.appcoins.sdk.billing.activities.InstallDialogActivity
+import com.appcoins.sdk.billing.activities.UnavailableBillingDialogActivity
 import com.appcoins.sdk.billing.analytics.AnalyticsManagerProvider
 import com.appcoins.sdk.billing.analytics.IndicativeAnalytics.instanceId
 import com.appcoins.sdk.billing.analytics.IndicativeAnalytics.setIndicativeSuperProperties
@@ -23,7 +28,9 @@ import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.AptoideGames
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.GamesHub
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Wallet
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.WebPayment.WebViewDetails
+import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
+import com.appcoins.sdk.billing.types.SkuType
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.KEY_BUY_INTENT
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
 import com.appcoins.sdk.billing.webpayment.WebPaymentActivity.Companion.newIntent
@@ -36,13 +43,13 @@ import java.util.concurrent.CountDownLatch
 
 @Suppress("StaticFieldLeak", "TooManyFunctions")
 object WalletUtils {
-    var billingServicePackageName: String? = null
-    var billingServiceIabAction: String? = null
     var paymentFlowMethods: List<PaymentFlowMethod> = emptyList()
-        set(paymentFlowMethods) {
-            field = paymentFlowMethods
-            setBillingServiceInfoToBind()
-        }
+    val localPaymentFlowMethods =
+        listOf(
+            Wallet("wallet", 1),
+            GamesHub("games_hub_checkout", 2),
+            AptoideGames("aptoide_games", 3)
+        )
     var webPaymentUrl: String? = null
     lateinit var context: Context
 
@@ -53,9 +60,6 @@ object WalletUtils {
         val heightPixels = displayMetrics.heightPixels
         buildUserAgent(widthPixels, heightPixels)
     }
-
-    fun hasBillingServiceInstalled(): Boolean =
-        billingServicePackageName != null
 
     fun startWebFirstPayment(sku: String, skuType: String, webViewDetails: WebViewDetails?): Bundle {
         logInfo("Creating WebPayment bundle.")
@@ -95,6 +99,13 @@ object WalletUtils {
         return intentBundle
     }
 
+    fun startServiceUnavailableDialog(message: String?): Bundle {
+        logInfo("Creating BillingUnavailableDialog bundle.")
+        val intent = UnavailableBillingDialogActivity.newIntent(context, message)
+        val intentBundle = createIntentBundle(intent, ResponseCode.OK.value)
+        return intentBundle
+    }
+
     fun startIndicative(packageName: String?) {
         logInfo("Starting Indicative for $packageName")
         launchIndicative {
@@ -109,6 +120,58 @@ object WalletUtils {
                 setIndicativeSuperProperties(packageName, BuildConfig.VERSION_CODE, getDeviceInfo())
                 sdkAnalytics.sendStartConnectionEvent()
             }.start()
+        }
+    }
+
+    fun getBillingPackageNameFromPaymentFlowMethod(paymentFlowMethod: PaymentFlowMethod): String? =
+        when (paymentFlowMethod) {
+            is Wallet -> BuildConfig.APPCOINS_WALLET_PACKAGE_NAME
+            is GamesHub -> BuildConfig.GAMESHUB_PACKAGE_NAME
+            is AptoideGames -> BuildConfig.APTOIDE_GAMES_PACKAGE_NAME
+            else -> null
+        }
+
+    fun getBillingIabActionNameFromPaymentFlowMethod(paymentFlowMethod: PaymentFlowMethod): String? =
+        when (paymentFlowMethod) {
+            is Wallet -> BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION
+            is GamesHub -> BuildConfig.GAMESHUB_IAB_BIND_ACTION
+            is AptoideGames -> BuildConfig.APTOIDE_GAMES_IAB_BIND_ACTION
+            else -> null
+        }
+
+    fun isAppAvailableToBind(action: String?): Boolean {
+        val intent = Intent(action)
+        val resolveInfoList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.packageManager.queryIntentServices(intent, ResolveInfoFlags.of(MATCH_ALL.toLong()))
+        } else {
+            context.packageManager.queryIntentServices(intent, 0)
+        }
+        logInfo("Resolve Information list contains ${resolveInfoList.size} packages for action $action.")
+        resolveInfoList.forEach {
+            logInfo("Found following packages to bind: $it")
+        }
+        return resolveInfoList.isNotEmpty()
+    }
+
+    fun isUriBillingSupported(): Boolean {
+        if (!BuildConfig.URI_COMMUNICATION) {
+            return false
+        }
+        val messageRequester =
+            MessageRequesterFactory.create(
+                context,
+                BuildConfig.APPCOINS_WALLET_PACKAGE_NAME,
+                "appcoins://billing/communication/processor/1",
+                "appcoins://billing/communication/requester/1",
+                BdsService.TIME_OUT_IN_MILLIS
+            )
+        val uriCommunicationAppcoinsBilling = UriCommunicationAppcoinsBilling(messageRequester)
+        return try {
+            val result = uriCommunicationAppcoinsBilling.isBillingSupported(3, context.packageName, SkuType.inapp.name)
+            result == ResponseCode.OK.value
+        } catch (ex: Exception) {
+            logError("Failed to verify if URI Communication Protocol is available.", ex)
+            false
         }
     }
 
@@ -155,89 +218,6 @@ object WalletUtils {
         Bundle().apply {
             putInt(RESPONSE_CODE, responseCode)
         }
-
-    @Suppress("NestedBlockDepth")
-    private fun setBillingServiceInfoToBind() {
-        clearBillingServiceInfo()
-        if (paymentFlowMethods.isEmpty()) {
-            setDefaultBillingServiceInfoToBind()
-        } else {
-            for (method in paymentFlowMethods) {
-                when (method) {
-                    is Wallet ->
-                        if (isAppAvailableToBind(BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION)) {
-                            setWalletBillingInfo()
-                        }
-
-                    is GamesHub ->
-                        if (isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION) ||
-                            isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE)
-                        ) {
-                            setGamesHubBillingInfo()
-                        }
-
-                    is AptoideGames ->
-                        if (isAppAvailableToBind(BuildConfig.APTOIDE_GAMES_IAB_BIND_ACTION)) {
-                            setAptoideGamesBillingInfo()
-                        }
-
-                    else -> clearBillingServiceInfo()
-                }
-                if (billingServicePackageName != null) {
-                    break
-                }
-            }
-        }
-    }
-
-    private fun setDefaultBillingServiceInfoToBind() =
-        when {
-            isAppAvailableToBind(BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION) -> setWalletBillingInfo()
-            isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION) -> setGamesHubBillingInfo()
-            isAppAvailableToBind(BuildConfig.APTOIDE_GAMES_IAB_BIND_ACTION) -> setAptoideGamesBillingInfo()
-            else -> clearBillingServiceInfo()
-        }
-
-    private fun setWalletBillingInfo() {
-        logInfo("Setting Wallet Billing info.")
-        billingServicePackageName = BuildConfig.APPCOINS_WALLET_PACKAGE_NAME
-        billingServiceIabAction = BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION
-    }
-
-    private fun setGamesHubBillingInfo() {
-        logInfo("Setting GamesHub Billing info.")
-        val shouldUseAlternative = BuildConfig.DEBUG && !isAppAvailableToBind(BuildConfig.GAMESHUB_IAB_BIND_ACTION)
-        billingServicePackageName =
-            if (shouldUseAlternative) {
-                BuildConfig.GAMESHUB_PACKAGE_NAME_ALTERNATIVE
-            } else {
-                BuildConfig.GAMESHUB_PACKAGE_NAME
-            }
-        billingServiceIabAction =
-            if (shouldUseAlternative) {
-                BuildConfig.GAMESHUB_IAB_BIND_ACTION_ALTERNATIVE
-            } else {
-                BuildConfig.GAMESHUB_IAB_BIND_ACTION
-            }
-    }
-
-    private fun setAptoideGamesBillingInfo() {
-        logInfo("Setting AptoideGames Billing info.")
-        billingServicePackageName = BuildConfig.APTOIDE_GAMES_PACKAGE_NAME
-        billingServiceIabAction = BuildConfig.APTOIDE_GAMES_IAB_BIND_ACTION
-    }
-
-    private fun clearBillingServiceInfo() {
-        logInfo("Clearing Billing info.")
-        billingServicePackageName = null
-        billingServiceIabAction = null
-    }
-
-    private fun isAppAvailableToBind(action: String?): Boolean {
-        val intent = Intent(action)
-        val resolveInfoList = context.packageManager.queryIntentServices(intent, 0)
-        return resolveInfoList.isNotEmpty()
-    }
 
     private fun buildUserAgent(widthPixels: Int, heightPixels: Int): String {
         return "AppCoinsGuestSDK/${BuildConfig.VERSION_NAME} (Linux; Android ${

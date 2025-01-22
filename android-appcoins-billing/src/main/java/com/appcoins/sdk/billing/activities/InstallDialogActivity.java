@@ -83,7 +83,7 @@ public class InstallDialogActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (WalletUtils.INSTANCE.hasBillingServiceInstalled()) {
+        if (WalletUtils.INSTANCE.isAppAvailableToBind(BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION)) {
             shouldSendCancelResult = false;
             showLoadingDialog();
             sdkAnalytics.installWalletAptoideSuccess();

@@ -22,5 +22,11 @@ data class SDKPaymentResponse(
                 RESULT_OK,
                 Intent().apply { putExtra(RESPONSE_CODE, ResponseCode.ERROR.value) }
             )
+
+        fun createServiceUnavailableResponse() =
+            SDKPaymentResponse(
+                RESULT_OK,
+                Intent().apply { putExtra(RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.value) }
+            )
     }
 }

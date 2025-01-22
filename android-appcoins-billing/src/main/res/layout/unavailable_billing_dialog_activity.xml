@@ -17,52 +17,29 @@
         android:paddingVertical="20dp">
 
         <TextView
+            android:id="@+id/text_view_unavailable_billing_error_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="@string/igu_app_new_version_available_popup_body"
+            android:text="@string/sdk_unavailable_description_body"
             android:textColor="#4a4a4a" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:baselineAligned="false"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:weightSum="2">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start">
+            android:gravity="center">
 
                 <Button
                     android:id="@+id/button_close"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:text="@string/igu_app_new_version_available_popup_close_button"
-                    android:textColor="#8f000000" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="end">
-
-                <Button
-                    android:id="@+id/button_update"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:paddingVertical="8dp"
                     android:paddingHorizontal="12dp"
                     android:background="@drawable/yellow_rounded_button_background"
-                    android:text="@string/igu_app_new_version_available_popup_update_button"
+                    android:text="@string/sdk_general_close_button"
                     android:textColor="#FFFFFFFF" />
-            </LinearLayout>
 
         </LinearLayout>
 
