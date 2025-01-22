@@ -12,4 +12,7 @@ interface SDKWebPaymentInterface {
 
     @JavascriptInterface
     fun startExternalPayment(url: String): Boolean
+
+    @JavascriptInterface
+    fun allowExternalApps(allow: Boolean)
 }
