@@ -56,7 +56,7 @@ internal class InternalWebViewClient(private val activity: Activity) : WebViewCl
     private fun canHandleExternalApps(uri: Uri): Boolean {
         if (uri.scheme.isNullOrEmpty()) return false
         return if (shouldAllowExternalApps) {
-            if (uri.scheme?.startsWith("http://") == true || uri.scheme?.startsWith("https://") == true) {
+            if (uri.scheme == "http" || uri.scheme == "https") {
                 false
             } else {
                 try {
