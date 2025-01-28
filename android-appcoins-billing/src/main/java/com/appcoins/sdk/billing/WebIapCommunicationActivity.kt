@@ -4,6 +4,7 @@ import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
 import com.appcoins.sdk.billing.listeners.ExternalPaymentResponseStream
+import com.appcoins.sdk.billing.listeners.WebPaymentActionStream
 import com.appcoins.sdk.billing.models.ResponseType
 import com.appcoins.sdk.billing.usecases.HandlePurchaseResultFromWalletDeeplink
 import com.appcoins.sdk.core.logger.Logger.logDebug
@@ -28,6 +29,9 @@ class WebIapCommunicationActivity : Activity() {
             when (ResponseType.fromValue(responseTypeReceived)) {
                 ResponseType.EXTERNAL_PAYMENT ->
                     ExternalPaymentResponseStream.getInstance().emit()
+
+                ResponseType.WEB_PAYMENT_ACTION ->
+                    WebPaymentActionStream.getInstance().emit(uri.toString())
 
                 else -> handleOldResult(uri)
             }
