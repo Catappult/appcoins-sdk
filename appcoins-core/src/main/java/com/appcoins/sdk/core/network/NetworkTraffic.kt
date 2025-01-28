@@ -6,7 +6,6 @@ import android.os.Build
 import com.appcoins.sdk.core.logger.Logger.logInfo
 import com.appcoins.sdk.core.logger.Logger.logWarning
 
-
 class NetworkTraffic {
 
     fun getAverageSpeed(context: Context): String? {
@@ -17,7 +16,7 @@ class NetworkTraffic {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> {
                     val networkCapabilities =
                         connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-                    val downstreamSpeedInMbps = networkCapabilities!!.linkDownstreamBandwidthKbps / 1000
+                    val downstreamSpeedInMbps = networkCapabilities!!.linkDownstreamBandwidthKbps / MBPS_DIVIDER
 
                     logInfo("Network speed obtained: $downstreamSpeedInMbps")
                     downstreamSpeedInMbps.toString()
@@ -43,5 +42,9 @@ class NetworkTraffic {
             logWarning("There was an error obtaining network speed. ${ex.message}")
             return null
         }
+    }
+
+    private companion object {
+        const val MBPS_DIVIDER = 1000
     }
 }
