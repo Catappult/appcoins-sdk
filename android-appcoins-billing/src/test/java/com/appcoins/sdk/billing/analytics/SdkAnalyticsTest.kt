@@ -1,10 +1,13 @@
 package com.appcoins.sdk.billing.analytics
 
+import android.content.Context
 import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
 import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager.Action
+import com.appcoins.sdk.billing.helpers.WalletUtils
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.runs
 import io.mockk.verify
 import org.junit.Before
@@ -19,10 +22,13 @@ class SdkAnalyticsTest {
     private lateinit var sdkAnalytics: SdkAnalytics
 
     private val mockkAnalyticsManager = mockk<AnalyticsManager>()
+    private val mockkContext = mockk<Context>()
 
     @Before
     fun setup() {
         sdkAnalytics = SdkAnalytics(mockkAnalyticsManager)
+        mockkStatic(WalletUtils::class)
+        WalletUtils.context = mockkContext
     }
 
     @Test

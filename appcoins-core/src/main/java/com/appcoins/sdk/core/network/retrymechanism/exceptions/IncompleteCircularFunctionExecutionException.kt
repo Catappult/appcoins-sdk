@@ -1,3 +1,3 @@
-package com.appcoins.sdk.core.retrymechanism.exceptions
+package com.appcoins.sdk.core.network.retrymechanism.exceptions
 
 class IncompleteCircularFunctionExecutionException(message: String) : Exception(message)

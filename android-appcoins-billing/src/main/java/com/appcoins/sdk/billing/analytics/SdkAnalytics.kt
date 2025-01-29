@@ -2,6 +2,8 @@ package com.appcoins.sdk.billing.analytics
 
 import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
 import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager.Action
+import com.appcoins.sdk.billing.helpers.WalletUtils
+import com.appcoins.sdk.core.network.NetworkTraffic
 
 @Suppress("complexity:TooManyFunctions")
 class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
@@ -269,6 +271,7 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         val eventData: MutableMap<String, Any> = HashMap()
         eventData[AnalyticsLabels.FAILURE_TYPE] = failureType
         failureMessage?.let { eventData[AnalyticsLabels.FAILURE_MESSAGE] = it }
+        eventData[AnalyticsLabels.NETWORK_SPEED] = NetworkTraffic().getAverageSpeed(WalletUtils.context) ?: "null"
 
         logEvent(
             eventData,
