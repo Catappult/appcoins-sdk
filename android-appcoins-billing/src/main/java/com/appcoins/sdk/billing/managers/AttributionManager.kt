@@ -16,8 +16,8 @@ import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.TIMEOUT_30_SECS
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
-import com.appcoins.sdk.core.retrymechanism.exceptions.IncompleteCircularFunctionExecutionException
-import com.appcoins.sdk.core.retrymechanism.retryUntilSuccess
+import com.appcoins.sdk.core.network.retrymechanism.exceptions.IncompleteCircularFunctionExecutionException
+import com.appcoins.sdk.core.network.retrymechanism.retryUntilSuccess
 
 object AttributionManager {
     private val packageName by lazy { WalletUtils.context.packageName }

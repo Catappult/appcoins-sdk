@@ -1,8 +1,8 @@
-package com.appcoins.sdk.core.retrymechanism
+package com.appcoins.sdk.core.network.retrymechanism
 
 import com.appcoins.sdk.core.logger.Logger
-import com.appcoins.sdk.core.retrymechanism.exceptions.IncompleteCircularFunctionExecutionException
-import com.appcoins.sdk.core.retrymechanism.exceptions.MaxAttemptsReachedException
+import com.appcoins.sdk.core.network.retrymechanism.exceptions.IncompleteCircularFunctionExecutionException
+import com.appcoins.sdk.core.network.retrymechanism.exceptions.MaxAttemptsReachedException
 import io.mockk.mockkStatic
 import io.mockk.verify
 import org.junit.Before

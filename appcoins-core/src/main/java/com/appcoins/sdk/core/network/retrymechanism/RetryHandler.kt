@@ -1,9 +1,9 @@
-package com.appcoins.sdk.core.retrymechanism
+package com.appcoins.sdk.core.network.retrymechanism
 
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
-import com.appcoins.sdk.core.retrymechanism.exceptions.IncompleteCircularFunctionExecutionException
-import com.appcoins.sdk.core.retrymechanism.exceptions.MaxAttemptsReachedException
+import com.appcoins.sdk.core.network.retrymechanism.exceptions.IncompleteCircularFunctionExecutionException
+import com.appcoins.sdk.core.network.retrymechanism.exceptions.MaxAttemptsReachedException
 
 fun <T> retryUntilSuccess(
     retries: Int? = null,

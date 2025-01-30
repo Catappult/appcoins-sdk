@@ -28,6 +28,7 @@ object AnalyticsLabels {
     const val PAYMENT_STATUS_MESSAGE = "status_message"
     const val FAILURE_TYPE = "failure_type"
     const val FAILURE_MESSAGE = "failure_message"
+    const val NETWORK_SPEED = "network_speed"
 }
 
 object SdkAnalyticsEvents {
