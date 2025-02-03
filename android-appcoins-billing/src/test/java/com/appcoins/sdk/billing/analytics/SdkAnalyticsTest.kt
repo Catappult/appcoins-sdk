@@ -409,11 +409,12 @@ class SdkAnalyticsTest {
 
     @Test
     fun `appUpdateImpression should send event`() {
+        val sdkLaunchAppUpdateDialogRequest = SdkLaunchAppUpdateDialogEvents.SdkLaunchAppUpdateDialogRequest()
         every {
             mockkAnalyticsManager.logEvent(
-                any(),
-                SdkUpdateFlowEvents.SDK_APP_UPDATE_IMPRESSION,
-                Action.IMPRESSION,
+                sdkLaunchAppUpdateDialogRequest.data,
+                sdkLaunchAppUpdateDialogRequest.name,
+                sdkLaunchAppUpdateDialogRequest.action,
                 EVENT_CONTEXT
             )
         } just runs
@@ -422,9 +423,9 @@ class SdkAnalyticsTest {
 
         verify(exactly = 1) {
             mockkAnalyticsManager.logEvent(
-                any(),
-                SdkUpdateFlowEvents.SDK_APP_UPDATE_IMPRESSION,
-                Action.IMPRESSION,
+                sdkLaunchAppUpdateDialogRequest.data,
+                sdkLaunchAppUpdateDialogRequest.name,
+                sdkLaunchAppUpdateDialogRequest.action,
                 EVENT_CONTEXT
             )
         }
@@ -434,11 +435,16 @@ class SdkAnalyticsTest {
     fun `appUpdateClick should send event`() {
         val updateAction = "example_update_action"
 
+        val eventData: MutableMap<String, Any> = HashMap()
+        eventData[AnalyticsLabels.APP_UPDATE_ACTION] = updateAction
+
+        val sdkLaunchAppUpdateDialogAction = SdkLaunchAppUpdateDialogEvents.SdkLaunchAppUpdateDialogAction(eventData)
+
         every {
             mockkAnalyticsManager.logEvent(
-                any(),
-                SdkUpdateFlowEvents.SDK_APP_UPDATE_CLICK,
-                Action.CLICK,
+                sdkLaunchAppUpdateDialogAction.data,
+                sdkLaunchAppUpdateDialogAction.name,
+                sdkLaunchAppUpdateDialogAction.action,
                 EVENT_CONTEXT
             )
         } just runs
@@ -447,9 +453,9 @@ class SdkAnalyticsTest {
 
         verify(exactly = 1) {
             mockkAnalyticsManager.logEvent(
-                any(),
-                SdkUpdateFlowEvents.SDK_APP_UPDATE_CLICK,
-                Action.CLICK,
+                sdkLaunchAppUpdateDialogAction.data,
+                sdkLaunchAppUpdateDialogAction.name,
+                sdkLaunchAppUpdateDialogAction.action,
                 EVENT_CONTEXT
             )
         }

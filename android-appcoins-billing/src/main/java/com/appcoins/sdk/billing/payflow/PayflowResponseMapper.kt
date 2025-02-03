@@ -23,7 +23,16 @@ class PayflowResponseMapper {
             return PayflowMethodResponse(response.responseCode, arrayListOf(), arrayListOf())
         }
 
-        val paymentFlowList = runCatching {
+        val paymentFlowList = mapPaymentFlowMethods(response)
+
+        val analyticsFlowSeverityLevels: ArrayList<AnalyticsFlowSeverityLevel>? =
+            mapAnalyticsFlowSeverityLevels(response)
+
+        return PayflowMethodResponse(response.responseCode, paymentFlowList, analyticsFlowSeverityLevels)
+    }
+
+    private fun mapPaymentFlowMethods(response: RequestResponse): ArrayList<PaymentFlowMethod> =
+        runCatching {
             JSONObject(response.response).optJSONObject("payment_methods")
                 ?.let { paymentMethodsObject ->
                     paymentMethodsObject.keys().asSequence().mapNotNull { methodName: String ->
@@ -56,30 +65,27 @@ class PayflowResponseMapper {
             arrayListOf()
         }
 
-        val analyticsFlowSeverityLevels: ArrayList<AnalyticsFlowSeverityLevel> =
-            runCatching {
-                JSONObject(response.response).optJSONArray("analytics_flow_severity_levels")
-                    ?.let { analyticsFlowSeverityLevelsJsonArray ->
-                        val analyticsFlowSeverityLevels = arrayListOf<AnalyticsFlowSeverityLevel>()
-                        for (i in 0 until analyticsFlowSeverityLevelsJsonArray.length()) {
-                            val analyticsFlowSeverityLevelJsonObject =
-                                analyticsFlowSeverityLevelsJsonArray.optJSONObject(i)
-                            analyticsFlowSeverityLevels.add(
-                                AnalyticsFlowSeverityLevel(
-                                    analyticsFlowSeverityLevelJsonObject.optString("flow"),
-                                    analyticsFlowSeverityLevelJsonObject.optInt("severity_level"),
-                                )
+    private fun mapAnalyticsFlowSeverityLevels(response: RequestResponse): ArrayList<AnalyticsFlowSeverityLevel>? =
+        runCatching {
+            JSONObject(response.response).optJSONArray("analytics_flow_severity_levels")
+                ?.let { analyticsFlowSeverityLevelsJsonArray ->
+                    val analyticsFlowSeverityLevels = arrayListOf<AnalyticsFlowSeverityLevel>()
+                    for (i in 0 until analyticsFlowSeverityLevelsJsonArray.length()) {
+                        val analyticsFlowSeverityLevelJsonObject =
+                            analyticsFlowSeverityLevelsJsonArray.optJSONObject(i)
+                        analyticsFlowSeverityLevels.add(
+                            AnalyticsFlowSeverityLevel(
+                                analyticsFlowSeverityLevelJsonObject.optString("flow"),
+                                analyticsFlowSeverityLevelJsonObject.optInt("severity_level"),
                             )
-                        }
-                        analyticsFlowSeverityLevels
-                    } ?: arrayListOf()
-            }.getOrElse {
-                logError("There was an error mapping the AnalyticsFlowSeverityLevels.", Exception(it))
-                arrayListOf()
-            }
-
-        return PayflowMethodResponse(response.responseCode, paymentFlowList, analyticsFlowSeverityLevels)
-    }
+                        )
+                    }
+                    analyticsFlowSeverityLevels
+                }
+        }.getOrElse {
+            logError("There was an error mapping the AnalyticsFlowSeverityLevels.", Exception(it))
+            null
+        }
 }
 
 data class PayflowMethodResponse(

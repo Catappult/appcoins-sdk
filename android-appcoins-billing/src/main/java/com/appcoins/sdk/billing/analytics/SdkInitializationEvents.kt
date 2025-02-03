@@ -3,7 +3,7 @@ package com.appcoins.sdk.billing.analytics
 import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
 
 object SdkInitializationEvents {
-    class SdkStartConnection() :
+    class SdkStartConnection :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_START_CONNECTION,
