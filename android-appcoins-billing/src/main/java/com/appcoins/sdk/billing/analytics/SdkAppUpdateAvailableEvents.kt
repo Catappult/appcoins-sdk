@@ -8,12 +8,12 @@ object SdkAppUpdateAvailableEvents {
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_APP_UPDATE_AVAILABLE_REQUEST,
-            hashMapOf(),
+            mutableMapOf(),
             APP_UPDATE_AVAILABLE_FLOW,
             1
         )
 
-    class SdkAppUpdateAvailableResult(data: HashMap<String, String>) :
+    class SdkAppUpdateAvailableResult(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_APP_UPDATE_AVAILABLE_RESULT,
@@ -26,7 +26,7 @@ object SdkAppUpdateAvailableEvents {
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_APP_UPDATE_AVAILABLE_MAIN_THREAD_FAILURE,
-            hashMapOf(),
+            mutableMapOf(),
             APP_UPDATE_AVAILABLE_FLOW,
             1
         )
@@ -35,7 +35,7 @@ object SdkAppUpdateAvailableEvents {
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_APP_UPDATE_AVAILABLE_FAILURE_TO_OBTAIN_RESULT,
-            hashMapOf(),
+            mutableMapOf(),
             APP_UPDATE_AVAILABLE_FLOW,
             1
         )

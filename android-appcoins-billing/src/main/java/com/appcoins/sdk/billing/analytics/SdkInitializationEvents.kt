@@ -7,12 +7,12 @@ object SdkInitializationEvents {
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_START_CONNECTION,
-            hashMapOf(),
+            mutableMapOf(),
             SDK_INITIALIZATION_FLOW,
             1
         )
 
-    class SdkFinishConnection(data: HashMap<String, String>) :
+    class SdkFinishConnection(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_FINISH_CONNECTION,
@@ -21,7 +21,7 @@ object SdkInitializationEvents {
             1
         )
 
-    class SdkServiceConnected(data: HashMap<String, String>) :
+    class SdkServiceConnected(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_SERVICE_CONNECTED,
@@ -30,7 +30,7 @@ object SdkInitializationEvents {
             1
         )
 
-    class SdkServiceConnectionFailure(data: HashMap<String, String>) :
+    class SdkServiceConnectionFailure(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_SERVICE_CONNECTION_FAILED,
@@ -39,7 +39,7 @@ object SdkInitializationEvents {
             1
         )
 
-    class SdkAttributionRequest(data: HashMap<String, String>) :
+    class SdkAttributionRequest(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_ATTRIBUTION_REQUEST,
@@ -48,7 +48,7 @@ object SdkInitializationEvents {
             3
         )
 
-    class SdkAttributionResult(data: HashMap<String, String>) :
+    class SdkAttributionResult(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_ATTRIBUTION_RESULT,
@@ -57,7 +57,7 @@ object SdkInitializationEvents {
             2
         )
 
-    class SdkAttributionRequestFailure(data: HashMap<String, String>) :
+    class SdkAttributionRequestFailure(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_ATTRIBUTION_REQUEST_FAILURE,
@@ -66,7 +66,7 @@ object SdkInitializationEvents {
             1
         )
 
-    class SdkAttributionRetryAttempt(data: HashMap<String, String>) :
+    class SdkAttributionRetryAttempt(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_ATTRIBUTION_RETRY_ATTEMPT,
@@ -75,7 +75,7 @@ object SdkInitializationEvents {
             3
         )
 
-    class SdkPayflowRequest(data: HashMap<String, String>) :
+    class SdkPayflowRequest(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_PAYFLOW_REQUEST,
@@ -84,7 +84,7 @@ object SdkInitializationEvents {
             3
         )
 
-    class SdkPayflowResult(data: HashMap<String, String>) :
+    class SdkPayflowResult(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_PAYFLOW_RESULT,
@@ -93,7 +93,7 @@ object SdkInitializationEvents {
             2
         )
 
-    class SdkAppInstallationTrigger(data: HashMap<String, String>) :
+    class SdkAppInstallationTrigger(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_APP_INSTALLATION_TRIGGER,

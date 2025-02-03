@@ -4,7 +4,7 @@ import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
 
 object SdkConsumePurchaseEvents {
 
-    class SdkConsumePurchaseRequest(data: HashMap<String, String>) :
+    class SdkConsumePurchaseRequest(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_CONSUME_PURCHASE_REQUEST,
@@ -13,7 +13,7 @@ object SdkConsumePurchaseEvents {
             1
         )
 
-    class SdkConsumePurchaseResult(data: HashMap<String, String>) :
+    class SdkConsumePurchaseResult(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_CONSUME_PURCHASE_RESULT,

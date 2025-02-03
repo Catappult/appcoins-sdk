@@ -8,12 +8,12 @@ object SdkInstallWalletDialogEvents {
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_WALLET_INSTALL_DIALOG_ACTION,
-            hashMapOf(),
+            mutableMapOf(),
             INSTALL_WALLET_DIALOG_FLOW,
             1
         )
 
-    class SdkInstallWalletDialogAction(data: HashMap<String, String>) :
+    class SdkInstallWalletDialogAction(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_WALLET_INSTALL_DIALOG,
@@ -26,7 +26,7 @@ object SdkInstallWalletDialogEvents {
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_WALLET_INSTALL_DIALOG_VANILLA_IMPRESSION,
-            hashMapOf(),
+            mutableMapOf(),
             INSTALL_WALLET_DIALOG_FLOW,
             3
         )
@@ -35,7 +35,7 @@ object SdkInstallWalletDialogEvents {
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_WALLET_INSTALL_DIALOG_FALLBACK_IMPRESSION,
-            hashMapOf(),
+            mutableMapOf(),
             INSTALL_WALLET_DIALOG_FLOW,
             3
         )
@@ -44,7 +44,7 @@ object SdkInstallWalletDialogEvents {
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_WALLET_INSTALL_DIALOG_SUCCESS,
-            hashMapOf(),
+            mutableMapOf(),
             INSTALL_WALLET_DIALOG_FLOW,
             1
         )

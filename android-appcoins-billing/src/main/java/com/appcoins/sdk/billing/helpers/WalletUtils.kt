@@ -23,6 +23,7 @@ import com.appcoins.sdk.billing.analytics.IndicativeAnalytics.instanceId
 import com.appcoins.sdk.billing.analytics.IndicativeAnalytics.setIndicativeSuperProperties
 import com.appcoins.sdk.billing.analytics.SdkAnalytics
 import com.appcoins.sdk.billing.managers.ApiKeysManager.getIndicativeApiKey
+import com.appcoins.sdk.billing.payflow.AnalyticsFlowSeverityLevel
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.AptoideGames
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.GamesHub
@@ -44,6 +45,7 @@ import java.util.concurrent.CountDownLatch
 @Suppress("StaticFieldLeak", "TooManyFunctions")
 object WalletUtils {
     var paymentFlowMethods: List<PaymentFlowMethod> = emptyList()
+    var analyticsFlowSeverityLevels: List<AnalyticsFlowSeverityLevel>? = null
     val localPaymentFlowMethods =
         listOf(
             Wallet("wallet", 1),

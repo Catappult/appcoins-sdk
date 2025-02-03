@@ -8,12 +8,12 @@ object SdkGetReferralDeeplinkEvents {
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_GET_REFERRAL_DEEPLINK_REQUEST,
-            hashMapOf(),
+            mutableMapOf(),
             GET_REFERRAL_DEEPLINK_FLOW,
             1
         )
 
-    class SdkGetReferralDeeplinkResult(data: HashMap<String, String>) :
+    class SdkGetReferralDeeplinkResult(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_GET_REFERRAL_DEEPLINK_RESULT,
@@ -26,7 +26,7 @@ object SdkGetReferralDeeplinkEvents {
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_GET_REFERRAL_DEEPLINK_MAIN_THREAD_FAILURE,
-            hashMapOf(),
+            mutableMapOf(),
             GET_REFERRAL_DEEPLINK_FLOW,
             1
         )

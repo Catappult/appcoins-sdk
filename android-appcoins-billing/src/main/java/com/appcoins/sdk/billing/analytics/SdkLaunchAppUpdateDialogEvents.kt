@@ -8,12 +8,12 @@ object SdkLaunchAppUpdateDialogEvents {
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_LAUNCH_APP_UPDATE_DIALOG_REQUEST,
-            hashMapOf(),
+            mutableMapOf(),
             LAUNCH_APP_UPDATE_DIALOG_FLOW,
             1
         )
 
-    class SdkLaunchAppUpdateDialogResult(data: HashMap<String, String>) :
+    class SdkLaunchAppUpdateDialogAction(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.CLICK,
             SDK_LAUNCH_APP_UPDATE_DIALOG_ACTION,
@@ -22,7 +22,7 @@ object SdkLaunchAppUpdateDialogEvents {
             1
         )
 
-    class SdkLaunchAppUpdateDialogDeeplinkFailure(data: HashMap<String, String>) :
+    class SdkLaunchAppUpdateDialogDeeplinkFailure(data: HashMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_LAUNCH_APP_UPDATE_DIALOG_DEEPLINK_FAILURE,

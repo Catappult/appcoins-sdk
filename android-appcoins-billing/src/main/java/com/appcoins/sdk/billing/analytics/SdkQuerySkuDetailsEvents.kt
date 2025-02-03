@@ -4,7 +4,7 @@ import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
 
 object SdkQuerySkuDetailsEvents {
 
-    class SdkQuerySkuDetailsRequest(data: HashMap<String, String>) :
+    class SdkQuerySkuDetailsRequest(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_QUERY_SKU_DETAILS_REQUEST,
@@ -13,7 +13,7 @@ object SdkQuerySkuDetailsEvents {
             1
         )
 
-    class SdkQuerySkuDetailsResult(data: HashMap<String, String>) :
+    class SdkQuerySkuDetailsResult(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_QUERY_SKU_DETAILS_RESULT,
@@ -22,7 +22,7 @@ object SdkQuerySkuDetailsEvents {
             1
         )
 
-    class SdkQuerySkuDetailsNoSkusPresentFailure(data: HashMap<String, String>) :
+    class SdkQuerySkuDetailsNoSkusPresentFailure(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_QUERY_SKU_DETAILS_NO_SKUS_PRESENT_FAILURE,
@@ -31,7 +31,7 @@ object SdkQuerySkuDetailsEvents {
             1
         )
 
-    class SdkQuerySkuDetailsFailureParsingSkus(data: HashMap<String, String>) :
+    class SdkQuerySkuDetailsFailureParsingSkus(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_QUERY_SKU_DETAILS_FAILURE_PARSING_SKUS,

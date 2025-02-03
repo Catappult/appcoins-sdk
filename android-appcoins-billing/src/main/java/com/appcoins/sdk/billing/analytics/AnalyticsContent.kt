@@ -80,9 +80,9 @@ object SdkUpdateFlowActions {
 }
 
 abstract class AnalyticsEvent(
-    action: AnalyticsManager.Action,
-    name: String,
-    data: HashMap<String, String>,
-    flow: String,
-    severityLevel: Int
+    val action: AnalyticsManager.Action,
+    val name: String,
+    val data: MutableMap<String, Any>,
+    val flow: String,
+    val severityLevel: Int
 )

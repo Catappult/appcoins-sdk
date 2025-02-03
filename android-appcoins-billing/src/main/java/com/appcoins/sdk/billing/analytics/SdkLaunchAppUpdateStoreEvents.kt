@@ -8,12 +8,12 @@ object SdkLaunchAppUpdateStoreEvents {
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_LAUNCH_APP_UPDATE_STORE_REQUEST,
-            hashMapOf(),
+            mutableMapOf(),
             LAUNCH_APP_UPDATE_STORE_FLOW,
             1
         )
 
-    class SdkLaunchAppUpdateStoreResult(data: HashMap<String, String>) :
+    class SdkLaunchAppUpdateStoreResult(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_LAUNCH_APP_UPDATE_STORE_RESULT,
@@ -22,7 +22,7 @@ object SdkLaunchAppUpdateStoreEvents {
             1
         )
 
-    class SdkLaunchAppUpdateStoreDeeplinkFailure(data: HashMap<String, String>) :
+    class SdkLaunchAppUpdateStoreDeeplinkFailure(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_LAUNCH_APP_UPDATE_STORE_DEEPLINK_FAILURE,

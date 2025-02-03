@@ -4,7 +4,7 @@ import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
 
 object SdkGeneralFailureEvents {
 
-    class SdkServiceConnectionException(data: HashMap<String, String>) :
+    class SdkServiceConnectionException(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_SERVICE_CONNECTION_EXCEPTION,
@@ -13,7 +13,7 @@ object SdkGeneralFailureEvents {
             1
         )
 
-    class SdkPurchaseSignatureVerificationFailure(data: HashMap<String, String>) :
+    class SdkPurchaseSignatureVerificationFailure(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_PURCHASE_SIGNATURE_VERIFICATION_FAILURE,
@@ -22,7 +22,7 @@ object SdkGeneralFailureEvents {
             1
         )
 
-    class SdkUnexpectedFailure(data: HashMap<String, String>) :
+    class SdkUnexpectedFailure(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_UNEXPECTED_FAILURE,

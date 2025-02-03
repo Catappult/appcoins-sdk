@@ -3,7 +3,7 @@ package com.appcoins.sdk.billing.analytics
 import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
 
 object SdkQueryPurchasesEvents {
-    class SdkQueryPurchasesRequest(data: HashMap<String, String>) :
+    class SdkQueryPurchasesRequest(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_QUERY_PURCHASES_REQUEST,
@@ -12,7 +12,7 @@ object SdkQueryPurchasesEvents {
             1
         )
 
-    class SdkQueryPurchasesTypeNotSupportedError(data: HashMap<String, String>) :
+    class SdkQueryPurchasesTypeNotSupportedError(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_QUERY_PURCHASES_TYPE_NOT_SUPPORTED_ERROR,
@@ -21,7 +21,7 @@ object SdkQueryPurchasesEvents {
             1
         )
 
-    class SdkQueryPurchasesResult(data: HashMap<String, String>) :
+    class SdkQueryPurchasesResult(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_QUERY_PURCHASES_RESULT,

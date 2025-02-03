@@ -4,7 +4,7 @@ import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
 
 object SdkWebPaymentFlowEvents {
 
-    class SdkWebPaymentFailureToOpenDeeplink(data: HashMap<String, String>) :
+    class SdkWebPaymentFailureToOpenDeeplink(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_WEB_PAYMENT_FAILURE_TO_OPEN_DEEPLINK,
@@ -13,7 +13,7 @@ object SdkWebPaymentFlowEvents {
             1
         )
 
-    class SdkWebPaymentErrorProcessingPurchaseResult(data: HashMap<String, String>) :
+    class SdkWebPaymentErrorProcessingPurchaseResult(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_WEB_PAYMENT_ERROR_PROCESSING_PURCHASE_RESULT,
@@ -26,12 +26,12 @@ object SdkWebPaymentFlowEvents {
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_WEB_PAYMENT_PURCHASE_RESULT_EMPTY,
-            hashMapOf(),
+            mutableMapOf(),
             WEB_PAYMENT_FLOW,
             1
         )
 
-    class SdkWebPaymentOpenDeeplink(data: HashMap<String, String>) :
+    class SdkWebPaymentOpenDeeplink(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_WEB_PAYMENT_OPEN_DEEPLINK,
@@ -40,7 +40,7 @@ object SdkWebPaymentFlowEvents {
             3
         )
 
-    class SdkWebPaymentLaunchExternalPayment(data: HashMap<String, String>) :
+    class SdkWebPaymentLaunchExternalPayment(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_WEB_PAYMENT_LAUNCH_EXTERNAL_PAYMENT,
@@ -49,7 +49,7 @@ object SdkWebPaymentFlowEvents {
             3
         )
 
-    class SdkWebPaymentAllowExternalApps(data: HashMap<String, String>) :
+    class SdkWebPaymentAllowExternalApps(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_WEB_PAYMENT_ALLOW_EXTERNAL_APPS,
@@ -62,12 +62,12 @@ object SdkWebPaymentFlowEvents {
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_WEB_PAYMENT_EXTERNAL_PAYMENT_RESULT,
-            hashMapOf(),
+            mutableMapOf(),
             WEB_PAYMENT_FLOW,
             2
         )
 
-    class SdkWebPaymentExecuteExternalDeeplink(data: HashMap<String, String>) :
+    class SdkWebPaymentExecuteExternalDeeplink(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_WEB_PAYMENT_EXECUTE_EXTERNAL_DEEPLINK,
@@ -80,7 +80,7 @@ object SdkWebPaymentFlowEvents {
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_WEB_PAYMENT_WALLET_PAYMENT_RESULT,
-            hashMapOf(),
+            mutableMapOf(),
             WEB_PAYMENT_FLOW,
             2
         )

@@ -4,7 +4,7 @@ import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
 
 object SdkBackendRequestEvents {
 
-    class SdkCallBackendRequest(data: HashMap<String, String>) :
+    class SdkCallBackendRequest(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_CALL_BACKEND_REQUEST,
@@ -13,7 +13,7 @@ object SdkBackendRequestEvents {
             3
         )
 
-    class SdkCallBackendResponse(data: HashMap<String, String>) :
+    class SdkCallBackendResponse(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_CALL_BACKEND_RESPONSE,
@@ -22,7 +22,7 @@ object SdkBackendRequestEvents {
             2
         )
 
-    class SdkCallBackendMappingFailure(data: HashMap<String, String>) :
+    class SdkCallBackendMappingFailure(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_CALL_BACKEND_MAPPING_FAILURE,

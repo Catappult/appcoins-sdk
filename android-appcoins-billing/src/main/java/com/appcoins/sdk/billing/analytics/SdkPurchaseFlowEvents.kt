@@ -4,7 +4,7 @@ import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
 
 object SdkPurchaseFlowEvents {
 
-    class SdkLaunchPurchaseRequest(data: HashMap<String, String>) :
+    class SdkLaunchPurchaseRequest(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.CLICK,
             SDK_LAUNCH_PURCHASE_REQUEST,
@@ -13,7 +13,7 @@ object SdkPurchaseFlowEvents {
             1
         )
 
-    class SdkLaunchPurchaseResult(data: HashMap<String, String>) :
+    class SdkLaunchPurchaseResult(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_LAUNCH_PURCHASE_RESULT,
@@ -22,7 +22,7 @@ object SdkPurchaseFlowEvents {
             1
         )
 
-    class SdkLaunchPurchaseTypeNotSupportedFailure(data: HashMap<String, String>) :
+    class SdkLaunchPurchaseTypeNotSupportedFailure(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_LAUNCH_PURCHASE_TYPE_NOT_SUPPORTED_FAILURE,
@@ -35,7 +35,7 @@ object SdkPurchaseFlowEvents {
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_LAUNCH_PURCHASE_MAIN_THREAD_FAILURE,
-            hashMapOf(),
+            mutableMapOf(),
             PURCHASE_FLOW,
             1
         )

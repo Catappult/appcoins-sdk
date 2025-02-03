@@ -13,10 +13,7 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
     }
 
     fun sendStartConnectionEvent() {
-        logEvent(
-            eventName = SdkAnalyticsEvents.SDK_START_CONNECTION,
-            action = Action.IMPRESSION
-        )
+        logEvent(SdkInitializationEvents.SdkStartConnection())
     }
 
     fun sendPurchaseIntentEvent(skuName: String) {
@@ -209,21 +206,14 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
     }
 
     fun appUpdateImpression() {
-        logEvent(
-            eventName = SdkUpdateFlowEvents.SDK_APP_UPDATE_IMPRESSION,
-            action = Action.IMPRESSION
-        )
+        logEvent(SdkLaunchAppUpdateDialogEvents.SdkLaunchAppUpdateDialogRequest())
     }
 
     fun appUpdateClick(updateAction: String) {
         val eventData: MutableMap<String, Any> = HashMap()
         eventData[AnalyticsLabels.APP_UPDATE_ACTION] = updateAction
 
-        logEvent(
-            eventData,
-            SdkUpdateFlowEvents.SDK_APP_UPDATE_CLICK,
-            Action.CLICK
-        )
+        logEvent(SdkLaunchAppUpdateDialogEvents.SdkLaunchAppUpdateDialogAction(eventData))
     }
 
     fun sendPurchaseStatusEvent(paymentStatus: String, responseMessage: String) {
@@ -285,4 +275,15 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         eventName: String,
         action: Action
     ) = analyticsManager.logEvent(eventData, eventName, action, EVENT_CONTEXT)
+
+    private fun logEvent(analyticsEvent: AnalyticsEvent) {
+        if (SdkAnalyticsSeverityUtils().isEventSeverityAllowed(analyticsEvent)) {
+            analyticsManager.logEvent(
+                analyticsEvent.data,
+                analyticsEvent.name,
+                analyticsEvent.action,
+                EVENT_CONTEXT
+            )
+        }
+    }
 }

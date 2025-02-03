@@ -20,7 +20,7 @@ class PayflowResponseMapper {
                 "Failed to obtain Payflow Response. " +
                     "ResponseCode: ${response.responseCode} | Cause: ${response.exception}"
             )
-            return PayflowMethodResponse(response.responseCode, arrayListOf())
+            return PayflowMethodResponse(response.responseCode, arrayListOf(), arrayListOf())
         }
 
         val paymentFlowList = runCatching {
@@ -55,13 +55,37 @@ class PayflowResponseMapper {
             logError("There was an error mapping the response.", Exception(it))
             arrayListOf()
         }
-        return PayflowMethodResponse(response.responseCode, paymentFlowList)
+
+        val analyticsFlowSeverityLevels: ArrayList<AnalyticsFlowSeverityLevel> =
+            runCatching {
+                JSONObject(response.response).optJSONArray("analytics_flow_severity_levels")
+                    ?.let { analyticsFlowSeverityLevelsJsonArray ->
+                        val analyticsFlowSeverityLevels = arrayListOf<AnalyticsFlowSeverityLevel>()
+                        for (i in 0 until analyticsFlowSeverityLevelsJsonArray.length()) {
+                            val analyticsFlowSeverityLevelJsonObject =
+                                analyticsFlowSeverityLevelsJsonArray.optJSONObject(i)
+                            analyticsFlowSeverityLevels.add(
+                                AnalyticsFlowSeverityLevel(
+                                    analyticsFlowSeverityLevelJsonObject.optString("flow"),
+                                    analyticsFlowSeverityLevelJsonObject.optInt("severity_level"),
+                                )
+                            )
+                        }
+                        analyticsFlowSeverityLevels
+                    } ?: arrayListOf()
+            }.getOrElse {
+                logError("There was an error mapping the AnalyticsFlowSeverityLevels.", Exception(it))
+                arrayListOf()
+            }
+
+        return PayflowMethodResponse(response.responseCode, paymentFlowList, analyticsFlowSeverityLevels)
     }
 }
 
 data class PayflowMethodResponse(
     val responseCode: Int?,
-    val paymentFlowList: ArrayList<PaymentFlowMethod>?
+    val paymentFlowList: ArrayList<PaymentFlowMethod>?,
+    val analyticsFlowSeverityLevels: ArrayList<AnalyticsFlowSeverityLevel>?
 )
 
 sealed class PaymentFlowMethod(
@@ -248,3 +272,5 @@ sealed class PaymentFlowMethod(
             (payflowMethodsList.firstOrNull { it is UnavailableBilling } as UnavailableBilling?)?.errorMessage
     }
 }
+
+data class AnalyticsFlowSeverityLevel(val flow: String, val severityLevel: Int)

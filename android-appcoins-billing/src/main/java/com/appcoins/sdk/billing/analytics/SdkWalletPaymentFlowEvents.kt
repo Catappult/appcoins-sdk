@@ -4,7 +4,7 @@ import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
 
 object SdkWalletPaymentFlowEvents {
 
-    class SdkWalletPaymentEmptyData(data: HashMap<String, String>) :
+    class SdkWalletPaymentEmptyData(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_WALLET_PAYMENT_EMPTY_DATA,

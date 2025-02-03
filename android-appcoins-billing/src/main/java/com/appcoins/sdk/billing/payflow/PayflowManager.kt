@@ -1,6 +1,7 @@
 package com.appcoins.sdk.billing.payflow
 
 import com.appcoins.billing.sdk.BuildConfig
+import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.listeners.PayflowPriorityStream
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.TIMEOUT_30_SECS
@@ -21,8 +22,14 @@ object PayflowManager {
                         val sortedMethods = payflowMethodResponse.paymentFlowList
                         sortedMethods?.sortBy { it.priority }
                         PayflowPriorityStream.getInstance().emit(sortedMethods)
+                        payflowMethodResponse.analyticsFlowSeverityLevels
+                            ?.takeIf { it.isNotEmpty() }
+                            ?.let {
+                                WalletUtils.analyticsFlowSeverityLevels = it
+                            }
                     } else {
                         PayflowPriorityStream.getInstance().emit(arrayListOf())
+                        WalletUtils.analyticsFlowSeverityLevels = null
                     }
                 }
             }
