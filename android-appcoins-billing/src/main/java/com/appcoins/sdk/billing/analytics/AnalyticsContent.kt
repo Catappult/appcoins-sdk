@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing.analytics
 
+import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
+
 object AnalyticsSuperLabels {
     const val INSTANCE_ID = "instance_id"
     const val SDK_VERSION_CODE = "version_code"
@@ -76,3 +78,11 @@ object SdkUpdateFlowActions {
     const val CANCEL = "cancel"
     const val BACK_PRESSED = "back_pressed"
 }
+
+abstract class AnalyticsEvent(
+    action: AnalyticsManager.Action,
+    name: String,
+    data: HashMap<String, String>,
+    flow: String,
+    severityLevel: Int
+)
