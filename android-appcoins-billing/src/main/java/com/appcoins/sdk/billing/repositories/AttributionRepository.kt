@@ -1,11 +1,11 @@
 package com.appcoins.sdk.billing.repositories
 
-import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.billing.mappers.AttributionResponse
 import com.appcoins.sdk.billing.mappers.AttributionResponseMapper
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.service.ServiceResponseListener
 import com.appcoins.sdk.billing.utils.ServiceUtils
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.core.logger.Logger.logError
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit

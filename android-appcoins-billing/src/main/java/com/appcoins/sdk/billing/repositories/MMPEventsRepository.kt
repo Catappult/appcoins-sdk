@@ -1,7 +1,7 @@
 package com.appcoins.sdk.billing.repositories
 
-import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.billing.service.BdsRetryService
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 
 class MMPEventsRepository(private val bdsRetryService: BdsRetryService) {
 
