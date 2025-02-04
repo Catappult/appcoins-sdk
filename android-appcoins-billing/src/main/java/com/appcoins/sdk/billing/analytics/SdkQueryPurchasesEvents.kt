@@ -36,3 +36,8 @@ object SdkQueryPurchasesEvents {
 
     private const val SDK_QUERY_PURCHASES_FLOW = "query_purchases"
 }
+
+object SdkQueryPurchasesLabels {
+    const val SKU_TYPE = "sku_type"
+    const val PURCHASES = "purchases"
+}

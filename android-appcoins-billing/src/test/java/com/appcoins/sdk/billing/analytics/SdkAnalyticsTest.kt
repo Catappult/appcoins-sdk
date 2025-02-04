@@ -66,7 +66,7 @@ class SdkAnalyticsTest {
             )
         } just runs
 
-        sdkAnalytics.sendPurchaseIntentEvent(skuName)
+        sdkAnalytics.sendLaunchPurchaseRequestEvent(skuName)
 
         verify(exactly = 1) {
             mockkAnalyticsManager.logEvent(
@@ -90,7 +90,7 @@ class SdkAnalyticsTest {
             )
         } just runs
 
-        sdkAnalytics.sendPurchaseViaWebEvent(skuName)
+        sdkAnalytics.sendWebPaymentStartEvent(skuName)
 
         verify(exactly = 1) {
             mockkAnalyticsManager.logEvent(
@@ -475,7 +475,7 @@ class SdkAnalyticsTest {
             )
         } just runs
 
-        sdkAnalytics.sendPurchaseStatusEvent(paymentStatus, responseMessage)
+        sdkAnalytics.sendPurchaseResultEvent(paymentStatus, responseMessage)
 
         verify(exactly = 1) {
             mockkAnalyticsManager.logEvent(
@@ -525,7 +525,7 @@ class SdkAnalyticsTest {
             )
         } just runs
 
-        sdkAnalytics.sendUnsuccessfulWebViewResultEvent(failureMessage)
+        sdkAnalytics.sendWebPaymentErrorProcessingPurchaseResultEvent(failureMessage)
 
         verify(exactly = 1) {
             mockkAnalyticsManager.logEvent(

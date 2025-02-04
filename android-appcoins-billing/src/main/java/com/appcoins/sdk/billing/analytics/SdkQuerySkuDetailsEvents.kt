@@ -22,11 +22,11 @@ object SdkQuerySkuDetailsEvents {
             1
         )
 
-    class SdkQuerySkuDetailsNoSkusPresentFailure(data: MutableMap<String, Any>) :
+    class SdkQuerySkuDetailsNoSkusPresentFailure :
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_QUERY_SKU_DETAILS_NO_SKUS_PRESENT_FAILURE,
-            data,
+            mutableMapOf(),
             QUERY_SKU_DETAILS_FLOW,
             1
         )
@@ -46,4 +46,9 @@ object SdkQuerySkuDetailsEvents {
     const val SDK_QUERY_SKU_DETAILS_FAILURE_PARSING_SKUS = "sdk_query_sku_details_failure_on_parsing_skus"
 
     private const val QUERY_SKU_DETAILS_FLOW = "query_sku_details"
+}
+
+object SdkQuerySkuDetailsLabels {
+    const val SKUS = "skus"
+    const val SKU_TYPE = "sku_type"
 }

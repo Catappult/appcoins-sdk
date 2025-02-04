@@ -315,40 +315,207 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkLaunchAppUpdateStoreEvents.SdkLaunchAppUpdateStoreRequest())
     }
 
-    fun sendPurchaseIntentEvent(skuName: String) {
+    // Purchase Flow Events
+    fun sendLaunchPurchaseRequestEvent(
+        sku: String,
+        skuType: String,
+        developerPayload: String?,
+        orderReference: String?,
+        origin: String,
+    ) {
         val eventData: MutableMap<String, Any> = HashMap()
-        // TODO: Add more data
-        eventData[AnalyticsLabels.SKU_NAME] = skuName
+        eventData[SdkPurchaseFlowLabels.SKU] = sku
+        eventData[SdkPurchaseFlowLabels.SKU_TYPE] = skuType
+        developerPayload?.let { eventData[SdkPurchaseFlowLabels.DEVELOPER_PAYLOAD] = it }
+        orderReference?.let { eventData[SdkPurchaseFlowLabels.ORDER_REFERENCE] = it }
+        eventData[SdkPurchaseFlowLabels.ORIGIN] = origin
 
-        logEvent(SdkPurchaseFlowEvents.SdkLaunchPurchaseRequest(eventData))
+        logEvent(SdkPurchaseFlowEvents.SdkLaunchPurchase(eventData))
     }
 
-    fun sendPurchaseStatusEvent(paymentStatus: String, responseMessage: String) {
+    fun sendPurchaseResultEvent(responseCode: Int, purchaseToken: String, sku: String) {
         val eventData: MutableMap<String, Any> = HashMap()
-        eventData[AnalyticsLabels.PAYMENT_STATUS] = paymentStatus
-        eventData[AnalyticsLabels.PAYMENT_STATUS_MESSAGE] = responseMessage
 
-        logEvent(SdkPurchaseFlowEvents.SdkLaunchPurchaseResult(eventData))
+        eventData[SdkPurchaseFlowLabels.RESPONSE_CODE] = responseCode
+        eventData[SdkPurchaseFlowLabels.PURCHASE_TOKEN] = purchaseToken
+        eventData[SdkPurchaseFlowLabels.SKU] = sku
+
+        logEvent(SdkPurchaseFlowEvents.SdkPurchaseResult(eventData))
     }
 
-    fun sendPurchaseViaWebEvent(url: String) {
+    fun sendLaunchPurchaseTypeNotSupportedFailureEvent(skuType: String) {
         val eventData: MutableMap<String, Any> = HashMap()
-        // TODO: Change data to URL
-        eventData[AnalyticsLabels.URL] = url
+
+        eventData[SdkPurchaseFlowLabels.SKU_TYPE] = skuType
+
+        logEvent(SdkPurchaseFlowEvents.SdkLaunchPurchaseTypeNotSupportedFailure(eventData))
+    }
+
+    fun sendLaunchPurchaseMainThreadFailureEvent() {
+        logEvent(SdkPurchaseFlowEvents.SdkLaunchPurchaseMainThreadFailure())
+    }
+
+    // Web Payment Events
+    fun sendWebPaymentStartEvent(url: String) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        eventData[SdkWebPaymentFlowLabels.URL] = url
 
         logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentStart(eventData))
     }
 
-    fun sendUnsuccessfulWebViewResultEvent(failureMessage: String) {
+    fun sendWebPaymentUrlNotGeneratedEvent() {
+        logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentFailureToObtainUrl())
+    }
+
+    fun sendWebPaymentStartEvent(deeplink: String, exception: String) {
         val eventData: MutableMap<String, Any> = HashMap()
-        // TODO: Use correct Data values.
-        eventData[AnalyticsLabels.PAYMENT_STATUS] = failureMessage
+
+        eventData[SdkWebPaymentFlowLabels.DEEPLINK] = deeplink
+        eventData[SdkWebPaymentFlowLabels.EXCEPTION] = exception
+
+        logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentFailureToOpenDeeplink(eventData))
+    }
+
+    fun sendWebPaymentErrorProcessingPurchaseResultEvent(result: String) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        eventData[SdkWebPaymentFlowLabels.RESULT] = result
 
         logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentErrorProcessingPurchaseResult(eventData))
     }
 
-    fun sendWebPaymentUrlNotGeneratedEvent() {
-        logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentFailureToObtainUrl())
+    fun sendWebPaymentPurchaseResultEmptyEvent() {
+        logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentPurchaseResultEmpty())
+    }
+
+    fun sendWebPaymentOpenDeeplinkEvent(deeplink: String) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        eventData[SdkWebPaymentFlowLabels.DEEPLINK] = deeplink
+
+        logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentOpenDeeplink(eventData))
+    }
+
+    fun sendWebPaymentLaunchExternalPaymentEvent(url: String) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        eventData[SdkWebPaymentFlowLabels.URL] = url
+
+        logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentLaunchExternalPayment(eventData))
+    }
+
+    fun sendWebPaymentLaunchExternalPaymentEvent(allow: Boolean) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        eventData[SdkWebPaymentFlowLabels.ALLOW] = allow
+
+        logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentAllowExternalApps(eventData))
+    }
+
+    fun sendWebPaymentExternalPaymentResultEvent() {
+        logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentExternalPaymentResult())
+    }
+
+    fun sendWebPaymentExecuteExternalDeeplinkEvent(deeplink: String) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        eventData[SdkWebPaymentFlowLabels.DEEPLINK] = deeplink
+
+        logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentExecuteExternalDeeplink(eventData))
+    }
+
+    fun sendWebPaymentWalletPaymentResultEvent() {
+        logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentWalletPaymentResult())
+    }
+
+    // Wallet Payment events
+    fun sendWalletPaymentStartEvent() {
+        logEvent(SdkWalletPaymentFlowEvents.SdkWalletPaymentStart())
+    }
+
+    fun sendWalletPaymentEmptyDataEvent() {
+        logEvent(SdkWalletPaymentFlowEvents.SdkWalletPaymentEmptyData())
+    }
+
+    // Query Purchases events
+    fun sendQueryPurchasesRequestEvent(skuType: String) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        eventData[SdkQueryPurchasesLabels.SKU_TYPE] = skuType
+
+        logEvent(SdkQueryPurchasesEvents.SdkQueryPurchasesRequest(eventData))
+    }
+
+    fun sendQueryPurchasesTypeNotSupportedErrorEvent(skuType: String) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        eventData[SdkQueryPurchasesLabels.SKU_TYPE] = skuType
+
+        logEvent(SdkQueryPurchasesEvents.SdkQueryPurchasesTypeNotSupportedError(eventData))
+    }
+
+    fun sendQueryPurchasesTypeNotSupportedErrorEvent(purchases: List<String>?) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        purchases?.let {
+            val jsonArray = JSONArray()
+            it.forEach { purchaseToken ->
+                jsonArray.put(purchaseToken)
+            }
+            eventData[SdkQueryPurchasesLabels.PURCHASES] = jsonArray.toString()
+        }
+
+        logEvent(SdkQueryPurchasesEvents.SdkQueryPurchasesResult(eventData))
+    }
+
+    // Query SKU Details events
+    fun sendQuerySkuDetailsRequestEvent(skus: List<String>?, skuType: String) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        skus?.let {
+            val jsonArray = JSONArray()
+            it.forEach { sku ->
+                jsonArray.put(sku)
+            }
+            eventData[SdkQuerySkuDetailsLabels.SKUS] = jsonArray.toString()
+        }
+        eventData[SdkQuerySkuDetailsLabels.SKU_TYPE] = skuType
+
+        logEvent(SdkQuerySkuDetailsEvents.SdkQuerySkuDetailsRequest(eventData))
+    }
+
+    fun sendQuerySkuDetailsResult(skus: List<String>?) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        skus?.let {
+            val jsonArray = JSONArray()
+            it.forEach { sku ->
+                jsonArray.put(sku)
+            }
+            eventData[SdkQuerySkuDetailsLabels.SKUS] = jsonArray.toString()
+        }
+
+        logEvent(SdkQuerySkuDetailsEvents.SdkQuerySkuDetailsResult(eventData))
+    }
+
+    fun sendQuerySkuDetailsRequestEvent() {
+        logEvent(SdkQuerySkuDetailsEvents.SdkQuerySkuDetailsNoSkusPresentFailure())
+    }
+
+    fun sendQuerySkuDetailsFailureParsingSkusEvent(skus: List<String>?, skuType: String) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        skus?.let {
+            val jsonArray = JSONArray()
+            it.forEach { sku ->
+                jsonArray.put(sku)
+            }
+            eventData[SdkQuerySkuDetailsLabels.SKUS] = jsonArray.toString()
+        }
+        eventData[SdkQuerySkuDetailsLabels.SKU_TYPE] = skuType
+
+        logEvent(SdkQuerySkuDetailsEvents.SdkQuerySkuDetailsFailureParsingSkus(eventData))
     }
 
     private fun addBackendRequestData(

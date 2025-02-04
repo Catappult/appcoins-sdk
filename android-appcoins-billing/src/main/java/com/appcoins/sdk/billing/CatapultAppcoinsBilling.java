@@ -62,7 +62,7 @@ public class CatapultAppcoinsBilling
 
         try {
             WalletUtils.INSTANCE.getSdkAnalytics()
-                .sendPurchaseIntentEvent(billingFlowParams.getSku());
+                .sendLaunchPurchaseRequestEvent(billingFlowParams.getSku());
             String payload = PayloadHelper.buildIntentPayload(billingFlowParams.getOrderReference(),
                 billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin());
             AttributionSharedPreferences attributionSharedPreferences = new AttributionSharedPreferences(activity);

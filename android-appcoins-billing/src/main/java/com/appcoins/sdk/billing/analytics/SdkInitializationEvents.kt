@@ -118,27 +118,27 @@ object SdkInitializationEvents {
 }
 
 object SdkInitializationLabels {
-    const val OEMID = ""
-    const val GUEST_ID = ""
-    const val UTM_SOURCE = ""
-    const val UTM_MEDIUM = ""
-    const val UTM_CAMPAIGN = ""
-    const val UTM_TERM = ""
-    const val UTM_CONTENT = ""
+    const val OEMID = "oemid"
+    const val GUEST_ID = "guest_id"
+    const val UTM_SOURCE = "utm_source"
+    const val UTM_MEDIUM = "utm_medium"
+    const val UTM_CAMPAIGN = "utm_campaign"
+    const val UTM_TERM = "utm_term"
+    const val UTM_CONTENT = "utm_content"
 
-    const val REASON = ""
+    const val REASON = "reason"
 
-    const val PAYMENT_FLOW_LIST = ""
+    const val PAYMENT_FLOW_LIST = "payment_flow_list"
 
-    const val SERVICE = ""
+    const val SERVICE = "service"
     const val METHOD = "method"
-    const val METHOD_BINDING = ""
-    const val METHOD_URI = ""
+    const val METHOD_BINDING = "binding"
+    const val METHOD_URI = "uri"
 
-    const val APP_PACKAGE_NAME = ""
-    const val STATE = ""
-    const val INSTALLED = ""
-    const val REMOVED = ""
+    const val APP_PACKAGE_NAME = "app_package_name"
+    const val STATE = "state"
+    const val INSTALLED = "installed"
+    const val REMOVED = "removed"
 }
 
 enum class SdkInitializationService(val type: String) {

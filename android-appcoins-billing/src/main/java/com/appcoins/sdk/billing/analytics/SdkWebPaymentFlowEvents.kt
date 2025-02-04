@@ -13,20 +13,20 @@ object SdkWebPaymentFlowEvents {
             1
         )
 
-    class SdkWebPaymentFailureToOpenDeeplink(data: MutableMap<String, Any>) :
-        AnalyticsEvent(
-            AnalyticsManager.Action.ERROR,
-            SDK_WEB_PAYMENT_FAILURE_TO_OPEN_DEEPLINK,
-            data,
-            WEB_PAYMENT_FLOW,
-            1
-        )
-
     class SdkWebPaymentFailureToObtainUrl :
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_WEB_PAYMENT_FAILURE_TO_OBTAIN_URL,
             mutableMapOf(),
+            WEB_PAYMENT_FLOW,
+            1
+        )
+
+    class SdkWebPaymentFailureToOpenDeeplink(data: MutableMap<String, Any>) :
+        AnalyticsEvent(
+            AnalyticsManager.Action.ERROR,
+            SDK_WEB_PAYMENT_FAILURE_TO_OPEN_DEEPLINK,
+            data,
             WEB_PAYMENT_FLOW,
             1
         )
@@ -116,4 +116,12 @@ object SdkWebPaymentFlowEvents {
     const val SDK_WEB_PAYMENT_WALLET_PAYMENT_RESULT = "sdk_web_payment_wallet_payment_result"
 
     private const val WEB_PAYMENT_FLOW = "web_payment_flow"
+}
+
+object SdkWebPaymentFlowLabels {
+    const val URL = "url"
+    const val DEEPLINK = "deeplink"
+    const val EXCEPTION = "exception"
+    const val RESULT = "result"
+    const val ALLOW = "allow"
 }

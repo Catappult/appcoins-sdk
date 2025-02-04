@@ -61,8 +61,8 @@ public class AnalyticsManagerProvider {
         list.add(SdkLaunchAppUpdateStoreEvents.SDK_LAUNCH_APP_UPDATE_STORE_REQUEST);
         list.add(SdkLaunchAppUpdateStoreEvents.SDK_LAUNCH_APP_UPDATE_STORE_RESULT);
         list.add(SdkLaunchAppUpdateStoreEvents.SDK_LAUNCH_APP_UPDATE_STORE_DEEPLINK_FAILURE);
-        list.add(SdkPurchaseFlowEvents.SDK_LAUNCH_PURCHASE_REQUEST);
-        list.add(SdkPurchaseFlowEvents.SDK_LAUNCH_PURCHASE_RESULT);
+        list.add(SdkPurchaseFlowEvents.SDK_LAUNCH_PURCHASE);
+        list.add(SdkPurchaseFlowEvents.SDK_PURCHASE_RESULT);
         list.add(SdkPurchaseFlowEvents.SDK_LAUNCH_PURCHASE_MAIN_THREAD_FAILURE);
         list.add(SdkPurchaseFlowEvents.SDK_LAUNCH_PURCHASE_TYPE_NOT_SUPPORTED_FAILURE);
         list.add(SdkQueryPurchasesEvents.SDK_QUERY_PURCHASES_REQUEST);

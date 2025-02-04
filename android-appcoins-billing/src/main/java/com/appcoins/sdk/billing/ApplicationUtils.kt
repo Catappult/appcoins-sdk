@@ -38,7 +38,7 @@ internal object ApplicationUtils {
         val skuType = data.getStringExtra(SKU_TYPE)
 
         if (resultCode == Activity.RESULT_OK && responseCode == ResponseCode.OK.value) {
-            sdkAnalytics.sendPurchaseStatusEvent("success", getResponseDesc(responseCode))
+            sdkAnalytics.sendPurchaseResultEvent("success", getResponseDesc(responseCode))
             logInfo("Successful ResultCode from Purchase.")
             logDebug("Purchase data: $purchaseData")
             logDebug("Data signature: $dataSignature")
@@ -93,12 +93,12 @@ internal object ApplicationUtils {
                     getResponseDesc(responseCode)
             )
             logDebug("Bundle: $data")
-            sdkAnalytics.sendPurchaseStatusEvent("error", getResponseDesc(responseCode))
+            sdkAnalytics.sendPurchaseResultEvent("error", getResponseDesc(responseCode))
             purchaseFinishedListener.onPurchasesUpdated(responseCode, emptyList())
         } else if (resultCode == Activity.RESULT_CANCELED) {
             logInfo("Purchase canceled - Response: " + getResponseDesc(responseCode))
             logDebug("Bundle: $data")
-            sdkAnalytics.sendPurchaseStatusEvent("user_canceled", getResponseDesc(responseCode))
+            sdkAnalytics.sendPurchaseResultEvent("user_canceled", getResponseDesc(responseCode))
             purchaseFinishedListener
                 .onPurchasesUpdated(ResponseCode.USER_CANCELED.value, emptyList())
         } else {
@@ -107,7 +107,7 @@ internal object ApplicationUtils {
                     getResponseDesc(responseCode)
             )
             logDebug("Bundle: $data")
-            sdkAnalytics.sendPurchaseStatusEvent("error", getResponseDesc(responseCode))
+            sdkAnalytics.sendPurchaseResultEvent("error", getResponseDesc(responseCode))
             purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.value, emptyList())
         }
     }
