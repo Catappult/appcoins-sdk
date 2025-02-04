@@ -7,9 +7,9 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import com.appcoins.billing.sdk.R
-import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
 class UnavailableBillingDialogActivity : Activity() {

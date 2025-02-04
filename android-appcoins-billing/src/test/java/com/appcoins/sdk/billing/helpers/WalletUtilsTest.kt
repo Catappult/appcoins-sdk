@@ -9,6 +9,7 @@ import android.preference.PreferenceManager
 import com.appcoins.sdk.billing.ResponseCode
 import com.appcoins.sdk.billing.managers.ApiKeysManager
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.indicative.client.android.Indicative
 import io.mockk.every
 import io.mockk.just

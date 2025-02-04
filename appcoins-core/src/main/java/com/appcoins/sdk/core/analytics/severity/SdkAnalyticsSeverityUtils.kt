@@ -1,7 +1,7 @@
 package com.appcoins.sdk.core.analytics.severity
 
-import com.appcoins.sdk.core.analytics.AnalyticsEvent
 import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
+import com.appcoins.sdk.core.analytics.events.AnalyticsEvent
 
 class SdkAnalyticsSeverityUtils {
 

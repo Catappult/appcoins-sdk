@@ -2,11 +2,11 @@ package com.appcoins.sdk.billing.usecases.ingameupdates
 
 import android.content.Context
 import android.os.Build
-import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.managers.AppVersionManager
 import com.appcoins.sdk.billing.mappers.Version
 import com.appcoins.sdk.billing.usecases.GetAppInstalledVersion
 import com.appcoins.sdk.billing.usecases.UseCase
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.logger.Logger.logError
 
 object IsUpdateAvailable : UseCase() {

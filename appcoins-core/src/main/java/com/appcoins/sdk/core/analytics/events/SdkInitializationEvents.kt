@@ -66,11 +66,11 @@ object SdkInitializationEvents {
             1
         )
 
-    class SdkAttributionRetryAttempt :
+    class SdkAttributionRetryAttempt(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_ATTRIBUTION_RETRY_ATTEMPT,
-            mutableMapOf(),
+            data,
             SDK_INITIALIZATION_FLOW,
             3
         )
@@ -139,6 +139,8 @@ object SdkInitializationLabels {
     const val STATE = "state"
     const val INSTALLED = "installed"
     const val REMOVED = "removed"
+
+    const val MESSAGE = "message"
 }
 
 enum class SdkInitializationService(val type: String) {

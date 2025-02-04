@@ -26,13 +26,15 @@ object RetryFailedRequests : UseCase() {
                     request.paths,
                     request.queries,
                     request.header,
-                    request.body
-                ) { requestResponse ->
-                    if (isSuccess(requestResponse.responseCode)) {
-                        failedRequests.remove(request)
-                        backendRequestsSharedPreferences.setFailedRequests(failedRequests)
-                    }
-                }
+                    request.body,
+                    { requestResponse ->
+                        if (isSuccess(requestResponse.responseCode)) {
+                            failedRequests.remove(request)
+                            backendRequestsSharedPreferences.setFailedRequests(failedRequests)
+                        }
+                    },
+                    request.sdkBackendRequestType
+                )
             }
         }
     }

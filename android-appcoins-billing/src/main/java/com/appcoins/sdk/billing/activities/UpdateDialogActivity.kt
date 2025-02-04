@@ -4,9 +4,9 @@ import android.app.Activity
 import android.os.Bundle
 import android.widget.Button
 import com.appcoins.billing.sdk.R
-import com.appcoins.sdk.billing.analytics.SdkLaunchAppUpdateDialogLabels
-import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.usecases.ingameupdates.LaunchAppUpdate
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
+import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateDialogLabels
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
 class UpdateDialogActivity : Activity() {

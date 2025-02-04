@@ -3,6 +3,7 @@ package com.appcoins.sdk.billing.usecases
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.mappers.AttributionResponse
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo

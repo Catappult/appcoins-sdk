@@ -1,6 +1,6 @@
 package com.appcoins.sdk.billing.usecases
 
-import com.appcoins.sdk.billing.helpers.WalletUtils
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

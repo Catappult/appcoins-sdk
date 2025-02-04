@@ -253,8 +253,12 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkInitializationEvents.SdkAttributionRequestFailure())
     }
 
-    fun sendAttributionRetryAttemptEvent() {
-        logEvent(SdkInitializationEvents.SdkAttributionRetryAttempt())
+    fun sendAttributionRetryAttemptEvent(message: String) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        eventData[SdkInitializationLabels.MESSAGE] = message
+
+        logEvent(SdkInitializationEvents.SdkAttributionRetryAttempt(eventData))
     }
 
     fun sendAttributionRequestFailureEvent() {

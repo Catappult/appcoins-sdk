@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import com.appcoins.billing.sdk.BuildConfig
-import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.managers.StoreLinkMapperManager
 import com.appcoins.sdk.billing.usecases.UseCase
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 

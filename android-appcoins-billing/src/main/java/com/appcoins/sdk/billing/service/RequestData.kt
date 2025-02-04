@@ -1,5 +1,6 @@
 package com.appcoins.sdk.billing.service
 
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import java.io.Serializable
 
 /**
@@ -13,6 +14,7 @@ import java.io.Serializable
  * @param body Body to add to the request.
  */
 class RequestData(
+    val sdkBackendRequestType: SdkBackendRequestType,
     val baseUrl: String,
     val timeoutInMillis: Int,
     val endPoint: String?,
