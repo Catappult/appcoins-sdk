@@ -1,5 +1,6 @@
 package com.appcoins.sdk.billing.payflow
 
+import com.appcoins.sdk.billing.analytics.SdkBackendRequestType
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
@@ -9,7 +10,8 @@ import java.io.Serializable
 
 class PayflowResponseMapper {
     fun map(response: RequestResponse): PayflowMethodResponse {
-        WalletUtils.sdkAnalytics.sendCallBackendPayflowEvent(
+        WalletUtils.sdkAnalytics.sendBackendResponseEvent(
+            SdkBackendRequestType.PAYMENT_FLOW,
             response.responseCode,
             response.response,
             response.exception?.toString()

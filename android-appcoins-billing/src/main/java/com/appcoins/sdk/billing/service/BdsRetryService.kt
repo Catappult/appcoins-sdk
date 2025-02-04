@@ -1,5 +1,6 @@
 package com.appcoins.sdk.billing.service
 
+import com.appcoins.sdk.billing.analytics.SdkBackendRequestType
 import com.appcoins.sdk.billing.sharedpreferences.BackendRequestsSharedPreferences
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 
@@ -15,7 +16,8 @@ class BdsRetryService(
         queries: Map<String, String>,
         header: Map<String, String>,
         body: Map<String, Any>,
-        serviceResponseListener: ServiceResponseListener?
+        serviceResponseListener: ServiceResponseListener?,
+        sdkBackendRequestType: SdkBackendRequestType
     ) {
         val serviceAsyncTaskExecutorAsync =
             ServiceAsyncTaskExecutorAsync(
@@ -26,22 +28,24 @@ class BdsRetryService(
                 paths,
                 queries,
                 header,
-                body
-            ) {
-                serviceResponseListener?.onResponseReceived(it)
-                if (!isSuccess(it.responseCode)) {
-                    saveFailedRequest(
-                        bdsService.baseUrl,
-                        bdsService.timeoutInMillis,
-                        endPoint,
-                        httpMethod,
-                        paths,
-                        queries,
-                        header,
-                        body
-                    )
-                }
-            }
+                body,
+                serviceResponseListener = {
+                    serviceResponseListener?.onResponseReceived(it)
+                    if (!isSuccess(it.responseCode)) {
+                        saveFailedRequest(
+                            bdsService.baseUrl,
+                            bdsService.timeoutInMillis,
+                            endPoint,
+                            httpMethod,
+                            paths,
+                            queries,
+                            header,
+                            body
+                        )
+                    }
+                },
+                sdkBackendRequestType = sdkBackendRequestType,
+            )
         serviceAsyncTaskExecutorAsync.execute()
     }
 

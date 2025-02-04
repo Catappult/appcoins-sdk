@@ -2,6 +2,7 @@ package com.appcoins.sdk.billing.usecases.ingameupdates
 
 import android.content.Context
 import android.os.Build
+import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.managers.AppVersionManager
 import com.appcoins.sdk.billing.mappers.Version
 import com.appcoins.sdk.billing.usecases.GetAppInstalledVersion
@@ -23,6 +24,7 @@ object IsUpdateAvailable : UseCase() {
             } ?: false
         } catch (e: Exception) {
             logError("Failed to verify if update available: $e")
+            WalletUtils.sdkAnalytics.sendAppUpdateAvailableFailureToObtainResult()
             false
         }
     }

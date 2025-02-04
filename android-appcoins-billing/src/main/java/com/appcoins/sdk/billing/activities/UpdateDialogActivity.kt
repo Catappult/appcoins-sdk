@@ -4,7 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import android.widget.Button
 import com.appcoins.billing.sdk.R
-import com.appcoins.sdk.billing.analytics.SdkUpdateFlowActions
+import com.appcoins.sdk.billing.analytics.SdkLaunchAppUpdateDialogLabels
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.usecases.ingameupdates.LaunchAppUpdate
 import com.appcoins.sdk.core.logger.Logger.logInfo
@@ -20,13 +20,13 @@ class UpdateDialogActivity : Activity() {
 
         logInfo("Starting UpdateDialogActivity.")
 
-        sdkAnalytics.appUpdateImpression()
+        sdkAnalytics.sendLaunchAppUpdateDialogRequestEvent()
         setActionsForButtons()
     }
 
     override fun onBackPressed() {
         logInfo("User BACK_PRESSED on UpdateDialogActivity.")
-        sdkAnalytics.appUpdateClick(SdkUpdateFlowActions.BACK_PRESSED)
+        sdkAnalytics.sendLaunchAppUpdateDialogActionEvent(SdkLaunchAppUpdateDialogLabels.BACK_BUTTON)
         super.onBackPressed()
     }
 
@@ -34,7 +34,7 @@ class UpdateDialogActivity : Activity() {
         findViewById<Button>(R.id.button_update)?.let {
             it.setOnClickListener {
                 logInfo("User pressed UPDATE_APP on UpdateDialogActivity.")
-                sdkAnalytics.appUpdateClick(SdkUpdateFlowActions.UPDATE_APP)
+                sdkAnalytics.sendLaunchAppUpdateDialogActionEvent(SdkLaunchAppUpdateDialogLabels.UPDATE)
                 Thread { LaunchAppUpdate(applicationContext) }.start()
                 finish()
             }
@@ -42,7 +42,7 @@ class UpdateDialogActivity : Activity() {
         findViewById<Button>(R.id.button_close)?.let {
             it.setOnClickListener {
                 logInfo("User pressed CANCEL on UpdateDialogActivity.")
-                sdkAnalytics.appUpdateClick(SdkUpdateFlowActions.CANCEL)
+                sdkAnalytics.sendLaunchAppUpdateDialogActionEvent(SdkLaunchAppUpdateDialogLabels.CLOSE)
                 finish()
             }
         }

@@ -40,11 +40,15 @@ object SdkAppUpdateAvailableEvents {
             1
         )
 
-    private const val SDK_APP_UPDATE_AVAILABLE_REQUEST = "sdk_app_update_available_request"
-    private const val SDK_APP_UPDATE_AVAILABLE_RESULT = "sdk_app_update_available_result"
-    private const val SDK_APP_UPDATE_AVAILABLE_MAIN_THREAD_FAILURE = "sdk_app_update_available_main_thread_failure"
-    private const val SDK_APP_UPDATE_AVAILABLE_FAILURE_TO_OBTAIN_RESULT =
+    const val SDK_APP_UPDATE_AVAILABLE_REQUEST = "sdk_app_update_available_request"
+    const val SDK_APP_UPDATE_AVAILABLE_RESULT = "sdk_app_update_available_result"
+    const val SDK_APP_UPDATE_AVAILABLE_MAIN_THREAD_FAILURE = "sdk_app_update_available_main_thread_failure"
+    const val SDK_APP_UPDATE_AVAILABLE_FAILURE_TO_OBTAIN_RESULT =
         "sdk_app_update_available_failure_to_obtain_result"
 
     private const val APP_UPDATE_AVAILABLE_FLOW = "app_update_available"
+}
+
+object SdkAppUpdateAvailableLabels {
+    const val RESULT = "result"
 }

@@ -34,5 +34,5 @@ object SdkQueryPurchasesEvents {
     const val SDK_QUERY_PURCHASES_TYPE_NOT_SUPPORTED_ERROR = "sdk_query_purchases_type_not_supported_error"
     const val SDK_QUERY_PURCHASES_RESULT = "sdk_query_purchases_result"
 
-    const val SDK_QUERY_PURCHASES_FLOW = "query_purchases"
+    private const val SDK_QUERY_PURCHASES_FLOW = "query_purchases"
 }

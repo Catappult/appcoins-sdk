@@ -1,5 +1,6 @@
 package com.appcoins.sdk.billing.mappers
 
+import com.appcoins.sdk.billing.analytics.SdkBackendRequestType
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
@@ -8,7 +9,8 @@ import org.json.JSONObject
 
 class ReferralDeeplinkResponseMapper {
     fun map(response: RequestResponse): ReferralDeeplinkResponse {
-        WalletUtils.sdkAnalytics.sendCallBackendReferralDeeplinkEvent(
+        WalletUtils.sdkAnalytics.sendBackendResponseEvent(
+            SdkBackendRequestType.STORE_DEEPLINK,
             response.responseCode,
             response.response,
             response.exception?.toString()

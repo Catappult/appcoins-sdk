@@ -419,7 +419,7 @@ class SdkAnalyticsTest {
             )
         } just runs
 
-        sdkAnalytics.appUpdateImpression()
+        sdkAnalytics.sendLaunchAppUpdateDialogRequestEvent()
 
         verify(exactly = 1) {
             mockkAnalyticsManager.logEvent(
@@ -449,7 +449,7 @@ class SdkAnalyticsTest {
             )
         } just runs
 
-        sdkAnalytics.appUpdateClick(updateAction)
+        sdkAnalytics.sendLaunchAppUpdateDialogActionEvent(updateAction)
 
         verify(exactly = 1) {
             mockkAnalyticsManager.logEvent(

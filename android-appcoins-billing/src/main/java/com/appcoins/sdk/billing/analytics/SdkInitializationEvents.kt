@@ -39,11 +39,11 @@ object SdkInitializationEvents {
             1
         )
 
-    class SdkAttributionRequest(data: MutableMap<String, Any>) :
+    class SdkAttributionRequest :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_ATTRIBUTION_REQUEST,
-            data,
+            mutableMapOf(),
             SDK_INITIALIZATION_FLOW,
             3
         )
@@ -66,20 +66,20 @@ object SdkInitializationEvents {
             1
         )
 
-    class SdkAttributionRetryAttempt(data: MutableMap<String, Any>) :
+    class SdkAttributionRetryAttempt :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_ATTRIBUTION_RETRY_ATTEMPT,
-            data,
+            mutableMapOf(),
             SDK_INITIALIZATION_FLOW,
             3
         )
 
-    class SdkPayflowRequest(data: MutableMap<String, Any>) :
+    class SdkPayflowRequest :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_PAYFLOW_REQUEST,
-            data,
+            mutableMapOf(),
             SDK_INITIALIZATION_FLOW,
             3
         )
@@ -114,5 +114,37 @@ object SdkInitializationEvents {
     const val SDK_SERVICE_CONNECTION_FAILED = "sdk_service_connection_failed"
     const val SDK_APP_INSTALLATION_TRIGGER = "sdk_app_installation_trigger"
 
-    const val SDK_INITIALIZATION_FLOW = "initialization"
+    private const val SDK_INITIALIZATION_FLOW = "initialization"
+}
+
+object SdkInitializationLabels {
+    const val OEMID = ""
+    const val GUEST_ID = ""
+    const val UTM_SOURCE = ""
+    const val UTM_MEDIUM = ""
+    const val UTM_CAMPAIGN = ""
+    const val UTM_TERM = ""
+    const val UTM_CONTENT = ""
+
+    const val REASON = ""
+
+    const val PAYMENT_FLOW_LIST = ""
+
+    const val SERVICE = ""
+    const val METHOD = "method"
+    const val METHOD_BINDING = ""
+    const val METHOD_URI = ""
+
+    const val APP_PACKAGE_NAME = ""
+    const val STATE = ""
+    const val INSTALLED = ""
+    const val REMOVED = ""
+}
+
+enum class SdkInitializationService(val type: String) {
+    WEB("web"),
+    APTOIDE_WALLET("aptoide_wallet"),
+    GAMES_HUB("games_hub"),
+    APTOIDE_GAMES("aptoide_games"),
+    UNAVAILABLE_SERVICE("unavailable_service"),
 }

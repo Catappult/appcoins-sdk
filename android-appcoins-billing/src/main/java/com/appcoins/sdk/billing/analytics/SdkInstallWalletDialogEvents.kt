@@ -49,11 +49,19 @@ object SdkInstallWalletDialogEvents {
             1
         )
 
-    private const val SDK_WALLET_INSTALL_DIALOG = "sdk_wallet_install_dialog"
-    private const val SDK_WALLET_INSTALL_DIALOG_ACTION = "sdk_wallet_install_action"
-    private const val SDK_WALLET_INSTALL_DIALOG_VANILLA_IMPRESSION = "sdk_download_wallet_vanilla_impression"
-    private const val SDK_WALLET_INSTALL_DIALOG_FALLBACK_IMPRESSION = "sdk_download_wallet_fallback_impression"
-    private const val SDK_WALLET_INSTALL_DIALOG_SUCCESS = "sdk_wallet_install_success"
+    const val SDK_WALLET_INSTALL_DIALOG = "sdk_wallet_install_dialog"
+    const val SDK_WALLET_INSTALL_DIALOG_ACTION = "sdk_wallet_install_action"
+    const val SDK_WALLET_INSTALL_DIALOG_VANILLA_IMPRESSION = "sdk_download_wallet_vanilla_impression"
+    const val SDK_WALLET_INSTALL_DIALOG_FALLBACK_IMPRESSION = "sdk_download_wallet_fallback_impression"
+    const val SDK_WALLET_INSTALL_DIALOG_SUCCESS = "sdk_wallet_install_success"
 
     private const val INSTALL_WALLET_DIALOG_FLOW = "install_wallet_dialog"
+}
+
+object SdkInstallWalletDialogLabels {
+    const val WALLET_INSTALL_ACTION = "wallet_install_action"
+    const val BACK_BUTTON = "back_button"
+    const val CANCEL = "cancel"
+    const val INSTALL = "install"
+
 }

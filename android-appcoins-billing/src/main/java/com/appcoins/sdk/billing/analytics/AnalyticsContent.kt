@@ -31,6 +31,7 @@ object AnalyticsLabels {
     const val FAILURE_TYPE = "failure_type"
     const val FAILURE_MESSAGE = "failure_message"
     const val NETWORK_SPEED = "network_speed"
+    const val EXCEPTION = "exception"
 }
 
 object SdkAnalyticsEvents {
@@ -51,8 +52,6 @@ object SdkInstallFlowEvents {
 
 object SdkUpdateFlowEvents {
     const val SDK_APP_UPDATE_DEEPLINK_IMPRESSION = "sdk_app_update_deeplink_impression"
-    const val SDK_APP_UPDATE_IMPRESSION = "sdk_app_update_impression"
-    const val SDK_APP_UPDATE_CLICK = "sdk_app_update_click"
 }
 
 object SdkBackendPayflowEvents {
@@ -61,22 +60,7 @@ object SdkBackendPayflowEvents {
     const val SDK_CALL_BACKEND_ATTRIBUTION = "sdk_call_backend_attribution_response"
     const val SDK_CALL_BACKEND_APP_VERSION = "sdk_call_backend_app_version_response"
     const val SDK_CALL_BACKEND_STORE_LINK = "sdk_call_backend_store_link_response"
-    const val SDK_CALL_BACKEND_REFERRAL_DEEPLINK = "sdk_call_backend_referral_deeplink_response"
     const val SDK_CALL_BINDSERVICE_FAIL = "sdk_call_bindservice_fail"
-}
-
-object SdkAnalyticsFailureLabels {
-    const val SDK_WEB_PAYMENT_URL_GENERATION_FAILED = "sdk_web_payment_url_generation_failed"
-    const val SDK_BACKEND_GUEST_UID_GENERATION_FAILED = "sdk_backend_guest_uid_generation_failed"
-    const val SDK_WEB_VIEW_RESULT_FAILED = "sdk_web_view_result_failed"
-    const val ATTRIBUTION_RETRY_ATTEMPT = "attribution_retry_attempt"
-    const val SDK_BACKEND_REQUEST_FAILED = "sdk_backend_request_failed"
-}
-
-object SdkUpdateFlowActions {
-    const val UPDATE_APP = "update_app"
-    const val CANCEL = "cancel"
-    const val BACK_PRESSED = "back_pressed"
 }
 
 abstract class AnalyticsEvent(

@@ -40,10 +40,10 @@ object SdkPurchaseFlowEvents {
             1
         )
 
-    private const val SDK_LAUNCH_PURCHASE_REQUEST = "sdk_launch_purchase_request"
-    private const val SDK_LAUNCH_PURCHASE_RESULT = "sdk_launch_purchase_result"
-    private const val SDK_LAUNCH_PURCHASE_TYPE_NOT_SUPPORTED_FAILURE = "sdk_launch_purchase_type_not_supported_failure"
-    private const val SDK_LAUNCH_PURCHASE_MAIN_THREAD_FAILURE = "sdk_launch_purchase_main_thread_failure"
+    const val SDK_LAUNCH_PURCHASE_REQUEST = "sdk_launch_purchase_request"
+    const val SDK_LAUNCH_PURCHASE_RESULT = "sdk_launch_purchase_result"
+    const val SDK_LAUNCH_PURCHASE_TYPE_NOT_SUPPORTED_FAILURE = "sdk_launch_purchase_type_not_supported_failure"
+    const val SDK_LAUNCH_PURCHASE_MAIN_THREAD_FAILURE = "sdk_launch_purchase_main_thread_failure"
 
     private const val PURCHASE_FLOW = "purchase_flow"
 }

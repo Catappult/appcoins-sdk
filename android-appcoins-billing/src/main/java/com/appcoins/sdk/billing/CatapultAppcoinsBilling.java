@@ -143,11 +143,18 @@ public class CatapultAppcoinsBilling
     @Override
     public boolean isAppUpdateAvailable() {
         logInfo("Request to verify AppUpdateAvailable.");
+        WalletUtils.INSTANCE.getSdkAnalytics()
+            .sendAppUpdateAvailableRequest();
         if (Looper.myLooper() == Looper.getMainLooper()) {
             logInfo("Request from MainThread. Cancelling.");
+            WalletUtils.INSTANCE.getSdkAnalytics()
+                .sendAppUpdateAvailableMainThreadFailure();
             return false;
         } else {
-            return IsUpdateAvailable.INSTANCE.invoke(WalletUtils.INSTANCE.getContext());
+            boolean result = IsUpdateAvailable.INSTANCE.invoke(WalletUtils.INSTANCE.getContext());
+            WalletUtils.INSTANCE.getSdkAnalytics()
+                .sendAppUpdateAvailableResult(result);
+            return result;
         }
     }
 
@@ -203,9 +210,7 @@ public class CatapultAppcoinsBilling
     }
 
     @Override
-    public void accept(
-        @Nullable
-        Pair<Activity, BuyItemProperties> value) {
+    public void accept(@Nullable Pair<Activity, BuyItemProperties> value) {
         Runnable runnable = () -> {
             Looper.prepare();
             resumeBillingFlow(value.component1(), value.component2()

@@ -1,5 +1,6 @@
 package com.appcoins.sdk.billing.service;
 
+import com.appcoins.sdk.billing.analytics.SdkBackendRequestType;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.utils.RequestBuilderUtils;
 import java.io.BufferedReader;
@@ -29,12 +30,17 @@ public class BdsService implements Service {
     }
 
     RequestResponse createRequest(String baseUrl, String endPoint, String httpMethod, List<String> paths,
-        Map<String, String> queries, Map<String, String> header, Map<String, Object> body) {
+        Map<String, String> queries, Map<String, String> header, Map<String, Object> body,
+        SdkBackendRequestType sdkBackendRequestType) {
         HttpURLConnection urlConnection = null;
         try {
             String urlBuilder = RequestBuilderUtils.buildUrl(baseUrl, endPoint, paths, queries);
             logDebug("Url -> " + urlBuilder);
             URL url = new URL(urlBuilder);
+
+            WalletUtils.INSTANCE.getSdkAnalytics()
+                .sendBackendRequestEvent(sdkBackendRequestType, urlBuilder, httpMethod, paths, header, queries, body);
+
             urlConnection = openUrlConnection(url, httpMethod);
 
             urlConnection.setReadTimeout(timeoutInMillis);
@@ -48,7 +54,7 @@ public class BdsService implements Service {
             if (responseCode >= 400) {
                 inputStream = urlConnection.getErrorStream();
                 WalletUtils.INSTANCE.getSdkAnalytics()
-                    .sendUnsuccessfulBackendRequestEvent(baseUrl + endPoint,
+                    .sendBackendErrorEvent(sdkBackendRequestType, urlBuilder,
                         urlConnection.getResponseCode() + " " + urlConnection.getResponseMessage());
             } else {
                 inputStream = urlConnection.getInputStream();
@@ -56,7 +62,7 @@ public class BdsService implements Service {
             return readResponse(inputStream, responseCode);
         } catch (Exception firstException) {
             WalletUtils.INSTANCE.getSdkAnalytics()
-                .sendUnsuccessfulBackendRequestEvent(baseUrl + endPoint, firstException.toString());
+                .sendBackendErrorEvent(sdkBackendRequestType, baseUrl + endPoint, firstException.toString());
             return handleException(urlConnection, firstException);
         } finally {
             if (urlConnection != null) {
@@ -133,7 +139,8 @@ public class BdsService implements Service {
     }
 
     public void makeRequest(String endPoint, String httpMethod, List<String> paths, Map<String, String> queries,
-        Map<String, String> header, Map<String, Object> body, ServiceResponseListener serviceResponseListener) {
+        Map<String, String> header, Map<String, Object> body, ServiceResponseListener serviceResponseListener,
+        SdkBackendRequestType sdkBackendRequestType) {
         if (paths == null) {
             paths = new ArrayList<>();
         }
@@ -142,7 +149,7 @@ public class BdsService implements Service {
         }
         ServiceAsyncTaskExecutorAsync serviceAsyncTaskExecutorAsync =
             new ServiceAsyncTaskExecutorAsync(this, baseUrl, endPoint, httpMethod, paths, queries, header, body,
-                serviceResponseListener);
+                serviceResponseListener, sdkBackendRequestType);
         serviceAsyncTaskExecutorAsync.execute();
     }
 }
