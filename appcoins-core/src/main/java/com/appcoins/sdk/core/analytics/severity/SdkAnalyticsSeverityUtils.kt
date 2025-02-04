@@ -1,15 +1,16 @@
-package com.appcoins.sdk.billing.analytics
+package com.appcoins.sdk.core.analytics.severity
 
-import com.appcoins.sdk.billing.helpers.WalletUtils
+import com.appcoins.sdk.core.analytics.AnalyticsEvent
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 
 class SdkAnalyticsSeverityUtils {
 
     fun isEventSeverityAllowed(analyticsEvent: AnalyticsEvent): Boolean {
         val savedSeverityLevel =
-            if (WalletUtils.analyticsFlowSeverityLevels == null) {
+            if (SdkAnalyticsUtils.analyticsFlowSeverityLevels == null) {
                 5
             } else {
-                WalletUtils.analyticsFlowSeverityLevels?.firstOrNull {
+                SdkAnalyticsUtils.analyticsFlowSeverityLevels?.firstOrNull {
                     it.flow.equals(analyticsEvent.flow, false)
                 }?.severityLevel ?: 1
             }

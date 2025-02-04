@@ -14,7 +14,7 @@ import com.appcoins.sdk.core.logger.Logger.logInfo
 
 class UnavailableBillingDialogActivity : Activity() {
 
-    private val sdkAnalytics = WalletUtils.sdkAnalytics
+    private val sdkAnalytics = SdkAnalyticsUtils.sdkAnalytics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

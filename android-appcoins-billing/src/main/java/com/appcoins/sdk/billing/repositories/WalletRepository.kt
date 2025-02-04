@@ -1,5 +1,6 @@
 package com.appcoins.sdk.billing.repositories
 
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.billing.mappers.WalletGenerationMapper
 import com.appcoins.sdk.billing.models.WalletGenerationModel
 import com.appcoins.sdk.billing.service.BdsService
@@ -38,7 +39,8 @@ class WalletRepository(private val service: Service) {
             queries,
             emptyMap(),
             emptyMap(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.GUEST_WALLET
         )
 
         try {

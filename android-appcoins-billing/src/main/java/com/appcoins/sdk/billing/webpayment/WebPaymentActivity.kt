@@ -75,7 +75,7 @@ class WebPaymentActivity :
 
         skuType = intent.getStringExtra(SKU_TYPE)
         val sku = intent.getStringExtra(SKU)
-        WalletUtils.sdkAnalytics.sendWebPaymentStartEvent(sku ?: "")
+        SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentStartEvent(sku ?: "")
 
         webViewDetails =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -167,7 +167,7 @@ class WebPaymentActivity :
                 PaymentResponseStream.getInstance().emit(paymentResponse)
             } catch (e: Exception) {
                 logError("There was a failure receiving the purchase result from the WebView.", e)
-                WalletUtils.sdkAnalytics.sendWebPaymentErrorProcessingPurchaseResultEvent(e.toString())
+                SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentErrorProcessingPurchaseResultEvent(e.toString())
                 PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
             }
         } ?: PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())

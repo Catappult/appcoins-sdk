@@ -79,6 +79,8 @@ dependencies {
     detektPlugins libs.detekt.formatting
 
     implementation libs.kotlin.stdlib
+
+    api libs.indicative
 }
 
 //Publish configuration

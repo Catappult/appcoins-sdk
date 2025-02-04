@@ -1,6 +1,22 @@
-package com.appcoins.sdk.billing.analytics;
+package com.appcoins.sdk.core.analytics;
 
-import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager;
+import com.appcoins.sdk.core.analytics.events.SdkAppUpdateAvailableEvents;
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestEvents;
+import com.appcoins.sdk.core.analytics.events.SdkConsumePurchaseEvents;
+import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureEvents;
+import com.appcoins.sdk.core.analytics.events.SdkGetReferralDeeplinkEvents;
+import com.appcoins.sdk.core.analytics.events.SdkInitializationEvents;
+import com.appcoins.sdk.core.analytics.events.SdkInstallWalletDialogEvents;
+import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateDialogEvents;
+import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateEvents;
+import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateStoreEvents;
+import com.appcoins.sdk.core.analytics.events.SdkPurchaseFlowEvents;
+import com.appcoins.sdk.core.analytics.events.SdkQueryPurchasesEvents;
+import com.appcoins.sdk.core.analytics.events.SdkQuerySkuDetailsEvents;
+import com.appcoins.sdk.core.analytics.events.SdkWalletPaymentFlowEvents;
+import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents;
+import com.appcoins.sdk.core.analytics.indicative.IndicativeEventLogger;
+import com.appcoins.sdk.core.analytics.manager.AnalyticsManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,8 +75,8 @@ public class AnalyticsManagerProvider {
         list.add(SdkLaunchAppUpdateDialogEvents.SDK_LAUNCH_APP_UPDATE_DIALOG_ACTION);
         list.add(SdkLaunchAppUpdateDialogEvents.SDK_LAUNCH_APP_UPDATE_DIALOG_DEEPLINK_FAILURE);
         list.add(SdkLaunchAppUpdateStoreEvents.SDK_LAUNCH_APP_UPDATE_STORE_REQUEST);
-        list.add(SdkLaunchAppUpdateStoreEvents.SDK_LAUNCH_APP_UPDATE_STORE_RESULT);
-        list.add(SdkLaunchAppUpdateStoreEvents.SDK_LAUNCH_APP_UPDATE_STORE_DEEPLINK_FAILURE);
+        list.add(SdkLaunchAppUpdateEvents.SDK_LAUNCH_APP_UPDATE_RESULT);
+        list.add(SdkLaunchAppUpdateEvents.SDK_LAUNCH_APP_UPDATE_DEEPLINK_FAILURE);
         list.add(SdkPurchaseFlowEvents.SDK_LAUNCH_PURCHASE);
         list.add(SdkPurchaseFlowEvents.SDK_PURCHASE_RESULT);
         list.add(SdkPurchaseFlowEvents.SDK_LAUNCH_PURCHASE_MAIN_THREAD_FAILURE);

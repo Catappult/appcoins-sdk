@@ -129,14 +129,14 @@ class WalletUtilsTest {
         every { ApiKeysManager.getIndicativeApiKey() } returns EMPTY_STRING
         every { PreferenceManager.getDefaultSharedPreferences(mockkContext) } returns mockkSharedPreferences
         every { mockkSharedPreferences.getString(WALLET_ID_KEY, null) } returns EMPTY_STRING
-        every { WalletUtils.sdkAnalytics.sendStartConnectionEvent() } just runs
+        every { SdkAnalyticsUtils.sdkAnalytics.sendStartConnectionEvent() } just runs
 
         WalletUtils.startIndicative(EMPTY_STRING)
 
         shadowOf(Looper.getMainLooper()).idle()
         shadowOf(Looper.getMainLooper()).runToNextTask()
 
-        verify(exactly = 1) { WalletUtils.sdkAnalytics.sendStartConnectionEvent() }
+        verify(exactly = 1) { SdkAnalyticsUtils.sdkAnalytics.sendStartConnectionEvent() }
     }
 
     private companion object {

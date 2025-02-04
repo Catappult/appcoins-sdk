@@ -1,4 +1,4 @@
-package com.appcoins.sdk.billing.helpers
+package com.appcoins.sdk.core.device
 
 import android.os.Build
 import java.util.Locale

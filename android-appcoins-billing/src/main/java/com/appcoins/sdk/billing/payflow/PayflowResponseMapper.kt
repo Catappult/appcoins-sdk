@@ -1,22 +1,16 @@
 package com.appcoins.sdk.billing.payflow
 
-import com.appcoins.sdk.billing.analytics.SdkBackendRequestType
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
+import com.appcoins.sdk.core.analytics.severity.AnalyticsFlowSeverityLevel
 import com.appcoins.sdk.core.logger.Logger.logError
 import org.json.JSONObject
 import java.io.Serializable
 
 class PayflowResponseMapper {
     fun map(response: RequestResponse): PayflowMethodResponse {
-        WalletUtils.sdkAnalytics.sendBackendResponseEvent(
-            SdkBackendRequestType.PAYMENT_FLOW,
-            response.responseCode,
-            response.response,
-            response.exception?.toString()
-        )
-
         if (!isSuccess(response.responseCode) || response.response == null) {
             logError(
                 "Failed to obtain Payflow Response. " +
@@ -64,6 +58,11 @@ class PayflowResponseMapper {
                 } ?: arrayListOf()
         }.getOrElse {
             logError("There was an error mapping the response.", Exception(it))
+            SdkAnalyticsUtils.sdkAnalytics.sendBackendMappingFailureEvent(
+                SdkBackendRequestType.PAYMENT_FLOW,
+                response.response,
+                Exception(it).toString()
+            )
             arrayListOf()
         }
 
@@ -86,6 +85,11 @@ class PayflowResponseMapper {
                 }
         }.getOrElse {
             logError("There was an error mapping the AnalyticsFlowSeverityLevels.", Exception(it))
+            SdkAnalyticsUtils.sdkAnalytics.sendBackendMappingFailureEvent(
+                SdkBackendRequestType.PAYMENT_FLOW,
+                response.response,
+                Exception(it).toString()
+            )
             null
         }
 }
@@ -280,5 +284,3 @@ sealed class PaymentFlowMethod(
             (payflowMethodsList.firstOrNull { it is UnavailableBilling } as UnavailableBilling?)?.errorMessage
     }
 }
-
-data class AnalyticsFlowSeverityLevel(val flow: String, val severityLevel: Int)

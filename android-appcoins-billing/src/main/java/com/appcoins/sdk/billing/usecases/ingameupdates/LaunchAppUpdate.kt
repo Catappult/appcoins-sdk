@@ -43,7 +43,7 @@ object LaunchAppUpdate : UseCase() {
                 }
         return try {
             context.startActivity(deeplinkIntent)
-            WalletUtils.sdkAnalytics.sendLaunchAppUpdateResultEvent(deeplink)
+            SdkAnalyticsUtils.sdkAnalytics.sendLaunchAppUpdateResultEvent(deeplink)
             true
         } catch (e: ActivityNotFoundException) {
             logError("Failed to launch App Update Deeplink: $e")

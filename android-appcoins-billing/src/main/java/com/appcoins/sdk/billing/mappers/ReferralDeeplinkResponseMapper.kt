@@ -1,6 +1,6 @@
 package com.appcoins.sdk.billing.mappers
 
-import com.appcoins.sdk.billing.analytics.SdkBackendRequestType
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
@@ -9,13 +9,6 @@ import org.json.JSONObject
 
 class ReferralDeeplinkResponseMapper {
     fun map(response: RequestResponse): ReferralDeeplinkResponse {
-        WalletUtils.sdkAnalytics.sendBackendResponseEvent(
-            SdkBackendRequestType.STORE_DEEPLINK,
-            response.responseCode,
-            response.response,
-            response.exception?.toString()
-        )
-
         if (!isSuccess(response.responseCode) || response.response == null) {
             logError(
                 "Failed to obtain Referral Deeplink Response. " +
@@ -33,6 +26,11 @@ class ReferralDeeplinkResponseMapper {
             ReferralDeeplinkResponse(response.responseCode, storeDeeplink, fallbackDeeplink)
         } catch (ex: Exception) {
             logError("There was an error mapping the response.", ex)
+            SdkAnalyticsUtils.sdkAnalytics.sendBackendMappingFailureEvent(
+                SdkBackendRequestType.STORE_DEEPLINK,
+                response.response,
+                ex.toString()
+            )
             ReferralDeeplinkResponse(response.responseCode)
         }
     }

@@ -3,12 +3,12 @@ package com.appcoins.sdk.billing
 import android.app.Activity
 import android.content.Intent
 import android.util.Base64
-import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.usecases.mmp.SendSuccessfulPurchaseResponseEvent
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.SKU_TYPE
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
@@ -24,7 +24,7 @@ internal object ApplicationUtils {
         data: Intent?,
         purchaseFinishedListener: PurchasesUpdatedListener
     ) {
-        val sdkAnalytics = WalletUtils.sdkAnalytics
+        val sdkAnalytics = SdkAnalyticsUtils.sdkAnalytics
 
         if (data == null) {
             logError("Null data in IAB activity result.")
@@ -38,7 +38,6 @@ internal object ApplicationUtils {
         val skuType = data.getStringExtra(SKU_TYPE)
 
         if (resultCode == Activity.RESULT_OK && responseCode == ResponseCode.OK.value) {
-            sdkAnalytics.sendPurchaseResultEvent("success", getResponseDesc(responseCode))
             logInfo("Successful ResultCode from Purchase.")
             logDebug("Purchase data: $purchaseData")
             logDebug("Data signature: $dataSignature")
@@ -51,9 +50,7 @@ internal object ApplicationUtils {
                 return
             }
 
-            if (
-                billing.verifyPurchase(purchaseData, Base64.decode(dataSignature, Base64.DEFAULT))
-            ) {
+            if (billing.verifyPurchase(purchaseData, Base64.decode(dataSignature, Base64.DEFAULT))) {
                 val purchaseDataJSON: JSONObject
                 try {
                     purchaseDataJSON = JSONObject(purchaseData)
@@ -76,14 +73,18 @@ internal object ApplicationUtils {
                     purchases.add(purchase)
                     SendSuccessfulPurchaseResponseEvent.invoke(purchase)
                     purchaseFinishedListener.onPurchasesUpdated(responseCode, purchases)
+                    sdkAnalytics.sendPurchaseResultEvent(responseCode, purchase.token, purchase.sku)
                     logInfo("Purchase result successfully sent.")
                 } catch (e: Exception) {
                     logError("Failed to parse purchase data: $e")
+                    sdkAnalytics.sendPurchaseResultEvent(ResponseCode.ERROR.value, null, null)
                     purchaseFinishedListener
                         .onPurchasesUpdated(ResponseCode.ERROR.value, emptyList())
                 }
             } else {
                 logError("Signature verification failed.")
+                // TODO: Use correctly API_KEY
+                sdkAnalytics.sendPurchaseSignatureVerificationFailureEvent(purchaseData, "api_key")
                 purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.value, emptyList())
             }
         } else if (resultCode == Activity.RESULT_OK) {
@@ -93,12 +94,12 @@ internal object ApplicationUtils {
                     getResponseDesc(responseCode)
             )
             logDebug("Bundle: $data")
-            sdkAnalytics.sendPurchaseResultEvent("error", getResponseDesc(responseCode))
+            sdkAnalytics.sendPurchaseResultEvent(responseCode, null, null)
             purchaseFinishedListener.onPurchasesUpdated(responseCode, emptyList())
         } else if (resultCode == Activity.RESULT_CANCELED) {
             logInfo("Purchase canceled - Response: " + getResponseDesc(responseCode))
             logDebug("Bundle: $data")
-            sdkAnalytics.sendPurchaseResultEvent("user_canceled", getResponseDesc(responseCode))
+            sdkAnalytics.sendPurchaseResultEvent(ResponseCode.USER_CANCELED.value, null, null)
             purchaseFinishedListener
                 .onPurchasesUpdated(ResponseCode.USER_CANCELED.value, emptyList())
         } else {
@@ -107,7 +108,7 @@ internal object ApplicationUtils {
                     getResponseDesc(responseCode)
             )
             logDebug("Bundle: $data")
-            sdkAnalytics.sendPurchaseResultEvent("error", getResponseDesc(responseCode))
+            sdkAnalytics.sendPurchaseResultEvent(responseCode, null, null)
             purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.value, emptyList())
         }
     }

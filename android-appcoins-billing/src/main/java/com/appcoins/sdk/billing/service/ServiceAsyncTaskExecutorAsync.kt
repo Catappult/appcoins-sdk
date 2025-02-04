@@ -2,7 +2,7 @@ package com.appcoins.sdk.billing.service
 
 import android.os.Handler
 import android.os.Looper
-import com.appcoins.sdk.billing.analytics.SdkBackendRequestType
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import java.util.concurrent.Executors
 
 class ServiceAsyncTaskExecutorAsync(

@@ -1,5 +1,6 @@
 package com.appcoins.sdk.billing.repositories
 
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.billing.mappers.AttributionResponse
 import com.appcoins.sdk.billing.mappers.AttributionResponseMapper
 import com.appcoins.sdk.billing.service.BdsService
@@ -43,7 +44,8 @@ class AttributionRepository(private val bdsService: BdsService) {
             queries,
             emptyMap(),
             emptyMap(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.ATTRIBUTION
         )
 
         waitForCountDown(countDownLatch)

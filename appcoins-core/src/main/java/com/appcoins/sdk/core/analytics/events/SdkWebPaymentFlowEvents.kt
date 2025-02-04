@@ -1,6 +1,6 @@
-package com.appcoins.sdk.billing.analytics
+package com.appcoins.sdk.core.analytics.events
 
-import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
+import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
 
 object SdkWebPaymentFlowEvents {
 

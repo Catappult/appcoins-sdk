@@ -2,6 +2,7 @@ package com.appcoins.sdk.billing.webpayment
 
 import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.BillingFlowParams
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
 import com.appcoins.sdk.billing.service.BdsService
@@ -63,7 +64,8 @@ class WebPaymentRepository(private val bdsService: BdsService) {
             queries,
             emptyMap(),
             emptyMap(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.WEB_PAYMENT_URL
         )
 
         waitForCountDown(countDownLatch)

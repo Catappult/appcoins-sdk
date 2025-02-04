@@ -1,6 +1,6 @@
 package com.appcoins.sdk.billing.mappers
 
-import com.appcoins.sdk.billing.analytics.SdkBackendRequestType
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
@@ -13,12 +13,6 @@ class AppVersionResponseMapper {
             logError(
                 "Failed to obtain AppVersion Response. " +
                     "ResponseCode: ${response.responseCode} | Cause: ${response.exception}"
-            )
-            WalletUtils.sdkAnalytics.sendBackendResponseEvent(
-                SdkBackendRequestType.APP_VERSION,
-                response.responseCode,
-                null,
-                response.exception?.toString()
             )
             return AppVersionResponse(response.responseCode)
         }
@@ -49,14 +43,13 @@ class AppVersionResponseMapper {
             AppVersionResponse(response.responseCode, mutableList)
         }.getOrElse {
             logError("There was an error mapping the response.", Exception(it))
+            SdkAnalyticsUtils.sdkAnalytics.sendBackendMappingFailureEvent(
+                SdkBackendRequestType.APP_VERSION,
+                response.response,
+                Exception(it).toString()
+            )
             AppVersionResponse(response.responseCode)
         }
-
-        WalletUtils.sdkAnalytics.sendBackendResponseEvent(
-            SdkBackendRequestType.APP_VERSION,
-            response.responseCode,
-            appVersionResponse.toString()
-        )
 
         return appVersionResponse
     }

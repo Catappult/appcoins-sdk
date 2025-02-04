@@ -571,7 +571,7 @@ class SdkAnalyticsTest {
             )
         } just runs
 
-        sdkAnalytics.sendBackendGuestUidGenerationFailedEvent()
+        sdkAnalytics.sendAttributionRequestFailureEvent()
 
         verify(exactly = 1) {
             mockkAnalyticsManager.logEvent(

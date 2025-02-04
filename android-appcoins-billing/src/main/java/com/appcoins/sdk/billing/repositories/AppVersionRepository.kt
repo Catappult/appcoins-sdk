@@ -1,5 +1,6 @@
 package com.appcoins.sdk.billing.repositories
 
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.billing.mappers.AppVersionResponseMapper
 import com.appcoins.sdk.billing.mappers.Version
 import com.appcoins.sdk.billing.service.BdsService
@@ -37,7 +38,8 @@ class AppVersionRepository(private val bdsService: BdsService) {
             emptyMap(),
             emptyMap(),
             emptyMap<String?, Any>(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.APP_VERSION
         )
 
         waitForCountDown(countDownLatch)

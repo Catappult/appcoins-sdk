@@ -100,6 +100,6 @@ object SaveAttributionResultOnPrefs : UseCase() {
 
     private fun sendBackendGuestUidGenerationFailedEvent() {
         logError("Failure to get GuestUid for User from Attribution.")
-        WalletUtils.sdkAnalytics.sendBackendGuestUidGenerationFailedEvent()
+        SdkAnalyticsUtils.sdkAnalytics.sendAttributionRequestFailureEvent()
     }
 }

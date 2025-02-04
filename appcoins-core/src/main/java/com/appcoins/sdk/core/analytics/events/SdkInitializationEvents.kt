@@ -1,6 +1,6 @@
-package com.appcoins.sdk.billing.analytics
+package com.appcoins.sdk.core.analytics.events
 
-import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
+import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
 
 object SdkInitializationEvents {
     class SdkStartConnection :
@@ -57,11 +57,11 @@ object SdkInitializationEvents {
             2
         )
 
-    class SdkAttributionRequestFailure(data: MutableMap<String, Any>) :
+    class SdkAttributionRequestFailure :
         AnalyticsEvent(
             AnalyticsManager.Action.ERROR,
             SDK_ATTRIBUTION_REQUEST_FAILURE,
-            data,
+            mutableMapOf(),
             SDK_INITIALIZATION_FLOW,
             1
         )

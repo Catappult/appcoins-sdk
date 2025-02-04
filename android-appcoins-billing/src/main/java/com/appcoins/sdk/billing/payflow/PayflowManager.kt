@@ -1,11 +1,11 @@
 package com.appcoins.sdk.billing.payflow
 
 import com.appcoins.billing.sdk.BuildConfig
-import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.listeners.PayflowPriorityStream
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.TIMEOUT_30_SECS
 import com.appcoins.sdk.billing.utils.ServiceUtils
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 
 object PayflowManager {
 
@@ -25,11 +25,11 @@ object PayflowManager {
                         payflowMethodResponse.analyticsFlowSeverityLevels
                             ?.takeIf { it.isNotEmpty() }
                             ?.let {
-                                WalletUtils.analyticsFlowSeverityLevels = it
+                                SdkAnalyticsUtils.analyticsFlowSeverityLevels = it
                             }
                     } else {
                         PayflowPriorityStream.getInstance().emit(arrayListOf())
-                        WalletUtils.analyticsFlowSeverityLevels = null
+                        SdkAnalyticsUtils.analyticsFlowSeverityLevels = null
                     }
                 }
             }

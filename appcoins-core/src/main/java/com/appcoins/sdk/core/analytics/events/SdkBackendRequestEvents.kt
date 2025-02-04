@@ -1,6 +1,6 @@
-package com.appcoins.sdk.billing.analytics
+package com.appcoins.sdk.core.analytics.events
 
-import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
+import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
 
 object SdkBackendRequestEvents {
 
@@ -61,6 +61,7 @@ object SdkBackendRequestLabels {
     const val RESPONSE_CODE = "response_code"
     const val RESPONSE_MESSAGE = "response_message"
     const val ERROR_MESSAGE = "error_message"
+    const val NETWORK_SPEED = "network_speed"
 }
 
 enum class SdkBackendRequestType(val type: String) {
@@ -72,6 +73,7 @@ enum class SdkBackendRequestType(val type: String) {
     INAPP_PURCHASE("inapp_purchase"),
     PURCHASES("purchases"),
     PURCHASE("purchase"),
+    PURCHASE_RESULT_EVENT("purchase_result_event"),
     CONSUME_PURCHASE("consume_purchase"),
     SKU_DETAILS("sku_details"),
     STORE_DEEPLINK("store_deeplink"),

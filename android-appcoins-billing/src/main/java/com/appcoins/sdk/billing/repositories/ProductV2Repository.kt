@@ -1,6 +1,7 @@
 package com.appcoins.sdk.billing.repositories
 
 import com.appcoins.sdk.billing.ResponseCode
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.billing.mappers.InappPurchaseResponse
 import com.appcoins.sdk.billing.mappers.InappPurchaseResponseMapper
 import com.appcoins.sdk.billing.mappers.PurchaseResponse
@@ -43,7 +44,8 @@ class ProductV2Repository(private val bdsService: BdsService) {
             emptyMap(),
             emptyMap(),
             emptyMap<String?, Any>(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.INAPP_PURCHASE
         )
 
         waitForCountDown(countDownLatch)
@@ -79,7 +81,8 @@ class ProductV2Repository(private val bdsService: BdsService) {
             queries,
             emptyMap(),
             emptyMap(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.PURCHASES
         )
 
         waitForCountDown(countDownLatch)
@@ -111,7 +114,8 @@ class ProductV2Repository(private val bdsService: BdsService) {
             emptyMap(),
             headers,
             emptyMap(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.PURCHASE
         )
 
         waitForCountDown(countDownLatch)
@@ -147,7 +151,8 @@ class ProductV2Repository(private val bdsService: BdsService) {
             queries,
             emptyMap(),
             emptyMap(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.CONSUME_PURCHASE
         )
 
         waitForCountDown(countDownLatch)
@@ -179,7 +184,8 @@ class ProductV2Repository(private val bdsService: BdsService) {
             queries,
             emptyMap(),
             emptyMap(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.SKU_DETAILS
         )
 
         waitForCountDown(countDownLatch)

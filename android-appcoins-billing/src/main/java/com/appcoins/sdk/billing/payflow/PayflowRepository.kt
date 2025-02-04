@@ -1,5 +1,6 @@
 package com.appcoins.sdk.billing.payflow
 
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.service.ServiceResponseListener
 import com.appcoins.sdk.billing.usecases.GetQueriesListForPayflowPriority
@@ -18,7 +19,8 @@ class PayflowRepository(private val bdsService: BdsService) {
             GetQueriesListForPayflowPriority(),
             emptyMap(),
             emptyMap(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.PAYMENT_FLOW
         )
     }
 

@@ -1,8 +1,9 @@
 package com.appcoins.sdk.billing.service;
 
-import com.appcoins.sdk.billing.analytics.SdkBackendRequestType;
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.utils.RequestBuilderUtils;
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +39,7 @@ public class BdsService implements Service {
             logDebug("Url -> " + urlBuilder);
             URL url = new URL(urlBuilder);
 
-            WalletUtils.INSTANCE.getSdkAnalytics()
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
                 .sendBackendRequestEvent(sdkBackendRequestType, urlBuilder, httpMethod, paths, header, queries, body);
 
             urlConnection = openUrlConnection(url, httpMethod);
@@ -53,16 +54,29 @@ public class BdsService implements Service {
             InputStream inputStream;
             if (responseCode >= 400) {
                 inputStream = urlConnection.getErrorStream();
-                WalletUtils.INSTANCE.getSdkAnalytics()
+                SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
                     .sendBackendErrorEvent(sdkBackendRequestType, urlBuilder,
-                        urlConnection.getResponseCode() + " " + urlConnection.getResponseMessage());
+                        urlConnection.getResponseCode() + " " + urlConnection.getResponseMessage(),
+                        WalletUtils.context);
             } else {
                 inputStream = urlConnection.getInputStream();
             }
-            return readResponse(inputStream, responseCode);
+            RequestResponse requestResponse = readResponse(inputStream, responseCode);
+            String errorMessage = null;
+
+            if (requestResponse.getException() != null) {
+                errorMessage = requestResponse.getException()
+                    .getMessage();
+            }
+
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendBackendResponseEvent(sdkBackendRequestType, responseCode, requestResponse.getResponse(),
+                    errorMessage);
+            return requestResponse;
         } catch (Exception firstException) {
-            WalletUtils.INSTANCE.getSdkAnalytics()
-                .sendBackendErrorEvent(sdkBackendRequestType, baseUrl + endPoint, firstException.toString());
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendBackendErrorEvent(sdkBackendRequestType, baseUrl + endPoint, firstException.toString(),
+                    WalletUtils.context);
             return handleException(urlConnection, firstException);
         } finally {
             if (urlConnection != null) {

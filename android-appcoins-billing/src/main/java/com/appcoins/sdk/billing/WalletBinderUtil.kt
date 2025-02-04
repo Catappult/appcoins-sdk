@@ -117,7 +117,7 @@ object WalletBinderUtil {
         paymentFlowMethod: PaymentFlowMethod
     ): Boolean {
         logError("Attempting URI Communication Protocol.")
-        WalletUtils.sdkAnalytics.sendCallBindServiceFailEvent(
+        SdkAnalyticsUtils.sdkAnalytics.sendCallBindServiceFailEvent(
             paymentFlowMethod.javaClass.simpleName,
             paymentFlowMethod.priority
         )

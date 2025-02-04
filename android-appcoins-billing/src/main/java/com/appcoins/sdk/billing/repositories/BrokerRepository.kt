@@ -1,5 +1,6 @@
 package com.appcoins.sdk.billing.repositories
 
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.billing.mappers.TransactionResponse
 import com.appcoins.sdk.billing.mappers.TransactionResponseMapper
 import com.appcoins.sdk.billing.service.BdsService
@@ -35,7 +36,8 @@ class BrokerRepository(private val bdsService: BdsService) {
             emptyMap(),
             emptyMap(),
             emptyMap<String?, Any>(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.TRANSACTION
         )
 
         waitForCountDown(countDownLatch)

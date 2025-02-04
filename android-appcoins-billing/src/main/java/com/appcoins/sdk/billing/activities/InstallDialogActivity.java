@@ -28,12 +28,13 @@ import android.widget.TextView;
 import com.appcoins.billing.sdk.BuildConfig;
 import com.appcoins.billing.sdk.R;
 import com.appcoins.sdk.billing.BuyItemProperties;
-import com.appcoins.sdk.billing.analytics.SdkAnalytics;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.PaymentResponseStream;
 import com.appcoins.sdk.billing.listeners.PendingPurchaseStream;
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse;
 import com.appcoins.sdk.billing.usecases.GetAppInstalledVersion;
+import com.appcoins.sdk.core.analytics.SdkAnalytics;
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils;
 import kotlin.Pair;
 
 import static android.graphics.Typeface.BOLD;
@@ -64,7 +65,7 @@ public class InstallDialogActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         buyItemProperties = (BuyItemProperties) getIntent().getSerializableExtra(BUY_ITEM_PROPERTIES);
-        sdkAnalytics = WalletUtils.INSTANCE.getSdkAnalytics();
+        sdkAnalytics = SdkAnalyticsUtils.INSTANCE.getSdkAnalytics();
         String storeUrl = "market://details?id="
             + BuildConfig.APPCOINS_WALLET_PACKAGE_NAME
             + "&utm_source=appcoinssdk&app_source="

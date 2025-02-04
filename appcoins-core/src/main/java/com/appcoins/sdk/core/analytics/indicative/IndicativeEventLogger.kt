@@ -1,7 +1,7 @@
-package com.appcoins.sdk.billing.analytics
+package com.appcoins.sdk.core.analytics.indicative
 
-import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
-import com.appcoins.sdk.billing.analytics.manager.EventLogger
+import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
+import com.appcoins.sdk.core.analytics.manager.EventLogger
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logInfo
 import com.indicative.client.android.Indicative

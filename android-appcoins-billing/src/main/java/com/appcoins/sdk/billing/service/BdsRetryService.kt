@@ -1,6 +1,6 @@
 package com.appcoins.sdk.billing.service
 
-import com.appcoins.sdk.billing.analytics.SdkBackendRequestType
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.billing.sharedpreferences.BackendRequestsSharedPreferences
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 

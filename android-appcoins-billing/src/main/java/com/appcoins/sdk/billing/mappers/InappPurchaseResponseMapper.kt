@@ -1,5 +1,7 @@
 package com.appcoins.sdk.billing.mappers
 
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
+import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import com.appcoins.sdk.core.logger.Logger.logError
@@ -60,6 +62,11 @@ class InappPurchaseResponseMapper {
             )
         }.getOrElse {
             logError("There was an error mapping the response.", Exception(it))
+            SdkAnalyticsUtils.sdkAnalytics.sendBackendMappingFailureEvent(
+                SdkBackendRequestType.INAPP_PURCHASE,
+                response.response,
+                Exception(it).toString()
+            )
             return InappPurchaseResponse(response.responseCode)
         }
     }

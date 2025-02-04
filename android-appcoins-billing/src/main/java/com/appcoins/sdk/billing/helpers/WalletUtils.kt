@@ -18,12 +18,7 @@ import com.appcoins.sdk.billing.UriCommunicationAppcoinsBilling
 import com.appcoins.sdk.billing.activities.BillingFlowActivity.Companion.newIntent
 import com.appcoins.sdk.billing.activities.InstallDialogActivity
 import com.appcoins.sdk.billing.activities.UnavailableBillingDialogActivity
-import com.appcoins.sdk.billing.analytics.AnalyticsManagerProvider
-import com.appcoins.sdk.billing.analytics.IndicativeAnalytics.instanceId
-import com.appcoins.sdk.billing.analytics.IndicativeAnalytics.setIndicativeSuperProperties
-import com.appcoins.sdk.billing.analytics.SdkAnalytics
 import com.appcoins.sdk.billing.managers.ApiKeysManager.getIndicativeApiKey
-import com.appcoins.sdk.billing.payflow.AnalyticsFlowSeverityLevel
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.AptoideGames
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.GamesHub
@@ -35,6 +30,10 @@ import com.appcoins.sdk.billing.types.SkuType
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.KEY_BUY_INTENT
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
 import com.appcoins.sdk.billing.webpayment.WebPaymentActivity.Companion.newIntent
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
+import com.appcoins.sdk.core.analytics.indicative.IndicativeAnalytics.instanceId
+import com.appcoins.sdk.core.analytics.indicative.IndicativeAnalytics.setIndicativeSuperProperties
+import com.appcoins.sdk.core.device.getDeviceInfo
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
@@ -45,7 +44,6 @@ import java.util.concurrent.CountDownLatch
 @Suppress("StaticFieldLeak", "TooManyFunctions")
 object WalletUtils {
     var paymentFlowMethods: List<PaymentFlowMethod> = emptyList()
-    var analyticsFlowSeverityLevels: List<AnalyticsFlowSeverityLevel>? = null
     val localPaymentFlowMethods =
         listOf(
             Wallet("wallet", 1),
@@ -55,7 +53,6 @@ object WalletUtils {
     var webPaymentUrl: String? = null
     lateinit var context: Context
 
-    val sdkAnalytics: SdkAnalytics by lazy { SdkAnalytics(AnalyticsManagerProvider.provideAnalyticsManager()) }
     val userAgent: String by lazy {
         val displayMetrics = getDisplayMetrics()
         val widthPixels = displayMetrics.widthPixels
@@ -71,7 +68,7 @@ object WalletUtils {
         }
         if (webPaymentUrl == null) {
             logError("Failure obtaining WebPayment URL.")
-            sdkAnalytics.sendWebPaymentUrlNotGeneratedEvent()
+            SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentUrlNotGeneratedEvent()
             return createBundleWithResponseCode(ResponseCode.ERROR.value)
         }
 
@@ -120,7 +117,7 @@ object WalletUtils {
                 )
                 instanceId = walletId
                 setIndicativeSuperProperties(packageName, BuildConfig.VERSION_CODE, getDeviceInfo())
-                sdkAnalytics.sendStartConnectionEvent()
+                SdkAnalyticsUtils.sdkAnalytics.sendStartConnectionEvent()
             }.start()
         }
     }

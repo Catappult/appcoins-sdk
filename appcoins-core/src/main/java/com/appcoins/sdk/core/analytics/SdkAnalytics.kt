@@ -1,8 +1,40 @@
-package com.appcoins.sdk.billing.analytics
+package com.appcoins.sdk.core.analytics
 
-import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
-import com.appcoins.sdk.billing.helpers.WalletUtils
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
+import android.content.Context
+import com.appcoins.sdk.core.analytics.events.AnalyticsEvent
+import com.appcoins.sdk.core.analytics.events.SdkAppUpdateAvailableEvents
+import com.appcoins.sdk.core.analytics.events.SdkAppUpdateAvailableLabels
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestEvents
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestLabels
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
+import com.appcoins.sdk.core.analytics.events.SdkConsumePurchaseEvents
+import com.appcoins.sdk.core.analytics.events.SdkConsumePurchaseLabels
+import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureEvents
+import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureLabels
+import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureStep
+import com.appcoins.sdk.core.analytics.events.SdkGetReferralDeeplinkEvents
+import com.appcoins.sdk.core.analytics.events.SdkGetReferralDeeplinkLabels
+import com.appcoins.sdk.core.analytics.events.SdkInitializationEvents
+import com.appcoins.sdk.core.analytics.events.SdkInitializationLabels
+import com.appcoins.sdk.core.analytics.events.SdkInitializationService
+import com.appcoins.sdk.core.analytics.events.SdkInstallWalletDialogEvents
+import com.appcoins.sdk.core.analytics.events.SdkInstallWalletDialogLabels
+import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateDialogEvents
+import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateDialogLabels
+import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateEvents
+import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateLabels
+import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateStoreEvents
+import com.appcoins.sdk.core.analytics.events.SdkPurchaseFlowEvents
+import com.appcoins.sdk.core.analytics.events.SdkPurchaseFlowLabels
+import com.appcoins.sdk.core.analytics.events.SdkQueryPurchasesEvents
+import com.appcoins.sdk.core.analytics.events.SdkQueryPurchasesLabels
+import com.appcoins.sdk.core.analytics.events.SdkQuerySkuDetailsEvents
+import com.appcoins.sdk.core.analytics.events.SdkQuerySkuDetailsLabels
+import com.appcoins.sdk.core.analytics.events.SdkWalletPaymentFlowEvents
+import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents
+import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowLabels
+import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
+import com.appcoins.sdk.core.analytics.severity.SdkAnalyticsSeverityUtils
 import com.appcoins.sdk.core.network.NetworkTraffic
 import org.json.JSONArray
 import org.json.JSONObject
@@ -69,13 +101,13 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkBackendRequestEvents.SdkCallBackendResponse(eventData))
     }
 
-    fun sendBackendErrorEvent(type: SdkBackendRequestType, url: String, responseMessage: String?) {
+    fun sendBackendErrorEvent(type: SdkBackendRequestType, url: String, responseMessage: String?, context: Context) {
         val eventData: MutableMap<String, Any> = HashMap()
 
         eventData[SdkBackendRequestLabels.TYPE] = type.type
         eventData[SdkBackendRequestLabels.URL] = url
         eventData[SdkBackendRequestLabels.RESPONSE_MESSAGE] = responseMessage ?: ""
-        eventData[AnalyticsLabels.NETWORK_SPEED] = NetworkTraffic().getAverageSpeed(WalletUtils.context) ?: "null"
+        eventData[SdkBackendRequestLabels.NETWORK_SPEED] = NetworkTraffic().getAverageSpeed(context) ?: "null"
 
         logEvent(SdkBackendRequestEvents.SdkCallBackendError(eventData))
     }
@@ -218,31 +250,28 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
 
         reason?.let { eventData[SdkInitializationLabels.REASON] = it }
 
-        logEvent(SdkInitializationEvents.SdkAttributionRequestFailure(eventData))
+        logEvent(SdkInitializationEvents.SdkAttributionRequestFailure())
     }
 
     fun sendAttributionRetryAttemptEvent() {
         logEvent(SdkInitializationEvents.SdkAttributionRetryAttempt())
     }
 
-    fun sendBackendGuestUidGenerationFailedEvent() {
-        val eventData: MutableMap<String, Any> = HashMap()
-        // TODO: Use correct Data values.
-        eventData[AnalyticsLabels.PAYMENT_STATUS] = failureMessage
-        logEvent(SdkInitializationEvents.SdkAttributionRequestFailure(eventData))
+    fun sendAttributionRequestFailureEvent() {
+        logEvent(SdkInitializationEvents.SdkAttributionRequestFailure())
     }
 
     fun sendPayflowRequestEvent() {
         logEvent(SdkInitializationEvents.SdkPayflowRequest())
     }
 
-    fun sendPayflowResultEvent(paymentFlowMethods: List<PaymentFlowMethod>?) {
+    fun sendPayflowResultEvent(paymentFlowMethods: List<String>?) {
         val eventData: MutableMap<String, Any> = HashMap()
 
         paymentFlowMethods?.let {
             val jsonArray = JSONArray()
             it.forEach { paymentFlowMethod ->
-                jsonArray.put(paymentFlowMethod.name)
+                jsonArray.put(paymentFlowMethod)
             }
             eventData[SdkInitializationLabels.PAYMENT_FLOW_LIST] = jsonArray.toString()
         }
@@ -275,11 +304,16 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkInstallWalletDialogEvents.SdkInstallWalletDialogVanillaImpression())
     }
 
-    fun downloadWalletFallbackImpression() {
-        logEvent(SdkInstallWalletDialogEvents.SdkInstallWalletDialogFallbackImpression())
+    fun downloadWalletFallbackImpression(source: String) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        eventData[SdkInstallWalletDialogLabels.SOURCE] = source
+
+        logEvent(SdkInstallWalletDialogEvents.SdkInstallWalletDialogFallbackImpression(eventData))
     }
 
     fun installWalletAptoideSuccess() {
+
         logEvent(SdkInstallWalletDialogEvents.SdkInstallWalletDialogSuccess())
     }
 
@@ -311,7 +345,7 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
     }
 
     // Launch App Update Store events
-    fun sendLaunchAppUpdateStoreRequestEvent(deeplink: String) {
+    fun sendLaunchAppUpdateStoreRequestEvent() {
         logEvent(SdkLaunchAppUpdateStoreEvents.SdkLaunchAppUpdateStoreRequest())
     }
 
@@ -333,12 +367,12 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkPurchaseFlowEvents.SdkLaunchPurchase(eventData))
     }
 
-    fun sendPurchaseResultEvent(responseCode: Int, purchaseToken: String, sku: String) {
+    fun sendPurchaseResultEvent(responseCode: Int, purchaseToken: String?, sku: String?) {
         val eventData: MutableMap<String, Any> = HashMap()
 
         eventData[SdkPurchaseFlowLabels.RESPONSE_CODE] = responseCode
-        eventData[SdkPurchaseFlowLabels.PURCHASE_TOKEN] = purchaseToken
-        eventData[SdkPurchaseFlowLabels.SKU] = sku
+        purchaseToken?.let { eventData[SdkPurchaseFlowLabels.PURCHASE_TOKEN] = it }
+        sku?.let { eventData[SdkPurchaseFlowLabels.SKU] = it }
 
         logEvent(SdkPurchaseFlowEvents.SdkPurchaseResult(eventData))
     }

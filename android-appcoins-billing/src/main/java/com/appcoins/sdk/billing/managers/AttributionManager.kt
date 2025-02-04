@@ -2,7 +2,6 @@ package com.appcoins.sdk.billing.managers
 
 import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.WalletInteract
-import com.appcoins.sdk.billing.analytics.IndicativeAnalytics
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.mappers.AttributionResponse
 import com.appcoins.sdk.billing.repositories.AttributionRepository
@@ -14,6 +13,7 @@ import com.appcoins.sdk.billing.usecases.SaveInitialAttributionTimestamp
 import com.appcoins.sdk.billing.usecases.SendAttributionRetryAttempt
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.TIMEOUT_30_SECS
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
+import com.appcoins.sdk.core.analytics.indicative.IndicativeAnalytics
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 import com.appcoins.sdk.core.network.retrymechanism.exceptions.IncompleteCircularFunctionExecutionException

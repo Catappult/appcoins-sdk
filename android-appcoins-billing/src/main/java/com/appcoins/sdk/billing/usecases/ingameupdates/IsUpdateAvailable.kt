@@ -24,7 +24,7 @@ object IsUpdateAvailable : UseCase() {
             } ?: false
         } catch (e: Exception) {
             logError("Failed to verify if update available: $e")
-            WalletUtils.sdkAnalytics.sendAppUpdateAvailableFailureToObtainResult()
+            SdkAnalyticsUtils.sdkAnalytics.sendAppUpdateAvailableFailureToObtainResult()
             false
         }
     }

@@ -1,6 +1,6 @@
-package com.appcoins.sdk.billing.analytics
+package com.appcoins.sdk.core.analytics.events
 
-import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager
+import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
 
 object SdkInstallWalletDialogEvents {
 
@@ -31,11 +31,11 @@ object SdkInstallWalletDialogEvents {
             3
         )
 
-    class SdkInstallWalletDialogFallbackImpression :
+    class SdkInstallWalletDialogFallbackImpression(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_WALLET_INSTALL_DIALOG_FALLBACK_IMPRESSION,
-            mutableMapOf(),
+            data,
             INSTALL_WALLET_DIALOG_FLOW,
             3
         )
@@ -63,5 +63,5 @@ object SdkInstallWalletDialogLabels {
     const val BACK_BUTTON = "back_button"
     const val CANCEL = "cancel"
     const val INSTALL = "install"
-
+    const val SOURCE = "source"
 }
