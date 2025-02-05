@@ -441,10 +441,10 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentExternalPaymentResult())
     }
 
-    fun sendWebPaymentExecuteExternalDeeplinkEvent(deeplink: String) {
+    fun sendWebPaymentExecuteExternalDeeplinkEvent(deeplink: String?) {
         val eventData: MutableMap<String, Any> = HashMap()
 
-        eventData[SdkWebPaymentFlowLabels.DEEPLINK] = deeplink
+        deeplink?.let { eventData[SdkWebPaymentFlowLabels.DEEPLINK] = it }
 
         logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentExecuteExternalDeeplink(eventData))
     }
