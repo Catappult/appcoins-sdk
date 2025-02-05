@@ -15,6 +15,8 @@ import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.service.WalletBillingService;
 import com.appcoins.sdk.billing.usecases.RetryFailedRequests;
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils;
+import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureStep;
 import java.util.List;
 
 import static com.appcoins.sdk.core.logger.Logger.logDebug;
@@ -59,6 +61,8 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
 
         if (!isReady()) {
             logError("Service is not ready. Throwing ServiceConnectionException.");
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendServiceConnectionExceptionEvent(SdkGeneralFailureStep.GET_PURCHASES);
             throw new ServiceConnectionException();
         }
         try {
@@ -87,6 +91,8 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
 
         if (!isReady()) {
             logError("Service is not ready. Throwing ServiceConnectionException.");
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendServiceConnectionExceptionEvent(SdkGeneralFailureStep.QUERY_SKU_DETAILS);
             throw new ServiceConnectionException();
         }
 
@@ -112,6 +118,8 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
             return skuDetailsResult;
         } catch (Exception e) {
             logError("Error querySkuDetailsAsync. ", e);
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendQuerySkuDetailsFailureParsingSkusEvent(sku, skuType);
             throw new ServiceConnectionException(e.getMessage());
         }
     }
@@ -123,6 +131,8 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
 
         if (!isReady()) {
             logError("Service is not ready. Throwing ServiceConnectionException.");
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendServiceConnectionExceptionEvent(SdkGeneralFailureStep.CONSUME);
             throw new ServiceConnectionException();
         }
         try {
@@ -145,6 +155,8 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
 
         if (!isReady()) {
             logError("Service is not ready. Throwing ServiceConnectionException.");
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendServiceConnectionExceptionEvent(SdkGeneralFailureStep.START_PURCHASE);
             throw new ServiceConnectionException();
         }
         try {

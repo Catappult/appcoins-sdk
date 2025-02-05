@@ -13,6 +13,7 @@ import com.appcoins.sdk.billing.usecases.SaveInitialAttributionTimestamp
 import com.appcoins.sdk.billing.usecases.SendAttributionRetryAttempt
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.TIMEOUT_30_SECS
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.analytics.indicative.IndicativeAnalytics
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
@@ -68,6 +69,7 @@ object AttributionManager {
     }
 
     private fun startAttributionRequest(oemid: String?, guestWalletId: String?, onSuccessfulAttribution: () -> Unit) {
+        SdkAnalyticsUtils.sdkAnalytics.sendAttributionRequestEvent()
         val initialAttributionTimestamp = attributionSharedPreferences.getInitialAttributionTimestamp()
         val attributionResponse =
             attributionRepository.getAttributionForUser(packageName, oemid, guestWalletId, initialAttributionTimestamp)
@@ -88,8 +90,18 @@ object AttributionManager {
                 SaveAttributionResultOnPrefs(this)
             }
             updateIndicativeUserId(attributionResponse?.walletId)
+            SdkAnalyticsUtils.sdkAnalytics.sendAttributionResultEvent(
+                attributionResponse?.oemId,
+                attributionResponse?.walletId,
+                attributionResponse?.utmSource,
+                attributionResponse?.utmMedium,
+                attributionResponse?.utmCampaign,
+                attributionResponse?.utmTerm,
+                attributionResponse?.utmContent
+            )
             onSuccessfulAttribution()
         } else {
+            SdkAnalyticsUtils.sdkAnalytics.sendAttributionRequestFailureEvent()
             throw IncompleteCircularFunctionExecutionException("Attribution failed. Repeating request.")
         }
     }

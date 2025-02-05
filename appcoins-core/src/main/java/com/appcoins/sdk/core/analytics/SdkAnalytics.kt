@@ -16,7 +16,6 @@ import com.appcoins.sdk.core.analytics.events.SdkGetReferralDeeplinkEvents
 import com.appcoins.sdk.core.analytics.events.SdkGetReferralDeeplinkLabels
 import com.appcoins.sdk.core.analytics.events.SdkInitializationEvents
 import com.appcoins.sdk.core.analytics.events.SdkInitializationLabels
-import com.appcoins.sdk.core.analytics.events.SdkInitializationService
 import com.appcoins.sdk.core.analytics.events.SdkInstallWalletDialogEvents
 import com.appcoins.sdk.core.analytics.events.SdkInstallWalletDialogLabels
 import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateDialogEvents
@@ -127,18 +126,18 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
     }
 
     // Consume Purchase events
-    fun sendConsumePurchaseRequest(purchaseToken: String) {
+    fun sendConsumePurchaseRequest(purchaseToken: String?) {
         val eventData: MutableMap<String, Any> = HashMap()
 
-        eventData[SdkConsumePurchaseLabels.PURCHASE_TOKEN] = purchaseToken
+        purchaseToken?.let { eventData[SdkConsumePurchaseLabels.PURCHASE_TOKEN] = it }
 
         logEvent(SdkConsumePurchaseEvents.SdkConsumePurchaseRequest(eventData))
     }
 
-    fun sendConsumePurchaseResult(purchaseToken: String, responseCode: Int) {
+    fun sendConsumePurchaseResult(purchaseToken: String?, responseCode: Int) {
         val eventData: MutableMap<String, Any> = HashMap()
 
-        eventData[SdkConsumePurchaseLabels.PURCHASE_TOKEN] = purchaseToken
+        purchaseToken?.let { eventData[SdkConsumePurchaseLabels.PURCHASE_TOKEN] = it }
         eventData[SdkConsumePurchaseLabels.RESPONSE_CODE] = responseCode
 
         logEvent(SdkConsumePurchaseEvents.SdkConsumePurchaseResult(eventData))
@@ -153,11 +152,11 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkGeneralFailureEvents.SdkServiceConnectionException(eventData))
     }
 
-    fun sendPurchaseSignatureVerificationFailureEvent(purchaseToken: String, apiKey: String) {
+    fun sendPurchaseSignatureVerificationFailureEvent(purchaseToken: String, apiKey: String?) {
         val eventData: MutableMap<String, Any> = HashMap()
 
-        eventData[SdkGeneralFailureLabels.PURCHASE_TOKEN] = purchaseToken
-        eventData[SdkGeneralFailureLabels.API_KEY] = apiKey
+        eventData[SdkGeneralFailureLabels.SIGNED_DATA] = purchaseToken
+        apiKey?.let { eventData[SdkGeneralFailureLabels.API_KEY] = it }
 
         logEvent(SdkGeneralFailureEvents.SdkPurchaseSignatureVerificationFailure(eventData))
     }
@@ -176,10 +175,10 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkGetReferralDeeplinkEvents.SdkGetReferralDeeplinkRequest())
     }
 
-    fun sendGetReferralDeeplinkResultEvent(deeplink: String) {
+    fun sendGetReferralDeeplinkResultEvent(deeplink: String?) {
         val eventData: MutableMap<String, Any> = HashMap()
 
-        eventData[SdkGetReferralDeeplinkLabels.DEEPLINK] = deeplink
+        eventData[SdkGetReferralDeeplinkLabels.DEEPLINK] = deeplink ?: "null"
 
         logEvent(SdkGetReferralDeeplinkEvents.SdkGetReferralDeeplinkResult(eventData))
     }
@@ -193,30 +192,26 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkInitializationEvents.SdkStartConnection())
     }
 
-    fun sendServiceConnectedEvent(service: SdkInitializationService, method: String?) {
+    fun sendServiceConnectedEvent(service: String, method: String? = null) {
         val eventData: MutableMap<String, Any> = HashMap()
 
-        eventData[SdkInitializationLabels.SERVICE] = service.type
+        eventData[SdkInitializationLabels.SERVICE] = service
         method?.let { eventData[SdkInitializationLabels.METHOD] = it }
 
         logEvent(SdkInitializationEvents.SdkServiceConnected(eventData))
     }
 
-    fun sendServiceConnectionFailureEvent(reason: String?) {
+    fun sendServiceConnectionFailureEvent(service: String, method: String? = null) {
         val eventData: MutableMap<String, Any> = HashMap()
 
-        reason?.let { eventData[SdkInitializationLabels.REASON] = it }
+        eventData[SdkInitializationLabels.SERVICE] = service
+        method?.let { eventData[SdkInitializationLabels.METHOD] = it }
 
         logEvent(SdkInitializationEvents.SdkServiceConnectionFailure(eventData))
     }
 
-    fun sendFinishConnectionEvent(service: SdkInitializationService, method: String?) {
-        val eventData: MutableMap<String, Any> = HashMap()
-
-        eventData[SdkInitializationLabels.SERVICE] = service.type
-        method?.let { eventData[SdkInitializationLabels.METHOD] = it }
-
-        logEvent(SdkInitializationEvents.SdkFinishConnection(eventData))
+    fun sendFinishConnectionEvent() {
+        logEvent(SdkInitializationEvents.SdkFinishConnection())
     }
 
     fun sendAttributionRequestEvent() {
@@ -243,14 +238,6 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         utmContent?.let { eventData[SdkInitializationLabels.UTM_CONTENT] = it }
 
         logEvent(SdkInitializationEvents.SdkAttributionResult(eventData))
-    }
-
-    fun sendAttributionRequestFailureEvent(reason: String?) {
-        val eventData: MutableMap<String, Any> = HashMap()
-
-        reason?.let { eventData[SdkInitializationLabels.REASON] = it }
-
-        logEvent(SdkInitializationEvents.SdkAttributionRequestFailure())
     }
 
     fun sendAttributionRetryAttemptEvent(message: String) {
@@ -406,7 +393,7 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentFailureToObtainUrl())
     }
 
-    fun sendWebPaymentStartEvent(deeplink: String, exception: String) {
+    fun sendWebPaymentFailureToOpenDeeplinkEvent(deeplink: String, exception: String) {
         val eventData: MutableMap<String, Any> = HashMap()
 
         eventData[SdkWebPaymentFlowLabels.DEEPLINK] = deeplink
@@ -435,7 +422,7 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentOpenDeeplink(eventData))
     }
 
-    fun sendWebPaymentLaunchExternalPaymentEvent(url: String) {
+    fun sendWebPaymentAllowExternalAppsEvent(url: String) {
         val eventData: MutableMap<String, Any> = HashMap()
 
         eventData[SdkWebPaymentFlowLabels.URL] = url
@@ -443,7 +430,7 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentLaunchExternalPayment(eventData))
     }
 
-    fun sendWebPaymentLaunchExternalPaymentEvent(allow: Boolean) {
+    fun sendWebPaymentAllowExternalAppsEvent(allow: Boolean) {
         val eventData: MutableMap<String, Any> = HashMap()
 
         eventData[SdkWebPaymentFlowLabels.ALLOW] = allow
@@ -493,7 +480,7 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkQueryPurchasesEvents.SdkQueryPurchasesTypeNotSupportedError(eventData))
     }
 
-    fun sendQueryPurchasesTypeNotSupportedErrorEvent(purchases: List<String>?) {
+    fun sendQueryPurchasesResultEvent(purchases: List<String>?) {
         val eventData: MutableMap<String, Any> = HashMap()
 
         purchases?.let {
@@ -535,10 +522,6 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         }
 
         logEvent(SdkQuerySkuDetailsEvents.SdkQuerySkuDetailsResult(eventData))
-    }
-
-    fun sendQuerySkuDetailsRequestEvent() {
-        logEvent(SdkQuerySkuDetailsEvents.SdkQuerySkuDetailsNoSkusPresentFailure())
     }
 
     fun sendQuerySkuDetailsFailureParsingSkusEvent(skus: List<String>?, skuType: String) {

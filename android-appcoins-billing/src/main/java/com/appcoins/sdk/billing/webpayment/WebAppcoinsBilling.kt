@@ -26,6 +26,7 @@ import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNAT
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ITEM_LIST
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
@@ -109,6 +110,8 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
             }
         }
 
+        SdkAnalyticsUtils.sdkAnalytics.sendLaunchPurchaseTypeNotSupportedFailureEvent(type)
+
         // Fallback to WalletInstallation Activity if something fails
         logInfo("Failed to find available Payflow Method. Using fallback of install Wallet.")
         setBuyItemPropertiesForPayflow(packageName, apiVersion, sku, type, developerPayload)
@@ -172,6 +175,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
             bundleResponse =
                 PurchasesBundleMapper().mapGuestPurchases(bundleResponse, purchasesResponse)
         } else {
+            SdkAnalyticsUtils.sdkAnalytics.sendQueryPurchasesTypeNotSupportedErrorEvent(type)
             logError("Purchases type not available in WebPayments.")
         }
         return bundleResponse

@@ -1,7 +1,9 @@
 package com.appcoins.sdk.billing;
 
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
+import com.appcoins.sdk.billing.helpers.AnalyticsMappingHelper;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils;
 import java.util.ArrayList;
 
 import static com.appcoins.sdk.core.logger.Logger.logError;
@@ -23,6 +25,9 @@ public class SkuDetailsAsync implements Runnable {
     public void run() {
         try {
             SkuDetailsResult response = getSkuDetails();
+
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendQuerySkuDetailsResult(new AnalyticsMappingHelper().mapSkuDetailsToListOfStrings(response));
 
             skuDetailsResponseListener.onSkuDetailsResponse(response.getResponseCode(), response.getSkuDetailsList());
         } catch (ServiceConnectionException e) {

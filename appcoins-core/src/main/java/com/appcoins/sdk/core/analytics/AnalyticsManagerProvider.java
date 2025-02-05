@@ -86,7 +86,6 @@ public class AnalyticsManagerProvider {
         list.add(SdkQueryPurchasesEvents.SDK_QUERY_PURCHASES_TYPE_NOT_SUPPORTED_ERROR);
         list.add(SdkQuerySkuDetailsEvents.SDK_QUERY_SKU_DETAILS_REQUEST);
         list.add(SdkQuerySkuDetailsEvents.SDK_QUERY_SKU_DETAILS_RESULT);
-        list.add(SdkQuerySkuDetailsEvents.SDK_QUERY_SKU_DETAILS_NO_SKUS_PRESENT_FAILURE);
         list.add(SdkQuerySkuDetailsEvents.SDK_QUERY_SKU_DETAILS_FAILURE_PARSING_SKUS);
         list.add(SdkWalletPaymentFlowEvents.SDK_WALLET_PAYMENT_START);
         list.add(SdkWalletPaymentFlowEvents.SDK_WALLET_PAYMENT_EMPTY_DATA);

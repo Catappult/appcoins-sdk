@@ -9,6 +9,7 @@ import com.appcoins.sdk.billing.ResponseCode;
 import com.appcoins.sdk.billing.managers.ProductV2Manager;
 import com.appcoins.sdk.billing.mappers.PurchasesBundleMapper;
 import com.appcoins.sdk.billing.mappers.PurchasesResponse;
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
@@ -48,10 +49,14 @@ class AppcoinsBillingWrapper implements AppcoinsBilling, Serializable {
     @Override
     public Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type, String developerPayload,
         String oemid, String guestWalletId) throws RemoteException {
+        SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+            .sendWalletPaymentStartEvent();
         Bundle bundle =
             appcoinsBilling.getBuyIntent(apiVersion, packageName, sku, type, developerPayload, oemid, guestWalletId);
 
         if (bundle == null) {
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendWalletPaymentEmptyDataEvent();
             bundle = new Bundle();
             bundle.putInt(RESPONSE_CODE, ResponseCode.SERVICE_UNAVAILABLE.getValue());
         }

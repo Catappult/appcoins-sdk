@@ -5,8 +5,10 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
+import com.appcoins.communication.requester.MainThreadException;
 import com.appcoins.sdk.billing.activities.UpdateDialogActivity;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
+import com.appcoins.sdk.billing.helpers.AnalyticsMappingHelper;
 import com.appcoins.sdk.billing.helpers.PayloadHelper;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
@@ -44,7 +46,13 @@ public class CatapultAppcoinsBilling
     public PurchasesResult queryPurchases(String skuType) {
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
             .sendQueryPurchasesRequestEvent(skuType);
-        return billing.queryPurchases(skuType);
+
+        PurchasesResult result = billing.queryPurchases(skuType);
+
+        SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+            .sendQueryPurchasesResultEvent(new AnalyticsMappingHelper().mapPurchasesToListOfStrings(result));
+
+        return result;
     }
 
     @Override
@@ -68,6 +76,12 @@ public class CatapultAppcoinsBilling
         int responseCode;
 
         try {
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                    .sendLaunchPurchaseMainThreadFailureEvent();
+                return handleErrorTypeResponse(ResponseCode.DEVELOPER_ERROR.getValue(),
+                    new MainThreadException("launchBillingFlow"));
+            }
             SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
                 .sendLaunchPurchaseRequestEvent(billingFlowParams.getSku(), billingFlowParams.getSkuType(),
                     billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrderReference(),
@@ -137,6 +151,8 @@ public class CatapultAppcoinsBilling
     public void endConnection() {
         logInfo("Request to end connection of SDK.");
         if (isReady()) {
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendFinishConnectionEvent();
             logInfo("Ending connection of SDK.");
             PendingPurchaseStream.getInstance()
                 .stopCollecting();
@@ -171,6 +187,8 @@ public class CatapultAppcoinsBilling
     public void launchAppUpdateStore(Context context) {
         logInfo("Request to launch App Update Store.");
         Runnable runnable = () -> {
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendLaunchAppUpdateStoreRequestEvent();
             boolean isAppUpdateAvailable = IsUpdateAvailable.INSTANCE.invoke(WalletUtils.INSTANCE.getContext());
             if (isAppUpdateAvailable) {
                 LaunchAppUpdate.INSTANCE.invoke(context);
@@ -198,8 +216,12 @@ public class CatapultAppcoinsBilling
     @Override
     public ReferralDeeplink getReferralDeeplink() {
         logInfo("Request to get Referral Deeplink.");
+        SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+            .sendGetReferralDeeplinkRequestEvent();
         if (Looper.myLooper() == Looper.getMainLooper()) {
             logInfo("Request from MainThread. Cancelling.");
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendGetReferralDeeplinkMainThreadFailureEvent();
             return new ReferralDeeplink(ResponseCode.DEVELOPER_ERROR, null, null);
         } else {
             return GetReferralDeeplink.INSTANCE.invoke();

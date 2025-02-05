@@ -83,8 +83,6 @@ internal object ApplicationUtils {
                 }
             } else {
                 logError("Signature verification failed.")
-                // TODO: Use correctly API_KEY
-                sdkAnalytics.sendPurchaseSignatureVerificationFailureEvent(purchaseData, "api_key")
                 purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.value, emptyList())
             }
         } else if (resultCode == Activity.RESULT_OK) {

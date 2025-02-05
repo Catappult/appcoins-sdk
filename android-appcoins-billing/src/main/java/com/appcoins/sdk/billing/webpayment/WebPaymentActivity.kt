@@ -114,6 +114,7 @@ class WebPaymentActivity :
 
     override fun accept(value: SDKWebResponse) {
         logInfo("Received response from WalletPaymentDeeplinkResponseStream with responseCode: ${value.responseCode}.")
+        SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentWalletPaymentResultEvent()
         if (value.responseCode == ResponseCode.OK.value) {
             logInfo(
                 "Response code successful. " +
@@ -170,7 +171,10 @@ class WebPaymentActivity :
                 SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentErrorProcessingPurchaseResultEvent(e.toString())
                 PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
             }
-        } ?: PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
+        } ?: run {
+            SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentPurchaseResultEmptyEvent()
+            PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
+        }
     }
 
     @JavascriptInterface
@@ -180,12 +184,14 @@ class WebPaymentActivity :
 
     @JavascriptInterface
     override fun startExternalPayment(url: String): Boolean {
+        SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentAllowExternalAppsEvent(url)
         startActivityForResult(ExternalPaymentActivity.newIntent(this, url), RESULT_CODE)
         return true
     }
 
     @JavascriptInterface
     override fun allowExternalApps(allow: Boolean) {
+        SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentAllowExternalAppsEvent(allow)
         internalWebViewClient.shouldAllowExternalApps = allow
     }
 
@@ -270,6 +276,7 @@ class WebPaymentActivity :
     }
 
     private fun notifyWebViewOfExternalPaymentResult() {
+        SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentExternalPaymentResultEvent()
         webView?.loadUrl("javascript:onPaymentStateUpdated()")
     }
 

@@ -15,9 +15,12 @@ object PayflowManager {
 
     @JvmStatic
     fun getPayflowPriorityAsync() {
+        SdkAnalyticsUtils.sdkAnalytics.sendPayflowRequestEvent()
         val payflowListener = object : PayflowListener {
             override fun onResponse(payflowMethodResponse: PayflowMethodResponse) {
                 payflowMethodResponse.responseCode?.let { responseCode ->
+                    SdkAnalyticsUtils.sdkAnalytics
+                        .sendPayflowResultEvent(payflowMethodResponse.paymentFlowList?.map { it.name })
                     if (ServiceUtils.isSuccess(responseCode)) {
                         val sortedMethods = payflowMethodResponse.paymentFlowList
                         sortedMethods?.sortBy { it.priority }

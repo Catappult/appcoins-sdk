@@ -46,6 +46,7 @@ object LaunchAppUpdate : UseCase() {
             SdkAnalyticsUtils.sdkAnalytics.sendLaunchAppUpdateResultEvent(deeplink)
             true
         } catch (e: ActivityNotFoundException) {
+            SdkAnalyticsUtils.sdkAnalytics.sendLaunchAppUpdateDeeplinkFailureEvent(deeplink)
             logError("Failed to launch App Update Deeplink: $e")
             false
         }

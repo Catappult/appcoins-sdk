@@ -12,11 +12,11 @@ object SdkInitializationEvents {
             1
         )
 
-    class SdkFinishConnection(data: MutableMap<String, Any>) :
+    class SdkFinishConnection :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
             SDK_FINISH_CONNECTION,
-            data,
+            mutableMapOf(),
             SDK_INITIALIZATION_FLOW,
             1
         )
@@ -131,6 +131,7 @@ object SdkInitializationLabels {
     const val PAYMENT_FLOW_LIST = "payment_flow_list"
 
     const val SERVICE = "service"
+    const val SERVICE_INSTALL_WALLET_DIALOG = "install_wallet_dialog"
     const val METHOD = "method"
     const val METHOD_BINDING = "binding"
     const val METHOD_URI = "uri"

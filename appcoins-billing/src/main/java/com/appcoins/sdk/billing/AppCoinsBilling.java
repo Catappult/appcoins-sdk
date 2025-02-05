@@ -1,8 +1,10 @@
 package com.appcoins.sdk.billing;
 
+import android.util.Base64;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -51,7 +53,20 @@ public class AppCoinsBilling implements Billing {
     }
 
     public boolean verifyPurchase(String purchaseData, byte[] decodeSignature) {
-        return Security.verifyPurchase(base64DecodedPublicKey, purchaseData, decodeSignature);
+        boolean result = Security.verifyPurchase(base64DecodedPublicKey, purchaseData, decodeSignature);
+
+        if (!result) {
+            String keyEncoded;
+            try {
+                keyEncoded = Base64.encodeToString(base64DecodedPublicKey, Base64.DEFAULT);
+            } catch (Exception exception) {
+                keyEncoded = null;
+            }
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendPurchaseSignatureVerificationFailureEvent(purchaseData, keyEncoded);
+        }
+
+        return result;
     }
 
     @Override

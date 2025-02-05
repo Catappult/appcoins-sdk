@@ -40,12 +40,15 @@ object SdkGeneralFailureEvents {
 
 object SdkGeneralFailureLabels {
     const val STEP = "step"
-    const val PURCHASE_TOKEN = "purchase_token"
+    const val SIGNED_DATA = "signed_data"
     const val API_KEY = "api_key"
     const val TYPE = "type"
     const val DATA = "data"
 }
 
 enum class SdkGeneralFailureStep(val type: String) {
-    GET_PURCHASES("get_purchases")
+    GET_PURCHASES("get_purchases"),
+    QUERY_SKU_DETAILS("query_sku_details"),
+    CONSUME("consume"),
+    START_PURCHASE("start_purchase"),
 }
