@@ -13,6 +13,7 @@ import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.service.ServiceResponseListener
 import com.appcoins.sdk.billing.utils.ServiceUtils
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.core.logger.Logger.logError
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -43,7 +44,8 @@ class ProductV2Repository(private val bdsService: BdsService) {
             emptyMap(),
             emptyMap(),
             emptyMap<String?, Any>(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.INAPP_PURCHASE
         )
 
         waitForCountDown(countDownLatch)
@@ -79,7 +81,8 @@ class ProductV2Repository(private val bdsService: BdsService) {
             queries,
             emptyMap(),
             emptyMap(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.PURCHASES
         )
 
         waitForCountDown(countDownLatch)
@@ -111,7 +114,8 @@ class ProductV2Repository(private val bdsService: BdsService) {
             emptyMap(),
             headers,
             emptyMap(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.PURCHASE
         )
 
         waitForCountDown(countDownLatch)
@@ -147,7 +151,8 @@ class ProductV2Repository(private val bdsService: BdsService) {
             queries,
             emptyMap(),
             emptyMap(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.CONSUME_PURCHASE
         )
 
         waitForCountDown(countDownLatch)
@@ -179,7 +184,8 @@ class ProductV2Repository(private val bdsService: BdsService) {
             queries,
             emptyMap(),
             emptyMap(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.SKU_DETAILS
         )
 
         waitForCountDown(countDownLatch)

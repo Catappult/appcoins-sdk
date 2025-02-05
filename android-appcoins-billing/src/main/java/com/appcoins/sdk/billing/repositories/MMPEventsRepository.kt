@@ -1,6 +1,7 @@
 package com.appcoins.sdk.billing.repositories
 
 import com.appcoins.sdk.billing.service.BdsRetryService
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 
 class MMPEventsRepository(private val bdsRetryService: BdsRetryService) {
 
@@ -40,7 +41,8 @@ class MMPEventsRepository(private val bdsRetryService: BdsRetryService) {
             queries,
             mutableMapOf(),
             mutableMapOf(),
-            null
+            null,
+            SdkBackendRequestType.PURCHASE_RESULT_EVENT
         )
     }
 }

@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import com.appcoins.billing.sdk.BuildConfig
-import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.managers.StoreLinkMapperManager
 import com.appcoins.sdk.billing.usecases.UseCase
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
@@ -43,9 +43,10 @@ object LaunchAppUpdate : UseCase() {
                 }
         return try {
             context.startActivity(deeplinkIntent)
-            WalletUtils.sdkAnalytics.appUpdateDeeplinkImpression(deeplink)
+            SdkAnalyticsUtils.sdkAnalytics.sendLaunchAppUpdateResultEvent(deeplink)
             true
         } catch (e: ActivityNotFoundException) {
+            SdkAnalyticsUtils.sdkAnalytics.sendLaunchAppUpdateDeeplinkFailureEvent(deeplink)
             logError("Failed to launch App Update Deeplink: $e")
             false
         }

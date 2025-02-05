@@ -2,6 +2,8 @@ package com.appcoins.sdk.billing.mappers
 
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.core.logger.Logger.logError
 import org.json.JSONObject
 
@@ -57,6 +59,11 @@ class PurchasesResponseMapper {
                     }
                 } catch (e: Exception) {
                     logError("There was an error mapping the Purchase response: $e")
+                    SdkAnalyticsUtils.sdkAnalytics.sendBackendMappingFailureEvent(
+                        SdkBackendRequestType.PURCHASES,
+                        response.response,
+                        e.toString()
+                    )
                 }
             }
 
@@ -66,6 +73,11 @@ class PurchasesResponseMapper {
             )
         }.getOrElse {
             logError("There was an error mapping the List of Purchases response: " + Exception(it))
+            SdkAnalyticsUtils.sdkAnalytics.sendBackendMappingFailureEvent(
+                SdkBackendRequestType.PURCHASES,
+                response.response,
+                Exception(it).toString()
+            )
             return PurchasesResponse(response.responseCode)
         }
     }

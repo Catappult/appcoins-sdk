@@ -1,6 +1,6 @@
-package com.appcoins.sdk.billing.analytics;
+package com.appcoins.sdk.core.analytics;
 
-import com.appcoins.sdk.billing.analytics.manager.KeyValueNormalizer;
+import com.appcoins.sdk.core.analytics.manager.KeyValueNormalizer;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;

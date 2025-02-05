@@ -1,6 +1,7 @@
-package com.appcoins.sdk.billing.analytics
+package com.appcoins.sdk.core.analytics
 
-import com.appcoins.sdk.billing.analytics.manager.AnalyticsManager.Action
+import com.appcoins.sdk.core.analytics.indicative.IndicativeEventLogger
+import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
 import com.appcoins.sdk.core.logger.Logger
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logInfo
@@ -44,7 +45,7 @@ class IndicativeEventLoggerTest {
         indicativeEventLogger.logEvent(
             eventName,
             null,
-            Action.IMPRESSION,
+            AnalyticsManager.Action.IMPRESSION,
             EVENT_CONTEXT
         )
 

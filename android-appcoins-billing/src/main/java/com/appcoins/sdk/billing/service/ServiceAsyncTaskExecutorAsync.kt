@@ -2,18 +2,20 @@ package com.appcoins.sdk.billing.service
 
 import android.os.Handler
 import android.os.Looper
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import java.util.concurrent.Executors
 
-class ServiceAsyncTaskExecutorAsync internal constructor(
+class ServiceAsyncTaskExecutorAsync(
     private val bdsService: BdsService,
     private val baseUrl: String,
     private val endPoint: String,
     private val httpMethod: String,
-    private val paths: List<String>,
-    private val queries: Map<String, String>,
-    private val header: Map<String, String>,
-    private val body: Map<String, Any>,
-    private val serviceResponseListener: ServiceResponseListener?
+    private val paths: MutableList<String>,
+    private val queries: MutableMap<String, String>,
+    private val header: MutableMap<String, String>,
+    private val body: MutableMap<String, out Any>,
+    private val serviceResponseListener: ServiceResponseListener?,
+    private val sdkBackendRequestType: SdkBackendRequestType
 ) {
     fun execute() {
         val executor = Executors.newSingleThreadExecutor()
@@ -28,7 +30,8 @@ class ServiceAsyncTaskExecutorAsync internal constructor(
                     paths,
                     queries,
                     header,
-                    body
+                    body,
+                    sdkBackendRequestType
                 )
             handler.post {
                 serviceResponseListener?.onResponseReceived(requestResponse)

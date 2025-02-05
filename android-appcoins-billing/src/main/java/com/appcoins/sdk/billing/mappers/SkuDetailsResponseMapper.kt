@@ -5,6 +5,8 @@ import com.appcoins.sdk.billing.PriceV2
 import com.appcoins.sdk.billing.SkuDetailsV2
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.core.logger.Logger.logError
 import org.json.JSONObject
 
@@ -70,6 +72,11 @@ class SkuDetailsResponseMapper {
             )
         }.getOrElse {
             logError("There was an error mapping the response.", Exception(it))
+            SdkAnalyticsUtils.sdkAnalytics.sendBackendMappingFailureEvent(
+                SdkBackendRequestType.SKU_DETAILS,
+                response.response,
+                Exception(it).toString()
+            )
             return SkuDetailsResponse(response.responseCode)
         }
     }

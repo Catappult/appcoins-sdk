@@ -6,6 +6,7 @@ import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.service.Service
 import com.appcoins.sdk.billing.service.ServiceResponseListener
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.core.logger.Logger.logError
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -38,7 +39,8 @@ class WalletRepository(private val service: Service) {
             queries,
             emptyMap(),
             emptyMap(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.GUEST_WALLET
         )
 
         try {

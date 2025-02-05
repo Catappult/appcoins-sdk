@@ -14,7 +14,6 @@ import android.webkit.WebView
 import android.widget.LinearLayout
 import com.appcoins.billing.sdk.R
 import com.appcoins.sdk.billing.ResponseCode
-import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
@@ -29,6 +28,7 @@ import com.appcoins.sdk.billing.webpayment.WebViewOrientationUtils.setupOrientat
 import com.appcoins.sdk.billing.webpayment.WebViewPortraitUtils.applyDefaultPortraitConstraints
 import com.appcoins.sdk.billing.webpayment.WebViewPortraitUtils.applyDynamicPortraitConstraints
 import com.appcoins.sdk.billing.webpayment.WebViewTabletUtils.applyTabletConstraints
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
@@ -77,7 +77,7 @@ class WebPaymentActivity :
 
         skuType = intent.getStringExtra(SKU_TYPE)
         val sku = intent.getStringExtra(SKU)
-        WalletUtils.sdkAnalytics.sendPurchaseViaWebEvent(sku ?: "")
+        SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentStartEvent(sku ?: "")
 
         webViewDetails =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -118,6 +118,7 @@ class WebPaymentActivity :
     // WalletPaymentDeeplinkResponseStream
     override fun accept(value: SDKWebResponse) {
         logInfo("Received response from WalletPaymentDeeplinkResponseStream with responseCode: ${value.responseCode}.")
+        SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentWalletPaymentResultEvent()
         if (value.responseCode == ResponseCode.OK.value) {
             logInfo(
                 "Response code successful. " +
@@ -176,10 +177,13 @@ class WebPaymentActivity :
                 PaymentResponseStream.getInstance().emit(paymentResponse)
             } catch (e: Exception) {
                 logError("There was a failure receiving the purchase result from the WebView.", e)
-                WalletUtils.sdkAnalytics.sendUnsuccessfulWebViewResultEvent(e.toString())
+                SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentErrorProcessingPurchaseResultEvent(e.toString())
                 PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
             }
-        } ?: PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
+        } ?: run {
+            SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentPurchaseResultEmptyEvent()
+            PaymentResponseStream.getInstance().emit(SDKPaymentResponse.createErrorTypeResponse())
+        }
     }
 
     @JavascriptInterface
@@ -189,12 +193,14 @@ class WebPaymentActivity :
 
     @JavascriptInterface
     override fun startExternalPayment(url: String): Boolean {
+        SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentLaunchExternalPaymentEvent(url)
         startActivityForResult(ExternalPaymentActivity.newIntent(this, url), RESULT_CODE)
         return true
     }
 
     @JavascriptInterface
     override fun allowExternalApps(allow: Boolean) {
+        SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentAllowExternalAppsEvent(allow)
         internalWebViewClient.shouldAllowExternalApps = allow
     }
 
@@ -284,8 +290,10 @@ class WebPaymentActivity :
 
     private fun notifyWebViewOfExternalPaymentResult(data: String? = null) {
         if (data != null) {
+            SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentExecuteExternalDeeplinkEvent(data)
             webView?.loadUrl("javascript:onPaymentStateUpdated(\"${data}\")")
         } else {
+            SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentExternalPaymentResultEvent()
             webView?.loadUrl("javascript:onPaymentStateUpdated()")
         }
     }

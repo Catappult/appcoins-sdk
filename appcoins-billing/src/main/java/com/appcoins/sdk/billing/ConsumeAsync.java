@@ -2,6 +2,7 @@ package com.appcoins.sdk.billing;
 
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils;
 
 public class ConsumeAsync implements Runnable {
 
@@ -19,6 +20,8 @@ public class ConsumeAsync implements Runnable {
     public void run() {
         if (token == null || token.isEmpty()) {
             listener.onConsumeResponse(ResponseCode.DEVELOPER_ERROR.getValue(), null);
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendConsumePurchaseResult(null, ResponseCode.DEVELOPER_ERROR.getValue());
             return;
         }
 
@@ -26,8 +29,12 @@ public class ConsumeAsync implements Runnable {
             int response = repository.consumeAsync(token);
 
             listener.onConsumeResponse(response, token);
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendConsumePurchaseResult(token, response);
         } catch (ServiceConnectionException e) {
             listener.onConsumeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), null);
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendConsumePurchaseResult(token, ResponseCode.SERVICE_UNAVAILABLE.getValue());
         }
     }
 }

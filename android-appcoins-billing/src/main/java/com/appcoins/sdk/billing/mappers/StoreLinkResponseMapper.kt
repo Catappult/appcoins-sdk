@@ -1,19 +1,14 @@
 package com.appcoins.sdk.billing.mappers
 
-import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.core.logger.Logger.logError
 import org.json.JSONObject
 
 class StoreLinkResponseMapper {
     fun map(response: RequestResponse): StoreLinkResponse {
-        WalletUtils.sdkAnalytics.sendCallBackendStoreLinkEvent(
-            response.responseCode,
-            response.response,
-            response.exception?.toString()
-        )
-
         if (!isSuccess(response.responseCode) || response.response == null) {
             logError(
                 "Failed to obtain StoreLink Response. " +
@@ -38,6 +33,11 @@ class StoreLinkResponseMapper {
             }
         } catch (ex: Exception) {
             logError("There was an error mapping the response.", ex)
+            SdkAnalyticsUtils.sdkAnalytics.sendBackendMappingFailureEvent(
+                SdkBackendRequestType.STORE_DEEPLINK,
+                response.response,
+                ex.toString()
+            )
         }
         return StoreLinkResponse(
             response.responseCode,

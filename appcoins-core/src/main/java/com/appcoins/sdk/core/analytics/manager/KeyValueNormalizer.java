@@ -1,4 +1,4 @@
-package com.appcoins.sdk.billing.analytics.manager;
+package com.appcoins.sdk.core.analytics.manager;
 
 import java.util.Map;
 

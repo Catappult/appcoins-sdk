@@ -9,6 +9,7 @@ import android.preference.PreferenceManager
 import com.appcoins.sdk.billing.ResponseCode
 import com.appcoins.sdk.billing.managers.ApiKeysManager
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.indicative.client.android.Indicative
 import io.mockk.every
 import io.mockk.just
@@ -129,14 +130,14 @@ class WalletUtilsTest {
         every { ApiKeysManager.getIndicativeApiKey() } returns EMPTY_STRING
         every { PreferenceManager.getDefaultSharedPreferences(mockkContext) } returns mockkSharedPreferences
         every { mockkSharedPreferences.getString(WALLET_ID_KEY, null) } returns EMPTY_STRING
-        every { WalletUtils.sdkAnalytics.sendStartConnectionEvent() } just runs
+        every { SdkAnalyticsUtils.sdkAnalytics.sendStartConnectionEvent() } just runs
 
         WalletUtils.startIndicative(EMPTY_STRING)
 
         shadowOf(Looper.getMainLooper()).idle()
         shadowOf(Looper.getMainLooper()).runToNextTask()
 
-        verify(exactly = 1) { WalletUtils.sdkAnalytics.sendStartConnectionEvent() }
+        verify(exactly = 1) { SdkAnalyticsUtils.sdkAnalytics.sendStartConnectionEvent() }
     }
 
     private companion object {

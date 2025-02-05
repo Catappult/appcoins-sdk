@@ -1,29 +1,34 @@
 package com.appcoins.sdk.billing.payflow
 
-import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
+import com.appcoins.sdk.core.analytics.severity.AnalyticsFlowSeverityLevel
 import com.appcoins.sdk.core.logger.Logger.logError
 import org.json.JSONObject
 import java.io.Serializable
 
 class PayflowResponseMapper {
     fun map(response: RequestResponse): PayflowMethodResponse {
-        WalletUtils.sdkAnalytics.sendCallBackendPayflowEvent(
-            response.responseCode,
-            response.response,
-            response.exception?.toString()
-        )
-
         if (!isSuccess(response.responseCode) || response.response == null) {
             logError(
                 "Failed to obtain Payflow Response. " +
                     "ResponseCode: ${response.responseCode} | Cause: ${response.exception}"
             )
-            return PayflowMethodResponse(response.responseCode, arrayListOf())
+            return PayflowMethodResponse(response.responseCode, arrayListOf(), null)
         }
 
-        val paymentFlowList = runCatching {
+        val paymentFlowList = mapPaymentFlowMethods(response)
+
+        val analyticsFlowSeverityLevels: ArrayList<AnalyticsFlowSeverityLevel>? =
+            mapAnalyticsFlowSeverityLevels(response)
+
+        return PayflowMethodResponse(response.responseCode, paymentFlowList, analyticsFlowSeverityLevels)
+    }
+
+    private fun mapPaymentFlowMethods(response: RequestResponse): ArrayList<PaymentFlowMethod> =
+        runCatching {
             JSONObject(response.response).optJSONObject("payment_methods")
                 ?.let { paymentMethodsObject ->
                     paymentMethodsObject.keys().asSequence().mapNotNull { methodName: String ->
@@ -53,15 +58,46 @@ class PayflowResponseMapper {
                 } ?: arrayListOf()
         }.getOrElse {
             logError("There was an error mapping the response.", Exception(it))
+            SdkAnalyticsUtils.sdkAnalytics.sendBackendMappingFailureEvent(
+                SdkBackendRequestType.PAYMENT_FLOW,
+                response.response,
+                Exception(it).toString()
+            )
             arrayListOf()
         }
-        return PayflowMethodResponse(response.responseCode, paymentFlowList)
-    }
+
+    private fun mapAnalyticsFlowSeverityLevels(response: RequestResponse): ArrayList<AnalyticsFlowSeverityLevel>? =
+        runCatching {
+            JSONObject(response.response).optJSONArray("analytics_flow_severity_levels")
+                ?.let { analyticsFlowSeverityLevelsJsonArray ->
+                    val analyticsFlowSeverityLevels = arrayListOf<AnalyticsFlowSeverityLevel>()
+                    for (i in 0 until analyticsFlowSeverityLevelsJsonArray.length()) {
+                        val analyticsFlowSeverityLevelJsonObject =
+                            analyticsFlowSeverityLevelsJsonArray.optJSONObject(i)
+                        analyticsFlowSeverityLevels.add(
+                            AnalyticsFlowSeverityLevel(
+                                analyticsFlowSeverityLevelJsonObject.optString("flow"),
+                                analyticsFlowSeverityLevelJsonObject.optInt("severity_level"),
+                            )
+                        )
+                    }
+                    analyticsFlowSeverityLevels
+                }
+        }.getOrElse {
+            logError("There was an error mapping the AnalyticsFlowSeverityLevels.", Exception(it))
+            SdkAnalyticsUtils.sdkAnalytics.sendBackendMappingFailureEvent(
+                SdkBackendRequestType.PAYMENT_FLOW,
+                response.response,
+                Exception(it).toString()
+            )
+            null
+        }
 }
 
 data class PayflowMethodResponse(
     val responseCode: Int?,
-    val paymentFlowList: ArrayList<PaymentFlowMethod>?
+    val paymentFlowList: ArrayList<PaymentFlowMethod>?,
+    val analyticsFlowSeverityLevels: ArrayList<AnalyticsFlowSeverityLevel>?
 )
 
 sealed class PaymentFlowMethod(
