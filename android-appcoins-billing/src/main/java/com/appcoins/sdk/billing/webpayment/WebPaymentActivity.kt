@@ -184,7 +184,7 @@ class WebPaymentActivity :
 
     @JavascriptInterface
     override fun startExternalPayment(url: String): Boolean {
-        SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentAllowExternalAppsEvent(url)
+        SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentLaunchExternalPaymentEvent(url)
         startActivityForResult(ExternalPaymentActivity.newIntent(this, url), RESULT_CODE)
         return true
     }

@@ -304,7 +304,6 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
     }
 
     fun installWalletAptoideSuccess() {
-
         logEvent(SdkInstallWalletDialogEvents.SdkInstallWalletDialogSuccess())
     }
 
@@ -422,7 +421,7 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentOpenDeeplink(eventData))
     }
 
-    fun sendWebPaymentAllowExternalAppsEvent(url: String) {
+    fun sendWebPaymentLaunchExternalPaymentEvent(url: String) {
         val eventData: MutableMap<String, Any> = HashMap()
 
         eventData[SdkWebPaymentFlowLabels.URL] = url

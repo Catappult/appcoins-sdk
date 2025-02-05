@@ -76,16 +76,18 @@ public class CatapultAppcoinsBilling
         int responseCode;
 
         try {
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendLaunchPurchaseRequestEvent(billingFlowParams.getSku(), billingFlowParams.getSkuType(),
+                    billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrderReference(),
+                    billingFlowParams.getOrigin());
+
             if (Looper.myLooper() == Looper.getMainLooper()) {
                 SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
                     .sendLaunchPurchaseMainThreadFailureEvent();
                 return handleErrorTypeResponse(ResponseCode.DEVELOPER_ERROR.getValue(),
                     new MainThreadException("launchBillingFlow"));
             }
-            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
-                .sendLaunchPurchaseRequestEvent(billingFlowParams.getSku(), billingFlowParams.getSkuType(),
-                    billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrderReference(),
-                    billingFlowParams.getOrigin());
+
             String payload = PayloadHelper.buildIntentPayload(billingFlowParams.getOrderReference(),
                 billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin());
             AttributionSharedPreferences attributionSharedPreferences = new AttributionSharedPreferences(activity);

@@ -35,6 +35,8 @@ object AttributionManager {
             logInfo("Getting Attribution for User.")
             SaveInitialAttributionTimestamp()
 
+            SdkAnalyticsUtils.sdkAnalytics.sendAttributionRequestEvent()
+
             val oemid = GetOemIdForPackage(packageName, WalletUtils.context)
             val guestWalletId = getWalletId()
 
@@ -69,7 +71,6 @@ object AttributionManager {
     }
 
     private fun startAttributionRequest(oemid: String?, guestWalletId: String?, onSuccessfulAttribution: () -> Unit) {
-        SdkAnalyticsUtils.sdkAnalytics.sendAttributionRequestEvent()
         val initialAttributionTimestamp = attributionSharedPreferences.getInitialAttributionTimestamp()
         val attributionResponse =
             attributionRepository.getAttributionForUser(packageName, oemid, guestWalletId, initialAttributionTimestamp)
