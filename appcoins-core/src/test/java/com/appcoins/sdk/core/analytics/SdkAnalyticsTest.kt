@@ -30,7 +30,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-@Suppress("MaxLineLength")
+@Suppress("MaxLineLength", "LargeClass")
 class SdkAnalyticsTest {
 
     private lateinit var sdkAnalytics: SdkAnalytics
