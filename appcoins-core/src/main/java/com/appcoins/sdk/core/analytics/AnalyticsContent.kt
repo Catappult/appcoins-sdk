@@ -1,6 +1,6 @@
 package com.appcoins.sdk.core.analytics
 
-object AnalyticsSuperLabels {
+object AnalyticsContent {
     const val INSTANCE_ID = "instance_id"
     const val SDK_VERSION_CODE = "version_code"
     const val GAME_PACKAGE_NAME = "package_name"

@@ -37,7 +37,7 @@ android {
         }
     }
 
-    check.dependsOn 'checkstyle', 'lint', 'detekt', 'test'
+    check.dependsOn 'checkstyle', 'lint', 'detekt', 'testDebugUnitTest'
 
     lintOptions {
         abortOnError false
