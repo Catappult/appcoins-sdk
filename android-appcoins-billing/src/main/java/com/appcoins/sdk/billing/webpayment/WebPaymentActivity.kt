@@ -18,6 +18,7 @@ import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
 import com.appcoins.sdk.billing.listeners.WalletPaymentDeeplinkResponseStream
+import com.appcoins.sdk.billing.listeners.WebPaymentActionStream
 import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
 import com.appcoins.sdk.billing.usecases.HandleDeeplinkFromWebView
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESULT_CODE
@@ -37,7 +38,8 @@ import org.json.JSONObject
 class WebPaymentActivity :
     Activity(),
     SDKWebPaymentInterface,
-    WalletPaymentDeeplinkResponseStream.Consumer<SDKWebResponse> {
+    WalletPaymentDeeplinkResponseStream.Consumer<SDKWebResponse>,
+    WebPaymentActionStream.Consumer<String> {
 
     private var webView: WebView? = null
     private val internalWebViewClient: InternalWebViewClient by lazy { InternalWebViewClient(this) }
@@ -89,6 +91,7 @@ class WebPaymentActivity :
         setupWebView(url)
         adjustWebViewSize(getScreenOrientation(this))
         observeWalletPurchaseResultDeeplinkStream()
+        observeWebPaymentActionStream()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -112,6 +115,7 @@ class WebPaymentActivity :
         super.onDestroy()
     }
 
+    // WalletPaymentDeeplinkResponseStream
     override fun accept(value: SDKWebResponse) {
         logInfo("Received response from WalletPaymentDeeplinkResponseStream with responseCode: ${value.responseCode}.")
         SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentWalletPaymentResultEvent()
@@ -126,6 +130,11 @@ class WebPaymentActivity :
             return
         }
         walletDeeplinkResponseCode = value.responseCode
+    }
+
+    // WebPaymentActionStream
+    override fun acceptWebPaymentActionStream(value: String?) {
+        notifyWebViewOfExternalPaymentResult(value)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -275,9 +284,18 @@ class WebPaymentActivity :
         WalletPaymentDeeplinkResponseStream.getInstance().removeCollector(this)
     }
 
-    private fun notifyWebViewOfExternalPaymentResult() {
-        SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentExternalPaymentResultEvent()
-        webView?.loadUrl("javascript:onPaymentStateUpdated()")
+    private fun observeWebPaymentActionStream() {
+        WebPaymentActionStream.getInstance().collect(this)
+    }
+
+    private fun notifyWebViewOfExternalPaymentResult(data: String? = null) {
+        if (data != null) {
+            SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentExecuteExternalDeeplinkEvent(data)
+            webView?.loadUrl("javascript:onPaymentStateUpdated(\"${data}\")")
+        } else {
+            SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentExternalPaymentResultEvent()
+            webView?.loadUrl("javascript:onPaymentStateUpdated()")
+        }
     }
 
     companion object {
