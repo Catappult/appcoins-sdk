@@ -16,7 +16,7 @@ class PayflowResponseMapper {
                 "Failed to obtain Payflow Response. " +
                     "ResponseCode: ${response.responseCode} | Cause: ${response.exception}"
             )
-            return PayflowMethodResponse(response.responseCode, arrayListOf(), arrayListOf())
+            return PayflowMethodResponse(response.responseCode, arrayListOf(), null)
         }
 
         val paymentFlowList = mapPaymentFlowMethods(response)

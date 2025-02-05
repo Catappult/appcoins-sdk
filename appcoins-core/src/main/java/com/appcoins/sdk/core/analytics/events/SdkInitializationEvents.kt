@@ -126,8 +126,6 @@ object SdkInitializationLabels {
     const val UTM_TERM = "utm_term"
     const val UTM_CONTENT = "utm_content"
 
-    const val REASON = "reason"
-
     const val PAYMENT_FLOW_LIST = "payment_flow_list"
 
     const val SERVICE = "service"
@@ -142,12 +140,4 @@ object SdkInitializationLabels {
     const val REMOVED = "removed"
 
     const val MESSAGE = "message"
-}
-
-enum class SdkInitializationService(val type: String) {
-    WEB("web"),
-    APTOIDE_WALLET("aptoide_wallet"),
-    GAMES_HUB("games_hub"),
-    APTOIDE_GAMES("aptoide_games"),
-    UNAVAILABLE_SERVICE("unavailable_service"),
 }

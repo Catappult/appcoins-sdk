@@ -77,7 +77,7 @@ public class CatapultAppcoinsBilling
 
         try {
             SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
-                .sendLaunchPurchaseRequestEvent(billingFlowParams.getSku(), billingFlowParams.getSkuType(),
+                .sendLaunchPurchaseEvent(billingFlowParams.getSku(), billingFlowParams.getSkuType(),
                     billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrderReference(),
                     billingFlowParams.getOrigin());
 

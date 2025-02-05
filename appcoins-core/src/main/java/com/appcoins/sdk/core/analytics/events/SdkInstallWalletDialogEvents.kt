@@ -7,7 +7,7 @@ object SdkInstallWalletDialogEvents {
     class SdkInstallWalletDialog :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
-            SDK_WALLET_INSTALL_DIALOG_ACTION,
+            SDK_INSTALL_WALLET_DIALOG,
             mutableMapOf(),
             INSTALL_WALLET_DIALOG_FLOW,
             1
@@ -16,25 +16,25 @@ object SdkInstallWalletDialogEvents {
     class SdkInstallWalletDialogAction(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
-            SDK_WALLET_INSTALL_DIALOG,
+            SDK_INSTALL_WALLET_DIALOG_ACTION,
             data,
             INSTALL_WALLET_DIALOG_FLOW,
             1
         )
 
-    class SdkInstallWalletDialogVanillaImpression :
+    class SdkInstallWalletDialogDownloadWalletVanilla :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
-            SDK_WALLET_INSTALL_DIALOG_VANILLA_IMPRESSION,
+            SDK_INSTALL_WALLET_DIALOG_DOWNLOAD_WALLET_VANILLA,
             mutableMapOf(),
             INSTALL_WALLET_DIALOG_FLOW,
             3
         )
 
-    class SdkInstallWalletDialogFallbackImpression(data: MutableMap<String, Any>) :
+    class SdkInstallWalletDialogDownloadWalletFallback(data: MutableMap<String, Any>) :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
-            SDK_WALLET_INSTALL_DIALOG_FALLBACK_IMPRESSION,
+            SDK_INSTALL_WALLET_DIALOG_DOWNLOAD_WALLET_FALLBACK,
             data,
             INSTALL_WALLET_DIALOG_FLOW,
             3
@@ -43,17 +43,17 @@ object SdkInstallWalletDialogEvents {
     class SdkInstallWalletDialogSuccess :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
-            SDK_WALLET_INSTALL_DIALOG_SUCCESS,
+            SDK_INSTALL_WALLET_DIALOG_SUCCESS,
             mutableMapOf(),
             INSTALL_WALLET_DIALOG_FLOW,
             1
         )
 
-    const val SDK_WALLET_INSTALL_DIALOG = "sdk_wallet_install_dialog"
-    const val SDK_WALLET_INSTALL_DIALOG_ACTION = "sdk_wallet_install_action"
-    const val SDK_WALLET_INSTALL_DIALOG_VANILLA_IMPRESSION = "sdk_download_wallet_vanilla_impression"
-    const val SDK_WALLET_INSTALL_DIALOG_FALLBACK_IMPRESSION = "sdk_download_wallet_fallback_impression"
-    const val SDK_WALLET_INSTALL_DIALOG_SUCCESS = "sdk_wallet_install_success"
+    const val SDK_INSTALL_WALLET_DIALOG = "sdk_install_wallet_dialog"
+    const val SDK_INSTALL_WALLET_DIALOG_ACTION = "sdk_install_wallet_dialog_action"
+    const val SDK_INSTALL_WALLET_DIALOG_DOWNLOAD_WALLET_VANILLA = "sdk_install_wallet_dialog_download_wallet_vanilla"
+    const val SDK_INSTALL_WALLET_DIALOG_DOWNLOAD_WALLET_FALLBACK = "sdk_install_wallet_dialog_download_wallet_fallback"
+    const val SDK_INSTALL_WALLET_DIALOG_SUCCESS = "sdk_install_wallet_dialog_success"
 
     private const val INSTALL_WALLET_DIALOG_FLOW = "install_wallet_dialog"
 }

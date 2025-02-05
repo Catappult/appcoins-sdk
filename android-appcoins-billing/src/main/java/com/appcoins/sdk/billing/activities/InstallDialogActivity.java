@@ -35,6 +35,7 @@ import com.appcoins.sdk.billing.listeners.SDKPaymentResponse;
 import com.appcoins.sdk.billing.usecases.GetAppInstalledVersion;
 import com.appcoins.sdk.core.analytics.SdkAnalytics;
 import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils;
+import com.appcoins.sdk.core.analytics.events.SdkInstallWalletDialogLabels;
 import kotlin.Pair;
 
 import static android.graphics.Typeface.BOLD;
@@ -78,7 +79,7 @@ public class InstallDialogActivity extends Activity {
 
         showInstallationDialog(installationDialog);
 
-        sdkAnalytics.walletInstallImpression();
+        sdkAnalytics.sendInstallWalletDialogEvent();
     }
 
     @Override
@@ -87,7 +88,7 @@ public class InstallDialogActivity extends Activity {
         if (WalletUtils.INSTANCE.isAppAvailableToBind(BuildConfig.APPCOINS_WALLET_IAB_BIND_ACTION)) {
             shouldSendCancelResult = false;
             showLoadingDialog();
-            sdkAnalytics.installWalletAptoideSuccess();
+            sdkAnalytics.sendInstallWalletDialogSuccessEvent();
             PendingPurchaseStream.getInstance()
                 .emit(new Pair<>(this, buyItemProperties));
             finish();
@@ -97,7 +98,7 @@ public class InstallDialogActivity extends Activity {
     @Override
     public void onBackPressed() {
         logInfo("Pressed back_button on InstallDialogActivity.");
-        sdkAnalytics.walletInstallClick("back_button");
+        sdkAnalytics.sendInstallWalletDialogActionEvent(SdkInstallWalletDialogLabels.BACK_BUTTON);
         finish();
         super.onBackPressed();
     }
@@ -187,7 +188,7 @@ public class InstallDialogActivity extends Activity {
         skipButton.setClickable(true);
         skipButton.setOnClickListener(v -> {
             logInfo("Pressed cancel button on InstallDialogActivity.");
-            sdkAnalytics.walletInstallClick("cancel");
+            sdkAnalytics.sendInstallWalletDialogActionEvent(SdkInstallWalletDialogLabels.CANCEL);
             finish();
         });
         RelativeLayout.LayoutParams skipButtonParams =
@@ -221,7 +222,7 @@ public class InstallDialogActivity extends Activity {
         installButton.setLayoutParams(installButtonParams);
         installButton.setOnClickListener(v -> {
             logInfo("Pressed install button on InstallDialogActivity.");
-            sdkAnalytics.walletInstallClick("install_wallet");
+            sdkAnalytics.sendInstallWalletDialogActionEvent(SdkInstallWalletDialogLabels.INSTALL);
             redirectToRemainingStores(storeUrl);
         });
         return installButton;
@@ -235,16 +236,16 @@ public class InstallDialogActivity extends Activity {
             startActivity(storeIntentPair.getFirst());
         } else {
             logInfo("No store available. Sending to browser.");
-            sdkAnalytics.downloadWalletFallbackImpression("browser");
+            sdkAnalytics.sendInstallWalletDialogDownloadWalletFallbackEvent("browser");
             startActivityForBrowser();
         }
     }
 
     private void sendInternalAppDownloadAnalytic(Boolean isAptoidePackage) {
         if (isAptoidePackage) {
-            sdkAnalytics.downloadWalletAptoideImpression();
+            sdkAnalytics.sendInstallWalletDialogDownloadWalletVanillaEvent();
         } else {
-            sdkAnalytics.downloadWalletFallbackImpression("native");
+            sdkAnalytics.sendInstallWalletDialogDownloadWalletFallbackEvent("native");
         }
     }
 

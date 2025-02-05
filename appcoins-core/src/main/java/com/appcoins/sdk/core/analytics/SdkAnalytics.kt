@@ -122,7 +122,7 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         eventData[SdkBackendRequestLabels.RESPONSE_MESSAGE] = responseMessage ?: ""
         eventData[SdkBackendRequestLabels.ERROR_MESSAGE] = errorMessage ?: ""
 
-        logEvent(SdkBackendRequestEvents.SdkCallBackendError(eventData))
+        logEvent(SdkBackendRequestEvents.SdkCallBackendMappingFailure(eventData))
     }
 
     // Consume Purchase events
@@ -280,30 +280,30 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
     }
 
     // Wallet Install Dialog events
-    fun walletInstallImpression() {
+    fun sendInstallWalletDialogEvent() {
         logEvent(SdkInstallWalletDialogEvents.SdkInstallWalletDialog())
     }
 
-    fun walletInstallClick(action: String) {
+    fun sendInstallWalletDialogActionEvent(action: String) {
         val eventData: MutableMap<String, Any> = HashMap()
         eventData[SdkInstallWalletDialogLabels.WALLET_INSTALL_ACTION] = action
 
         logEvent(SdkInstallWalletDialogEvents.SdkInstallWalletDialogAction(eventData))
     }
 
-    fun downloadWalletAptoideImpression() {
-        logEvent(SdkInstallWalletDialogEvents.SdkInstallWalletDialogVanillaImpression())
+    fun sendInstallWalletDialogDownloadWalletVanillaEvent() {
+        logEvent(SdkInstallWalletDialogEvents.SdkInstallWalletDialogDownloadWalletVanilla())
     }
 
-    fun downloadWalletFallbackImpression(source: String) {
+    fun sendInstallWalletDialogDownloadWalletFallbackEvent(source: String) {
         val eventData: MutableMap<String, Any> = HashMap()
 
         eventData[SdkInstallWalletDialogLabels.SOURCE] = source
 
-        logEvent(SdkInstallWalletDialogEvents.SdkInstallWalletDialogFallbackImpression(eventData))
+        logEvent(SdkInstallWalletDialogEvents.SdkInstallWalletDialogDownloadWalletFallback(eventData))
     }
 
-    fun installWalletAptoideSuccess() {
+    fun sendInstallWalletDialogSuccessEvent() {
         logEvent(SdkInstallWalletDialogEvents.SdkInstallWalletDialogSuccess())
     }
 
@@ -340,7 +340,7 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
     }
 
     // Purchase Flow Events
-    fun sendLaunchPurchaseRequestEvent(
+    fun sendLaunchPurchaseEvent(
         sku: String,
         skuType: String,
         developerPayload: String?,
@@ -388,7 +388,7 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentStart(eventData))
     }
 
-    fun sendWebPaymentUrlNotGeneratedEvent() {
+    fun sendWebPaymentFailureToObtainUrlEvent() {
         logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentFailureToObtainUrl())
     }
 

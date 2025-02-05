@@ -9,12 +9,9 @@ import android.widget.TextView
 import com.appcoins.billing.sdk.R
 import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
-import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
 class UnavailableBillingDialogActivity : Activity() {
-
-    private val sdkAnalytics = SdkAnalyticsUtils.sdkAnalytics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

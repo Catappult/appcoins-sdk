@@ -68,7 +68,7 @@ object WalletUtils {
         }
         if (webPaymentUrl == null) {
             logError("Failure obtaining WebPayment URL.")
-            SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentUrlNotGeneratedEvent()
+            SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentFailureToObtainUrlEvent()
             return createBundleWithResponseCode(ResponseCode.ERROR.value)
         }
 
