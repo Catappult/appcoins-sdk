@@ -2,7 +2,7 @@ package com.appcoins.sdk.billing.usecases
 
 import android.content.Context
 import com.appcoins.billing.sdk.BuildConfig
-import com.appcoins.sdk.billing.helpers.getDeviceInfo
+import com.appcoins.sdk.core.device.getDeviceInfo
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
 object LogGeneralInformation : UseCase() {

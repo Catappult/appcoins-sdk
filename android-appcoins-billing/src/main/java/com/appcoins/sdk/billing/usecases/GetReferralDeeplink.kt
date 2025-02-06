@@ -5,6 +5,7 @@ import com.appcoins.sdk.billing.ResponseCode
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.managers.StoreLinkMapperManager
 import com.appcoins.sdk.billing.utils.ServiceUtils.responseCodeFromNetworkResponseCode
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils.sdkAnalytics
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
 object GetReferralDeeplink : UseCase() {
@@ -26,6 +27,8 @@ object GetReferralDeeplink : UseCase() {
 
         val responseCode =
             referralDeeplinkResponse.responseCode?.let { responseCodeFromNetworkResponseCode(it) } ?: ResponseCode.ERROR
+
+        sdkAnalytics.sendGetReferralDeeplinkResultEvent(referralDeeplinkResponse.storeDeeplink)
 
         return ReferralDeeplink(
             responseCode,

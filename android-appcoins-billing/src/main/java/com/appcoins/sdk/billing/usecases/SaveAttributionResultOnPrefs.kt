@@ -4,7 +4,6 @@ import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.mappers.AttributionResponse
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
 import com.appcoins.sdk.core.logger.Logger.logDebug
-import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 
 object SaveAttributionResultOnPrefs : UseCase() {
@@ -92,14 +91,7 @@ object SaveAttributionResultOnPrefs : UseCase() {
                 logInfo("Setting new WalletId.")
                 logDebug("WalletId: $it")
                 attributionSharedPreferences.setWalletId(it)
-            } else {
-                sendBackendGuestUidGenerationFailedEvent()
             }
-        } ?: sendBackendGuestUidGenerationFailedEvent()
-    }
-
-    private fun sendBackendGuestUidGenerationFailedEvent() {
-        logError("Failure to get GuestUid for User from Attribution.")
-        WalletUtils.sdkAnalytics.sendBackendGuestUidGenerationFailedEvent()
+        }
     }
 }

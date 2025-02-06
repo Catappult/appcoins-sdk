@@ -7,6 +7,7 @@ import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.service.ServiceResponseListener
 import com.appcoins.sdk.billing.utils.ServiceUtils
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.core.logger.Logger.logError
 import java.util.Locale
 import java.util.concurrent.CountDownLatch
@@ -63,7 +64,8 @@ class WebPaymentRepository(private val bdsService: BdsService) {
             queries,
             emptyMap(),
             emptyMap(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.WEB_PAYMENT_URL
         )
 
         waitForCountDown(countDownLatch)

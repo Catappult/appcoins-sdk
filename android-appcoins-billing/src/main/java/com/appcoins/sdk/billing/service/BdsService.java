@@ -1,7 +1,9 @@
 package com.appcoins.sdk.billing.service;
 
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.utils.RequestBuilderUtils;
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,12 +31,17 @@ public class BdsService implements Service {
     }
 
     RequestResponse createRequest(String baseUrl, String endPoint, String httpMethod, List<String> paths,
-        Map<String, String> queries, Map<String, String> header, Map<String, Object> body) {
+        Map<String, String> queries, Map<String, String> header, Map<String, Object> body,
+        SdkBackendRequestType sdkBackendRequestType) {
         HttpURLConnection urlConnection = null;
         try {
             String urlBuilder = RequestBuilderUtils.buildUrl(baseUrl, endPoint, paths, queries);
             logDebug("Url -> " + urlBuilder);
             URL url = new URL(urlBuilder);
+
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendBackendRequestEvent(sdkBackendRequestType, urlBuilder, httpMethod, paths, header, queries, body);
+
             urlConnection = openUrlConnection(url, httpMethod);
 
             urlConnection.setReadTimeout(timeoutInMillis);
@@ -47,16 +54,29 @@ public class BdsService implements Service {
             InputStream inputStream;
             if (responseCode >= 400) {
                 inputStream = urlConnection.getErrorStream();
-                WalletUtils.INSTANCE.getSdkAnalytics()
-                    .sendUnsuccessfulBackendRequestEvent(baseUrl + endPoint,
-                        urlConnection.getResponseCode() + " " + urlConnection.getResponseMessage());
+                SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                    .sendBackendErrorEvent(sdkBackendRequestType, urlBuilder,
+                        urlConnection.getResponseCode() + " " + urlConnection.getResponseMessage(),
+                        WalletUtils.context);
             } else {
                 inputStream = urlConnection.getInputStream();
             }
-            return readResponse(inputStream, responseCode);
+            RequestResponse requestResponse = readResponse(inputStream, responseCode);
+            String errorMessage = null;
+
+            if (requestResponse.getException() != null) {
+                errorMessage = requestResponse.getException()
+                    .getMessage();
+            }
+
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendBackendResponseEvent(sdkBackendRequestType, responseCode, requestResponse.getResponse(),
+                    errorMessage);
+            return requestResponse;
         } catch (Exception firstException) {
-            WalletUtils.INSTANCE.getSdkAnalytics()
-                .sendUnsuccessfulBackendRequestEvent(baseUrl + endPoint, firstException.toString());
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendBackendErrorEvent(sdkBackendRequestType, baseUrl + endPoint, firstException.toString(),
+                    WalletUtils.context);
             return handleException(urlConnection, firstException);
         } finally {
             if (urlConnection != null) {
@@ -133,7 +153,8 @@ public class BdsService implements Service {
     }
 
     public void makeRequest(String endPoint, String httpMethod, List<String> paths, Map<String, String> queries,
-        Map<String, String> header, Map<String, Object> body, ServiceResponseListener serviceResponseListener) {
+        Map<String, String> header, Map<String, Object> body, ServiceResponseListener serviceResponseListener,
+        SdkBackendRequestType sdkBackendRequestType) {
         if (paths == null) {
             paths = new ArrayList<>();
         }
@@ -142,7 +163,7 @@ public class BdsService implements Service {
         }
         ServiceAsyncTaskExecutorAsync serviceAsyncTaskExecutorAsync =
             new ServiceAsyncTaskExecutorAsync(this, baseUrl, endPoint, httpMethod, paths, queries, header, body,
-                serviceResponseListener);
+                serviceResponseListener, sdkBackendRequestType);
         serviceAsyncTaskExecutorAsync.execute();
     }
 }

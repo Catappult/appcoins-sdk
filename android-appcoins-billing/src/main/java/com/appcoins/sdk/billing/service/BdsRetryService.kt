@@ -2,6 +2,7 @@ package com.appcoins.sdk.billing.service
 
 import com.appcoins.sdk.billing.sharedpreferences.BackendRequestsSharedPreferences
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 
 class BdsRetryService(
     private val bdsService: BdsService,
@@ -15,7 +16,8 @@ class BdsRetryService(
         queries: Map<String, String>,
         header: Map<String, String>,
         body: Map<String, Any>,
-        serviceResponseListener: ServiceResponseListener?
+        serviceResponseListener: ServiceResponseListener?,
+        sdkBackendRequestType: SdkBackendRequestType
     ) {
         val serviceAsyncTaskExecutorAsync =
             ServiceAsyncTaskExecutorAsync(
@@ -23,29 +25,33 @@ class BdsRetryService(
                 bdsService.baseUrl,
                 endPoint,
                 httpMethod,
-                paths,
-                queries,
-                header,
-                body
-            ) {
-                serviceResponseListener?.onResponseReceived(it)
-                if (!isSuccess(it.responseCode)) {
-                    saveFailedRequest(
-                        bdsService.baseUrl,
-                        bdsService.timeoutInMillis,
-                        endPoint,
-                        httpMethod,
-                        paths,
-                        queries,
-                        header,
-                        body
-                    )
-                }
-            }
+                paths.toMutableList(),
+                queries.toMutableMap(),
+                header.toMutableMap(),
+                body.toMutableMap(),
+                serviceResponseListener = {
+                    serviceResponseListener?.onResponseReceived(it)
+                    if (!isSuccess(it.responseCode)) {
+                        saveFailedRequest(
+                            sdkBackendRequestType,
+                            bdsService.baseUrl,
+                            bdsService.timeoutInMillis,
+                            endPoint,
+                            httpMethod,
+                            paths,
+                            queries,
+                            header,
+                            body
+                        )
+                    }
+                },
+                sdkBackendRequestType = sdkBackendRequestType,
+            )
         serviceAsyncTaskExecutorAsync.execute()
     }
 
     private fun saveFailedRequest(
+        sdkBackendRequestType: SdkBackendRequestType,
         baseUrl: String,
         timeoutInMillis: Int,
         endPoint: String?,
@@ -56,7 +62,17 @@ class BdsRetryService(
         body: Map<String, Any>
     ) {
         val failedRequests = getFailedRequests()?.toMutableList() ?: mutableListOf()
-        val requestData = RequestData(baseUrl, timeoutInMillis, endPoint, httpMethod, paths, queries, header, body)
+        val requestData = RequestData(
+            sdkBackendRequestType,
+            baseUrl,
+            timeoutInMillis,
+            endPoint,
+            httpMethod,
+            paths,
+            queries,
+            header,
+            body
+        )
         failedRequests.add(requestData)
         sharedPreferences.setFailedRequests(failedRequests)
     }

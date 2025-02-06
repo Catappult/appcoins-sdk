@@ -1,6 +1,6 @@
 package com.appcoins.sdk.billing.usecases
 
-import com.appcoins.sdk.billing.helpers.WalletUtils
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -20,6 +20,6 @@ object SendAttributionRetryAttempt : UseCase() {
                 "Initial date of Attribution: ${formatter.format(initialDate)}. " +
                 "Current date: ${formatter.format(currentDate)}."
 
-        WalletUtils.sdkAnalytics.sendAttributionRetryAttemptEvent(message)
+        SdkAnalyticsUtils.sdkAnalytics.sendAttributionRetryAttemptEvent(message)
     }
 }

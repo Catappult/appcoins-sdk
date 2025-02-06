@@ -8,6 +8,7 @@ import com.appcoins.sdk.billing.mappers.StoreLinkResponseMapper
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.service.ServiceResponseListener
 import com.appcoins.sdk.billing.utils.ServiceUtils
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.core.logger.Logger.logError
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -48,7 +49,8 @@ class StoreLinkMapperRepository(private val bdsService: BdsService) {
             queries.toMap(),
             emptyMap(),
             emptyMap<String?, Any>(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.STORE_DEEPLINK
         )
 
         waitForCountDown(countDownLatch)
@@ -89,7 +91,8 @@ class StoreLinkMapperRepository(private val bdsService: BdsService) {
             queries.toMap(),
             emptyMap(),
             emptyMap<String?, Any>(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.STORE_DEEPLINK
         )
 
         waitForCountDown(countDownLatch)
