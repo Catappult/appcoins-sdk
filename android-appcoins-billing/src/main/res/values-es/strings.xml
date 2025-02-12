@@ -14,8 +14,8 @@
     <string name="iab_wallet_not_installed_popup_close_install">INSTALAR WALLET</string>
     <!-- SDK - Unavailable
      TODO - Add rest of translations-->
-    <string name="sdk_unavailable_description_body">Billing services are currently not supported.\nPlease contact the support channel.</string>
+    <string name="sdk_unavailable_description_body">En estos momentos los sistemas de ventas no están disponibles.\nPor favor, ponte en contacto con el equipo de apoyo.</string>
     <!-- SDK General
      TODO - Add rest of translations-->
-    <string name="sdk_general_close_button">CLOSE</string>
+    <string name="sdk_general_close_button">CERRAR</string>
 </resources>
