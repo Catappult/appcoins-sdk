@@ -31,8 +31,7 @@ import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.KEY_BUY_INTENT
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
 import com.appcoins.sdk.billing.webpayment.WebPaymentActivity.Companion.newIntent
 import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
-import com.appcoins.sdk.core.analytics.indicative.IndicativeAnalytics.instanceId
-import com.appcoins.sdk.core.analytics.indicative.IndicativeAnalytics.setIndicativeSuperProperties
+import com.appcoins.sdk.core.analytics.indicative.IndicativeAnalytics.setupIndicativeProperties
 import com.appcoins.sdk.core.device.getDeviceInfo
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
@@ -115,8 +114,8 @@ object WalletUtils {
                         " packageName: $packageName" +
                         " versionCode: ${BuildConfig.VERSION_CODE}"
                 )
-                instanceId = walletId
-                setIndicativeSuperProperties(packageName, BuildConfig.VERSION_CODE, getDeviceInfo())
+
+                setupIndicativeProperties(packageName, BuildConfig.VERSION_CODE, getDeviceInfo(), walletId)
                 SdkAnalyticsUtils.sdkAnalytics.sendStartConnectionEvent()
             }.start()
         }
