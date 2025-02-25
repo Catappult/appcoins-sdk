@@ -6,7 +6,6 @@ import android.content.pm.PackageManager.MATCH_ALL
 import android.content.pm.PackageManager.ResolveInfoFlags
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
 import android.view.WindowManager
@@ -106,8 +105,9 @@ object WalletUtils {
 
     fun startIndicative(packageName: String?) {
         logInfo("Starting Indicative for $packageName")
-        launchIndicative {
-            Thread {
+        if (!SdkAnalyticsUtils.isIndicativeEventLoggerInitialized) {
+            launchIndicative {
+                SdkAnalyticsUtils.isIndicativeEventLoggerInitialized = true
                 val walletId = getWalletIdForUserSession()
                 logDebug(
                     "Parameters for indicative: walletId: $walletId" +
@@ -117,7 +117,7 @@ object WalletUtils {
 
                 setupIndicativeProperties(packageName, BuildConfig.VERSION_CODE, getDeviceInfo(), walletId)
                 SdkAnalyticsUtils.sdkAnalytics.sendStartConnectionEvent()
-            }.start()
+            }
         }
     }
 
@@ -173,11 +173,15 @@ object WalletUtils {
         }
     }
 
-    private fun launchIndicative(callback: () -> Unit) =
-        Handler(Looper.getMainLooper()).post {
+    private fun launchIndicative(callback: () -> Unit) {
+        try {
             Indicative.launch(context, getIndicativeApiKey())
+        } catch (ex: Exception) {
+            logError("Failed to Launch Indicative.", ex)
+        } finally {
             callback()
         }
+    }
 
     private fun isMainThread(): Boolean {
         val latch = CountDownLatch(1)
