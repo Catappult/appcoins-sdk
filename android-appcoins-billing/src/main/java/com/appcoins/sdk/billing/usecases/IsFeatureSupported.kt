@@ -26,7 +26,7 @@ object IsFeatureSupported : UseCase() {
                 logInfo("Feature is supported.")
                 ResponseCode.OK
             } else {
-                logInfo("Feature not found in the Supported Features.")
+                logInfo("Feature not found in the local Supported Features.")
                 ResponseCode.FEATURE_NOT_SUPPORTED
             }
         } ?: ResponseCode.FEATURE_NOT_SUPPORTED
