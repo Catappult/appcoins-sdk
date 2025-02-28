@@ -3,13 +3,13 @@ package com.appcoins.sdk.billing.webpayment
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.view.Surface
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.SCREEN_ORIENTATION_LANDSCAPE
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.SCREEN_ORIENTATION_PORTRAIT
+import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod.Companion.SCREEN_ORIENTATION_LANDSCAPE
+import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod.Companion.SCREEN_ORIENTATION_PORTRAIT
+import com.appcoins.sdk.billing.payflow.models.WebViewDetails
 import com.appcoins.sdk.core.ui.getScreenRotation
 
 internal object WebViewOrientationUtils {
-    fun setupOrientation(activity: Activity, webViewDetails: PaymentFlowMethod.WebPayment.WebViewDetails?) {
+    fun setupOrientation(activity: Activity, webViewDetails: WebViewDetails?) {
         val forcedOrientation = webViewDetails?.forcedScreenOrientation
         val rotation = getScreenRotation(activity)
         val orientation: Int? =

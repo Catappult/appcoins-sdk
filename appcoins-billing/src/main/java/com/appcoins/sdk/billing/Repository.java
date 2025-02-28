@@ -15,4 +15,6 @@ public interface Repository {
         String guestWalletId) throws ServiceConnectionException;
 
     boolean isReady();
+
+    ResponseCode isFeatureSupported(FeatureType feature) throws ServiceConnectionException;
 }

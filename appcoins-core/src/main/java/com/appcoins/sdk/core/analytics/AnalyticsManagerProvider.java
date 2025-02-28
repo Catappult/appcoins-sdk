@@ -7,6 +7,7 @@ import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureEvents;
 import com.appcoins.sdk.core.analytics.events.SdkGetReferralDeeplinkEvents;
 import com.appcoins.sdk.core.analytics.events.SdkInitializationEvents;
 import com.appcoins.sdk.core.analytics.events.SdkInstallWalletDialogEvents;
+import com.appcoins.sdk.core.analytics.events.SdkIsFeatureSupportedEvents;
 import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateDialogEvents;
 import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateEvents;
 import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateStoreEvents;
@@ -71,6 +72,8 @@ public class AnalyticsManagerProvider {
         list.add(SdkInstallWalletDialogEvents.SDK_INSTALL_WALLET_DIALOG_DOWNLOAD_WALLET_VANILLA);
         list.add(SdkInstallWalletDialogEvents.SDK_INSTALL_WALLET_DIALOG_DOWNLOAD_WALLET_FALLBACK);
         list.add(SdkInstallWalletDialogEvents.SDK_INSTALL_WALLET_DIALOG_SUCCESS);
+        list.add(SdkIsFeatureSupportedEvents.SDK_IS_FEATURE_SUPPORTED_REQUEST);
+        list.add(SdkIsFeatureSupportedEvents.SDK_IS_FEATURE_SUPPORTED_RESULT);
         list.add(SdkLaunchAppUpdateDialogEvents.SDK_LAUNCH_APP_UPDATE_DIALOG_REQUEST);
         list.add(SdkLaunchAppUpdateDialogEvents.SDK_LAUNCH_APP_UPDATE_DIALOG_ACTION);
         list.add(SdkLaunchAppUpdateStoreEvents.SDK_LAUNCH_APP_UPDATE_STORE_REQUEST);

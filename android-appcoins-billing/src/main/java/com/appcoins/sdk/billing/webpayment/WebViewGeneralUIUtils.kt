@@ -5,7 +5,7 @@ import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.view.ViewGroup
 import com.appcoins.billing.sdk.R
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
+import com.appcoins.sdk.billing.payflow.models.WebViewDetails
 import com.appcoins.sdk.core.logger.Logger.logInfo
 import com.appcoins.sdk.core.logger.Logger.logWarning
 import com.appcoins.sdk.core.ui.floatToPxs
@@ -64,7 +64,7 @@ internal object WebViewGeneralUIUtils {
         activity: Activity,
         mBaseConstraintLayout: ConstraintLayout,
         webViewContainerParams: ViewGroup.LayoutParams,
-        webViewDetailsDimensions: PaymentFlowMethod.WebPayment.WebViewDetails.OrientedScreenDimensions?,
+        webViewDetailsDimensions: WebViewDetails.OrientedScreenDimensions?,
         defaultFallback: () -> Unit
     ) {
         val mConstraintSet = ConstraintSet()
@@ -110,7 +110,7 @@ internal object WebViewGeneralUIUtils {
     private fun handleExactHeight(
         activity: Activity,
         mConstraintSet: ConstraintSet,
-        webViewDetailsDimensions: PaymentFlowMethod.WebPayment.WebViewDetails.OrientedScreenDimensions?,
+        webViewDetailsDimensions: WebViewDetails.OrientedScreenDimensions?,
         screenHeight: Int
     ): Boolean {
         val heightDp = webViewDetailsDimensions?.heightDp
@@ -129,7 +129,7 @@ internal object WebViewGeneralUIUtils {
     private fun handleExactWidth(
         activity: Activity,
         mConstraintSet: ConstraintSet,
-        webViewDetailsDimensions: PaymentFlowMethod.WebPayment.WebViewDetails.OrientedScreenDimensions?,
+        webViewDetailsDimensions: WebViewDetails.OrientedScreenDimensions?,
         screenWidth: Int
     ): Boolean {
         val widthDp = webViewDetailsDimensions?.widthDp
@@ -148,7 +148,7 @@ internal object WebViewGeneralUIUtils {
     private fun handlePercentageHeight(
         mConstraintSet: ConstraintSet,
         mBaseConstraintLayout: ConstraintLayout,
-        webViewDetailsDimensions: PaymentFlowMethod.WebPayment.WebViewDetails.OrientedScreenDimensions?,
+        webViewDetailsDimensions: WebViewDetails.OrientedScreenDimensions?,
         isHeightSet: Boolean
     ): Boolean {
         if (isHeightSet) {
@@ -172,7 +172,7 @@ internal object WebViewGeneralUIUtils {
 
     private fun handlePercentageWidth(
         mConstraintSet: ConstraintSet,
-        webViewDetailsDimensions: PaymentFlowMethod.WebPayment.WebViewDetails.OrientedScreenDimensions?,
+        webViewDetailsDimensions: WebViewDetails.OrientedScreenDimensions?,
         isWidthSet: Boolean
     ): Boolean {
         if (isWidthSet) {

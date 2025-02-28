@@ -104,4 +104,12 @@ public interface AppcoinsBillingClient {
      * if the User proceeds, will launch the Store from which your application was installed in your applications page.
      */
     void launchAppUpdateDialog(Context context);
+
+    /**
+     * Call this method to verify if a {@link FeatureType} is supported in the current SDK Version and
+     * the Billing Service that it is using.
+     *
+     * @return If the feature is supported.
+     */
+    ResponseCode isFeatureSupported(FeatureType feature);
 }
