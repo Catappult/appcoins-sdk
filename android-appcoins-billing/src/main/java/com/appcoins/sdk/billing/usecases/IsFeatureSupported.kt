@@ -17,7 +17,18 @@ object IsFeatureSupported : UseCase() {
                 logInfo("Feature not found in the Supported Features.")
                 ResponseCode.FEATURE_NOT_SUPPORTED
             }
-            // Verify if a local rule should be applied in case PaymentFlow doesn't have availableFeatures defined
-        } ?: ResponseCode.OK
+        } ?: isFeatureSupportedInDefaultValues(feature)
+    }
+
+    private fun isFeatureSupportedInDefaultValues(feature: FeatureType): ResponseCode {
+        return GetDefaultFeaturesSupported.invoke(currentPaymentFlowMethod)?.let {
+            if (it.contains(feature)) {
+                logInfo("Feature is supported.")
+                ResponseCode.OK
+            } else {
+                logInfo("Feature not found in the Supported Features.")
+                ResponseCode.FEATURE_NOT_SUPPORTED
+            }
+        } ?: ResponseCode.FEATURE_NOT_SUPPORTED
     }
 }
