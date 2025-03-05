@@ -109,7 +109,7 @@ public interface AppcoinsBillingClient {
      * Call this method to verify if a {@link FeatureType} is supported in the current SDK Version and
      * the Billing Service that it is using.
      *
-     * @return If the feature is supported.
+     * @return Integer value of the ResponseCode. ResponseCode.OK if the Feature is Supported.
      */
     int isFeatureSupported(FeatureType feature);
 }
