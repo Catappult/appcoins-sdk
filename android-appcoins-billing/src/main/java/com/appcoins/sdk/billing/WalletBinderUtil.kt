@@ -75,7 +75,6 @@ object WalletBinderUtil {
                     val successfullyBound =
                         bindBillingService(context, connection, paymentFlowMethod)
                     if (successfullyBound) {
-                        WalletUtils.currentPaymentFlowMethod = paymentFlowMethod
                         return true
                     }
                 }
@@ -83,24 +82,24 @@ object WalletBinderUtil {
                 is PaymentFlowMethod.WebPayment -> {
                     logInfo("Creating WebAppcoinsBilling service.")
                     bindType = BindType.BILLING_SERVICE_NOT_INSTALLED
+                    WalletUtils.currentPaymentFlowMethod = paymentFlowMethod
                     connection.onServiceConnected(
                         ComponentName("", WebAppcoinsBilling::class.java.simpleName),
                         IBinderWalletNotInstalled()
                     )
                     SdkAnalyticsUtils.sdkAnalytics.sendServiceConnectedEvent(paymentFlowMethod.name)
-                    WalletUtils.currentPaymentFlowMethod = paymentFlowMethod
                     return true
                 }
 
                 is PaymentFlowMethod.UnavailableBilling -> {
                     logInfo("Creating UnavailableBillingService.")
                     bindType = BindType.UNAVAILABLE_BILLING
+                    WalletUtils.currentPaymentFlowMethod = paymentFlowMethod
                     connection.onServiceConnected(
                         ComponentName("", UnavailableBillingService::class.java.simpleName),
                         IBinderWalletNotInstalled()
                     )
                     SdkAnalyticsUtils.sdkAnalytics.sendServiceConnectedEvent(paymentFlowMethod.name)
-                    WalletUtils.currentPaymentFlowMethod = paymentFlowMethod
                     return true
                 }
             }
@@ -140,6 +139,7 @@ object WalletBinderUtil {
         if (WalletUtils.isUriBillingSupported()) {
             logInfo("Establishing URI Communication Protocol with Wallet.")
             bindType = BindType.URI_CONNECTION
+            WalletUtils.currentPaymentFlowMethod = paymentFlowMethod
             connection.onServiceConnected(
                 ComponentName("", UriCommunicationAppcoinsBilling::class.java.simpleName),
                 IBinderWalletNotInstalled()
@@ -148,7 +148,6 @@ object WalletBinderUtil {
                 paymentFlowMethod.name,
                 SdkInitializationLabels.METHOD_URI
             )
-            WalletUtils.currentPaymentFlowMethod = paymentFlowMethod
             return true
         }
         logInfo("Failed to establish URI Communication Protocol with Wallet.")
@@ -168,11 +167,11 @@ object WalletBinderUtil {
         if (context.bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)) {
             logInfo("Binding to the wallet aidl.")
             bindType = BindType.AIDL
+            WalletUtils.currentPaymentFlowMethod = paymentFlowMethod
             SdkAnalyticsUtils.sdkAnalytics.sendServiceConnectedEvent(
                 paymentFlowMethod.name,
                 SdkInitializationLabels.METHOD_BINDING
             )
-            WalletUtils.currentPaymentFlowMethod = paymentFlowMethod
             true
         } else {
             SdkAnalyticsUtils.sdkAnalytics.sendServiceConnectionFailureEvent(
