@@ -111,5 +111,5 @@ public interface AppcoinsBillingClient {
      *
      * @return If the feature is supported.
      */
-    ResponseCode isFeatureSupported(FeatureType feature);
+    int isFeatureSupported(FeatureType feature);
 }

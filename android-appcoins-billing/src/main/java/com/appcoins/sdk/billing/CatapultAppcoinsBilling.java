@@ -231,13 +231,13 @@ public class CatapultAppcoinsBilling
     }
 
     @Override
-    public ResponseCode isFeatureSupported(FeatureType feature) {
+    public int isFeatureSupported(FeatureType feature) {
         logInfo("Request to verify if Feature is supported.");
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
             .sendIsFeatureSupportedRequestEvent(feature.name());
-        ResponseCode result = billing.isFeatureSupported(feature);
+        int result = billing.isFeatureSupported(feature);
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
-            .sendIsFeatureSupportedResultEvent(result.getValue());
+            .sendIsFeatureSupportedResultEvent(result);
         return result;
     }
 
