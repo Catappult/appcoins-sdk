@@ -6,7 +6,7 @@ import com.appcoins.billing.AppcoinsBilling
 import com.appcoins.sdk.billing.ResponseCode
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.helpers.WalletUtils.startServiceUnavailableDialog
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.getUnavailableBillingMessage
+import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod.Companion.getUnavailableBillingMessage
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logInfo

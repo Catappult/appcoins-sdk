@@ -1,5 +1,6 @@
 package com.appcoins.sdk.billing
 
+@Suppress("MagicNumber")
 enum class ResponseCode(val value: Int) {
     /**
      * Success
@@ -44,5 +45,10 @@ enum class ResponseCode(val value: Int) {
     /**
      * Failure to consume since item is not owned
      */
-    ITEM_NOT_OWNED(8)
+    ITEM_NOT_OWNED(8),
+
+    /**
+     * Requested Feature is not supported by the SDK Version or the Billing Service used.
+     */
+    FEATURE_NOT_SUPPORTED(-2),
 }

@@ -5,7 +5,7 @@ import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.view.ViewGroup
 import com.appcoins.billing.sdk.R
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
+import com.appcoins.sdk.billing.payflow.models.WebViewDetails
 import com.appcoins.sdk.billing.webpayment.WebViewGeneralUIUtils.applyDynamicConstraints
 import com.appcoins.sdk.billing.webpayment.WebViewGeneralUIUtils.resetConstraintsAndSize
 
@@ -41,7 +41,7 @@ internal object WebViewLandscapeUtils {
         activity: Activity,
         mBaseConstraintLayout: ConstraintLayout,
         webViewContainerParams: ViewGroup.LayoutParams,
-        webViewDetailsDimensions: PaymentFlowMethod.WebPayment.WebViewDetails.OrientedScreenDimensions?
+        webViewDetailsDimensions: WebViewDetails.OrientedScreenDimensions?
     ) {
         applyDynamicConstraints(
             activity,

@@ -8,7 +8,7 @@ import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.listeners.PayflowPriorityStream;
 import com.appcoins.sdk.billing.managers.BillingLifecycleManager;
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
+import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod;
 import java.util.ArrayList;
 import org.jetbrains.annotations.Nullable;
 
