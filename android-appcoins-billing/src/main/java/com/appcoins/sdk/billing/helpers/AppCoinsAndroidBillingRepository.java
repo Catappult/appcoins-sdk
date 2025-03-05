@@ -182,7 +182,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
     }
 
     @Override
-    public ResponseCode isFeatureSupported(FeatureType feature) throws ServiceConnectionException {
+    public int isFeatureSupported(FeatureType feature) throws ServiceConnectionException {
         logInfo("Executing isFeatureSupported " + feature);
 
         if (!isReady()) {
@@ -193,6 +193,6 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
         }
         ResponseCode featureSupportedResult = IsFeatureSupported.INSTANCE.invoke(feature);
         logInfo("Feature supported result: " + featureSupportedResult);
-        return featureSupportedResult;
+        return featureSupportedResult.getValue();
     }
 }

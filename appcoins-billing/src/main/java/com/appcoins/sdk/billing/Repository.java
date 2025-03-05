@@ -16,5 +16,5 @@ public interface Repository {
 
     boolean isReady();
 
-    ResponseCode isFeatureSupported(FeatureType feature) throws ServiceConnectionException;
+    int isFeatureSupported(FeatureType feature) throws ServiceConnectionException;
 }

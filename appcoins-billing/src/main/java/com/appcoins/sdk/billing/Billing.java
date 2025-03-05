@@ -20,6 +20,6 @@ public interface Billing {
 
     boolean verifyPurchase(String purchaseData, byte[] decodeSignature);
 
-    ResponseCode isFeatureSupported(FeatureType feature);
+    int isFeatureSupported(FeatureType feature);
 }
 
