@@ -11,11 +11,13 @@ object IndicativeAnalytics : Serializable {
     var instanceId: String = "" // Instance id from
     var superProperties: MutableMap<String, Any> = HashMap()
 
-    fun setIndicativeSuperProperties(
+    fun setupIndicativeProperties(
         packageName: String?,
         versionCode: Int?,
-        deviceInformation: DeviceInformation
+        deviceInformation: DeviceInformation,
+        instanceId: String,
     ) {
+        this.instanceId = instanceId
         superProperties[AnalyticsContent.GAME_PACKAGE_NAME] = packageName ?: ""
         superProperties[AnalyticsContent.SDK_VERSION_CODE] = versionCode ?: ""
         superProperties[AnalyticsContent.SDK_PACKAGE] = "android-billing"
