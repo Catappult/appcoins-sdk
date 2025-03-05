@@ -19,5 +19,7 @@ public interface Billing {
     boolean isReady();
 
     boolean verifyPurchase(String purchaseData, byte[] decodeSignature);
+
+    int isFeatureSupported(FeatureType feature);
 }
 

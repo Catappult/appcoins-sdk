@@ -5,7 +5,7 @@ import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
+import com.appcoins.sdk.billing.payflow.models.WebViewDetails
 import com.appcoins.sdk.billing.webpayment.WebViewGeneralUIUtils.applyDynamicConstraints
 import com.appcoins.sdk.billing.webpayment.WebViewGeneralUIUtils.resetConstraintsAndSize
 import com.appcoins.sdk.billing.webpayment.WebViewGeneralUIUtils.setMaxHeightForWebView
@@ -43,7 +43,7 @@ internal object WebViewPortraitUtils {
         activity: Activity,
         mBaseConstraintLayout: ConstraintLayout,
         webViewContainerParams: ViewGroup.LayoutParams,
-        webViewDetailsDimensions: PaymentFlowMethod.WebPayment.WebViewDetails.OrientedScreenDimensions?
+        webViewDetailsDimensions: WebViewDetails.OrientedScreenDimensions?
     ) {
         applyDynamicConstraints(
             activity,

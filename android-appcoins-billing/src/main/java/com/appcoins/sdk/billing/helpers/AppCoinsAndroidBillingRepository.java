@@ -6,6 +6,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import com.appcoins.billing.AppcoinsBilling;
 import com.appcoins.sdk.billing.ConnectionLifeCycle;
+import com.appcoins.sdk.billing.FeatureType;
 import com.appcoins.sdk.billing.LaunchBillingFlowResult;
 import com.appcoins.sdk.billing.PurchasesResult;
 import com.appcoins.sdk.billing.Repository;
@@ -14,6 +15,7 @@ import com.appcoins.sdk.billing.SkuDetailsResult;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.service.WalletBillingService;
+import com.appcoins.sdk.billing.usecases.IsFeatureSupported;
 import com.appcoins.sdk.billing.usecases.RetryFailedRequests;
 import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils;
 import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureStep;
@@ -177,5 +179,20 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
     @Override
     public boolean isReady() {
         return isServiceReady;
+    }
+
+    @Override
+    public int isFeatureSupported(FeatureType feature) throws ServiceConnectionException {
+        logInfo("Executing isFeatureSupported " + feature);
+
+        if (!isReady()) {
+            logError("Service is not ready. Throwing ServiceConnectionException.");
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendServiceConnectionExceptionEvent(SdkGeneralFailureStep.CONSUME);
+            throw new ServiceConnectionException();
+        }
+        ResponseCode featureSupportedResult = IsFeatureSupported.INSTANCE.invoke(feature);
+        logInfo("Feature supported result: " + featureSupportedResult);
+        return featureSupportedResult.getValue();
     }
 }

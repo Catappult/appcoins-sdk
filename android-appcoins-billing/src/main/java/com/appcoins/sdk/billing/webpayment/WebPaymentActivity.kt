@@ -19,7 +19,7 @@ import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
 import com.appcoins.sdk.billing.listeners.WalletPaymentDeeplinkResponseStream
 import com.appcoins.sdk.billing.listeners.WebPaymentActionStream
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
+import com.appcoins.sdk.billing.payflow.models.WebViewDetails
 import com.appcoins.sdk.billing.usecases.HandleDeeplinkFromWebView
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESULT_CODE
 import com.appcoins.sdk.billing.webpayment.WebViewLandscapeUtils.applyDefaultLandscapeConstraints
@@ -53,7 +53,7 @@ class WebPaymentActivity :
 
     private var skuType: String? = null
 
-    private var webViewDetails: PaymentFlowMethod.WebPayment.WebViewDetails? = null
+    private var webViewDetails: WebViewDetails? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,9 +81,9 @@ class WebPaymentActivity :
 
         webViewDetails =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                intent.getSerializableExtra(WEB_VIEW_DETAILS, PaymentFlowMethod.WebPayment.WebViewDetails::class.java)
+                intent.getSerializableExtra(WEB_VIEW_DETAILS, WebViewDetails::class.java)
             } else {
-                intent.getSerializableExtra(WEB_VIEW_DETAILS) as PaymentFlowMethod.WebPayment.WebViewDetails?
+                intent.getSerializableExtra(WEB_VIEW_DETAILS) as WebViewDetails?
             }
 
         setupOrientation(this, webViewDetails)
@@ -310,7 +310,7 @@ class WebPaymentActivity :
             url: String,
             sku: String,
             skuType: String,
-            webViewDetails: PaymentFlowMethod.WebPayment.WebViewDetails?
+            webViewDetails: WebViewDetails?
         ): Intent {
             val intent = Intent(context, WebPaymentActivity::class.java)
             intent.putExtra(URL, url)

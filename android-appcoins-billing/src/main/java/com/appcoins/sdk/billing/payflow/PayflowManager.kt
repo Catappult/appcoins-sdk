@@ -2,6 +2,7 @@ package com.appcoins.sdk.billing.payflow
 
 import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.listeners.PayflowPriorityStream
+import com.appcoins.sdk.billing.payflow.models.PayflowMethodResponse
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.TIMEOUT_30_SECS
 import com.appcoins.sdk.billing.utils.ServiceUtils

@@ -6,24 +6,24 @@ import android.content.pm.PackageManager.MATCH_ALL
 import android.content.pm.PackageManager.ResolveInfoFlags
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.communication.requester.MessageRequesterFactory
 import com.appcoins.sdk.billing.BuyItemProperties
+import com.appcoins.sdk.billing.FeatureType
 import com.appcoins.sdk.billing.ResponseCode
 import com.appcoins.sdk.billing.UriCommunicationAppcoinsBilling
 import com.appcoins.sdk.billing.activities.BillingFlowActivity.Companion.newIntent
 import com.appcoins.sdk.billing.activities.InstallDialogActivity
 import com.appcoins.sdk.billing.activities.UnavailableBillingDialogActivity
 import com.appcoins.sdk.billing.managers.ApiKeysManager.getIndicativeApiKey
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.AptoideGames
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.GamesHub
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Wallet
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.WebPayment.WebViewDetails
+import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod
+import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod.AptoideGames
+import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod.GamesHub
+import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod.Wallet
+import com.appcoins.sdk.billing.payflow.models.WebViewDetails
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
 import com.appcoins.sdk.billing.types.SkuType
@@ -31,8 +31,7 @@ import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.KEY_BUY_INTENT
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
 import com.appcoins.sdk.billing.webpayment.WebPaymentActivity.Companion.newIntent
 import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
-import com.appcoins.sdk.core.analytics.indicative.IndicativeAnalytics.instanceId
-import com.appcoins.sdk.core.analytics.indicative.IndicativeAnalytics.setIndicativeSuperProperties
+import com.appcoins.sdk.core.analytics.indicative.IndicativeAnalytics.setupIndicativeProperties
 import com.appcoins.sdk.core.device.getDeviceInfo
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
@@ -44,11 +43,12 @@ import java.util.concurrent.CountDownLatch
 @Suppress("StaticFieldLeak", "TooManyFunctions")
 object WalletUtils {
     var paymentFlowMethods: List<PaymentFlowMethod> = emptyList()
+    var currentPaymentFlowMethod: PaymentFlowMethod? = null
     val localPaymentFlowMethods =
         listOf(
-            Wallet("wallet", 1),
-            GamesHub("games_hub_checkout", 2),
-            AptoideGames("aptoide_games", 3)
+            Wallet("wallet", 1, arrayListOf(FeatureType.SUBSCRIPTIONS)),
+            GamesHub("games_hub_checkout", 2, arrayListOf()),
+            AptoideGames("aptoide_games", 3, arrayListOf())
         )
     var webPaymentUrl: String? = null
     lateinit var context: Context
@@ -107,18 +107,19 @@ object WalletUtils {
 
     fun startIndicative(packageName: String?) {
         logInfo("Starting Indicative for $packageName")
-        launchIndicative {
-            Thread {
+        if (!SdkAnalyticsUtils.isIndicativeEventLoggerInitialized) {
+            launchIndicative {
+                SdkAnalyticsUtils.isIndicativeEventLoggerInitialized = true
                 val walletId = getWalletIdForUserSession()
                 logDebug(
                     "Parameters for indicative: walletId: $walletId" +
                         " packageName: $packageName" +
                         " versionCode: ${BuildConfig.VERSION_CODE}"
                 )
-                instanceId = walletId
-                setIndicativeSuperProperties(packageName, BuildConfig.VERSION_CODE, getDeviceInfo())
+
+                setupIndicativeProperties(packageName, BuildConfig.VERSION_CODE, getDeviceInfo(), walletId)
                 SdkAnalyticsUtils.sdkAnalytics.sendStartConnectionEvent()
-            }.start()
+            }
         }
     }
 
@@ -174,11 +175,15 @@ object WalletUtils {
         }
     }
 
-    private fun launchIndicative(callback: () -> Unit) =
-        Handler(Looper.getMainLooper()).post {
+    private fun launchIndicative(callback: () -> Unit) {
+        try {
             Indicative.launch(context, getIndicativeApiKey())
+        } catch (ex: Exception) {
+            logError("Failed to Launch Indicative.", ex)
+        } finally {
             callback()
         }
+    }
 
     private fun isMainThread(): Boolean {
         val latch = CountDownLatch(1)

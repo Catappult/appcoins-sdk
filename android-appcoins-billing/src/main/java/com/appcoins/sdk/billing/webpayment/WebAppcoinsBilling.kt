@@ -17,8 +17,8 @@ import com.appcoins.sdk.billing.helpers.PayloadHelper
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.managers.ProductV2Manager
 import com.appcoins.sdk.billing.mappers.PurchasesBundleMapper
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.Companion.getPaymentFlowFromPayflowMethod
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod.WebPayment
+import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod.Companion.getPaymentFlowFromPayflowMethod
+import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod.WebPayment
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.DETAILS_LIST
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.GET_SKU_DETAILS_ITEM_LIST

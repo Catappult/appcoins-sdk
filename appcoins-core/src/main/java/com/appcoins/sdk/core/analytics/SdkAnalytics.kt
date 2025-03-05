@@ -18,6 +18,8 @@ import com.appcoins.sdk.core.analytics.events.SdkInitializationEvents
 import com.appcoins.sdk.core.analytics.events.SdkInitializationLabels
 import com.appcoins.sdk.core.analytics.events.SdkInstallWalletDialogEvents
 import com.appcoins.sdk.core.analytics.events.SdkInstallWalletDialogLabels
+import com.appcoins.sdk.core.analytics.events.SdkIsFeatureSupportedEvents
+import com.appcoins.sdk.core.analytics.events.SdkIsFeatureSupportedLabels
 import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateDialogEvents
 import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateDialogLabels
 import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateEvents
@@ -185,6 +187,23 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
 
     fun sendGetReferralDeeplinkMainThreadFailureEvent() {
         logEvent(SdkGetReferralDeeplinkEvents.SdkGetReferralDeeplinkMainThreadFailure())
+    }
+
+    // Is Feature Supported events
+    fun sendIsFeatureSupportedRequestEvent(feature: String) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        eventData[SdkIsFeatureSupportedLabels.FEATURE] = feature
+
+        logEvent(SdkIsFeatureSupportedEvents.SdkIsFeatureSupportedRequest(eventData))
+    }
+
+    fun sendIsFeatureSupportedResultEvent(result: Int) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        eventData[SdkIsFeatureSupportedLabels.RESULT] = result
+
+        logEvent(SdkIsFeatureSupportedEvents.SdkIsFeatureSupportedResult(eventData))
     }
 
     // Initialization events

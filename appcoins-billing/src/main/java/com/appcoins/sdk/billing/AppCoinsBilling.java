@@ -110,4 +110,13 @@ public class AppCoinsBilling implements Billing {
     public boolean isReady() {
         return repository.isReady();
     }
+
+    @Override
+    public int isFeatureSupported(FeatureType feature) {
+        try {
+            return repository.isFeatureSupported(feature);
+        } catch (ServiceConnectionException e) {
+            return ResponseCode.SERVICE_UNAVAILABLE.getValue();
+        }
+    }
 }

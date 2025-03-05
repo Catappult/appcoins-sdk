@@ -230,6 +230,17 @@ public class CatapultAppcoinsBilling
         }
     }
 
+    @Override
+    public int isFeatureSupported(FeatureType feature) {
+        logInfo("Request to verify if Feature is supported.");
+        SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+            .sendIsFeatureSupportedRequestEvent(feature.name());
+        int result = billing.isFeatureSupported(feature);
+        SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+            .sendIsFeatureSupportedResultEvent(result);
+        return result;
+    }
+
     @Deprecated
     @Override
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -8,7 +8,7 @@ import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.listeners.PayflowPriorityStream;
 import com.appcoins.sdk.billing.managers.BillingLifecycleManager;
-import com.appcoins.sdk.billing.payflow.PaymentFlowMethod;
+import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod;
 import java.util.ArrayList;
 import org.jetbrains.annotations.Nullable;
 
@@ -79,9 +79,7 @@ public class RepositoryServiceConnection
     }
 
     @Override
-    public void accept(
-        @Nullable
-        ArrayList<PaymentFlowMethod> paymentFlowMethods) {
+    public void accept(@Nullable ArrayList<PaymentFlowMethod> paymentFlowMethods) {
         logInfo("New result received from PayflowPriorityStream.");
         if (paymentFlowMethods != null) {
             logInfo(String.format("PaymentFlowMethods size: %s", paymentFlowMethods.size()));
@@ -91,7 +89,6 @@ public class RepositoryServiceConnection
         } else {
             logInfo("PaymentFlowMethods is null.");
         }
-        WalletBinderUtil.finishBillingRepository(context, this);
         Runnable runnable = () -> WalletBinderUtil.initializeBillingRepository(context, this, paymentFlowMethods);
         new Thread(runnable).start();
     }
