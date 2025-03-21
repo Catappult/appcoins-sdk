@@ -12,7 +12,9 @@ import com.appcoins.sdk.billing.usecases.GetAppInstalledVersion
 import com.appcoins.sdk.billing.usecases.GetOemIdForPackage
 import com.appcoins.sdk.billing.usecases.ingameupdates.GetInstallerAppPackage
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.TIMEOUT_3_SECS
+import com.appcoins.sdk.core.device.QGenerator
 import com.appcoins.sdk.core.logger.Logger.logInfo
+import com.appcoins.sdk.core.logger.Logger.logWarning
 
 class StoreLinkMapperManager(private val context: Context) {
     private val storeLinkMapperRepository =
@@ -47,13 +49,20 @@ class StoreLinkMapperManager(private val context: Context) {
         val oemid = GetOemIdForPackage(WalletUtils.context.packageName, WalletUtils.context)
         val installerAppPackage = GetInstallerAppPackage(context)
         val currentVersion = GetAppInstalledVersion(context.packageName, context)
+        val q = try {
+            QGenerator.generateQ(WalletUtils.context)
+        } catch (ex: Exception) {
+            logWarning(ex.toString())
+            null
+        }
 
         val newVersionAvailableResponse =
             storeLinkMapperRepository.getNewVersionAvailability(
                 context.packageName,
                 installerAppPackage,
                 oemid,
-                currentVersion
+                currentVersion,
+                q
             )
 
         logInfo("New Version Availability received: $newVersionAvailableResponse")

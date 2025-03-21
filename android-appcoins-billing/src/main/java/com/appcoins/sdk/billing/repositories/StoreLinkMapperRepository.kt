@@ -106,6 +106,7 @@ class StoreLinkMapperRepository(private val bdsService: BdsService) {
         appInstallerPackageName: String?,
         oemid: String?,
         versionCode: Int,
+        q: String?,
     ): NewVersionAvailableResponse {
         val countDownLatch = CountDownLatch(1)
         var referralDeeplink = NewVersionAvailableResponse(ResponseCode.ERROR.value)
@@ -114,6 +115,7 @@ class StoreLinkMapperRepository(private val bdsService: BdsService) {
         queries["version_code"] = "$versionCode"
         appInstallerPackageName?.let { queries["store-package"] = it }
         oemid?.let { queries["oemid"] = it }
+        q?.let { queries["q"] = it }
 
         val serviceResponseListener =
             ServiceResponseListener { requestResponse ->
@@ -129,7 +131,7 @@ class StoreLinkMapperRepository(private val bdsService: BdsService) {
             }
 
         bdsService.makeRequest(
-            "/new_version/$packageName",
+            "/new-version/$packageName",
             "GET",
             emptyList(),
             queries.toMap(),
