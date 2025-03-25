@@ -7,7 +7,6 @@ import android.opengl.EGLDisplay
 import android.opengl.GLES20
 import com.appcoins.sdk.core.logger.Logger.logWarning
 
-
 class OpenGLHelper {
 
     fun getDeviceSupportedExtensions(): List<String>? {
