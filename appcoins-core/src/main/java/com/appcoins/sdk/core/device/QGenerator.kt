@@ -8,7 +8,6 @@ import android.os.Build
 import android.util.Base64
 import android.util.DisplayMetrics
 import android.view.WindowManager
-import com.appcoins.sdk.core.logger.Logger.logInfo
 
 object QGenerator {
     private val supportedOpenGLExtensions = arrayOf(
@@ -38,8 +37,7 @@ object QGenerator {
     }
 
     private fun addOpenGLExtensions(filters: String): String {
-        val openGLExtensions =
-            OpenGLHelper().getDeviceSupportedExtensions().apply { logInfo(this.toString()) }
+        val openGLExtensions = OpenGLHelper().getDeviceSupportedExtensions()
         var updatedFilters = filters
         var extensionAdded = false
         openGLExtensions?.forEach { extension ->
