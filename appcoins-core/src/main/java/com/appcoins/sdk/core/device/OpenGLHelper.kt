@@ -2,16 +2,15 @@ package com.appcoins.sdk.core.device
 
 import android.opengl.EGL14
 import android.opengl.EGLConfig
-import android.opengl.EGLContext
-import android.opengl.EGLDisplay
 import android.opengl.GLES20
 import com.appcoins.sdk.core.logger.Logger.logWarning
 
 class OpenGLHelper {
 
+    @Suppress("ReturnCount")
     fun getDeviceSupportedExtensions(): List<String>? {
         try {
-            val display: EGLDisplay = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY)
+            val display = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY)
             if (display == EGL14.EGL_NO_DISPLAY) {
                 logWarning("No EGL display found")
                 return null
@@ -24,7 +23,7 @@ class OpenGLHelper {
             }
 
             val configAttribs = intArrayOf(EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT, EGL14.EGL_NONE)
-            val configs: Array<EGLConfig?> = arrayOfNulls(1)
+            val configs = arrayOfNulls<EGLConfig?>(1)
             val numConfigs = IntArray(1)
 
             if (!EGL14.eglChooseConfig(
@@ -44,8 +43,7 @@ class OpenGLHelper {
             }
 
             val contextAttribs = intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL14.EGL_NONE)
-            val context: EGLContext =
-                EGL14.eglCreateContext(display, configs[0], EGL14.EGL_NO_CONTEXT, contextAttribs, 0)
+            val context = EGL14.eglCreateContext(display, configs[0], EGL14.EGL_NO_CONTEXT, contextAttribs, 0)
 
             if (context == EGL14.EGL_NO_CONTEXT) {
                 logWarning("EGL context creation failed")
