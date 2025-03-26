@@ -151,7 +151,7 @@ class SdkAnalyticsTest {
         } just runs
 
         sdkAnalytics.sendBackendRequestEvent(
-            SdkBackendRequestType.APP_VERSION,
+            SdkBackendRequestType.ATTRIBUTION,
             EMPTY_STRING,
             EMPTY_STRING,
             mutableListOf(),
@@ -183,7 +183,7 @@ class SdkAnalyticsTest {
         } just runs
 
         sdkAnalytics.sendBackendResponseEvent(
-            SdkBackendRequestType.APP_VERSION,
+            SdkBackendRequestType.ATTRIBUTION,
             DEFAULT_INTEGER,
             EMPTY_STRING,
         )
@@ -212,7 +212,7 @@ class SdkAnalyticsTest {
         } just runs
 
         sdkAnalytics.sendBackendErrorEvent(
-            SdkBackendRequestType.APP_VERSION,
+            SdkBackendRequestType.ATTRIBUTION,
             EMPTY_STRING,
             EMPTY_STRING,
             mockkContext,
@@ -241,7 +241,7 @@ class SdkAnalyticsTest {
         } just runs
 
         sdkAnalytics.sendBackendMappingFailureEvent(
-            SdkBackendRequestType.APP_VERSION,
+            SdkBackendRequestType.ATTRIBUTION,
             EMPTY_STRING,
             EMPTY_STRING,
         )

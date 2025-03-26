@@ -67,7 +67,6 @@ object SdkBackendRequestLabels {
 enum class SdkBackendRequestType(val type: String) {
     PAYMENT_FLOW("payment_flow"),
     ATTRIBUTION("attribution"),
-    APP_VERSION("app_version"),
     WEB_PAYMENT_URL("web_payment_url"),
     TRANSACTION("transaction"),
     INAPP_PURCHASE("inapp_purchase"),
@@ -77,5 +76,6 @@ enum class SdkBackendRequestType(val type: String) {
     CONSUME_PURCHASE("consume_purchase"),
     SKU_DETAILS("sku_details"),
     STORE_DEEPLINK("store_deeplink"),
-    GUEST_WALLET("guest_wallet")
+    GUEST_WALLET("guest_wallet"),
+    NEW_VERSION_AVAILABLE("new_version_available")
 }

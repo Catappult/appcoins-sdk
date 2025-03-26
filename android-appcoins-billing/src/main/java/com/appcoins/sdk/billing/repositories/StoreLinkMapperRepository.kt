@@ -1,6 +1,8 @@
 package com.appcoins.sdk.billing.repositories
 
 import com.appcoins.sdk.billing.ResponseCode
+import com.appcoins.sdk.billing.mappers.NewVersionAvailableResponse
+import com.appcoins.sdk.billing.mappers.NewVersionAvailableResponseMapper
 import com.appcoins.sdk.billing.mappers.ReferralDeeplinkResponse
 import com.appcoins.sdk.billing.mappers.ReferralDeeplinkResponseMapper
 import com.appcoins.sdk.billing.mappers.StoreLinkResponse
@@ -93,6 +95,50 @@ class StoreLinkMapperRepository(private val bdsService: BdsService) {
             emptyMap<String?, Any>(),
             serviceResponseListener,
             SdkBackendRequestType.STORE_DEEPLINK
+        )
+
+        waitForCountDown(countDownLatch)
+        return referralDeeplink
+    }
+
+    fun getNewVersionAvailability(
+        packageName: String,
+        appInstallerPackageName: String?,
+        oemid: String?,
+        versionCode: Int,
+        q: String?,
+    ): NewVersionAvailableResponse {
+        val countDownLatch = CountDownLatch(1)
+        var referralDeeplink = NewVersionAvailableResponse(ResponseCode.ERROR.value)
+
+        val queries: MutableMap<String, String> = LinkedHashMap()
+        queries["version_code"] = "$versionCode"
+        appInstallerPackageName?.let { queries["store-package"] = it }
+        oemid?.let { queries["oemid"] = it }
+        q?.let { queries["q"] = it }
+
+        val serviceResponseListener =
+            ServiceResponseListener { requestResponse ->
+                requestResponse?.let {
+                    val newVersionAvailableResponse = NewVersionAvailableResponseMapper().map(requestResponse)
+                    newVersionAvailableResponse.responseCode?.let { responseCode ->
+                        if (ServiceUtils.isSuccess(responseCode)) {
+                            referralDeeplink = newVersionAvailableResponse
+                        }
+                    }
+                }
+                countDownLatch.countDown()
+            }
+
+        bdsService.makeRequest(
+            "/new-version/$packageName",
+            "GET",
+            emptyList(),
+            queries.toMap(),
+            emptyMap(),
+            emptyMap<String?, Any>(),
+            serviceResponseListener,
+            SdkBackendRequestType.NEW_VERSION_AVAILABLE
         )
 
         waitForCountDown(countDownLatch)

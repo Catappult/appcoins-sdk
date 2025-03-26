@@ -191,10 +191,7 @@ public class CatapultAppcoinsBilling
         Runnable runnable = () -> {
             SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
                 .sendLaunchAppUpdateStoreRequestEvent();
-            boolean isAppUpdateAvailable = IsUpdateAvailable.INSTANCE.invoke(WalletUtils.INSTANCE.getContext());
-            if (isAppUpdateAvailable) {
-                LaunchAppUpdate.INSTANCE.invoke(context);
-            }
+            LaunchAppUpdate.INSTANCE.invoke(context);
         };
         new Thread(runnable).start();
     }
@@ -203,14 +200,10 @@ public class CatapultAppcoinsBilling
     public void launchAppUpdateDialog(Context context) {
         logInfo("Request to launch App Update Dialog.");
         Runnable runnable = () -> {
-            boolean isAppUpdateAvailable = IsUpdateAvailable.INSTANCE.invoke(WalletUtils.INSTANCE.getContext());
-            if (isAppUpdateAvailable) {
-                Intent updateDialogActivityIntent =
-                    new Intent(context.getApplicationContext(), UpdateDialogActivity.class);
-                updateDialogActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.getApplicationContext()
-                    .startActivity(updateDialogActivityIntent);
-            }
+            Intent updateDialogActivityIntent = new Intent(context.getApplicationContext(), UpdateDialogActivity.class);
+            updateDialogActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.getApplicationContext()
+                .startActivity(updateDialogActivityIntent);
         };
         new Thread(runnable).start();
     }
