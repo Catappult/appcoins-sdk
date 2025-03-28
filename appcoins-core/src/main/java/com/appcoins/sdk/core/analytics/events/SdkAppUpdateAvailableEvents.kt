@@ -46,7 +46,7 @@ object SdkAppUpdateAvailableEvents {
     const val SDK_APP_UPDATE_AVAILABLE_FAILURE_TO_OBTAIN_RESULT =
         "sdk_app_update_available_failure_to_obtain_result"
 
-    private const val APP_UPDATE_AVAILABLE_FLOW = "app_update_available"
+    const val APP_UPDATE_AVAILABLE_FLOW = "app_update_available"
 }
 
 object SdkAppUpdateAvailableLabels {

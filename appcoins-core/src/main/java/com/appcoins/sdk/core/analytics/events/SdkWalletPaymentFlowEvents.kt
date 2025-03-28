@@ -25,5 +25,5 @@ object SdkWalletPaymentFlowEvents {
     const val SDK_WALLET_PAYMENT_START = "sdk_wallet_payment_start"
     const val SDK_WALLET_PAYMENT_EMPTY_DATA = "sdk_wallet_payment_empty_data"
 
-    private const val WALLET_PAYMENT_FLOW = "wallet_payment_flow"
+    const val WALLET_PAYMENT_FLOW = "wallet_payment_flow"
 }

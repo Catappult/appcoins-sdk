@@ -45,7 +45,7 @@ object SdkBackendRequestEvents {
     const val SDK_CALL_BACKEND_MAPPING_FAILURE = "sdk_call_backend_mapping_failure"
     const val SDK_CALL_BACKEND_ERROR = "sdk_call_backend_error"
 
-    private const val BACKEND_REQUEST_FLOW = "backend_request"
+    const val BACKEND_REQUEST_FLOW = "backend_request"
 }
 
 object SdkBackendRequestLabels {

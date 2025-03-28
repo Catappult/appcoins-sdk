@@ -18,6 +18,8 @@ import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.runs
 import io.mockk.unmockkAll
+import io.mockk.unmockkObject
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import org.junit.After
 import org.junit.Before
@@ -122,6 +124,7 @@ class WalletUtilsTest {
     fun `startIndicative should return OK when generates correctly Bundle`() {
         mockkStatic(Indicative::class)
         mockkObject(ApiKeysManager)
+        mockkObject(SdkAnalyticsUtils)
 
         val mockkIndicative = mockk<Indicative>()
         val mockkSharedPreferences = mockk<SharedPreferences>()
@@ -138,6 +141,9 @@ class WalletUtilsTest {
         shadowOf(Looper.getMainLooper()).runToNextTask()
 
         verify(exactly = 1) { SdkAnalyticsUtils.sdkAnalytics.sendStartConnectionEvent() }
+        unmockkObject(SdkAnalyticsUtils)
+        unmockkObject(ApiKeysManager)
+        unmockkStatic(Indicative::class)
     }
 
     private companion object {

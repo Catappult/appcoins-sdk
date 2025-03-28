@@ -26,15 +26,14 @@ object PayflowManager {
                         val sortedMethods = payflowMethodResponse.paymentFlowList
                         sortedMethods?.sortBy { it.priority }
                         PayflowPriorityStream.getInstance().emit(sortedMethods)
-                        payflowMethodResponse.analyticsFlowSeverityLevels
-                            ?.takeIf { it.isNotEmpty() }
-                            ?.let {
-                                SdkAnalyticsUtils.analyticsFlowSeverityLevels = it
-                            }
+                        payflowMethodResponse.analyticsFlowSeverityLevels?.let {
+                            SdkAnalyticsUtils.analyticsFlowSeverityLevels = it
+                        }
                     } else {
                         PayflowPriorityStream.getInstance().emit(arrayListOf())
                         SdkAnalyticsUtils.analyticsFlowSeverityLevels = null
                     }
+                    SdkAnalyticsUtils.isAnalyticsSetupFromPayflowFinalized = true
                 }
             }
         }

@@ -2,6 +2,7 @@ package com.appcoins.sdk.core.analytics.severity
 
 import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.analytics.events.SdkInitializationEvents
+import com.appcoins.sdk.core.analytics.events.SdkPurchaseFlowEvents
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,10 +22,20 @@ class SdkAnalyticsSeverityUtilsTest {
     }
 
     @Test
-    fun `should return true when no severity levels defined`() {
+    fun `should return false for SdkInitializationEvents when no severity levels defined`() {
         SdkAnalyticsUtils.analyticsFlowSeverityLevels = null
 
         val result = sdkAnalyticsSeverityUtils.isEventSeverityAllowed(SdkInitializationEvents.SdkStartConnection())
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun `should return false for Sdk when no severity levels defined`() {
+        SdkAnalyticsUtils.analyticsFlowSeverityLevels = null
+
+        val result =
+            sdkAnalyticsSeverityUtils.isEventSeverityAllowed(SdkPurchaseFlowEvents.SdkLaunchPurchaseMainThreadFailure())
 
         assertTrue(result)
     }

@@ -28,6 +28,10 @@ internal object ApplicationUtils {
 
         if (data == null) {
             logError("Null data in IAB activity result.")
+            sdkAnalytics.sendPurchaseResultEvent(
+                responseCode = ResponseCode.ERROR.value,
+                failureMessage = "Null data in IAB activity result."
+            )
             purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.value, emptyList())
             return
         }
@@ -46,6 +50,10 @@ internal object ApplicationUtils {
             if (purchaseData == null || dataSignature == null) {
                 logError("BUG: either purchaseData or dataSignature is null.")
                 logDebug("Extras: " + data.extras)
+                sdkAnalytics.sendPurchaseResultEvent(
+                    responseCode = ResponseCode.ERROR.value,
+                    failureMessage = "Either purchaseData or dataSignature is null."
+                )
                 purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.value, emptyList())
                 return
             }
@@ -72,17 +80,24 @@ internal object ApplicationUtils {
                     val purchases: MutableList<Purchase> = ArrayList()
                     purchases.add(purchase)
                     SendSuccessfulPurchaseResponseEvent.invoke(purchase)
-                    purchaseFinishedListener.onPurchasesUpdated(responseCode, purchases)
                     sdkAnalytics.sendPurchaseResultEvent(responseCode, purchase.token, purchase.sku)
+                    purchaseFinishedListener.onPurchasesUpdated(responseCode, purchases)
                     logInfo("Purchase result successfully sent.")
                 } catch (e: Exception) {
                     logError("Failed to parse purchase data: $e")
-                    sdkAnalytics.sendPurchaseResultEvent(ResponseCode.ERROR.value, null, null)
+                    sdkAnalytics.sendPurchaseResultEvent(
+                        responseCode = ResponseCode.ERROR.value,
+                        failureMessage = "Purchase failed. Result code: $resultCode."
+                    )
                     purchaseFinishedListener
                         .onPurchasesUpdated(ResponseCode.ERROR.value, emptyList())
                 }
             } else {
                 logError("Signature verification failed.")
+                sdkAnalytics.sendPurchaseResultEvent(
+                    responseCode = ResponseCode.ERROR.value,
+                    failureMessage = "Signature verification failed."
+                )
                 purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.value, emptyList())
             }
         } else if (resultCode == Activity.RESULT_OK) {
@@ -92,21 +107,26 @@ internal object ApplicationUtils {
                     getResponseDesc(responseCode)
             )
             logDebug("Bundle: $data")
-            sdkAnalytics.sendPurchaseResultEvent(responseCode, null, null)
+            sdkAnalytics.sendPurchaseResultEvent(
+                responseCode = responseCode,
+                failureMessage = "Result code was OK but in-app billing response was not OK."
+            )
             purchaseFinishedListener.onPurchasesUpdated(responseCode, emptyList())
         } else if (resultCode == Activity.RESULT_CANCELED) {
             logInfo("Purchase canceled - Response: " + getResponseDesc(responseCode))
             logDebug("Bundle: $data")
-            sdkAnalytics.sendPurchaseResultEvent(ResponseCode.USER_CANCELED.value, null, null)
-            purchaseFinishedListener
-                .onPurchasesUpdated(ResponseCode.USER_CANCELED.value, emptyList())
+            sdkAnalytics.sendPurchaseResultEvent(responseCode = ResponseCode.USER_CANCELED.value)
+            purchaseFinishedListener.onPurchasesUpdated(ResponseCode.USER_CANCELED.value, emptyList())
         } else {
             logError(
                 "Purchase failed. Result code: $resultCode. Response: " +
                     getResponseDesc(responseCode)
             )
             logDebug("Bundle: $data")
-            sdkAnalytics.sendPurchaseResultEvent(responseCode, null, null)
+            sdkAnalytics.sendPurchaseResultEvent(
+                responseCode = responseCode,
+                failureMessage = "Purchase failed. Result code: $resultCode."
+            )
             purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.value, emptyList())
         }
     }
