@@ -10,7 +10,7 @@ class SdkAnalyticsSeverityUtils {
             (
                 SdkAnalyticsUtils.analyticsFlowSeverityLevels
                     ?: SdkAnalyticsUtils.defaultAnalyticsFlowSeverityLevels
-                ).firstOrNull { it.flow.equals(analyticsEvent.flow, false) }?.severityLevel ?: 0
+                ).firstOrNull { it.flow.equals(analyticsEvent.flow, true) }?.severityLevel ?: 0
 
         return savedSeverityLevel >= analyticsEvent.severityLevel
     }
