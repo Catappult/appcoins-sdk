@@ -4,12 +4,16 @@
     <string name="igu_app_new_version_available_popup_update_button">بروزرسانی</string>
     <string name="igu_app_new_version_available_popup_close_button">بستن</string>
     <!-- SDK - Purchasing when wallet is not installed -->
-    <string name="iab_wallet_not_installed_popup_body">برای خرید این آیتم، ابتدا باید %s را نصب کنید.</string> <!-- Shouldn't be changed -->
-    <string name="appcoins_wallet">برنامه بازارچه</string> <!-- Shouldn't be changed -->
-    <string name="iab_wallet_not_installed_popup_close_button">بستن</string> <!-- Shouldn't be changed -->
+    <string name="iab_wallet_not_installed_popup_body">برای خرید این آیتم، ابتدا باید %s را بگیرید.</string>
+    <string name="appcoins_wallet">کیف پول AppCoins</string>
+    <string name="iab_wallet_not_installed_popup_close_button">بستن</string>
     <!-- SDK - Purchasing when neither wallet or app store are installed -->
     <string name="iap_wallet_and_appstore_not_installed_popup_body">برای این خرید نیاز به AppCoins Wallet دارید. آن را از Aptoide یا Play Store دانلود کنید و برای تکمیل خرید خود دوباره بازگردید!</string>
     <string name="iap_wallet_and_appstore_not_installed_popup_button">متوجه شدم!</string>
     <!-- SDK - Common -->
-    <string name="iab_wallet_not_installed_popup_close_install">نصب بازارچه</string> <!-- Shouldn't be changed -->
+    <string name="iab_wallet_not_installed_popup_close_install">نصب کیف پول</string>
+    <!-- SDK - Unavailable -->
+    <string name="sdk_unavailable_description_body">Billing services are currently not supported.\nPlease contact the support channel.</string>
+    <!-- SDK General -->
+    <string name="sdk_general_close_button">CLOSE</string>
 </resources>

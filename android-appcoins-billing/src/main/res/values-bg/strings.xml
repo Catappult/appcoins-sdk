@@ -12,4 +12,8 @@
     <string name="iap_wallet_and_appstore_not_installed_popup_button">РАЗБРАХ!</string>
     <!-- SDK - Common -->
     <string name="iab_wallet_not_installed_popup_close_install">ИНСТАЛИРАЙ ПОРТФЕЙЛА</string>
+    <!-- SDK - Unavailable -->
+    <string name="sdk_unavailable_description_body">Billing services are currently not supported.\nPlease contact the support channel.</string>
+    <!-- SDK General -->
+    <string name="sdk_general_close_button">CLOSE</string>
 </resources>
