@@ -1,6 +1,10 @@
 package com.appcoins.sdk.billing.usecases.ingameupdates
 
-object GetDefaultMarketDeepLink {
-    fun invoke(packageName: String): String =
-        "market://details?id=$packageName"
+import com.appcoins.sdk.billing.usecases.UseCase
+
+object GetDefaultMarketDeepLink : UseCase() {
+    operator fun invoke(packageName: String): String {
+        super.invokeUseCase()
+        return "market://details?id=$packageName"
+    }
 }

@@ -2,37 +2,42 @@ package com.appcoins.sdk.billing.models;
 
 public class WalletGenerationModel {
 
-  private final String walletAddress;
-  private final String signature;
-  private final boolean error;
+    private final String walletAddress;
+    private final String signature;
+    private final String ewt;
+    private final boolean error;
 
-  public WalletGenerationModel(String walletAddress, String signature, boolean error) {
+    public WalletGenerationModel(String walletAddress, String signature, String ewt, boolean error) {
+        this.walletAddress = walletAddress;
+        this.signature = signature;
+        this.ewt = ewt;
+        this.error = error;
+    }
 
-    this.walletAddress = walletAddress;
-    this.signature = signature;
-    this.error = error;
-  }
+    private WalletGenerationModel() {
+        this.walletAddress = "";
+        this.signature = "";
+        this.ewt = "";
+        this.error = true;
+    }
 
-  private WalletGenerationModel() {
+    public static WalletGenerationModel createErrorWalletGenerationModel() {
+        return new WalletGenerationModel();
+    }
 
-    this.walletAddress = "";
-    this.signature = "";
-    this.error = true;
-  }
+    public String getWalletAddress() {
+        return walletAddress;
+    }
 
-  public static WalletGenerationModel createErrorWalletGenerationModel() {
-    return new WalletGenerationModel();
-  }
+    public String getSignature() {
+        return signature;
+    }
 
-  public String getWalletAddress() {
-    return walletAddress;
-  }
+    public String getEwt() {
+        return ewt;
+    }
 
-  public String getSignature() {
-    return signature;
-  }
-
-  public boolean hasError() {
-    return error;
-  }
+    public boolean hasError() {
+        return error;
+    }
 }

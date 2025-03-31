@@ -2,10 +2,13 @@ package com.appcoins.sdk.billing.usecases.ingameupdates
 
 import android.content.Context
 import android.content.pm.PackageManager
+import com.appcoins.sdk.billing.usecases.UseCase
 
-object IsAppInstalled {
+object IsAppInstalled : UseCase() {
 
-    fun invoke(context: Context, packageName: String): Boolean {
+    @Suppress("exceptions:SwallowedException")
+    operator fun invoke(context: Context, packageName: String): Boolean {
+        super.invokeUseCase()
         return try {
             context.packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA)
             true

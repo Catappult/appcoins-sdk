@@ -1,8 +1,8 @@
 package com.appcoins.sdk.billing.service;
 
-import static com.appcoins.sdk.core.logger.Logger.logDebug;
-
 import com.appcoins.sdk.billing.oemid.OemIdExtractor;
+
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
 
 public class OemIdExtractorService {
 
@@ -24,5 +24,3 @@ public class OemIdExtractorService {
         return oemId;
     }
 }
-
-

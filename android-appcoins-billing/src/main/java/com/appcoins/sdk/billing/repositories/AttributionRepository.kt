@@ -5,6 +5,8 @@ import com.appcoins.sdk.billing.mappers.AttributionResponseMapper
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.service.ServiceResponseListener
 import com.appcoins.sdk.billing.utils.ServiceUtils
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
+import com.appcoins.sdk.core.logger.Logger.logError
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -14,6 +16,7 @@ class AttributionRepository(private val bdsService: BdsService) {
         packageName: String,
         oemId: String?,
         guestWalletId: String?,
+        initialAttributionTimestamp: Long,
     ): AttributionResponse? {
         val countDownLatch = CountDownLatch(1)
         var attributionResponse: AttributionResponse? = null
@@ -22,6 +25,7 @@ class AttributionRepository(private val bdsService: BdsService) {
         queries["package_name"] = packageName
         oemId?.let { queries["oemid"] = it }
         guestWalletId?.let { queries["guest_uid"] = it }
+        queries["timestamp"] = initialAttributionTimestamp.toString()
 
         val serviceResponseListener =
             ServiceResponseListener { requestResponse ->
@@ -40,7 +44,8 @@ class AttributionRepository(private val bdsService: BdsService) {
             queries,
             emptyMap(),
             emptyMap(),
-            serviceResponseListener
+            serviceResponseListener,
+            SdkBackendRequestType.ATTRIBUTION
         )
 
         waitForCountDown(countDownLatch)
@@ -51,7 +56,7 @@ class AttributionRepository(private val bdsService: BdsService) {
         try {
             countDownLatch.await(BdsService.TIME_OUT_IN_MILLIS.toLong(), TimeUnit.MILLISECONDS)
         } catch (e: InterruptedException) {
-            e.printStackTrace()
+            logError("Timeout getting User Attribution: $e")
         }
     }
 }

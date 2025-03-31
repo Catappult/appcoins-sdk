@@ -1,48 +1,62 @@
 allprojects {
-  apply from: "${rootProject.projectDir}/gradle/publish.gradle"
+    apply from: "${rootProject.projectDir}/gradle/publish.gradle"
 
-  group PUBLISH_GROUP_ID
-  version PUBLISH_VERSION
+    group PUBLISH_GROUP_ID
+    version PUBLISH_VERSION
 
-  buildscript {
-    repositories {
-      mavenCentral()
-      maven { url "https://dl.bintray.com/aptoide/Aptoide" }
-      maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    buildscript {
+        repositories {
+            mavenCentral()
+            maven { url "https://dl.bintray.com/aptoide/Aptoide" }
+            maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        }
     }
-  }
 
-  repositories {
-    mavenCentral()
-    google()
-    maven { url "https://dl.bintray.com/aptoide/Aptoide" }
-  }
+    repositories {
+        mavenCentral()
+        google()
+        maven { url "https://dl.bintray.com/aptoide/Aptoide" }
+    }
 }
 
 buildscript {
-  ext {
-    agp_version = '4.2.2'
-    kotlin_version = '1.5.30'
-  }
-  repositories {
-    mavenCentral()
-    maven { url "https://dl.bintray.com/aptoide/Aptoide" }
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-    google()
-  }
+    ext {
+        agp_version = '4.2.2'
+        kotlin_version = '1.5.30'
+    }
+    repositories {
+        mavenCentral()
+        maven { url "https://dl.bintray.com/aptoide/Aptoide" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        google()
+    }
 
-  dependencies {
-    classpath libs.android.tools.build.gradle
-    classpath libs.kotlin.gradle.plugin
-    classpath libs.fat.arr
-  }
+    dependencies {
+        classpath libs.android.tools.build.gradle
+        classpath libs.kotlin.gradle.plugin
+        classpath libs.fat.arr
+        classpath libs.detekt
+    }
 }
 
 configure(allprojects) {
-  apply from: "${rootProject.projectDir}/gradle/android.gradle"
-  apply from: "${rootProject.projectDir}/gradle/publish.gradle"
+    apply from: "${rootProject.projectDir}/gradle/android.gradle"
+    apply from: "${rootProject.projectDir}/gradle/publish.gradle"
+    apply from: "${rootProject.projectDir}/gradle/checkstyle.gradle"
 
-  repositories {
-    mavenCentral()
-  }
+    apply plugin: 'io.gitlab.arturbosch.detekt'
+
+    repositories {
+        mavenCentral()
+    }
+
+    detekt {
+        toolVersion = "1.23.3"
+        config = files("${rootDir}/config/detekt/detekt.yml")
+        buildUponDefaultConfig = true
+        allRules = false
+        reports.html.enabled = true
+        reports.xml.enabled = true
+        reports.txt.enabled = true
+    }
 }

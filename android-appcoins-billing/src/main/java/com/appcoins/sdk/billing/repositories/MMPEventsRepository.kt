@@ -1,8 +1,9 @@
 package com.appcoins.sdk.billing.repositories
 
-import com.appcoins.sdk.billing.service.BdsService
+import com.appcoins.sdk.billing.service.BdsRetryService
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 
-class MMPEventsRepository(private val bdsService: BdsService) {
+class MMPEventsRepository(private val bdsRetryService: BdsRetryService) {
 
     fun sendSuccessfulPurchaseResultEvent(
         packageName: String,
@@ -11,6 +12,7 @@ class MMPEventsRepository(private val bdsService: BdsService) {
         sku: String,
         orderId: String,
         purchaseAmount: String,
+        paymentMethod: String,
         utmSource: String?,
         utmMedium: String?,
         utmCampaign: String?,
@@ -24,20 +26,23 @@ class MMPEventsRepository(private val bdsService: BdsService) {
         queries["sku"] = sku
         queries["order_id"] = orderId
         queries["purchase_amount"] = purchaseAmount
+        queries["payment_method"] = paymentMethod
+        queries["timestamp"] = System.currentTimeMillis().toString()
         utmSource?.let { queries["utm_source"] = it }
         utmMedium?.let { queries["utm_medium"] = it }
         utmCampaign?.let { queries["utm_campaign"] = it }
         utmTerm?.let { queries["utm_term"] = it }
         utmContent?.let { queries["utm_content"] = it }
 
-        bdsService.makeRequest(
+        bdsRetryService.makeRequest(
             "/purchase",
             "GET",
-            emptyList(),
+            mutableListOf(),
             queries,
-            emptyMap(),
-            emptyMap(),
-            null
+            mutableMapOf(),
+            mutableMapOf(),
+            null,
+            SdkBackendRequestType.PURCHASE_RESULT_EVENT
         )
     }
 }

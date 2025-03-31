@@ -15,8 +15,9 @@ object BillingLifecycleManager {
     @JvmStatic
     fun setupBillingService(context: Context) {
         Thread {
-            AttributionManager.getAttributionForUser()
-            PayflowManager.getPayflowPriorityAsync()
+            AttributionManager.getAttributionForUser {
+                PayflowManager.getPayflowPriorityAsync()
+            }
             val receiverIntentFilter = IntentFilter()
             receiverIntentFilter.addAction(Intent.ACTION_PACKAGE_ADDED)
             receiverIntentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED)

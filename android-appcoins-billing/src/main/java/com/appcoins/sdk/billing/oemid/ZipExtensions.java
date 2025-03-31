@@ -5,7 +5,7 @@ import java.io.RandomAccessFile;
 
 public final class ZipExtensions {
     private static final int BUFFER_SIZE = 65047;
-    public static final byte[] EOCD_SIG = new byte[]{80, 75, 5, 6};
+    public static final byte[] EOCD_SIG = new byte[] { 80, 75, 5, 6 };
 
     public ZipExtensions() {
     }
@@ -25,7 +25,10 @@ public final class ZipExtensions {
         randomAccessFile.readFully(buffer);
 
         for (int i = seekAreaSize - 4; i >= 0; --i) {
-            if (buffer[i] == EOCD_SIG[0] && buffer[i + 1] == EOCD_SIG[1] && buffer[i + 2] == EOCD_SIG[2] && buffer[i + 3] == EOCD_SIG[3]) {
+            if (buffer[i] == EOCD_SIG[0]
+                && buffer[i + 1] == EOCD_SIG[1]
+                && buffer[i + 2] == EOCD_SIG[2]
+                && buffer[i + 3] == EOCD_SIG[3]) {
                 return seekAreaSize - i - 22;
             }
         }

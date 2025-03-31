@@ -1,7 +1,11 @@
 package com.appcoins.sdk.billing.usecases.ingameupdates
 
-object GetVanillaDeepLink {
+import com.appcoins.sdk.billing.usecases.UseCase
 
-    fun invoke(packageName: String): String =
-        "aptoidesearch://$packageName"
+object GetVanillaDeepLink : UseCase() {
+
+    operator fun invoke(packageName: String): String {
+        super.invokeUseCase()
+        return "aptoidesearch://$packageName"
+    }
 }

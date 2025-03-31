@@ -1,8 +1,7 @@
 ext {
-  VERSION_CODE = 130
-  VERSION_NAME_SUFFIX =
-      System.getenv("BUILD_NAME_SUFFIX") != null ? System.getenv("BUILD_NAME_SUFFIX") : ""
-  VERSION_NAME = "0.8.0.3" + VERSION_NAME_SUFFIX
-  PUBLISH_VERSION = VERSION_NAME
-  PUBLISH_GROUP_ID = "io.catappult"
+    VERSION_CODE = 139
+    VERSION_NAME_SUFFIX = System.getenv("BUILD_NAME_SUFFIX") != null ? System.getenv("BUILD_NAME_SUFFIX") : ""
+    VERSION_NAME = "0.9.0.8" + VERSION_NAME_SUFFIX
+    PUBLISH_VERSION = VERSION_NAME
+    PUBLISH_GROUP_ID = "io.catappult"
 }

@@ -5,8 +5,9 @@ import android.content.Context
 import android.content.Intent
 import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.payflow.PayflowManager
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
+import com.appcoins.sdk.core.analytics.events.SdkInitializationLabels
 import com.appcoins.sdk.core.logger.Logger.logInfo
-
 
 class AppInstallationReceiver : BroadcastReceiver() {
 
@@ -16,9 +17,17 @@ class AppInstallationReceiver : BroadcastReceiver() {
             val packageName = intent.data!!.schemeSpecificPart
             if (BILLING_APPS_PACKAGES.contains(packageName)) {
                 if (Intent.ACTION_PACKAGE_ADDED == intent.action) {
+                    SdkAnalyticsUtils.sdkAnalytics.sendAppInstallationTriggerEvent(
+                        packageName,
+                        SdkInitializationLabels.INSTALLED
+                    )
                     notifyBillingAppChanged()
                     logInfo("Package installed: $packageName")
                 } else if (Intent.ACTION_PACKAGE_REMOVED == intent.action) {
+                    SdkAnalyticsUtils.sdkAnalytics.sendAppInstallationTriggerEvent(
+                        packageName,
+                        SdkInitializationLabels.REMOVED
+                    )
                     notifyBillingAppChanged()
                     logInfo("Package removed: $packageName")
                 } else {

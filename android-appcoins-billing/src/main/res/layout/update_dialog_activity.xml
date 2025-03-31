@@ -59,7 +59,7 @@
                     android:layout_height="wrap_content"
                     android:paddingVertical="8dp"
                     android:paddingHorizontal="12dp"
-                    android:background="@drawable/update_button_background"
+                    android:background="@drawable/yellow_rounded_button_background"
                     android:text="@string/igu_app_new_version_available_popup_update_button"
                     android:textColor="#FFFFFFFF" />
             </LinearLayout>
