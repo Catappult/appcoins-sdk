@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="igu_app_new_version_available_popup_body">Hay una nueva versión de esta aplicación.\n¿Quieres actualizarla?</string>
     <string name="igu_app_new_version_available_popup_update_button">ACTUALIZAR</string>
     <string name="igu_app_new_version_available_popup_close_button">CERRAR</string>
@@ -12,10 +12,8 @@
     <string name="iap_wallet_and_appstore_not_installed_popup_button">OK</string>
     <!-- SDK - Common -->
     <string name="iab_wallet_not_installed_popup_close_install">INSTALAR WALLET</string>
-    <!-- SDK - Unavailable
-     TODO - Add rest of translations-->
+    <!-- SDK - Unavailable -->
     <string name="sdk_unavailable_description_body">En estos momentos los sistemas de ventas no están disponibles.\nPor favor, ponte en contacto con el equipo de apoyo.</string>
-    <!-- SDK General
-     TODO - Add rest of translations-->
+    <!-- SDK General -->
     <string name="sdk_general_close_button">CERRAR</string>
 </resources>

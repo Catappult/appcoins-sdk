@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="igu_app_new_version_available_popup_body">이 응용프로그램의 새 버전이 있습니다.\n새로운 버전으로 업데이트 부탁드립니다.</string>
     <string name="igu_app_new_version_available_popup_update_button">업데이트</string>
     <string name="igu_app_new_version_available_popup_close_button">닫기</string>
@@ -12,10 +12,8 @@
     <string name="iap_wallet_and_appstore_not_installed_popup_button">알겠습니다!</string>
     <!-- SDK - Common -->
     <string name="iab_wallet_not_installed_popup_close_install">지갑 설치</string>
-    <!-- SDK - Unavailable
-     TODO - Add rest of translations-->
+    <!-- SDK - Unavailable -->
     <string name="sdk_unavailable_description_body">Billing services are currently not supported.\nPlease contact the support channel.</string>
-    <!-- SDK General
-     TODO - Add rest of translations-->
+    <!-- SDK General -->
     <string name="sdk_general_close_button">CLOSE</string>
 </resources>
