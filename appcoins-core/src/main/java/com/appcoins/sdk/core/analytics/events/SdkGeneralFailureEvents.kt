@@ -35,7 +35,7 @@ object SdkGeneralFailureEvents {
     const val SDK_PURCHASE_SIGNATURE_VERIFICATION_FAILURE = "sdk_purchase_signature_verification_failure"
     const val SDK_UNEXPECTED_FAILURE = "sdk_unexpected_failure"
 
-    private const val GENERAL_FAILURE_FLOW = "general_failure"
+    const val GENERAL_FAILURE_FLOW = "general_failure"
 }
 
 object SdkGeneralFailureLabels {

@@ -45,7 +45,7 @@ object SdkPurchaseFlowEvents {
     const val SDK_LAUNCH_PURCHASE_TYPE_NOT_SUPPORTED_FAILURE = "sdk_launch_purchase_type_not_supported_failure"
     const val SDK_LAUNCH_PURCHASE_MAIN_THREAD_FAILURE = "sdk_launch_purchase_main_thread_failure"
 
-    private const val PURCHASE_FLOW = "purchase_flow"
+    const val PURCHASE_FLOW = "purchase_flow"
 }
 
 object SdkPurchaseFlowLabels {
@@ -54,6 +54,8 @@ object SdkPurchaseFlowLabels {
     const val DEVELOPER_PAYLOAD = "developer_payload"
     const val ORDER_REFERENCE = "order_reference"
     const val ORIGIN = "origin"
+
+    const val FAILURE_MESSAGE = "failure_message"
 
     const val RESPONSE_CODE = "response_code"
     const val PURCHASE_TOKEN = "purchase_token"

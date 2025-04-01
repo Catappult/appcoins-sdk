@@ -62,7 +62,8 @@ sealed class PaymentFlowMethod(
                 "priority: $priority, " +
                 "version: $version, " +
                 "paymentFlow: $paymentFlow, " +
-                "webViewDetails: $webViewDetails]"
+                "webViewDetails: $webViewDetails, " +
+                "availableFeatures: $availableFeatures]"
 
         override fun equals(other: Any?): Boolean {
             if (other != null) {
@@ -72,7 +73,8 @@ sealed class PaymentFlowMethod(
                         other.priority == priority &&
                         other.paymentFlow == paymentFlow &&
                         other.version == version &&
-                        other.webViewDetails == webViewDetails
+                        other.webViewDetails == webViewDetails &&
+                        other.availableFeatures == availableFeatures
                 }
             }
             return false
@@ -103,13 +105,15 @@ sealed class PaymentFlowMethod(
     }
 
     override fun toString(): String =
-        "${this.javaClass.name}: [name: $name, priority: $priority]"
+        "${this.javaClass.name}: [name: $name, priority: $priority, availableFeatures: $availableFeatures]"
 
     override fun equals(other: Any?): Boolean {
         if (other != null) {
             if (other::class.java == this::class.java) {
                 other as PaymentFlowMethod
-                return other.name == name && other.priority == priority
+                return other.name == name &&
+                    other.priority == priority &&
+                    other.availableFeatures == availableFeatures
             }
         }
         return false

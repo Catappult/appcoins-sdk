@@ -2,23 +2,40 @@ package com.appcoins.sdk.core.analytics
 
 import android.content.Context
 import com.appcoins.sdk.core.analytics.events.SdkAppUpdateAvailableEvents
+import com.appcoins.sdk.core.analytics.events.SdkAppUpdateAvailableEvents.APP_UPDATE_AVAILABLE_FLOW
 import com.appcoins.sdk.core.analytics.events.SdkBackendRequestEvents
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestEvents.BACKEND_REQUEST_FLOW
 import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.core.analytics.events.SdkConsumePurchaseEvents
+import com.appcoins.sdk.core.analytics.events.SdkConsumePurchaseEvents.CONSUME_PURCHASE_FLOW
 import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureEvents
+import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureEvents.GENERAL_FAILURE_FLOW
 import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureStep
 import com.appcoins.sdk.core.analytics.events.SdkGetReferralDeeplinkEvents
+import com.appcoins.sdk.core.analytics.events.SdkGetReferralDeeplinkEvents.GET_REFERRAL_DEEPLINK_FLOW
 import com.appcoins.sdk.core.analytics.events.SdkInitializationEvents
+import com.appcoins.sdk.core.analytics.events.SdkInitializationEvents.SDK_INITIALIZATION_FLOW
 import com.appcoins.sdk.core.analytics.events.SdkInstallWalletDialogEvents
+import com.appcoins.sdk.core.analytics.events.SdkInstallWalletDialogEvents.INSTALL_WALLET_DIALOG_FLOW
+import com.appcoins.sdk.core.analytics.events.SdkIsFeatureSupportedEvents.IS_FEATURE_SUPPORTED_FLOW
 import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateDialogEvents
+import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateDialogEvents.LAUNCH_APP_UPDATE_DIALOG_FLOW
 import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateEvents
+import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateEvents.LAUNCH_APP_UPDATE_FLOW
 import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateStoreEvents
+import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateStoreEvents.LAUNCH_APP_UPDATE_STORE_FLOW
 import com.appcoins.sdk.core.analytics.events.SdkPurchaseFlowEvents
+import com.appcoins.sdk.core.analytics.events.SdkPurchaseFlowEvents.PURCHASE_FLOW
 import com.appcoins.sdk.core.analytics.events.SdkQueryPurchasesEvents
+import com.appcoins.sdk.core.analytics.events.SdkQueryPurchasesEvents.SDK_QUERY_PURCHASES_FLOW
 import com.appcoins.sdk.core.analytics.events.SdkQuerySkuDetailsEvents
+import com.appcoins.sdk.core.analytics.events.SdkQuerySkuDetailsEvents.QUERY_SKU_DETAILS_FLOW
 import com.appcoins.sdk.core.analytics.events.SdkWalletPaymentFlowEvents
+import com.appcoins.sdk.core.analytics.events.SdkWalletPaymentFlowEvents.WALLET_PAYMENT_FLOW
 import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents
+import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents.WEB_PAYMENT_FLOW
 import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
+import com.appcoins.sdk.core.analytics.severity.AnalyticsFlowSeverityLevel
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -40,6 +57,25 @@ class SdkAnalyticsTest {
     @Before
     fun setup() {
         sdkAnalytics = SdkAnalytics(mockkAnalyticsManager)
+        SdkAnalyticsUtils.isAnalyticsSetupFromPayflowFinalized = true
+        SdkAnalyticsUtils.analyticsFlowSeverityLevels = FULL_SEVERITY_LEVELS
+    }
+
+    @Test
+    fun `should not send event if Payflow message not received yet`() {
+        SdkAnalyticsUtils.isAnalyticsSetupFromPayflowFinalized = false
+        val analyticsEvent = SdkAppUpdateAvailableEvents.SdkAppUpdateAvailableRequest()
+
+        sdkAnalytics.sendAppUpdateAvailableRequest()
+
+        verify(exactly = 0) {
+            mockkAnalyticsManager.logEvent(
+                any(),
+                analyticsEvent.name,
+                analyticsEvent.action,
+                EVENT_CONTEXT
+            )
+        }
     }
 
     @Test
@@ -996,7 +1032,7 @@ class SdkAnalyticsTest {
             )
         } just runs
 
-        sdkAnalytics.sendPurchaseResultEvent(DEFAULT_INTEGER, EMPTY_STRING, EMPTY_STRING)
+        sdkAnalytics.sendPurchaseResultEvent(DEFAULT_INTEGER, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING)
 
         verify(exactly = 1) {
             mockkAnalyticsManager.logEvent(
@@ -1519,5 +1555,24 @@ class SdkAnalyticsTest {
         const val DEFAULT_INTEGER = 1
         const val DEFAULT_BOOLEAN = true
         val DEFAULT_MAP = mutableMapOf<String, Any>()
+
+        val FULL_SEVERITY_LEVELS = listOf(
+            AnalyticsFlowSeverityLevel(flow = APP_UPDATE_AVAILABLE_FLOW, 5),
+            AnalyticsFlowSeverityLevel(flow = BACKEND_REQUEST_FLOW, 5),
+            AnalyticsFlowSeverityLevel(flow = CONSUME_PURCHASE_FLOW, 5),
+            AnalyticsFlowSeverityLevel(flow = GENERAL_FAILURE_FLOW, 5),
+            AnalyticsFlowSeverityLevel(flow = GET_REFERRAL_DEEPLINK_FLOW, 5),
+            AnalyticsFlowSeverityLevel(flow = SDK_INITIALIZATION_FLOW, 5),
+            AnalyticsFlowSeverityLevel(flow = INSTALL_WALLET_DIALOG_FLOW, 5),
+            AnalyticsFlowSeverityLevel(flow = IS_FEATURE_SUPPORTED_FLOW, 5),
+            AnalyticsFlowSeverityLevel(flow = LAUNCH_APP_UPDATE_DIALOG_FLOW, 5),
+            AnalyticsFlowSeverityLevel(flow = LAUNCH_APP_UPDATE_FLOW, 5),
+            AnalyticsFlowSeverityLevel(flow = LAUNCH_APP_UPDATE_STORE_FLOW, 5),
+            AnalyticsFlowSeverityLevel(flow = PURCHASE_FLOW, 5),
+            AnalyticsFlowSeverityLevel(flow = SDK_QUERY_PURCHASES_FLOW, 5),
+            AnalyticsFlowSeverityLevel(flow = QUERY_SKU_DETAILS_FLOW, 5),
+            AnalyticsFlowSeverityLevel(flow = WALLET_PAYMENT_FLOW, 5),
+            AnalyticsFlowSeverityLevel(flow = WEB_PAYMENT_FLOW, 5),
+        )
     }
 }

@@ -25,7 +25,7 @@ object SdkLaunchAppUpdateDialogEvents {
     const val SDK_LAUNCH_APP_UPDATE_DIALOG_REQUEST = "sdk_launch_app_update_dialog_request"
     const val SDK_LAUNCH_APP_UPDATE_DIALOG_ACTION = "sdk_launch_app_update_dialog_action"
 
-    private const val LAUNCH_APP_UPDATE_DIALOG_FLOW = "launch_app_update_dialog"
+    const val LAUNCH_APP_UPDATE_DIALOG_FLOW = "launch_app_update_dialog"
 }
 
 object SdkLaunchAppUpdateDialogLabels {

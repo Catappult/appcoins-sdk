@@ -25,7 +25,7 @@ object SdkIsFeatureSupportedEvents {
     const val SDK_IS_FEATURE_SUPPORTED_REQUEST = "sdk_is_feature_supported_request"
     const val SDK_IS_FEATURE_SUPPORTED_RESULT = "sdk_is_feature_supported_result"
 
-    private const val IS_FEATURE_SUPPORTED_FLOW = "is_feature_supported"
+    const val IS_FEATURE_SUPPORTED_FLOW = "is_feature_supported"
 }
 
 object SdkIsFeatureSupportedLabels {

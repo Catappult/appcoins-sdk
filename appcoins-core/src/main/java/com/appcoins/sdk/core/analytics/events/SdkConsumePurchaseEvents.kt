@@ -25,7 +25,7 @@ object SdkConsumePurchaseEvents {
     const val SDK_CONSUME_PURCHASE_REQUEST = "sdk_consume_purchase_request"
     const val SDK_CONSUME_PURCHASE_RESULT = "sdk_consume_purchase_result"
 
-    private const val CONSUME_PURCHASE_FLOW = "consume_purchase"
+    const val CONSUME_PURCHASE_FLOW = "consume_purchase"
 }
 
 object SdkConsumePurchaseLabels {

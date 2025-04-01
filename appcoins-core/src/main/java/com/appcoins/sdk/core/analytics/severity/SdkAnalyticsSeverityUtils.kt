@@ -7,13 +7,10 @@ class SdkAnalyticsSeverityUtils {
 
     fun isEventSeverityAllowed(analyticsEvent: AnalyticsEvent): Boolean {
         val savedSeverityLevel =
-            if (SdkAnalyticsUtils.analyticsFlowSeverityLevels == null) {
-                5
-            } else {
-                SdkAnalyticsUtils.analyticsFlowSeverityLevels?.firstOrNull {
-                    it.flow.equals(analyticsEvent.flow, false)
-                }?.severityLevel ?: 0
-            }
+            (
+                SdkAnalyticsUtils.analyticsFlowSeverityLevels
+                    ?: SdkAnalyticsUtils.defaultAnalyticsFlowSeverityLevels
+                ).firstOrNull { it.flow.equals(analyticsEvent.flow, true) }?.severityLevel ?: 0
 
         return savedSeverityLevel >= analyticsEvent.severityLevel
     }
