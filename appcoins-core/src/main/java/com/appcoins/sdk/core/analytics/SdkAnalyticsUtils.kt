@@ -6,9 +6,14 @@ import com.appcoins.sdk.core.analytics.events.SdkPurchaseFlowEvents.PURCHASE_FLO
 import com.appcoins.sdk.core.analytics.events.SdkWalletPaymentFlowEvents.WALLET_PAYMENT_FLOW
 import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents.WEB_PAYMENT_FLOW
 import com.appcoins.sdk.core.analytics.severity.AnalyticsFlowSeverityLevel
+import com.appcoins.sdk.core.logger.Logger.logInfo
 
 object SdkAnalyticsUtils {
     var analyticsFlowSeverityLevels: List<AnalyticsFlowSeverityLevel>? = null
+        set(value) {
+            field = value
+            logInfo(value.toString())
+        }
     val defaultAnalyticsFlowSeverityLevels =
         listOf(
             AnalyticsFlowSeverityLevel(flow = CONSUME_PURCHASE_FLOW, 1),
