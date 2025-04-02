@@ -11,21 +11,21 @@ class PayloadHelperTest {
 
     @Test
     fun `buildIntentPayload should build intent with all information`() {
-        val result = PayloadHelper.buildIntentPayload(ORDER_REFERENCE, DEVELOPER_PAYLOAD, ORIGIN)
+        val result = PayloadHelper.buildIntentPayload(ORDER_REFERENCE, DEVELOPER_PAYLOAD, ORIGIN, OBFUSCATED_ACCOUNT_ID)
 
         assertEquals(result, FULL_INTENT_PAYLOAD)
     }
 
     @Test
     fun `buildIntentPayload should build intent with empty information if parameters are null`() {
-        val result = PayloadHelper.buildIntentPayload(null, null, null)
+        val result = PayloadHelper.buildIntentPayload(null, null, null, null)
 
         assertEquals(result, EMPTY_INTENT_PAYLOAD)
     }
 
     @Test
     fun `buildIntentPayload should build intent with empty information if parameters are empty`() {
-        val result = PayloadHelper.buildIntentPayload("", "", "")
+        val result = PayloadHelper.buildIntentPayload("", "", "", "")
 
         assertEquals(result, EMPTY_INTENT_PAYLOAD)
     }
@@ -108,14 +108,41 @@ class PayloadHelperTest {
         assertEquals(result, ORIGIN)
     }
 
+    @Test
+    fun `getObfuscatedAccountId should return null when value in null`() {
+        val result = PayloadHelper.getObfuscatedAccountId(null)
+
+        assertEquals(result, null)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `getObfuscatedAccountId should throw IllegalArgumentException when scheme is not valid`() {
+        PayloadHelper.getObfuscatedAccountId("invalidScheme://")
+    }
+
+    @Test
+    fun `getObfuscatedAccountId should return null when value is not present in the URI`() {
+        val result = PayloadHelper.getObfuscatedAccountId(EMPTY_INTENT_PAYLOAD)
+
+        assertEquals(result, null)
+    }
+
+    @Test
+    fun `getObfuscatedAccountId should return OBFUSCATED_ACCOUNT_ID when value is present in the URI`() {
+        val result = PayloadHelper.getObfuscatedAccountId(FULL_INTENT_PAYLOAD)
+
+        assertEquals(result, OBFUSCATED_ACCOUNT_ID)
+    }
+
     private companion object {
         const val SCHEME = "appcoins"
         const val DEVELOPER_PAYLOAD = "developerPayload"
         const val ORDER_REFERENCE = "orderReference"
         const val ORIGIN = "origin"
+        const val OBFUSCATED_ACCOUNT_ID = "obfuscatedAccountId"
 
         const val FULL_INTENT_PAYLOAD =
-            "$SCHEME://appcoins.io?payload=$DEVELOPER_PAYLOAD&order_reference=$ORDER_REFERENCE&origin=$ORIGIN"
+            "$SCHEME://appcoins.io?payload=$DEVELOPER_PAYLOAD&order_reference=$ORDER_REFERENCE&origin=$ORIGIN&obfuscated_account_id=$OBFUSCATED_ACCOUNT_ID"
 
         const val EMPTY_INTENT_PAYLOAD =
             "$SCHEME://appcoins.io"

@@ -40,6 +40,7 @@ class WebPaymentRepository(private val bdsService: BdsService) {
             sku?.let { queries["sku"] = it }
             developerPayload?.let { queries["metadata"] = it }
             orderReference?.let { queries["order_id"] = it }
+            obfuscatedAccountId?.let { queries["obfuscated_account_id"] = it }
         }
         paymentFlow?.let { queries["payment_flow"] = it }
         queries["lang_code"] = Locale.getDefault().language

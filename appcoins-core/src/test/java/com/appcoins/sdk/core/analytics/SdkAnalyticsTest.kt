@@ -1008,7 +1008,14 @@ class SdkAnalyticsTest {
             )
         } just runs
 
-        sdkAnalytics.sendLaunchPurchaseEvent(EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING)
+        sdkAnalytics.sendLaunchPurchaseEvent(
+            EMPTY_STRING,
+            EMPTY_STRING,
+            EMPTY_STRING,
+            EMPTY_STRING,
+            EMPTY_STRING,
+            EMPTY_STRING
+        )
 
         verify(exactly = 1) {
             mockkAnalyticsManager.logEvent(

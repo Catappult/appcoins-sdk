@@ -188,7 +188,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
         if (!isReady()) {
             logError("Service is not ready. Throwing ServiceConnectionException.");
             SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
-                .sendServiceConnectionExceptionEvent(SdkGeneralFailureStep.CONSUME);
+                .sendServiceConnectionExceptionEvent(SdkGeneralFailureStep.IS_FEATURE_SUPPORTED);
             throw new ServiceConnectionException();
         }
         ResponseCode featureSupportedResult = IsFeatureSupported.INSTANCE.invoke(feature);

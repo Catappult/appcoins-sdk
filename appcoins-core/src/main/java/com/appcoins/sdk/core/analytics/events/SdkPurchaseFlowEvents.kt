@@ -54,6 +54,7 @@ object SdkPurchaseFlowLabels {
     const val DEVELOPER_PAYLOAD = "developer_payload"
     const val ORDER_REFERENCE = "order_reference"
     const val ORIGIN = "origin"
+    const val OBFUSCATED_ACCOUNT_ID = "obfuscated_account_id"
 
     const val FAILURE_MESSAGE = "failure_message"
 

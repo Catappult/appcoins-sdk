@@ -8,13 +8,16 @@ public class DeveloperPayload implements Serializable {
     private final String developerPayload;
     private final String orderReference;
     private final String origin;
+    private final String obfuscatedAccountId;
 
-    public DeveloperPayload(String rawPayload, String developerPayload, String orderReference, String origin) {
+    public DeveloperPayload(String rawPayload, String developerPayload, String orderReference, String origin,
+        String obfuscatedAccountId) {
 
         this.rawPayload = rawPayload;
         this.developerPayload = developerPayload;
         this.orderReference = orderReference;
         this.origin = origin;
+        this.obfuscatedAccountId = obfuscatedAccountId;
     }
 
     public String getRawPayload() {
@@ -31,5 +34,9 @@ public class DeveloperPayload implements Serializable {
 
     public String getOrigin() {
         return origin;
+    }
+
+    public String getObfuscatedAccountId() {
+        return obfuscatedAccountId;
     }
 }

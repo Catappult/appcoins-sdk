@@ -79,7 +79,7 @@ public class CatapultAppcoinsBilling
             SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
                 .sendLaunchPurchaseEvent(billingFlowParams.getSku(), billingFlowParams.getSkuType(),
                     billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrderReference(),
-                    billingFlowParams.getOrigin());
+                    billingFlowParams.getOrigin(), billingFlowParams.getObfuscatedAccountId());
 
             if (Looper.myLooper() == Looper.getMainLooper()) {
                 SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
@@ -89,7 +89,8 @@ public class CatapultAppcoinsBilling
             }
 
             String payload = PayloadHelper.buildIntentPayload(billingFlowParams.getOrderReference(),
-                billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin());
+                billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin(),
+                billingFlowParams.getObfuscatedAccountId());
             AttributionSharedPreferences attributionSharedPreferences = new AttributionSharedPreferences(activity);
             String oemid = attributionSharedPreferences.getOemId();
             String guestWalletId = attributionSharedPreferences.getWalletId();
@@ -264,7 +265,8 @@ public class CatapultAppcoinsBilling
         int responseCode;
         try {
             String payload = PayloadHelper.buildIntentPayload(billingFlowParams.getOrderReference(),
-                billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin());
+                billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin(),
+                billingFlowParams.getObfuscatedAccountId());
             AttributionSharedPreferences attributionSharedPreferences = new AttributionSharedPreferences(activity);
             String oemid = attributionSharedPreferences.getOemId();
             String guestWalletId = attributionSharedPreferences.getWalletId();
