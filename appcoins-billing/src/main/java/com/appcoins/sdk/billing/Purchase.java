@@ -13,14 +13,15 @@ public class Purchase {
     private final long purchaseTime;
     private final int purchaseState;
     private final String developerPayload;
+    private final String obfuscatedAccountId;
     private final String token;
     private final String originalJson;
     private final byte[] signature;
     private final boolean isAutoRenewing;
 
     public Purchase(String orderId, String itemType, String originalJson, byte[] signature, long purchaseTime,
-        int purchaseState, String developerPayload, String token, String packageName, String sku,
-        boolean isAutoRenewing) {
+        int purchaseState, String developerPayload, String obfuscatedAccountId, String token, String packageName,
+        String sku, boolean isAutoRenewing) {
         this.itemType = itemType;
         this.orderId = orderId;
         this.packageName = packageName;
@@ -28,6 +29,7 @@ public class Purchase {
         this.purchaseTime = purchaseTime;
         this.purchaseState = purchaseState;
         this.developerPayload = developerPayload;
+        this.obfuscatedAccountId = obfuscatedAccountId;
         this.token = token;
         this.originalJson = originalJson;
         this.signature = signature;
@@ -60,6 +62,10 @@ public class Purchase {
 
     public String getDeveloperPayload() {
         return developerPayload;
+    }
+
+    public String getObfuscatedAccountId() {
+        return obfuscatedAccountId;
     }
 
     @Nullable

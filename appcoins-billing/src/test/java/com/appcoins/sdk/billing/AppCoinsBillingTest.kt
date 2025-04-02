@@ -221,6 +221,7 @@ class AppCoinsBillingTest {
                 0,
                 0,
                 "developerPayload",
+                "obfuscatedAccountId",
                 "token",
                 "packageName",
                 "sku",
