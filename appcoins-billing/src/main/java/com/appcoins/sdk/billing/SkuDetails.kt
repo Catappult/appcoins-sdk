@@ -7,6 +7,7 @@ class SkuDetails(
     val sku: String,
     val type: String,
     val price: String,
+    //  TODO: Add the Free Trial information
     val priceAmountMicros: Long,
     val priceCurrencyCode: String,
     val appcPrice: String,
@@ -16,7 +17,7 @@ class SkuDetails(
     val fiatPriceAmountMicros: Long,
     val fiatPriceCurrencyCode: String,
     val title: String,
-    val description: String?
+    val description: String?,
 ) : Serializable {
     @Suppress("MaximumLineLength", "MaxLineLength")
     override fun toString(): String {

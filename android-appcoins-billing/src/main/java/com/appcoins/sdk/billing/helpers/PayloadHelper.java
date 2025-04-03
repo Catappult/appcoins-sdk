@@ -19,6 +19,7 @@ public class PayloadHelper {
     private static final String ORDER_PARAMETER = "order_reference";
     private static final String ORIGIN_PARAMETER = "origin";
     private static final String OBFUSCATED_ACCOUNT_ID_PARAMETER = "obfuscated_account_id";
+    private static final String FREE_TRIAL = "free_trial";
 
     /**
      * Method to build the payload required on the {@link AppcoinsBilling#getBuyIntent} method.
@@ -31,7 +32,7 @@ public class PayloadHelper {
      * @return The final developers payload to be sent
      */
     public static String buildIntentPayload(String orderReference, String developerPayload, String origin,
-        String obfuscatedAccountId) {
+        String obfuscatedAccountId, Boolean freeTrial) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme(SCHEME)
             .authority("appcoins.io");
@@ -46,6 +47,9 @@ public class PayloadHelper {
         }
         if (obfuscatedAccountId != null && !obfuscatedAccountId.isEmpty()) {
             builder.appendQueryParameter(OBFUSCATED_ACCOUNT_ID_PARAMETER, obfuscatedAccountId);
+        }
+        if (freeTrial != null && freeTrial) {
+            builder.appendQueryParameter(FREE_TRIAL, freeTrial.toString());
         }
         return builder.toString();
     }
@@ -99,5 +103,13 @@ public class PayloadHelper {
             return null;
         }
         return uri.getQueryParameter(OBFUSCATED_ACCOUNT_ID_PARAMETER);
+    }
+
+    public static Boolean getFreeTrial(String uriString) {
+        Uri uri = checkRequirements(uriString);
+        if (uri == null) {
+            return null;
+        }
+        return uri.getBooleanQueryParameter(FREE_TRIAL, false);
     }
 }

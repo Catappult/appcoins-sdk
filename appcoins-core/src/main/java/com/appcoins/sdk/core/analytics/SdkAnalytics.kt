@@ -375,6 +375,7 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         orderReference: String?,
         origin: String,
         obfuscatedAccountId: String?,
+        freeTrial: Boolean?,
     ) {
         val eventData: MutableMap<String, Any> = HashMap()
         eventData[SdkPurchaseFlowLabels.SKU] = sku
@@ -383,6 +384,7 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         orderReference?.let { eventData[SdkPurchaseFlowLabels.ORDER_REFERENCE] = it }
         eventData[SdkPurchaseFlowLabels.ORIGIN] = origin
         obfuscatedAccountId?.let { eventData[SdkPurchaseFlowLabels.OBFUSCATED_ACCOUNT_ID] = it }
+        freeTrial?.let { eventData[SdkPurchaseFlowLabels.FREE_TRIAL] = it }
 
         logEvent(SdkPurchaseFlowEvents.SdkLaunchPurchase(eventData))
     }

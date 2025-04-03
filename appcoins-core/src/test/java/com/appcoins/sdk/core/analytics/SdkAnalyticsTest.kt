@@ -1014,7 +1014,8 @@ class SdkAnalyticsTest {
             EMPTY_STRING,
             EMPTY_STRING,
             EMPTY_STRING,
-            EMPTY_STRING
+            EMPTY_STRING,
+            DEFAULT_BOOLEAN
         )
 
         verify(exactly = 1) {

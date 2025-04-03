@@ -48,6 +48,6 @@ public class BuyItemProperties implements Serializable {
     public BillingFlowParams toBillingFlowParams() {
         return new BillingFlowParams(sku, type, developerPayload.getOrderReference(),
             developerPayload.getDeveloperPayload(), developerPayload.getOrigin(),
-            developerPayload.getObfuscatedAccountId());
+            developerPayload.getObfuscatedAccountId(), developerPayload.getFreeTrial());
     }
 }

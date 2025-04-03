@@ -101,6 +101,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
                                 PayloadHelper.getPayload(developerPayload),
                                 PayloadHelper.getOrigin(developerPayload),
                                 PayloadHelper.getObfuscatedAccountId(developerPayload),
+                                PayloadHelper.getFreeTrial(developerPayload),
                             )
                         )
                     bundle = WalletUtils.startWebFirstPayment(sku, type, method.webViewDetails)
@@ -150,6 +151,7 @@ class WebAppcoinsBilling private constructor() : AppcoinsBilling, Serializable {
                 PayloadHelper.getOrderReference(developerPayload),
                 PayloadHelper.getOrigin(developerPayload),
                 PayloadHelper.getObfuscatedAccountId(developerPayload),
+                PayloadHelper.getFreeTrial(developerPayload),
             )
 
         buyItemProperties =

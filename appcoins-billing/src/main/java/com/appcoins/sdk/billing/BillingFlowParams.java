@@ -14,14 +14,17 @@ public class BillingFlowParams {
 
     private final String obfuscatedAccountId;
 
+    private final Boolean freeTrial;
+
     public BillingFlowParams(String sku, String skuType, String orderReference, String developerPayload, String origin,
-        String obfuscatedAccountId) {
+        String obfuscatedAccountId, Boolean freeTrial) {
         this.sku = sku;
         this.skuType = skuType;
         this.orderReference = orderReference;
         this.developerPayload = developerPayload;
         this.origin = origin;
         this.obfuscatedAccountId = obfuscatedAccountId;
+        this.freeTrial = freeTrial;
     }
 
     public String getSku() {
@@ -46,5 +49,9 @@ public class BillingFlowParams {
 
     public String getObfuscatedAccountId() {
         return obfuscatedAccountId;
+    }
+
+    public Boolean getFreeTrial() {
+        return freeTrial;
     }
 }
