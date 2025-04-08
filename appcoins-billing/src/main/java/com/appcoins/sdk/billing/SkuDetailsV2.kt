@@ -8,6 +8,7 @@ data class PriceV2(
     val symbol: String,
     val micros: Double,
     val appc: AppcV2,
+    val trial: Trial?,
 )
 
 data class AppcV2(
@@ -15,12 +16,16 @@ data class AppcV2(
     val micros: Double,
 )
 
+data class Trial(
+    val period: String,
+    val endDate: String,
+)
+
 data class SkuDetailsV2(
     val sku: String,
     val title: String,
     val description: String? = null,
     val price: PriceV2,
-    val trialPeriod: String?,
     val period: String?,
 ) {
     fun toSkuDetails(type: String = "INAPP"): SkuDetails =
@@ -39,8 +44,9 @@ data class SkuDetailsV2(
             price.currency,
             title,
             description,
-            trialPeriod,
             period,
+            price.trial?.period,
+            price.trial?.endDate,
         )
 
     fun toSkuDetailsResponseString(): String =
@@ -58,7 +64,8 @@ data class SkuDetailsV2(
             put("fiat_price_amount_micros", price.micros)
             put("title", title)
             description?.let { put("description", it) }
-            trialPeriod?.let { put("trial_period", it) }
             period?.let { put("period", it) }
+            price.trial?.period?.let { put("trial_period", it) }
+            price.trial?.endDate?.let { put("trial_period_end_date", it) }
         }.toString()
 }

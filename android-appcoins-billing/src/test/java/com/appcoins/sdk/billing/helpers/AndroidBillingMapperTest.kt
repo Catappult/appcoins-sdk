@@ -162,8 +162,9 @@ class AndroidBillingMapperTest {
                 "€",
                 "title",
                 "description",
-                "trialPeriod",
                 "period",
+                "trialPeriod",
+                "trialPeriodEndDate",
             )
 
         const val EXAMPLE_PURCHASE_JSON_DATA =
@@ -184,8 +185,9 @@ class AndroidBillingMapperTest {
                 put("fiat_price_amount_micros", fiatPriceAmountMicros)
                 put("title", title)
                 description?.let { put("description", it) }
-                trialPeriod?.let { put("trial_period", it) }
                 period?.let { put("period", it) }
+                trialPeriod?.let { put("trial_period", it) }
+                trialPeriodEndDate?.let { put("trial_period_end_date", it) }
             }.toString()
     }
 }
