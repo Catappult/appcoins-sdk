@@ -7,7 +7,6 @@ class SkuDetails(
     val sku: String,
     val type: String,
     val price: String,
-    //  TODO: Add the Free Trial information
     val priceAmountMicros: Long,
     val priceCurrencyCode: String,
     val appcPrice: String,
@@ -18,9 +17,11 @@ class SkuDetails(
     val fiatPriceCurrencyCode: String,
     val title: String,
     val description: String?,
+    val trialPeriod: String?,
+    val period: String?,
 ) : Serializable {
     @Suppress("MaximumLineLength", "MaxLineLength")
     override fun toString(): String {
-        return ("SkuDetails{itemType='$itemType', sku='$sku', type='$type', price='$price', priceCurrencyCode='$priceCurrencyCode', priceAmountMicros=$priceAmountMicros, appcPrice='$appcPrice', appcPriceCurrencyCode='$appcPriceCurrencyCode', appcPriceAmountMicros=$appcPriceAmountMicros, fiatPrice='$fiatPrice', fiatPriceCurrencyCode='$fiatPriceCurrencyCode', fiatPriceAmountMicros=$fiatPriceAmountMicros, title='$title', description='$description'}")
+        return ("SkuDetails{itemType='$itemType', sku='$sku', type='$type', price='$price', priceCurrencyCode='$priceCurrencyCode', priceAmountMicros=$priceAmountMicros, appcPrice='$appcPrice', appcPriceCurrencyCode='$appcPriceCurrencyCode', appcPriceAmountMicros=$appcPriceAmountMicros, fiatPrice='$fiatPrice', fiatPriceCurrencyCode='$fiatPriceCurrencyCode', fiatPriceAmountMicros=$fiatPriceAmountMicros, title='$title', description='$description', trialPeriod='$trialPeriod', period='$period'}")
     }
 }

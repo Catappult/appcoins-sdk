@@ -97,6 +97,8 @@ class SkuDetailsAsyncTest {
                 "fiatPriceCurrencyCode",
                 "title",
                 "description",
+                "trialPeriod",
+                "period",
             )
         )
     }

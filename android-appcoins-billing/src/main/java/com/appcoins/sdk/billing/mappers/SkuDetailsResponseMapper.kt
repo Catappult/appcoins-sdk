@@ -30,6 +30,8 @@ class SkuDetailsResponseMapper {
                     val sku = jsonObjectItem.getString("sku")
                     val title = jsonObjectItem.getString("title")
                     val description = jsonObjectItem.optString("description").takeIf { it.isNotEmpty() }
+                    val trialPeriod = jsonObjectItem.optString("trial_period").takeIf { it.isNotEmpty() }
+                    val period = jsonObjectItem.optString("period").takeIf { it.isNotEmpty() }
 
                     val price =
                         jsonObjectItem.getJSONObject("price").let { price ->
@@ -59,7 +61,9 @@ class SkuDetailsResponseMapper {
                         sku = sku,
                         title = title,
                         description = description,
-                        price = price
+                        price = price,
+                        trialPeriod = trialPeriod,
+                        period = period,
                     )
 
                     listOfItems.add(skuDetails)

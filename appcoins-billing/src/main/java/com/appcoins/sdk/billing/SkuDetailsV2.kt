@@ -20,6 +20,8 @@ data class SkuDetailsV2(
     val title: String,
     val description: String? = null,
     val price: PriceV2,
+    val trialPeriod: String?,
+    val period: String?,
 ) {
     fun toSkuDetails(type: String = "INAPP"): SkuDetails =
         SkuDetails(
@@ -36,7 +38,9 @@ data class SkuDetailsV2(
             price.micros.toLong(),
             price.currency,
             title,
-            description
+            description,
+            trialPeriod,
+            period,
         )
 
     fun toSkuDetailsResponseString(): String =
@@ -54,5 +58,7 @@ data class SkuDetailsV2(
             put("fiat_price_amount_micros", price.micros)
             put("title", title)
             description?.let { put("description", it) }
+            trialPeriod?.let { put("trial_period", it) }
+            period?.let { put("period", it) }
         }.toString()
 }

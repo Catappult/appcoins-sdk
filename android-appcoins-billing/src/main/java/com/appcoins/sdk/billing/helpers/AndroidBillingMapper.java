@@ -119,10 +119,18 @@ public class AndroidBillingMapper {
             if (jsonElement.has("description")) {
                 description = jsonElement.getString("description");
             }
+            String trial_period = null;
+            if (jsonElement.has("trial_period")) {
+                trial_period = jsonElement.getString("trial_period");
+            }
+            String period = null;
+            if (jsonElement.has("period")) {
+                period = jsonElement.getString("period");
+            }
 
             return new SkuDetails(skuType, sku, type, price, priceAmountMicros, priceCurrencyCode, appcPrice,
                 appcPriceAmountMicros, appcPriceCurrencyCode, fiatPrice, fiatPriceAmountMicros, fiatPriceCurrencyCode,
-                title, description);
+                title, description, trial_period, period);
         } catch (JSONException e) {
             logError("Failed to parse SkuDetails: " + e);
         }
