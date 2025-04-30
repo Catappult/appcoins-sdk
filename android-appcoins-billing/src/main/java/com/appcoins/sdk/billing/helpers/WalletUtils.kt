@@ -19,6 +19,7 @@ import com.appcoins.sdk.billing.activities.BillingFlowActivity.Companion.newInte
 import com.appcoins.sdk.billing.activities.InstallDialogActivity
 import com.appcoins.sdk.billing.activities.UnavailableBillingDialogActivity
 import com.appcoins.sdk.billing.managers.ApiKeysManager.getIndicativeApiKey
+import com.appcoins.sdk.billing.managers.ApiKeysManager.getMatomoApiKey
 import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod
 import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod.AptoideGames
 import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod.GamesHub
@@ -31,13 +32,13 @@ import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.KEY_BUY_INTENT
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
 import com.appcoins.sdk.billing.webpayment.WebPaymentActivity.Companion.newIntent
 import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
-import com.appcoins.sdk.core.analytics.indicative.IndicativeAnalytics.setupIndicativeProperties
+import com.appcoins.sdk.core.analytics.indicative.IndicativeEventLogger
+import com.appcoins.sdk.core.analytics.matomo.MatomoEventLogger
 import com.appcoins.sdk.core.device.getDeviceInfo
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 import com.appcoins.sdk.core.logger.Logger.logWarning
-import com.indicative.client.android.Indicative
 import java.util.concurrent.CountDownLatch
 
 @Suppress("StaticFieldLeak", "TooManyFunctions")
@@ -108,18 +109,17 @@ object WalletUtils {
     fun startIndicative(packageName: String?) {
         logInfo("Starting Indicative for $packageName")
         if (!SdkAnalyticsUtils.isIndicativeEventLoggerInitialized) {
-            launchIndicative {
-                SdkAnalyticsUtils.isIndicativeEventLoggerInitialized = true
-                val walletId = getWalletIdForUserSession()
-                logDebug(
-                    "Parameters for indicative: walletId: $walletId" +
-                        " packageName: $packageName" +
-                        " versionCode: ${BuildConfig.VERSION_CODE}"
-                )
+            launchAnalytics()
+            SdkAnalyticsUtils.isIndicativeEventLoggerInitialized = true
+            val walletId = getWalletIdForUserSession()
+            logDebug(
+                "Parameters for indicative: walletId: $walletId" +
+                    " packageName: $packageName" +
+                    " versionCode: ${BuildConfig.VERSION_CODE}"
+            )
 
-                setupIndicativeProperties(packageName, BuildConfig.VERSION_CODE, getDeviceInfo(), walletId)
-                SdkAnalyticsUtils.sdkAnalytics.sendStartConnectionEvent()
-            }
+            SdkAnalyticsUtils.setupProperties(packageName, BuildConfig.VERSION_CODE, getDeviceInfo(), walletId)
+            SdkAnalyticsUtils.sdkAnalytics.sendStartConnectionEvent()
         }
     }
 
@@ -175,13 +175,17 @@ object WalletUtils {
         }
     }
 
-    private fun launchIndicative(callback: () -> Unit) {
+    private fun launchAnalytics() {
         try {
-            Indicative.launch(context, getIndicativeApiKey())
+            IndicativeEventLogger.initialize(context, getIndicativeApiKey())
         } catch (ex: Exception) {
             logError("Failed to Launch Indicative.", ex)
-        } finally {
-            callback()
+        }
+
+        try {
+            MatomoEventLogger.initialize(context, getMatomoApiKey())
+        } catch (ex: Exception) {
+            logError("Failed to Launch Matomo.", ex)
         }
     }
 

@@ -18,6 +18,7 @@ import com.appcoins.sdk.core.analytics.events.SdkWalletPaymentFlowEvents;
 import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents;
 import com.appcoins.sdk.core.analytics.indicative.IndicativeEventLogger;
 import com.appcoins.sdk.core.analytics.manager.AnalyticsManager;
+import com.appcoins.sdk.core.analytics.matomo.MatomoEventLogger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,10 +28,12 @@ public class AnalyticsManagerProvider {
 
     public static AnalyticsManager provideAnalyticsManager() {
         if (analyticsManagerInstance == null) {
-            IndicativeEventLogger indicativeEventLogger = new IndicativeEventLogger();
+            IndicativeEventLogger indicativeEventLogger = IndicativeEventLogger.INSTANCE;
+            MatomoEventLogger matomoEventLogger = MatomoEventLogger.INSTANCE;
 
             analyticsManagerInstance =
                 new AnalyticsManager.Builder().addLogger(indicativeEventLogger, provideIndicativeEventList())
+                    .addLogger(matomoEventLogger, provideIndicativeEventList())
                     .setAnalyticsNormalizer(new KeysNormalizer())
                     .build();
         }

@@ -14,6 +14,7 @@ android {
     repositories {
         mavenCentral()
         maven { url "https://dl.bintray.com/aptoide/Aptoide" }
+        maven { url 'https://jitpack.io' }
     }
 
     configurations.embed.transitive = true //Needed for kezong.fat-aar plugin
@@ -156,6 +157,7 @@ dependencies {
 
     api libs.androidx.browser
 
+    api libs.matomo.android
     api libs.indicative
     api libs.app.compat.contraint.layout
 

@@ -130,7 +130,7 @@ class WalletUtilsTest {
         val mockkSharedPreferences = mockk<SharedPreferences>()
 
         every { Indicative.launch(mockkContext, EMPTY_STRING) } returns mockkIndicative
-        every { ApiKeysManager.getIndicativeApiKey() } returns EMPTY_STRING
+        every { ApiKeysManager.getMatomoApiKey() } returns EMPTY_STRING
         every { PreferenceManager.getDefaultSharedPreferences(mockkContext) } returns mockkSharedPreferences
         every { mockkSharedPreferences.getString(WALLET_ID_KEY, null) } returns EMPTY_STRING
         every { SdkAnalyticsUtils.sdkAnalytics.sendStartConnectionEvent() } just runs

@@ -1,8 +1,11 @@
 package com.appcoins.sdk.core.analytics.manager;
 
+import android.content.Context;
 import java.util.Map;
 
 public interface EventLogger {
+    void initialize(Context context, String key);
+
     /**
      * <p>Sends an event with parameters.</p>
      *

@@ -8,6 +8,7 @@ allprojects {
         repositories {
             mavenCentral()
             maven { url "https://dl.bintray.com/aptoide/Aptoide" }
+            maven { url 'https://jitpack.io' }
             maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         }
     }
@@ -16,6 +17,7 @@ allprojects {
         mavenCentral()
         google()
         maven { url "https://dl.bintray.com/aptoide/Aptoide" }
+        maven { url 'https://jitpack.io' }
     }
 }
 
@@ -27,6 +29,7 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url "https://dl.bintray.com/aptoide/Aptoide" }
+        maven { url 'https://jitpack.io' }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         google()
     }

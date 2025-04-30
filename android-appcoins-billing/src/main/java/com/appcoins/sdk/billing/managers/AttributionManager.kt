@@ -14,7 +14,6 @@ import com.appcoins.sdk.billing.usecases.SendAttributionRetryAttempt
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.TIMEOUT_30_SECS
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
-import com.appcoins.sdk.core.analytics.indicative.IndicativeAnalytics
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
 import com.appcoins.sdk.core.network.retrymechanism.exceptions.IncompleteCircularFunctionExecutionException
@@ -90,7 +89,7 @@ object AttributionManager {
             attributionResponse?.apply {
                 SaveAttributionResultOnPrefs(this)
             }
-            updateIndicativeUserId(attributionResponse?.walletId)
+            updateAnalyticsInstanceId(attributionResponse?.walletId)
             SdkAnalyticsUtils.sdkAnalytics.sendAttributionResultEvent(
                 attributionResponse?.oemId,
                 attributionResponse?.walletId,
@@ -118,6 +117,6 @@ object AttributionManager {
             this?.packageName == this@AttributionManager.packageName &&
             !this?.walletId.isNullOrEmpty()
 
-    private fun updateIndicativeUserId(walletId: String?) =
-        walletId?.let { IndicativeAnalytics.updateInstanceId(it) }
+    private fun updateAnalyticsInstanceId(walletId: String?) =
+        walletId?.let { SdkAnalyticsUtils.updateInstanceId(it) }
 }
