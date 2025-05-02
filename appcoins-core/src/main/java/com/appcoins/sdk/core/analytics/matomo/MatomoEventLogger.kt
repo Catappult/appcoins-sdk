@@ -4,9 +4,11 @@ import android.content.Context
 import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
 import com.appcoins.sdk.core.analytics.manager.EventLogger
+import com.appcoins.sdk.core.logger.Logger.logInfo
 import org.matomo.sdk.Matomo
 import org.matomo.sdk.Tracker
 import org.matomo.sdk.TrackerBuilder
+import org.matomo.sdk.extra.CustomVariables
 import org.matomo.sdk.extra.TrackHelper
 
 object MatomoEventLogger : EventLogger {
@@ -15,6 +17,7 @@ object MatomoEventLogger : EventLogger {
 
     override fun initialize(context: Context?, key: String?) {
         if (context != null && key != null) {
+            logInfo("Initializing MatomoEventLogger with key: $key")
             tracker = TrackerBuilder.createDefault(key, 1)
                 .build(Matomo.getInstance(context))
         }
@@ -31,19 +34,19 @@ object MatomoEventLogger : EventLogger {
             SdkAnalyticsUtils.superProperties + completedData
 
         val trackHelper = TrackHelper.track()
-        addTracksToTracker(trackHelper, superPropertiesAndData)
+        addTracksToTracker(trackHelper, completedData)
         trackHelper
             .event(eventName, action.name)
             .with(tracker)
     }
 
     private fun addTracksToTracker(trackHelper: TrackHelper, data: Map<String, Any>) {
-        data.keys.forEach { key ->
-            val property = Property.ofKey(key)
-
-            if (property != null) {
-                trackHelper.dimension(property.id, data[key].toString())
-            }
+        val customVariables = CustomVariables()
+        data.keys.forEachIndexed { index, key ->
+            customVariables.put(index, key, data[key].toString())
+            logInfo("Custom variable: $key = ${data[key]}")
         }
+        logInfo("Custom variables: $customVariables")
+        //trackHelper.visitVariables(customVariables)
     }
 }
