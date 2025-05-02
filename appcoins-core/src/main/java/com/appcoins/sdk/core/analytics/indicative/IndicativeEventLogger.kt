@@ -4,8 +4,6 @@ import android.content.Context
 import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
 import com.appcoins.sdk.core.analytics.manager.EventLogger
-import com.appcoins.sdk.core.logger.Logger.logDebug
-import com.appcoins.sdk.core.logger.Logger.logInfo
 import com.indicative.client.android.Indicative
 
 object IndicativeEventLogger : EventLogger {
@@ -26,19 +24,5 @@ object IndicativeEventLogger : EventLogger {
         val superPropertiesAndData: Map<String, Any> =
             SdkAnalyticsUtils.superProperties + completedData
         Indicative.recordEvent(eventName, SdkAnalyticsUtils.instanceId, superPropertiesAndData)
-        logDebug(
-            "Called with: eventName = [$eventName], " +
-                "superProperties = [${SdkAnalyticsUtils.superProperties}] " +
-                "data = [$completedData], " +
-                "action = [$action], " +
-                "context = [$context], " +
-                "instanceId = [${SdkAnalyticsUtils.instanceId}]"
-        )
-        logInfo(
-            "Called with: eventName = [$eventName], " +
-                "superProperties = [${SdkAnalyticsUtils.getLoggableSuperProperties()}], " +
-                "action = [$action], " +
-                "context = [$context]"
-        )
     }
 }
