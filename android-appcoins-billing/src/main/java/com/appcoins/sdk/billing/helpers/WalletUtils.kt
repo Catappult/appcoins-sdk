@@ -19,7 +19,7 @@ import com.appcoins.sdk.billing.activities.BillingFlowActivity.Companion.newInte
 import com.appcoins.sdk.billing.activities.InstallDialogActivity
 import com.appcoins.sdk.billing.activities.UnavailableBillingDialogActivity
 import com.appcoins.sdk.billing.managers.ApiKeysManager.getIndicativeApiKey
-import com.appcoins.sdk.billing.managers.ApiKeysManager.getMatomoApiKey
+import com.appcoins.sdk.billing.managers.ApiKeysManager.getMatomoUrl
 import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod
 import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod.AptoideGames
 import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod.GamesHub
@@ -183,7 +183,7 @@ object WalletUtils {
         }
 
         try {
-            MatomoEventLogger.initialize(context, getMatomoApiKey())
+            MatomoEventLogger.initialize(context, getMatomoUrl())
         } catch (ex: Exception) {
             logError("Failed to Launch Matomo.", ex)
         }

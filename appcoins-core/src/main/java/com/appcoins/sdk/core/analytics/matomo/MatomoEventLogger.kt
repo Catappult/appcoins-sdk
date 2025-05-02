@@ -15,7 +15,8 @@ object MatomoEventLogger : EventLogger {
 
     override fun initialize(context: Context?, key: String?) {
         if (context != null && key != null) {
-            tracker = TrackerBuilder.createDefault("TBD", 1).build(Matomo.getInstance(context))
+            tracker = TrackerBuilder.createDefault(key, 1)
+                .build(Matomo.getInstance(context))
         }
     }
 
