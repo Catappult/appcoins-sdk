@@ -16,15 +16,18 @@ class AttributionRepository(private val bdsService: BdsService) {
         packageName: String,
         oemId: String?,
         guestWalletId: String?,
+        installerAppPackage: String?,
+        currentVersion: Int,
         initialAttributionTimestamp: Long,
     ): AttributionResponse? {
         val countDownLatch = CountDownLatch(1)
         var attributionResponse: AttributionResponse? = null
-
         val queries: MutableMap<String, String> = LinkedHashMap()
         queries["package_name"] = packageName
         oemId?.let { queries["oemid"] = it }
         guestWalletId?.let { queries["guest_uid"] = it }
+        installerAppPackage?.let { queries["installer_package_name"] = it }
+        queries["package_vercode"] = currentVersion.toString()
         queries["timestamp"] = initialAttributionTimestamp.toString()
 
         val serviceResponseListener =
