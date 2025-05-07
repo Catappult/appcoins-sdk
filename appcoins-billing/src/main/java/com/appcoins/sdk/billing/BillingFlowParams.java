@@ -27,6 +27,16 @@ public class BillingFlowParams {
         this.freeTrial = freeTrial;
     }
 
+    public BillingFlowParams(String sku, String skuType, String orderReference, String developerPayload, String origin) {
+        this.sku = sku;
+        this.skuType = skuType;
+        this.orderReference = orderReference;
+        this.developerPayload = developerPayload;
+        this.origin = origin;
+        this.obfuscatedAccountId = null;
+        this.freeTrial = null;
+    }
+
     public String getSku() {
         return sku;
     }
