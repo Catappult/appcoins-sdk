@@ -27,7 +27,7 @@ class AttributionRepository(private val bdsService: BdsService) {
         oemId?.let { queries["oemid"] = it }
         guestWalletId?.let { queries["guest_uid"] = it }
         installerAppPackage?.let { queries["installer_package_name"] = it }
-        queries["package_vercode"] = currentVersion.toString()
+        queries["vercode"] = currentVersion.toString()
         queries["timestamp"] = initialAttributionTimestamp.toString()
 
         val serviceResponseListener =
