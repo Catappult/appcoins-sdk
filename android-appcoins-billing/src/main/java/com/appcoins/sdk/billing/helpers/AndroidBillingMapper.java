@@ -115,22 +115,10 @@ public class AndroidBillingMapper {
             long fiatPriceAmountMicros = jsonElement.getLong("fiat_price_amount_micros");
             String fiatPriceCurrencyCode = jsonElement.getString("fiat_price_currency_code");
             String title = jsonElement.getString("title");
-            String description = null;
-            if (jsonElement.has("description")) {
-                description = jsonElement.getString("description");
-            }
-            String period = null;
-            if (jsonElement.has("period")) {
-                period = jsonElement.getString("period");
-            }
-            String trial_period = null;
-            if (jsonElement.has("trial_period")) {
-                trial_period = jsonElement.getString("trial_period");
-            }
-            String trial_period_end_date = null;
-            if (jsonElement.has("trial_period_end_date")) {
-                trial_period_end_date = jsonElement.getString("trial_period_end_date");
-            }
+            String description = getStringValueFromJson(jsonElement, "description");
+            String period = getStringValueFromJson(jsonElement, "period");
+            String trial_period = getStringValueFromJson(jsonElement, "trial_period");
+            String trial_period_end_date = getStringValueFromJson(jsonElement, "trial_period_end_date");
 
             return new SkuDetails(skuType, sku, type, price, priceAmountMicros, priceCurrencyCode, appcPrice,
                 appcPriceAmountMicros, appcPriceCurrencyCode, fiatPrice, fiatPriceAmountMicros, fiatPriceCurrencyCode,
