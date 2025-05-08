@@ -51,4 +51,5 @@ enum class SdkGeneralFailureStep(val type: String) {
     QUERY_SKU_DETAILS("query_sku_details"),
     CONSUME("consume"),
     START_PURCHASE("start_purchase"),
+    IS_FEATURE_SUPPORTED("is_feature_supported"),
 }
