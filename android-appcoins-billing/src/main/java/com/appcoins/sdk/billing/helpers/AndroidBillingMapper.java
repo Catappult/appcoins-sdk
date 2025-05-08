@@ -46,39 +46,18 @@ public class AndroidBillingMapper {
                     long purchaseTime = jsonElement.getLong("purchaseTime");
                     int purchaseState = jsonElement.getInt("purchaseState");
 
-                    String developerPayload = null;
-                    try {
-                        if (jsonElement.has("developerPayload")) {
-                            developerPayload = jsonElement.getString("developerPayload");
-                        }
-                    } catch (org.json.JSONException e) {
-                        logDebug("Field error" + e.getLocalizedMessage());
-                    }
-
-                    String token = null;
-                    try {
-                        if (jsonElement.has("token")) {
-                            token = jsonElement.getString("token");
-                        }
-                    } catch (org.json.JSONException e) {
-                        logDebug("Field error " + e.getLocalizedMessage());
-                    }
-
+                    String developerPayload = getStringValueFromJson(jsonElement, "developerPayload");
+                    String obfuscatedAccountId = getStringValueFromJson(jsonElement, "obfuscatedAccountId");
+                    String token = getStringValueFromJson(jsonElement, "token");
                     if (token == null) {
-                        token = jsonElement.getString("purchaseToken");
+                        token = getStringValueFromJson(jsonElement, "purchaseToken");
                     }
-                    boolean isAutoRenewing = false;
-                    try {
-                        if (jsonElement.has("autoRenewing")) {
-                            isAutoRenewing = jsonElement.getBoolean("autoRenewing");
-                        }
-                    } catch (org.json.JSONException e) {
-                        logDebug("Field error " + e.getLocalizedMessage());
-                    }
+                    boolean isAutoRenewing = getBooleanValueFromJson(jsonElement, "autoRenewing");
+
                     //Base64 decoded string
                     byte[] decodedSignature = Base64.decode(signature, Base64.DEFAULT);
                     list.add(new Purchase(orderId, skuType, purchaseData, decodedSignature, purchaseTime, purchaseState,
-                        developerPayload, token, packageName, sku, isAutoRenewing));
+                        developerPayload, obfuscatedAccountId, token, packageName, sku, isAutoRenewing));
                 } catch (JSONException e) {
                     logError("Failed to map Purchase: " + e);
                 }
@@ -136,18 +115,42 @@ public class AndroidBillingMapper {
             long fiatPriceAmountMicros = jsonElement.getLong("fiat_price_amount_micros");
             String fiatPriceCurrencyCode = jsonElement.getString("fiat_price_currency_code");
             String title = jsonElement.getString("title");
-            String description = null;
-            if (jsonElement.has("description")) {
-                description = jsonElement.getString("description");
-            }
+            String description = getStringValueFromJson(jsonElement, "description");
+            String period = getStringValueFromJson(jsonElement, "period");
+            String trial_period = getStringValueFromJson(jsonElement, "trial_period");
+            String trial_period_end_date = getStringValueFromJson(jsonElement, "trial_period_end_date");
 
             return new SkuDetails(skuType, sku, type, price, priceAmountMicros, priceCurrencyCode, appcPrice,
                 appcPriceAmountMicros, appcPriceCurrencyCode, fiatPrice, fiatPriceAmountMicros, fiatPriceCurrencyCode,
-                title, description);
+                title, description, period, trial_period, trial_period_end_date);
         } catch (JSONException e) {
             logError("Failed to parse SkuDetails: " + e);
         }
 
         return null;
+    }
+
+    private static String getStringValueFromJson(JSONObject jsonObject, String key) {
+        String value = null;
+        try {
+            if (jsonObject.has(key)) {
+                value = jsonObject.getString(key);
+            }
+        } catch (org.json.JSONException e) {
+            logDebug("Field error" + e.getLocalizedMessage());
+        }
+        return value;
+    }
+
+    private static boolean getBooleanValueFromJson(JSONObject jsonObject, String key) {
+        boolean value = false;
+        try {
+            if (jsonObject.has(key)) {
+                value = jsonObject.getBoolean(key);
+            }
+        } catch (org.json.JSONException e) {
+            logDebug("Field error" + e.getLocalizedMessage());
+        }
+        return value;
     }
 }

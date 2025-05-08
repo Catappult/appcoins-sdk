@@ -3,6 +3,7 @@ package com.appcoins.sdk.billing.mappers
 import com.appcoins.sdk.billing.AppcV2
 import com.appcoins.sdk.billing.PriceV2
 import com.appcoins.sdk.billing.SkuDetailsV2
+import com.appcoins.sdk.billing.Trial
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
@@ -30,6 +31,7 @@ class SkuDetailsResponseMapper {
                     val sku = jsonObjectItem.getString("sku")
                     val title = jsonObjectItem.getString("title")
                     val description = jsonObjectItem.optString("description").takeIf { it.isNotEmpty() }
+                    val period = jsonObjectItem.optString("period").takeIf { it.isNotEmpty() }
 
                     val price =
                         jsonObjectItem.getJSONObject("price").let { price ->
@@ -46,12 +48,20 @@ class SkuDetailsResponseMapper {
                                     )
                                 }
 
+                            val trial = price.optJSONObject("trial")?.let { trial ->
+                                Trial(
+                                    period = trial.getString("period"),
+                                    endDate = trial.getString("end_date")
+                                )
+                            }
+
                             PriceV2(
                                 currency = currency,
                                 label = label,
                                 symbol = symbol,
                                 micros = micros,
-                                appc = appc
+                                appc = appc,
+                                trial = trial,
                             )
                         }
 
@@ -59,7 +69,8 @@ class SkuDetailsResponseMapper {
                         sku = sku,
                         title = title,
                         description = description,
-                        price = price
+                        price = price,
+                        period = period,
                     )
 
                     listOfItems.add(skuDetails)

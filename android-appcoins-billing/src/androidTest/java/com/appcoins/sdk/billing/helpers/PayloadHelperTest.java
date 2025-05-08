@@ -8,20 +8,20 @@ public class PayloadHelperTest {
     @Test
     public void buildIntentPayloadWithEmptyDeveloperPayload() {
         String developerPayload = "";
-        String intentPayload = PayloadHelper.buildIntentPayload(null, developerPayload, null);
+        String intentPayload = PayloadHelper.buildIntentPayload(null, developerPayload, null, null, false);
         Assert.assertEquals("appcoins://appcoins.io", intentPayload);
     }
 
     @Test
     public void buildIntentPayloadWithNullDeveloperPayload() {
-        String intentPayload = PayloadHelper.buildIntentPayload(null, null, null);
+        String intentPayload = PayloadHelper.buildIntentPayload(null, null, null, null, false);
         Assert.assertEquals("appcoins://appcoins.io", intentPayload);
     }
 
     @Test
     public void buildIntentPayloadSuccess() {
         String developerPayload = "suite1";
-        String intentPayload = PayloadHelper.buildIntentPayload(null, developerPayload, null);
+        String intentPayload = PayloadHelper.buildIntentPayload(null, developerPayload, null, null, false);
         Assert.assertEquals("appcoins://appcoins.io?payload=suite1", intentPayload);
     }
 }
