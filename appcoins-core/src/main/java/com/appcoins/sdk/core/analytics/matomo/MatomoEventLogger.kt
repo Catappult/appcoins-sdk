@@ -18,6 +18,7 @@ object MatomoEventLogger : EventLogger {
     override fun initialize(context: Context?, key: String?) {
         if (context != null && key != null) {
             logInfo("Initializing MatomoEventLogger with key: $key")
+            //tracker = TrackerBuilder.createDefault("$key?api_key=123", 1)
             tracker = TrackerBuilder.createDefault(key, 1)
                 .build(Matomo.getInstance(context))
         }
@@ -29,24 +30,38 @@ object MatomoEventLogger : EventLogger {
         action: AnalyticsManager.Action,
         context: String
     ) {
-        val completedData: Map<String, Any> = (data ?: HashMap())
-        val superPropertiesAndData: Map<String, Any> =
-            SdkAnalyticsUtils.superProperties + completedData
+        if (eventName == "sdk_launch_purchase") {
+            val completedData: Map<String, Any> = (data ?: HashMap())
+            val superPropertiesAndData: Map<String, Any> =
+                SdkAnalyticsUtils.superProperties + completedData
 
-        val trackHelper = TrackHelper.track()
-        addTracksToTracker(trackHelper, completedData)
-        trackHelper
-            .event(eventName, action.name)
-            .with(tracker)
+            val trackHelper = TrackHelper.track()
+            addVisitVariablesToTracker(trackHelper, superPropertiesAndData)
+            trackHelper
+                .event(eventName, action.name)
+                .with(tracker)
+        }
     }
 
-    private fun addTracksToTracker(trackHelper: TrackHelper, data: Map<String, Any>) {
+    private fun addVisitVariablesToTracker(trackHelper: TrackHelper, data: Map<String, Any>) {
         val customVariables = CustomVariables()
-        data.keys.forEachIndexed { index, key ->
-            customVariables.put(index, key, data[key].toString())
-            logInfo("Custom variable: $key = ${data[key]}")
+        data.keys.forEach { key ->
+            val property = Property.ofKey(key)
+            if (property != null) {
+                logInfo("Matomo: Adding visit variable: $key")
+                customVariables.put(property.id, property.key, data[key].toString())
+            }
         }
-        logInfo("Custom variables: $customVariables")
-        //trackHelper.visitVariables(customVariables)
+        trackHelper.visitVariables(customVariables)
+    }
+
+    private fun addDimensionsToTracker(trackHelper: TrackHelper, data: Map<String, Any>) {
+        data.keys.forEach { key ->
+            val property = Property.ofKey(key)
+            if (property != null) {
+                logInfo("Matomo: Adding dimension: $key")
+                trackHelper.dimension(property.id, data[key].toString())
+            }
+        }
     }
 }
