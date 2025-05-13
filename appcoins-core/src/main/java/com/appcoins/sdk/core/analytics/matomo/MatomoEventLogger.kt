@@ -4,6 +4,7 @@ import android.content.Context
 import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
 import com.appcoins.sdk.core.analytics.manager.EventLogger
+import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logInfo
 import org.matomo.sdk.Matomo
 import org.matomo.sdk.Tracker
@@ -17,7 +18,7 @@ object MatomoEventLogger : EventLogger {
 
     override fun initialize(context: Context?, key: String?) {
         if (context != null && key != null) {
-            logInfo("Initializing MatomoEventLogger with key: $key")
+            logDebug("Initializing MatomoEventLogger with key: $key")
             //tracker = TrackerBuilder.createDefault("$key?api_key=123", 1)
             tracker = TrackerBuilder.createDefault(key, 1)
                 .build(Matomo.getInstance(context))
@@ -30,17 +31,15 @@ object MatomoEventLogger : EventLogger {
         action: AnalyticsManager.Action,
         context: String
     ) {
-        if (eventName == "sdk_launch_purchase") {
-            val completedData: Map<String, Any> = (data ?: HashMap())
-            val superPropertiesAndData: Map<String, Any> =
-                SdkAnalyticsUtils.superProperties + completedData
+        val completedData: Map<String, Any> = (data ?: HashMap())
+        val superPropertiesAndData: Map<String, Any> =
+            SdkAnalyticsUtils.superProperties + completedData
 
-            val trackHelper = TrackHelper.track()
-            addVisitVariablesToTracker(trackHelper, superPropertiesAndData)
-            trackHelper
-                .event(eventName, action.name)
-                .with(tracker)
-        }
+        val trackHelper = TrackHelper.track()
+        addDimensionsToTracker(trackHelper, superPropertiesAndData)
+        trackHelper
+            .event(eventName, action.name)
+            .with(tracker)
     }
 
     private fun addVisitVariablesToTracker(trackHelper: TrackHelper, data: Map<String, Any>) {
