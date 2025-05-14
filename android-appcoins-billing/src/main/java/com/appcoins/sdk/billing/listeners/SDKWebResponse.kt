@@ -80,7 +80,7 @@ data class PurchaseData(
     val purchaseState: Int,
     val isAutoRenewing: Boolean,
     val developerPayload: String?,
-    val obfuscatedAccountId: String?,
+    val obfuscatedExternalAccountId: String?,
 ) {
     fun toJson(): String =
         JSONObject().apply {
@@ -96,8 +96,8 @@ data class PurchaseData(
             if (!developerPayload.isNullOrEmpty()) {
                 put("developerPayload", developerPayload)
             }
-            if (!obfuscatedAccountId.isNullOrEmpty()) {
-                put("obfuscatedAccountId", obfuscatedAccountId)
+            if (!obfuscatedExternalAccountId.isNullOrEmpty()) {
+                put("obfuscatedExternalAccountId", obfuscatedExternalAccountId)
             }
         }.toString()
 
@@ -111,7 +111,7 @@ data class PurchaseData(
         jsonObject.optInt(PURCHASE_STATE),
         jsonObject.optBoolean(IS_AUTO_RENEWING),
         jsonObject.optString(DEVELOPER_PAYLOAD).takeIf { it.isNotEmpty() },
-        jsonObject.optString(OBFUSCATED_ACCOUNT_ID).takeIf { it.isNotEmpty() }
+        jsonObject.optString(OBFUSCATED_EXTERNAL_ACCOUNT_ID).takeIf { it.isNotEmpty() }
     )
 
     private companion object {
@@ -124,6 +124,6 @@ data class PurchaseData(
         const val PURCHASE_STATE = "purchaseState"
         const val IS_AUTO_RENEWING = "isAutoRenewing"
         const val DEVELOPER_PAYLOAD = "developerPayload"
-        const val OBFUSCATED_ACCOUNT_ID = "obfuscatedAccountId"
+        const val OBFUSCATED_EXTERNAL_ACCOUNT_ID = "obfuscatedExternalAccountId"
     }
 }

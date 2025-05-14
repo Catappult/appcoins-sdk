@@ -71,7 +71,7 @@ internal object ApplicationUtils {
                             getObjectFromJson(purchaseDataJSON, "purchaseTime").toLong(),
                             Integer.decode(getObjectFromJson(purchaseDataJSON, "purchaseState")),
                             getObjectFromJson(purchaseDataJSON, "developerPayload"),
-                            getObjectFromJson(purchaseDataJSON, "obfuscatedAccountId"),
+                            getObjectFromJson(purchaseDataJSON, "obfuscatedExternalAccountId"),
                             getObjectFromJson(purchaseDataJSON, "purchaseToken"),
                             getObjectFromJson(purchaseDataJSON, "packageName"),
                             getObjectFromJson(purchaseDataJSON, "productId"),

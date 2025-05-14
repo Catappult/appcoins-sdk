@@ -47,7 +47,7 @@ public class AndroidBillingMapper {
                     int purchaseState = jsonElement.getInt("purchaseState");
 
                     String developerPayload = getStringValueFromJson(jsonElement, "developerPayload");
-                    String obfuscatedAccountId = getStringValueFromJson(jsonElement, "obfuscatedAccountId");
+                    String obfuscatedAccountId = getStringValueFromJson(jsonElement, "obfuscatedExternalAccountId");
                     String token = getStringValueFromJson(jsonElement, "token");
                     if (token == null) {
                         token = getStringValueFromJson(jsonElement, "purchaseToken");
