@@ -43,8 +43,17 @@ import org.json.JSONObject
 @Suppress("complexity:TooManyFunctions")
 class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
 
+    private var eventsQueue = arrayListOf<AnalyticsEvent>()
+
     companion object {
         private const val EVENT_CONTEXT = "AnalyticsSDK"
+    }
+
+    fun sendEventsOnQueue() {
+        eventsQueue.forEach {
+            logEvent(it)
+        }
+        eventsQueue.clear()
     }
 
     // App Update Available events
@@ -365,6 +374,8 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         developerPayload: String?,
         orderReference: String?,
         origin: String,
+        obfuscatedAccountId: String?,
+        freeTrial: Boolean?,
     ) {
         val eventData: MutableMap<String, Any> = HashMap()
         eventData[SdkPurchaseFlowLabels.SKU] = sku
@@ -372,16 +383,24 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         developerPayload?.let { eventData[SdkPurchaseFlowLabels.DEVELOPER_PAYLOAD] = it }
         orderReference?.let { eventData[SdkPurchaseFlowLabels.ORDER_REFERENCE] = it }
         eventData[SdkPurchaseFlowLabels.ORIGIN] = origin
+        obfuscatedAccountId?.let { eventData[SdkPurchaseFlowLabels.OBFUSCATED_ACCOUNT_ID] = it }
+        freeTrial?.let { eventData[SdkPurchaseFlowLabels.FREE_TRIAL] = it }
 
         logEvent(SdkPurchaseFlowEvents.SdkLaunchPurchase(eventData))
     }
 
-    fun sendPurchaseResultEvent(responseCode: Int, purchaseToken: String?, sku: String?) {
+    fun sendPurchaseResultEvent(
+        responseCode: Int,
+        purchaseToken: String? = null,
+        sku: String? = null,
+        failureMessage: String? = null
+    ) {
         val eventData: MutableMap<String, Any> = HashMap()
 
         eventData[SdkPurchaseFlowLabels.RESPONSE_CODE] = responseCode
         purchaseToken?.let { eventData[SdkPurchaseFlowLabels.PURCHASE_TOKEN] = it }
         sku?.let { eventData[SdkPurchaseFlowLabels.SKU] = it }
+        failureMessage?.let { eventData[SdkPurchaseFlowLabels.FAILURE_MESSAGE] = it }
 
         logEvent(SdkPurchaseFlowEvents.SdkPurchaseResult(eventData))
     }
@@ -628,6 +647,10 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
     }
 
     private fun logEvent(analyticsEvent: AnalyticsEvent) {
+        if (!SdkAnalyticsUtils.isAnalyticsSetupFromPayflowFinalized) {
+            eventsQueue.add(analyticsEvent)
+            return
+        }
         if (SdkAnalyticsSeverityUtils().isEventSeverityAllowed(analyticsEvent)) {
             analyticsManager.logEvent(
                 analyticsEvent.data,

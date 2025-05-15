@@ -35,7 +35,7 @@ object SdkGetReferralDeeplinkEvents {
     const val SDK_GET_REFERRAL_DEEPLINK_RESULT = "sdk_referral_deeplink_result"
     const val SDK_GET_REFERRAL_DEEPLINK_MAIN_THREAD_FAILURE = "sdk_referral_deeplink_main_thread_failure"
 
-    private const val GET_REFERRAL_DEEPLINK_FLOW = "get_referral_deeplink"
+    const val GET_REFERRAL_DEEPLINK_FLOW = "get_referral_deeplink"
 }
 
 object SdkGetReferralDeeplinkLabels {

@@ -35,7 +35,7 @@ object SdkQuerySkuDetailsEvents {
     const val SDK_QUERY_SKU_DETAILS_RESULT = "sdk_query_sku_details_result"
     const val SDK_QUERY_SKU_DETAILS_FAILURE_PARSING_SKUS = "sdk_query_sku_details_failure_on_parsing_skus"
 
-    private const val QUERY_SKU_DETAILS_FLOW = "query_sku_details"
+    const val QUERY_SKU_DETAILS_FLOW = "query_sku_details"
 }
 
 object SdkQuerySkuDetailsLabels {

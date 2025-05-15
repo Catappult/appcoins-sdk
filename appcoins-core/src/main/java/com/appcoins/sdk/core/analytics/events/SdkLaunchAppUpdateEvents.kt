@@ -25,7 +25,7 @@ object SdkLaunchAppUpdateEvents {
     const val SDK_LAUNCH_APP_UPDATE_RESULT = "sdk_launch_app_update_result"
     const val SDK_LAUNCH_APP_UPDATE_DEEPLINK_FAILURE = "sdk_launch_app_update_deeplink_failure"
 
-    private const val LAUNCH_APP_UPDATE_FLOW = "launch_app_update"
+    const val LAUNCH_APP_UPDATE_FLOW = "launch_app_update"
 }
 
 object SdkLaunchAppUpdateLabels {

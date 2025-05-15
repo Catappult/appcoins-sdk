@@ -7,10 +7,12 @@ import com.appcoins.sdk.billing.mappers.AttributionResponse
 import com.appcoins.sdk.billing.repositories.AttributionRepository
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
+import com.appcoins.sdk.billing.usecases.GetAppInstalledVersion
 import com.appcoins.sdk.billing.usecases.GetOemIdForPackage
 import com.appcoins.sdk.billing.usecases.SaveAttributionResultOnPrefs
 import com.appcoins.sdk.billing.usecases.SaveInitialAttributionTimestamp
 import com.appcoins.sdk.billing.usecases.SendAttributionRetryAttempt
+import com.appcoins.sdk.billing.usecases.ingameupdates.GetInstallerAppPackage
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.TIMEOUT_30_SECS
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
@@ -72,8 +74,17 @@ object AttributionManager {
 
     private fun startAttributionRequest(oemid: String?, guestWalletId: String?, onSuccessfulAttribution: () -> Unit) {
         val initialAttributionTimestamp = attributionSharedPreferences.getInitialAttributionTimestamp()
+        val installerAppPackage = GetInstallerAppPackage(WalletUtils.context)
+        val currentVersion = GetAppInstalledVersion(WalletUtils.context.packageName, WalletUtils.context)
         val attributionResponse =
-            attributionRepository.getAttributionForUser(packageName, oemid, guestWalletId, initialAttributionTimestamp)
+            attributionRepository.getAttributionForUser(
+                packageName,
+                oemid,
+                guestWalletId,
+                installerAppPackage,
+                currentVersion,
+                initialAttributionTimestamp
+            )
 
         processAttributionResult(attributionResponse, onSuccessfulAttribution)
     }

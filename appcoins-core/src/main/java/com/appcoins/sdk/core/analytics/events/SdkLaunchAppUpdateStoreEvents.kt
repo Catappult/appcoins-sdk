@@ -15,5 +15,5 @@ object SdkLaunchAppUpdateStoreEvents {
 
     const val SDK_LAUNCH_APP_UPDATE_STORE_REQUEST = "sdk_launch_app_update_store_request"
 
-    private const val LAUNCH_APP_UPDATE_STORE_FLOW = "launch_app_update_store"
+    const val LAUNCH_APP_UPDATE_STORE_FLOW = "launch_app_update_store"
 }

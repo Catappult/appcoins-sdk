@@ -114,7 +114,7 @@ object SdkInitializationEvents {
     const val SDK_SERVICE_CONNECTION_FAILED = "sdk_service_connection_failed"
     const val SDK_APP_INSTALLATION_TRIGGER = "sdk_app_installation_trigger"
 
-    private const val SDK_INITIALIZATION_FLOW = "initialization"
+    const val SDK_INITIALIZATION_FLOW = "initialization"
 }
 
 object SdkInitializationLabels {

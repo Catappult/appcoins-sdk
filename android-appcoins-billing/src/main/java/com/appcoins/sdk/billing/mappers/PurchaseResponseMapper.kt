@@ -27,6 +27,7 @@ class PurchaseResponseMapper {
                 val orderUid =
                     itemJson.optString("order_uid")
                 val payload = itemJson.optString("payload").takeIf { it.isNotEmpty() }
+                val externalBuyerReference = itemJson.optString("external_buyer_reference").takeIf { it.isNotEmpty() }
                 val created = itemJson.optString("created")
 
                 val verificationJson = itemJson.getJSONObject("verification")
@@ -45,6 +46,7 @@ class PurchaseResponseMapper {
                         state = state,
                         orderUid = orderUid,
                         payload = payload,
+                        externalBuyerReference = externalBuyerReference,
                         created = created,
                         verification = verification
                     )

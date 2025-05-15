@@ -221,6 +221,7 @@ class AppCoinsBillingTest {
                 0,
                 0,
                 "developerPayload",
+                "obfuscatedAccountId",
                 "token",
                 "packageName",
                 "sku",
@@ -231,7 +232,7 @@ class AppCoinsBillingTest {
         val DEVELOPER_ERROR_PURCHASES_RESULT = PurchasesResult(PURCHASES_LIST, ResponseCode.DEVELOPER_ERROR.value)
 
         val BILLING_FLOW_PARAMS =
-            BillingFlowParams("sku", "inapp", "order123", "user12345", "BDS")
+            BillingFlowParams("sku", "inapp", "order123", "user12345", "BDS", "user12345", true)
         val SUCCESSFUL_LAUNCH_BILLING_FLOW_RESULT = LaunchBillingFlowResult(ResponseCode.OK.value, Intent())
         val DEVELOPER_ERROR_LAUNCH_BILLING_FLOW_RESULT =
             LaunchBillingFlowResult(ResponseCode.DEVELOPER_ERROR.value, Intent())

@@ -3,14 +3,18 @@ package com.appcoins.sdk.billing.managers
 import android.content.Context
 import com.appcoins.billing.sdk.BuildConfig
 import com.appcoins.sdk.billing.helpers.WalletUtils
+import com.appcoins.sdk.billing.mappers.NewVersionAvailableResponse
 import com.appcoins.sdk.billing.mappers.ReferralDeeplinkResponse
 import com.appcoins.sdk.billing.mappers.StoreLinkResponse
 import com.appcoins.sdk.billing.repositories.StoreLinkMapperRepository
 import com.appcoins.sdk.billing.service.BdsService
+import com.appcoins.sdk.billing.usecases.GetAppInstalledVersion
 import com.appcoins.sdk.billing.usecases.GetOemIdForPackage
 import com.appcoins.sdk.billing.usecases.ingameupdates.GetInstallerAppPackage
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.TIMEOUT_3_SECS
+import com.appcoins.sdk.core.device.QGenerator
 import com.appcoins.sdk.core.logger.Logger.logInfo
+import com.appcoins.sdk.core.logger.Logger.logWarning
 
 class StoreLinkMapperManager(private val context: Context) {
     private val storeLinkMapperRepository =
@@ -38,5 +42,30 @@ class StoreLinkMapperManager(private val context: Context) {
 
         logInfo("Referral Deeplink received: $referralDeeplink")
         return referralDeeplink
+    }
+
+    fun getNewVersionAvailability(): NewVersionAvailableResponse {
+        logInfo("Getting New Version Availability.")
+        val oemid = GetOemIdForPackage(WalletUtils.context.packageName, WalletUtils.context)
+        val installerAppPackage = GetInstallerAppPackage(context)
+        val currentVersion = GetAppInstalledVersion(context.packageName, context)
+        val q = try {
+            QGenerator.generateQ(WalletUtils.context)
+        } catch (ex: Exception) {
+            logWarning(ex.toString())
+            null
+        }
+
+        val newVersionAvailableResponse =
+            storeLinkMapperRepository.getNewVersionAvailability(
+                context.packageName,
+                installerAppPackage,
+                oemid,
+                currentVersion,
+                q
+            )
+
+        logInfo("New Version Availability received: $newVersionAvailableResponse")
+        return newVersionAvailableResponse
     }
 }

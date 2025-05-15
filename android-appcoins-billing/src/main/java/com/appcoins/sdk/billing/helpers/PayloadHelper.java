@@ -18,6 +18,8 @@ public class PayloadHelper {
     private static final String PAYLOAD_PARAMETER = "payload";
     private static final String ORDER_PARAMETER = "order_reference";
     private static final String ORIGIN_PARAMETER = "origin";
+    private static final String OBFUSCATED_ACCOUNT_ID_PARAMETER = "obfuscated_account_id";
+    private static final String FREE_TRIAL_PARAMETER = "free_trial";
 
     /**
      * Method to build the payload required on the {@link AppcoinsBilling#getBuyIntent} method.
@@ -26,10 +28,14 @@ public class PayloadHelper {
      * @param origin payment origin (BDS, UNITY,EXTERNAL)
      * @param orderReference a reference that allows the developers to identify this order in
      * server-to-server communication
+     * @param obfuscatedAccountId Value to identify a User specific to the Developers Application (eg: via External
+     * Login)
+     * @param freeTrial Determines if the Billing Flow to launch is a Free Trial or not.
      *
      * @return The final developers payload to be sent
      */
-    public static String buildIntentPayload(String orderReference, String developerPayload, String origin) {
+    public static String buildIntentPayload(String orderReference, String developerPayload, String origin,
+        String obfuscatedAccountId, Boolean freeTrial) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme(SCHEME)
             .authority("appcoins.io");
@@ -41,6 +47,12 @@ public class PayloadHelper {
         }
         if (origin != null && !origin.isEmpty()) {
             builder.appendQueryParameter(ORIGIN_PARAMETER, origin);
+        }
+        if (obfuscatedAccountId != null && !obfuscatedAccountId.isEmpty()) {
+            builder.appendQueryParameter(OBFUSCATED_ACCOUNT_ID_PARAMETER, obfuscatedAccountId);
+        }
+        if (freeTrial != null && freeTrial) {
+            builder.appendQueryParameter(FREE_TRIAL_PARAMETER, freeTrial.toString());
         }
         return builder.toString();
     }
@@ -86,5 +98,21 @@ public class PayloadHelper {
             return null;
         }
         return uri.getQueryParameter(ORIGIN_PARAMETER);
+    }
+
+    public static String getObfuscatedAccountId(String uriString) {
+        Uri uri = checkRequirements(uriString);
+        if (uri == null) {
+            return null;
+        }
+        return uri.getQueryParameter(OBFUSCATED_ACCOUNT_ID_PARAMETER);
+    }
+
+    public static Boolean getFreeTrial(String uriString) {
+        Uri uri = checkRequirements(uriString);
+        if (uri == null) {
+            return null;
+        }
+        return uri.getBooleanQueryParameter(FREE_TRIAL_PARAMETER, false);
     }
 }

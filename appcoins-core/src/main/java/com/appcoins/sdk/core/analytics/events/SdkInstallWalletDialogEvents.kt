@@ -55,7 +55,7 @@ object SdkInstallWalletDialogEvents {
     const val SDK_INSTALL_WALLET_DIALOG_DOWNLOAD_WALLET_FALLBACK = "sdk_install_wallet_dialog_download_wallet_fallback"
     const val SDK_INSTALL_WALLET_DIALOG_SUCCESS = "sdk_install_wallet_dialog_success"
 
-    private const val INSTALL_WALLET_DIALOG_FLOW = "install_wallet_dialog"
+    const val INSTALL_WALLET_DIALOG_FLOW = "install_wallet_dialog"
 }
 
 object SdkInstallWalletDialogLabels {

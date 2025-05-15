@@ -115,7 +115,7 @@ object SdkWebPaymentFlowEvents {
     const val SDK_WEB_PAYMENT_EXECUTE_EXTERNAL_DEEPLINK = "sdk_web_payment_execute_external_deeplink"
     const val SDK_WEB_PAYMENT_WALLET_PAYMENT_RESULT = "sdk_web_payment_wallet_payment_result"
 
-    private const val WEB_PAYMENT_FLOW = "web_payment_flow"
+    const val WEB_PAYMENT_FLOW = "web_payment_flow"
 }
 
 object SdkWebPaymentFlowLabels {

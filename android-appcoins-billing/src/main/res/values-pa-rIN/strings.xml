@@ -2,7 +2,7 @@
 <resources>
     <string name="igu_app_new_version_available_popup_body">There is a new version for this application.\nPlease update to the new version.</string>
     <string name="igu_app_new_version_available_popup_update_button">UPDATE</string>
-    <string name="igu_app_new_version_available_popup_close_button">CLOSE</string>
+    <string name="igu_app_new_version_available_popup_close_button">ਬੰਦ</string>
     <!-- SDK - Purchasing when wallet is not installed -->
     <string name="iab_wallet_not_installed_popup_body">ਇਸ ਚੀਜ਼ ਨੂੰ ਖਰੀਦਣ ਲਈ ਤੁਹਾਨੂੰ ਪਹਿਲਾਂ %s ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਲੋੜ ਹੈ|</string>
     <string name="appcoins_wallet">ਐਪਸਿੱਕੇ ਬਟੂਆ</string>
@@ -12,4 +12,8 @@
     <string name="iap_wallet_and_appstore_not_installed_popup_button">ਠੀਕ ਹੈ!</string>
     <!-- SDK - Common -->
     <string name="iab_wallet_not_installed_popup_close_install">ਬਟੂਆ ਭਰੋ</string>
+    <!-- SDK - Unavailable -->
+    <string name="sdk_unavailable_description_body">Billing services are currently not supported.\nPlease contact the support channel.</string>
+    <!-- SDK General -->
+    <string name="sdk_general_close_button">CLOSE</string>
 </resources>

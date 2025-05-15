@@ -79,7 +79,8 @@ public class CatapultAppcoinsBilling
             SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
                 .sendLaunchPurchaseEvent(billingFlowParams.getSku(), billingFlowParams.getSkuType(),
                     billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrderReference(),
-                    billingFlowParams.getOrigin());
+                    billingFlowParams.getOrigin(), billingFlowParams.getObfuscatedAccountId(),
+                    billingFlowParams.getFreeTrial());
 
             if (Looper.myLooper() == Looper.getMainLooper()) {
                 SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
@@ -89,7 +90,8 @@ public class CatapultAppcoinsBilling
             }
 
             String payload = PayloadHelper.buildIntentPayload(billingFlowParams.getOrderReference(),
-                billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin());
+                billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin(),
+                billingFlowParams.getObfuscatedAccountId(), billingFlowParams.getFreeTrial());
             AttributionSharedPreferences attributionSharedPreferences = new AttributionSharedPreferences(activity);
             String oemid = attributionSharedPreferences.getOemId();
             String guestWalletId = attributionSharedPreferences.getWalletId();
@@ -191,10 +193,7 @@ public class CatapultAppcoinsBilling
         Runnable runnable = () -> {
             SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
                 .sendLaunchAppUpdateStoreRequestEvent();
-            boolean isAppUpdateAvailable = IsUpdateAvailable.INSTANCE.invoke(WalletUtils.INSTANCE.getContext());
-            if (isAppUpdateAvailable) {
-                LaunchAppUpdate.INSTANCE.invoke(context);
-            }
+            LaunchAppUpdate.INSTANCE.invoke(context);
         };
         new Thread(runnable).start();
     }
@@ -203,14 +202,10 @@ public class CatapultAppcoinsBilling
     public void launchAppUpdateDialog(Context context) {
         logInfo("Request to launch App Update Dialog.");
         Runnable runnable = () -> {
-            boolean isAppUpdateAvailable = IsUpdateAvailable.INSTANCE.invoke(WalletUtils.INSTANCE.getContext());
-            if (isAppUpdateAvailable) {
-                Intent updateDialogActivityIntent =
-                    new Intent(context.getApplicationContext(), UpdateDialogActivity.class);
-                updateDialogActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.getApplicationContext()
-                    .startActivity(updateDialogActivityIntent);
-            }
+            Intent updateDialogActivityIntent = new Intent(context.getApplicationContext(), UpdateDialogActivity.class);
+            updateDialogActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.getApplicationContext()
+                .startActivity(updateDialogActivityIntent);
         };
         new Thread(runnable).start();
     }
@@ -271,7 +266,8 @@ public class CatapultAppcoinsBilling
         int responseCode;
         try {
             String payload = PayloadHelper.buildIntentPayload(billingFlowParams.getOrderReference(),
-                billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin());
+                billingFlowParams.getDeveloperPayload(), billingFlowParams.getOrigin(),
+                billingFlowParams.getObfuscatedAccountId(), billingFlowParams.getFreeTrial());
             AttributionSharedPreferences attributionSharedPreferences = new AttributionSharedPreferences(activity);
             String oemid = attributionSharedPreferences.getOemId();
             String guestWalletId = attributionSharedPreferences.getWalletId();
