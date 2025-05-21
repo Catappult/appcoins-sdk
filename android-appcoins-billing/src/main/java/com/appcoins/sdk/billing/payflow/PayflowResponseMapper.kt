@@ -37,10 +37,10 @@ class PayflowResponseMapper {
                         val priority =
                             paymentMethodsObject.optJSONObject(methodName)?.optInt("priority") ?: -1
                         val availableFeatures =
-                            paymentMethodsObject.optJSONArray("supported_features")?.let {
+                            paymentMethodsObject.optJSONObject(methodName)?.optJSONArray("supported_features")?.let {
                                 val arrayList = arrayListOf<Int>()
                                 for (i in 0 until it.length()) {
-                                    arrayList.add(i)
+                                    arrayList.add(it.optInt(i))
                                 }
                                 arrayList.mapNotNull { featureInt ->
                                     FeatureType.values()

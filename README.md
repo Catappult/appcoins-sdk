@@ -1,2 +1,10 @@
-For BDS SDK Documentation read:
-[SDK Rewards integration](https://docs.catappult.io/docs/native-user-acquisition)
+
+# Aptoide Billing SDK
+
+## Description
+
+This is the Aptoide Billing SDK used to manage Purchases.
+
+## Documentation
+
+Follow the integration in our Aptoide Connect [documentation](https://docs.catappult.io/docs/android-billing-sdk).
