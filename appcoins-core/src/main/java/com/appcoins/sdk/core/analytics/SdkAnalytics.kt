@@ -373,7 +373,7 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         skuType: String,
         developerPayload: String?,
         orderReference: String?,
-        origin: String,
+        origin: String?,
         obfuscatedAccountId: String?,
         freeTrial: Boolean?,
     ) {
@@ -382,7 +382,7 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         eventData[SdkPurchaseFlowLabels.SKU_TYPE] = skuType
         developerPayload?.let { eventData[SdkPurchaseFlowLabels.DEVELOPER_PAYLOAD] = it }
         orderReference?.let { eventData[SdkPurchaseFlowLabels.ORDER_REFERENCE] = it }
-        eventData[SdkPurchaseFlowLabels.ORIGIN] = origin
+        origin?.let { eventData[SdkPurchaseFlowLabels.ORIGIN] = it }
         obfuscatedAccountId?.let { eventData[SdkPurchaseFlowLabels.OBFUSCATED_ACCOUNT_ID] = it }
         freeTrial?.let { eventData[SdkPurchaseFlowLabels.FREE_TRIAL] = it }
 
