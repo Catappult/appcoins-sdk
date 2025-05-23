@@ -313,6 +313,15 @@ public class CatapultAppcoinsBilling
         }
     }
 
+    /**
+     * Deprecated. Use
+     * {@link AppCoinsBilling#queryProductDetailsAsync(QueryProductDetailsParams, ProductDetailsResponseListener)}
+     * instead.
+     *
+     * @param skuDetailsParams {@link SkuDetailsParams} of the SKUs to be searched.
+     * @param onSkuDetailsResponseListener {@link SkuDetailsResponseListener} listener to which the SKU Details will
+     * be sent.
+     */
     @Override
     @Deprecated
     public void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
