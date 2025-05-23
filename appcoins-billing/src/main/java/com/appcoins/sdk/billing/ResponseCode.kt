@@ -1,6 +1,7 @@
 package com.appcoins.sdk.billing
 
 @Suppress("MagicNumber")
+@Deprecated("Use {@link ProductType} instead.")
 enum class ResponseCode(val value: Int) {
     /**
      * Success
