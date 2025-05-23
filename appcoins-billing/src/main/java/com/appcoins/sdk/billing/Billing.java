@@ -8,8 +8,8 @@ public interface Billing {
 
     PurchasesResult queryPurchases(String skuType);
 
-    void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
-        SkuDetailsResponseListener onSkuDetailsResponseListener);
+    void queryProductDetailsAsync(QueryProductDetailsParams queryProductDetailsParams,
+        ProductDetailsResponseListener productDetailsResponseListener);
 
     void consumeAsync(String purchaseToken, ConsumeResponseListener listener);
 
@@ -21,5 +21,9 @@ public interface Billing {
     boolean verifyPurchase(String purchaseData, byte[] decodeSignature);
 
     int isFeatureSupported(FeatureType feature);
+
+    @Deprecated
+    void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
+        SkuDetailsResponseListener onSkuDetailsResponseListener);
 }
 

@@ -19,14 +19,15 @@ public interface AppcoinsBillingClient {
     PurchasesResult queryPurchases(String skuType);
 
     /**
-     * Call this method to obtain the details of the SKUs available in your application.
+     * Call this method to obtain the details of the Products available for your application.
      *
-     * @param skuDetailsParams {@link SkuDetailsParams} of the SKUs to be searched.
-     * @param onSkuDetailsResponseListener {@link SkuDetailsResponseListener} listener to which the SKU Details will
+     * @param queryProductDetailsParams {@link QueryProductDetailsParams} of the Products to be searched.
+     * @param productDetailsResponseListener {@link ProductDetailsResponseListener} listener to which the Product
+     * Details will
      * be sent.
      */
-    void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
-        SkuDetailsResponseListener onSkuDetailsResponseListener);
+    void queryProductDetailsAsync(QueryProductDetailsParams queryProductDetailsParams,
+        ProductDetailsResponseListener productDetailsResponseListener);
 
     /**
      * Call this method to consume a Purchase.
@@ -112,4 +113,18 @@ public interface AppcoinsBillingClient {
      * @return Integer value of the ResponseCode. ResponseCode.OK if the Feature is Supported.
      */
     int isFeatureSupported(FeatureType feature);
+
+    /**
+     * This method is deprecated, use
+     * {@link #queryProductDetailsAsync(QueryProductDetailsParams, ProductDetailsResponseListener)} instead.
+     * <p>
+     * Call this method to obtain the details of the SKUs available in your application.
+     *
+     * @param skuDetailsParams {@link SkuDetailsParams} of the SKUs to be searched.
+     * @param onSkuDetailsResponseListener {@link SkuDetailsResponseListener} listener to which the SKU Details will
+     * be sent.
+     */
+    @Deprecated
+    void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
+        SkuDetailsResponseListener onSkuDetailsResponseListener);
 }

@@ -5,11 +5,13 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
+import androidx.annotation.NonNull;
 import com.appcoins.communication.requester.MainThreadException;
 import com.appcoins.sdk.billing.activities.UpdateDialogActivity;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.helpers.AnalyticsMappingHelper;
 import com.appcoins.sdk.billing.helpers.PayloadHelper;
+import com.appcoins.sdk.billing.helpers.QueryProductDetailsParamsMapper;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
@@ -21,6 +23,8 @@ import com.appcoins.sdk.billing.usecases.GetReferralDeeplink;
 import com.appcoins.sdk.billing.usecases.ingameupdates.IsUpdateAvailable;
 import com.appcoins.sdk.billing.usecases.ingameupdates.LaunchAppUpdate;
 import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import kotlin.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,11 +60,14 @@ public class CatapultAppcoinsBilling
     }
 
     @Override
-    public void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
-        SkuDetailsResponseListener onSkuDetailsResponseListener) {
+    public void queryProductDetailsAsync(QueryProductDetailsParams queryProductDetailsParams,
+        ProductDetailsResponseListener productDetailsResponseListener) {
+        QueryProductDetailsParamsMapper queryProductDetailsParamsMapper = new QueryProductDetailsParamsMapper();
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
-            .sendQuerySkuDetailsRequestEvent(skuDetailsParams.getMoreItemSkus(), skuDetailsParams.getItemType());
-        billing.querySkuDetailsAsync(skuDetailsParams, onSkuDetailsResponseListener);
+            .sendQuerySkuDetailsRequestEvent(
+                queryProductDetailsParamsMapper.mapProductDetailsListToProductIdsList(queryProductDetailsParams),
+                queryProductDetailsParamsMapper.getProductIdFromQueryProductDetailsParams(queryProductDetailsParams));
+        billing.queryProductDetailsAsync(queryProductDetailsParams, productDetailsResponseListener);
     }
 
     @Override
@@ -304,5 +311,22 @@ public class CatapultAppcoinsBilling
         } catch (ServiceConnectionException e) {
             handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e);
         }
+    }
+
+    @Override
+    @Deprecated
+    public void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
+        SkuDetailsResponseListener onSkuDetailsResponseListener) {
+        SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+            .sendQuerySkuDetailsRequestEvent(skuDetailsParams.getMoreItemSkus(), skuDetailsParams.getItemType());
+        billing.querySkuDetailsAsync(skuDetailsParams, onSkuDetailsResponseListener);
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ProductType {
+        @NonNull
+        String INAPP = "inapp";
+        @NonNull
+        String SUBS = "subs";
     }
 }

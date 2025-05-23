@@ -70,6 +70,16 @@ public class AppCoinsBilling implements Billing {
     }
 
     @Override
+    public void queryProductDetailsAsync(QueryProductDetailsParams queryProductDetailsParams,
+        ProductDetailsResponseListener productDetailsResponseListener) {
+        stopPreviousSkuDetailsRequests();
+        ProductDetailsAsync productDetailsAsync =
+            new ProductDetailsAsync(queryProductDetailsParams, productDetailsResponseListener, repository);
+        querySkuDetailsThread = new Thread(productDetailsAsync);
+        querySkuDetailsThread.start();
+    }
+
+    @Override
     public void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
         SkuDetailsResponseListener onSkuDetailsResponseListener) {
         stopPreviousSkuDetailsRequests();
