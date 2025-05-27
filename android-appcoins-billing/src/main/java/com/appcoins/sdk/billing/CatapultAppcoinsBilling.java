@@ -47,16 +47,25 @@ public class CatapultAppcoinsBilling
     }
 
     @Override
-    public PurchasesResult queryPurchases(String skuType) {
+    public PurchasesResult queryPurchasesAsync(QueryPurchasesParams queryPurchasesParams) {
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
-            .sendQueryPurchasesRequestEvent(skuType);
+            .sendQueryPurchasesRequestEvent(queryPurchasesParams.getProductType());
 
-        PurchasesResult result = billing.queryPurchases(skuType);
+        PurchasesResult result = billing.queryPurchases(queryPurchasesParams.getProductType());
 
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
             .sendQueryPurchasesResultEvent(new AnalyticsMappingHelper().mapPurchasesToListOfStrings(result));
 
         return result;
+    }
+
+    @Override
+    public void queryPurchasesAsync(QueryPurchasesParams queryPurchasesParams,
+        PurchasesResponseListener purchasesResponseListener) {
+        SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+            .sendQueryPurchasesRequestEvent(queryPurchasesParams.getProductType());
+
+        billing.queryPurchasesAsync(queryPurchasesParams, purchasesResponseListener);
     }
 
     @Override
@@ -71,10 +80,10 @@ public class CatapultAppcoinsBilling
     }
 
     @Override
-    public void consumeAsync(String token, ConsumeResponseListener consumeResponseListener) {
+    public void consumeAsync(ConsumeParams consumeParams, ConsumeResponseListener consumeResponseListener) {
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
-            .sendConsumePurchaseRequest(token);
-        billing.consumeAsync(token, consumeResponseListener);
+            .sendConsumePurchaseRequest(consumeParams.getPurchaseToken());
+        billing.consumeAsync(consumeParams.getPurchaseToken(), consumeResponseListener);
     }
 
     @Override
@@ -315,7 +324,28 @@ public class CatapultAppcoinsBilling
 
     /**
      * Deprecated. Use
-     * {@link AppCoinsBilling#queryProductDetailsAsync(QueryProductDetailsParams, ProductDetailsResponseListener)}
+     * {@link CatapultAppcoinsBilling#queryPurchasesAsync(QueryPurchasesParams, PurchasesResponseListener)} or
+     * {@link CatapultAppcoinsBilling#queryPurchasesAsync(QueryPurchasesParams)} instead.
+     *
+     * @param skuType Type of SKU to be searched.
+     */
+    @Override
+    @Deprecated
+    public PurchasesResult queryPurchases(String skuType) {
+        SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+            .sendQueryPurchasesRequestEvent(skuType);
+
+        PurchasesResult result = billing.queryPurchases(skuType);
+
+        SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+            .sendQueryPurchasesResultEvent(new AnalyticsMappingHelper().mapPurchasesToListOfStrings(result));
+
+        return result;
+    }
+
+    /**
+     * Deprecated. Use
+     * {@link CatapultAppcoinsBilling#queryProductDetailsAsync(QueryProductDetailsParams, ProductDetailsResponseListener)}
      * instead.
      *
      * @param skuDetailsParams {@link SkuDetailsParams} of the SKUs to be searched.
@@ -329,6 +359,19 @@ public class CatapultAppcoinsBilling
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
             .sendQuerySkuDetailsRequestEvent(skuDetailsParams.getMoreItemSkus(), skuDetailsParams.getItemType());
         billing.querySkuDetailsAsync(skuDetailsParams, onSkuDetailsResponseListener);
+    }
+
+    /**
+     * Deprecated. Use
+     * {@link CatapultAppcoinsBilling#consumeAsync(ConsumeParams, ConsumeResponseListener)}
+     * instead.
+     */
+    @Override
+    @Deprecated
+    public void consumeAsync(String token, ConsumeResponseListener consumeResponseListener) {
+        SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+            .sendConsumePurchaseRequest(token);
+        billing.consumeAsync(token, consumeResponseListener);
     }
 
     @Retention(RetentionPolicy.SOURCE)

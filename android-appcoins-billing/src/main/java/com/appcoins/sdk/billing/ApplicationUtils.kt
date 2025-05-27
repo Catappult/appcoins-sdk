@@ -12,6 +12,7 @@ import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
+import com.appcoins.sdk.core.security.PurchasesSecurityHelper
 import org.json.JSONObject
 
 internal object ApplicationUtils {
@@ -58,7 +59,7 @@ internal object ApplicationUtils {
                 return
             }
 
-            if (billing.verifyPurchase(purchaseData, Base64.decode(dataSignature, Base64.DEFAULT))) {
+            if (PurchasesSecurityHelper.verifyPurchase(purchaseData, Base64.decode(dataSignature, Base64.DEFAULT))) {
                 val purchaseDataJSON: JSONObject
                 try {
                     purchaseDataJSON = JSONObject(purchaseData)

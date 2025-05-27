@@ -2,6 +2,7 @@ package com.appcoins.sdk.billing
 
 import android.content.Intent
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException
+import com.appcoins.sdk.core.security.Security
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -23,11 +24,7 @@ class AppCoinsBillingTest {
 
     @Before
     fun setup() {
-        appCoinsBilling =
-            AppCoinsBilling(
-                mockkRepository,
-                BASE_64_DECODED_PUBLIC_KEY
-            )
+        appCoinsBilling = AppCoinsBilling(mockkRepository)
     }
 
     @Test

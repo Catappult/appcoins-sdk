@@ -6,6 +6,9 @@ import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
 
 public interface Billing {
 
+    void queryPurchasesAsync(QueryPurchasesParams queryPurchasesParams,
+        PurchasesResponseListener purchasesResponseListener);
+
     PurchasesResult queryPurchases(String skuType);
 
     void queryProductDetailsAsync(QueryProductDetailsParams queryProductDetailsParams,
@@ -17,8 +20,6 @@ public interface Billing {
         String guestWalletId) throws ServiceConnectionException;
 
     boolean isReady();
-
-    boolean verifyPurchase(String purchaseData, byte[] decodeSignature);
 
     int isFeatureSupported(FeatureType feature);
 

@@ -12,11 +12,20 @@ public interface AppcoinsBillingClient {
     /**
      * Call this method to obtain the Purchases associated to the User.
      *
-     * @param skuType {@link SkuType} value of the Type of Purchase to search.
+     * @param queryPurchasesParams {@link QueryPurchasesParams} parameters for the querying of the Purchases.
      *
      * @return {@link PurchasesResult}.
      */
-    PurchasesResult queryPurchases(String skuType);
+    PurchasesResult queryPurchasesAsync(QueryPurchasesParams queryPurchasesParams);
+
+    /**
+     * Call this method to obtain the Purchases associated to the User.
+     *
+     * @param queryPurchasesParams {@link QueryPurchasesParams} parameters for the querying of the Purchases.
+     * @param purchasesResponseListener {@link PurchasesResponseListener} listener to which the Purchases will be sent.
+     */
+    void queryPurchasesAsync(QueryPurchasesParams queryPurchasesParams,
+        PurchasesResponseListener purchasesResponseListener);
 
     /**
      * Call this method to obtain the details of the Products available for your application.
@@ -34,10 +43,10 @@ public interface AppcoinsBillingClient {
      * It is important to call this method after a Purchase is made in order to finalize the Payment and consume it.
      * Not calling this method will lead to a refund of the Payment made by the User.
      *
-     * @param token token {@link Purchase#token} of the Purchase to be consumed.
+     * @param consumeParams {@link ConsumeParams} of the Purchase to be consumed.
      * @param consumeResponseListener listener to where the status of the Consume will be provided.
      */
-    void consumeAsync(String token, ConsumeResponseListener consumeResponseListener);
+    void consumeAsync(ConsumeParams consumeParams, ConsumeResponseListener consumeResponseListener);
 
     /**
      * Call this method to launch a billing flow for an SKU.
@@ -115,6 +124,18 @@ public interface AppcoinsBillingClient {
     int isFeatureSupported(FeatureType feature);
 
     /**
+     * This method is deprecated, use {@link #queryPurchasesAsync(QueryPurchasesParams, PurchasesResponseListener)}
+     * or {@link #queryPurchasesAsync(QueryPurchasesParams)} instead.
+     * Call this method to obtain the Purchases associated to the User.
+     *
+     * @param skuType {@link SkuType} value of the Type of Purchase to search.
+     *
+     * @return {@link PurchasesResult}.
+     */
+    @Deprecated
+    PurchasesResult queryPurchases(String skuType);
+
+    /**
      * This method is deprecated, use
      * {@link #queryProductDetailsAsync(QueryProductDetailsParams, ProductDetailsResponseListener)} instead.
      * <p>
@@ -127,4 +148,17 @@ public interface AppcoinsBillingClient {
     @Deprecated
     void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
         SkuDetailsResponseListener onSkuDetailsResponseListener);
+
+    /**
+     * This method is deprecated, use {@link #consumeAsync(ConsumeParams, ConsumeResponseListener)} instead.
+     * <p>
+     * Call this method to consume a Purchase.
+     * It is important to call this method after a Purchase is made in order to finalize the Payment and consume it.
+     * Not calling this method will lead to a refund of the Payment made by the User.
+     *
+     * @param token token {@link Purchase#token} of the Purchase to be consumed.
+     * @param consumeResponseListener listener to where the status of the Consume will be provided.
+     */
+    @Deprecated
+    void consumeAsync(String token, ConsumeResponseListener consumeResponseListener);
 }
