@@ -2,6 +2,7 @@ package com.appcoins.sdk.billing
 
 import android.content.Intent
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException
+import com.appcoins.sdk.core.security.PurchasesSecurityHelper
 import com.appcoins.sdk.core.security.Security
 import io.mockk.every
 import io.mockk.mockk
@@ -25,56 +26,15 @@ class AppCoinsBillingTest {
     @Before
     fun setup() {
         appCoinsBilling = AppCoinsBilling(mockkRepository)
-    }
-
-    @Test
-    fun `verifyPurchase should return true if Signature was verified correctly`() {
-        val purchaseData = "empty_data"
-
-        mockkStatic(Security::class)
-        every {
-            Security.verifyPurchase(
-                BASE_64_DECODED_PUBLIC_KEY,
-                purchaseData,
-                BASE_64_DECODED_PUBLIC_KEY
-            )
-        } returns true
-
-        val result = appCoinsBilling.verifyPurchase(purchaseData, BASE_64_DECODED_PUBLIC_KEY)
-
-        assertTrue(result)
-    }
-
-    @Test
-    fun `verifyPurchase should return false if Signature was verified incorrectly`() {
-        val purchaseData = "empty_data"
-
-        mockkStatic(Security::class)
-        every {
-            Security.verifyPurchase(
-                BASE_64_DECODED_PUBLIC_KEY,
-                purchaseData,
-                BASE_64_DECODED_PUBLIC_KEY
-            )
-        } returns false
-
-        val result = appCoinsBilling.verifyPurchase(purchaseData, BASE_64_DECODED_PUBLIC_KEY)
-
-        assertFalse(result)
+        PurchasesSecurityHelper.base64DecodedPublicKey = BASE_64_DECODED_PUBLIC_KEY
     }
 
     @Test
     fun `queryPurchases should return OK on PurchasesResult if successful`() {
         val skuType = "skuType"
 
-        mockkStatic(Security::class)
-        every {
-            Security.verifyPurchase(
-                BASE_64_DECODED_PUBLIC_KEY,
-                any(),
-                any()
-            )
-        } returns true
+        mockkStatic(PurchasesSecurityHelper::class)
+        every { PurchasesSecurityHelper.verifyPurchase(any(), any()) } returns true
         every { mockkRepository.getPurchases(skuType) } returns SUCCESSFUL_PURCHASES_RESULT
 
         val result = appCoinsBilling.queryPurchases(skuType)
@@ -208,7 +168,6 @@ class AppCoinsBillingTest {
 
     private companion object {
         val BASE_64_DECODED_PUBLIC_KEY = ByteArray(1)
-
         val PURCHASES_LIST = listOf(
             Purchase(
                 "orderId",

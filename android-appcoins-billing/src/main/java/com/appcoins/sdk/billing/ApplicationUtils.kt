@@ -20,7 +20,6 @@ internal object ApplicationUtils {
     @Suppress("CyclomaticComplexMethod", "LongMethod")
     @JvmStatic
     fun handleActivityResult(
-        billing: Billing,
         resultCode: Int,
         data: Intent?,
         purchaseFinishedListener: PurchasesUpdatedListener

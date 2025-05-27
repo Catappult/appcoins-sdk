@@ -15,7 +15,9 @@ class QueryProductDetailsParams private constructor(val productList: List<Produc
         fun setProductList(productList: List<Product>): Builder {
             require(productList.isNotEmpty()) { "Product list must not be empty." }
             require(productList.distinctBy { it.productType }.size == 1) { "All products must be of the same type." }
-            require(productList.distinctBy { it.productId }.size == productList.size) { "Product id should not be repeated." }
+            require(
+                productList.distinctBy { it.productId }.size == productList.size
+            ) { "Product id should not be repeated." }
 
             this.productList = productList
             return this
@@ -26,7 +28,6 @@ class QueryProductDetailsParams private constructor(val productList: List<Produc
 
             return QueryProductDetailsParams(productList)
         }
-
     }
 
     class Product private constructor(val productId: String, val productType: String) {
@@ -57,9 +58,6 @@ class QueryProductDetailsParams private constructor(val productList: List<Produc
 
                 return Product(productId!!, productType!!)
             }
-
         }
-
     }
-
 }

@@ -1,6 +1,8 @@
 package com.appcoins.sdk.billing
 
-class BillingFlowParams @Deprecated("Deprecated constructor. Use the [Builder] to create the BillingFlowParams.") constructor(
+class BillingFlowParams
+@Deprecated("Deprecated constructor. Use the [Builder] to create the BillingFlowParams.")
+constructor(
     val sku: String,
     val skuType: String,
     val orderReference: String?,
@@ -12,8 +14,13 @@ class BillingFlowParams @Deprecated("Deprecated constructor. Use the [Builder] t
 
     @Deprecated("Deprecated constructor. Use the [Builder] to create the BillingFlowParams.")
     constructor(
-        sku: String, skuType: String, orderReference: String?, developerPayload: String?, origin: String?,
-        obfuscatedAccountId: String?, freeTrial: Boolean?
+        sku: String,
+        skuType: String,
+        orderReference: String?,
+        developerPayload: String?,
+        origin: String?,
+        obfuscatedAccountId: String?,
+        freeTrial: Boolean?
     ) : this(sku, skuType, orderReference, developerPayload, origin) {
         this.obfuscatedAccountId = obfuscatedAccountId
         this.freeTrial = freeTrial
@@ -79,7 +86,9 @@ class BillingFlowParams @Deprecated("Deprecated constructor. Use the [Builder] t
             }
 
             fun build(): ProductDetailsParams {
-                requireNotNull(this.productDetails) { "ProductDetails is required for constructing ProductDetailsParams." }
+                requireNotNull(this.productDetails) {
+                    "ProductDetails is required for constructing ProductDetailsParams."
+                }
 
                 return ProductDetailsParams(productDetails!!)
             }

@@ -127,7 +127,7 @@ public class CatapultAppcoinsBilling
             if (responseCode != ResponseCode.OK.getValue()) {
                 logError("Failed to launch billing flow. ResponseCode: " + responseCode);
                 SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
-                ApplicationUtils.handleActivityResult(billing, sdkPaymentResponse.getResultCode(),
+                ApplicationUtils.handleActivityResult(sdkPaymentResponse.getResultCode(),
                     sdkPaymentResponse.getIntent(), purchaseFinishedListener);
                 return responseCode;
             }
@@ -151,8 +151,8 @@ public class CatapultAppcoinsBilling
     private int handleErrorTypeResponse(int value, Exception e) {
         logError("Failed to launch billing flow.", e);
         SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
-        ApplicationUtils.handleActivityResult(billing, sdkPaymentResponse.getResultCode(),
-            sdkPaymentResponse.getIntent(), purchaseFinishedListener);
+        ApplicationUtils.handleActivityResult(sdkPaymentResponse.getResultCode(), sdkPaymentResponse.getIntent(),
+            purchaseFinishedListener);
         return value;
     }
 
@@ -258,10 +258,6 @@ public class CatapultAppcoinsBilling
         return true;
     }
 
-    public Billing getBilling() {
-        return billing;
-    }
-
     public PurchasesUpdatedListener getPurchaseFinishedListener() {
         return purchaseFinishedListener;
     }
@@ -303,7 +299,7 @@ public class CatapultAppcoinsBilling
             if (responseCode != ResponseCode.OK.getValue()) {
                 logError("Failed to launch billing flow. ResponseCode: " + responseCode);
                 SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
-                ApplicationUtils.handleActivityResult(billing, sdkPaymentResponse.getResultCode(),
+                ApplicationUtils.handleActivityResult(sdkPaymentResponse.getResultCode(),
                     sdkPaymentResponse.getIntent(), purchaseFinishedListener);
                 return;
             }

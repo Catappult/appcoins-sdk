@@ -19,7 +19,9 @@ class ProductDetailsMapper {
             )
         }
 
-    private fun mapSkuDetailsToOneTimePurchaseOfferDetails(skuDetails: SkuDetails): ProductDetails.OneTimePurchaseOfferDetails? {
+    private fun mapSkuDetailsToOneTimePurchaseOfferDetails(
+        skuDetails: SkuDetails
+    ): ProductDetails.OneTimePurchaseOfferDetails? {
         return if (skuDetails.type.equals("inapp", true)) {
             ProductDetails.OneTimePurchaseOfferDetails(
                 skuDetails.price,
@@ -37,7 +39,9 @@ class ProductDetailsMapper {
         }
     }
 
-    private fun mapSkuDetailsToSubscriptionOfferDetails(skuDetails: SkuDetails): List<ProductDetails.SubscriptionOfferDetails>? {
+    private fun mapSkuDetailsToSubscriptionOfferDetails(
+        skuDetails: SkuDetails
+    ): List<ProductDetails.SubscriptionOfferDetails>? {
         return if (skuDetails.type.equals("subs", true)) {
             listOf(
                 ProductDetails.SubscriptionOfferDetails(

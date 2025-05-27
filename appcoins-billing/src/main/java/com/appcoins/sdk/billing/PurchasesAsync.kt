@@ -32,7 +32,9 @@ class PurchasesAsync(
                     purchasesResponseListener.onQueryPurchasesResponse(
                         BillingResult(
                             ResponseCode.ERROR.value,
-                            "Signature verification failed. Verify the Public Key used in the Billing SDK Initialization and ensure it is the correct one."
+                            "Signature verification failed. " +
+                                "Verify the Public Key used in the Billing " +
+                                "SDK Initialization and ensure it is the correct one."
                         ),
                         emptyList()
                     )
@@ -58,7 +60,6 @@ class PurchasesAsync(
             sdkAnalytics.sendQueryPurchasesResultEvent(null)
             return
         }
-
     }
 
     @get:Throws(ServiceConnectionException::class)
