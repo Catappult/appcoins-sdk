@@ -9,6 +9,7 @@ import com.appcoins.sdk.billing.PurchasesUpdatedListener;
 import com.appcoins.sdk.billing.RepositoryServiceConnection;
 import com.appcoins.sdk.billing.usecases.LogGeneralInformation;
 import com.appcoins.sdk.core.logger.Logger;
+import com.appcoins.sdk.core.security.PurchasesSecurityHelper;
 
 import static com.appcoins.sdk.core.logger.Logger.logInfo;
 
@@ -29,8 +30,8 @@ public class CatapultBillingAppCoinsFactory {
         WalletUtils.INSTANCE.setContext(context.getApplicationContext());
 
         byte[] base64DecodedPublicKey = Base64.decode(base64PublicKey, Base64.DEFAULT);
+        PurchasesSecurityHelper.INSTANCE.setBase64DecodedPublicKey(base64DecodedPublicKey);
 
-        return new CatapultAppcoinsBilling(new AppCoinsBilling(repository, base64DecodedPublicKey), connection,
-            purchaseFinishedListener);
+        return new CatapultAppcoinsBilling(new AppCoinsBilling(repository), connection, purchaseFinishedListener);
     }
 }
