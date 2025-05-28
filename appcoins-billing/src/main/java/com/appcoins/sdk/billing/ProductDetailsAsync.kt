@@ -27,6 +27,7 @@ class ProductDetailsAsync(
                 BillingResult.Builder().setResponseCode(ResponseCode.SERVICE_UNAVAILABLE.value).build(),
                 ArrayList()
             )
+            sdkAnalytics.sendQuerySkuDetailsResult(null)
         }
     }
 
