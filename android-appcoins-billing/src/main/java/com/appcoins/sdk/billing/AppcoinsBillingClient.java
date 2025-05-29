@@ -12,31 +12,41 @@ public interface AppcoinsBillingClient {
     /**
      * Call this method to obtain the Purchases associated to the User.
      *
-     * @param skuType {@link SkuType} value of the Type of Purchase to search.
+     * @param queryPurchasesParams {@link QueryPurchasesParams} parameters for the querying of the Purchases.
      *
      * @return {@link PurchasesResult}.
      */
-    PurchasesResult queryPurchases(String skuType);
+    PurchasesResult queryPurchasesAsync(QueryPurchasesParams queryPurchasesParams);
 
     /**
-     * Call this method to obtain the details of the SKUs available in your application.
+     * Call this method to obtain the Purchases associated to the User.
      *
-     * @param skuDetailsParams {@link SkuDetailsParams} of the SKUs to be searched.
-     * @param onSkuDetailsResponseListener {@link SkuDetailsResponseListener} listener to which the SKU Details will
+     * @param queryPurchasesParams {@link QueryPurchasesParams} parameters for the querying of the Purchases.
+     * @param purchasesResponseListener {@link PurchasesResponseListener} listener to which the Purchases will be sent.
+     */
+    void queryPurchasesAsync(QueryPurchasesParams queryPurchasesParams,
+        PurchasesResponseListener purchasesResponseListener);
+
+    /**
+     * Call this method to obtain the details of the Products available for your application.
+     *
+     * @param queryProductDetailsParams {@link QueryProductDetailsParams} of the Products to be searched.
+     * @param productDetailsResponseListener {@link ProductDetailsResponseListener} listener to which the Product
+     * Details will
      * be sent.
      */
-    void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
-        SkuDetailsResponseListener onSkuDetailsResponseListener);
+    void queryProductDetailsAsync(QueryProductDetailsParams queryProductDetailsParams,
+        ProductDetailsResponseListener productDetailsResponseListener);
 
     /**
      * Call this method to consume a Purchase.
      * It is important to call this method after a Purchase is made in order to finalize the Payment and consume it.
      * Not calling this method will lead to a refund of the Payment made by the User.
      *
-     * @param token token {@link Purchase#token} of the Purchase to be consumed.
+     * @param consumeParams {@link ConsumeParams} of the Purchase to be consumed.
      * @param consumeResponseListener listener to where the status of the Consume will be provided.
      */
-    void consumeAsync(String token, ConsumeResponseListener consumeResponseListener);
+    void consumeAsync(ConsumeParams consumeParams, ConsumeResponseListener consumeResponseListener);
 
     /**
      * Call this method to launch a billing flow for an SKU.
@@ -112,4 +122,43 @@ public interface AppcoinsBillingClient {
      * @return Integer value of the ResponseCode. ResponseCode.OK if the Feature is Supported.
      */
     int isFeatureSupported(FeatureType feature);
+
+    /**
+     * This method is deprecated, use {@link #queryPurchasesAsync(QueryPurchasesParams, PurchasesResponseListener)}
+     * or {@link #queryPurchasesAsync(QueryPurchasesParams)} instead.
+     * Call this method to obtain the Purchases associated to the User.
+     *
+     * @param skuType {@link SkuType} value of the Type of Purchase to search.
+     *
+     * @return {@link PurchasesResult}.
+     */
+    @Deprecated
+    PurchasesResult queryPurchases(String skuType);
+
+    /**
+     * This method is deprecated, use
+     * {@link #queryProductDetailsAsync(QueryProductDetailsParams, ProductDetailsResponseListener)} instead.
+     * <p>
+     * Call this method to obtain the details of the SKUs available in your application.
+     *
+     * @param skuDetailsParams {@link SkuDetailsParams} of the SKUs to be searched.
+     * @param onSkuDetailsResponseListener {@link SkuDetailsResponseListener} listener to which the SKU Details will
+     * be sent.
+     */
+    @Deprecated
+    void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
+        SkuDetailsResponseListener onSkuDetailsResponseListener);
+
+    /**
+     * This method is deprecated, use {@link #consumeAsync(ConsumeParams, ConsumeResponseListener)} instead.
+     * <p>
+     * Call this method to consume a Purchase.
+     * It is important to call this method after a Purchase is made in order to finalize the Payment and consume it.
+     * Not calling this method will lead to a refund of the Payment made by the User.
+     *
+     * @param token token {@link Purchase#token} of the Purchase to be consumed.
+     * @param consumeResponseListener listener to where the status of the Consume will be provided.
+     */
+    @Deprecated
+    void consumeAsync(String token, ConsumeResponseListener consumeResponseListener);
 }

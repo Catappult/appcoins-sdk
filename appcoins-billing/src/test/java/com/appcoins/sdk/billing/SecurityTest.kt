@@ -1,6 +1,7 @@
 package com.appcoins.sdk.billing
 
 import android.util.Base64
+import com.appcoins.sdk.core.security.Security
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockkStatic

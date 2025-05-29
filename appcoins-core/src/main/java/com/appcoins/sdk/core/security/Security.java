@@ -1,4 +1,4 @@
-package com.appcoins.sdk.billing;
+package com.appcoins.sdk.core.security;
 
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;

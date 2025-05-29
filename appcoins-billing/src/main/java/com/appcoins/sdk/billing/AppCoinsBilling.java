@@ -1,10 +1,9 @@
 package com.appcoins.sdk.billing;
 
-import android.util.Base64;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
-import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils;
+import com.appcoins.sdk.core.security.PurchasesSecurityHelper;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -13,13 +12,31 @@ import static com.appcoins.sdk.core.logger.Logger.logWarning;
 
 public class AppCoinsBilling implements Billing {
     private final Repository repository;
-    private final byte[] base64DecodedPublicKey;
 
     private Thread querySkuDetailsThread = null;
+    private Thread queryInappPurchasesThread = null;
+    private Thread querySubsPurchasesThread = null;
 
-    public AppCoinsBilling(Repository repository, byte[] base64DecodedPublicKey) {
+    public AppCoinsBilling(Repository repository) {
         this.repository = repository;
-        this.base64DecodedPublicKey = base64DecodedPublicKey;
+    }
+
+    @Override
+    public void queryPurchasesAsync(QueryPurchasesParams queryPurchasesParams,
+        PurchasesResponseListener purchasesResponseListener) {
+        stopPreviousPurchasesRequests(queryPurchasesParams);
+        PurchasesAsync purchasesAsync = new PurchasesAsync(queryPurchasesParams, purchasesResponseListener, repository);
+        if (queryPurchasesParams.getProductType()
+            .equalsIgnoreCase("inapp")) {
+            queryInappPurchasesThread = new Thread(purchasesAsync);
+            queryInappPurchasesThread.start();
+        } else if (queryPurchasesParams.getProductType()
+            .equalsIgnoreCase("subs")) {
+            querySubsPurchasesThread = new Thread(purchasesAsync);
+            querySubsPurchasesThread.start();
+        } else {
+            logError("Invalid product type: " + queryPurchasesParams.getProductType());
+        }
     }
 
     @Override
@@ -31,42 +48,29 @@ public class AppCoinsBilling implements Billing {
                 return new PurchasesResult(new ArrayList<>(), purchasesResult.getResponseCode());
             }
 
-            ArrayList<Purchase> invalidPurchase = new ArrayList<>();
             for (Purchase purchase : purchasesResult.getPurchases()) {
                 String purchaseData = purchase.getOriginalJson();
                 byte[] decodeSignature = purchase.getSignature();
 
-                if (!verifyPurchase(purchaseData, decodeSignature)) {
-                    invalidPurchase.add(purchase);
+                if (!PurchasesSecurityHelper.INSTANCE.verifyPurchase(purchaseData, decodeSignature)) {
                     return new PurchasesResult(Collections.emptyList(), ResponseCode.ERROR.getValue());
                 }
             }
 
-            if (!invalidPurchase.isEmpty()) {
-                purchasesResult.getPurchases()
-                    .removeAll(invalidPurchase);
-            }
             return purchasesResult;
         } catch (ServiceConnectionException e) {
             return new PurchasesResult(Collections.emptyList(), ResponseCode.SERVICE_UNAVAILABLE.getValue());
         }
     }
 
-    public boolean verifyPurchase(String purchaseData, byte[] decodeSignature) {
-        boolean result = Security.verifyPurchase(base64DecodedPublicKey, purchaseData, decodeSignature);
-
-        if (!result) {
-            String keyEncoded;
-            try {
-                keyEncoded = Base64.encodeToString(base64DecodedPublicKey, Base64.DEFAULT);
-            } catch (Exception exception) {
-                keyEncoded = null;
-            }
-            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
-                .sendPurchaseSignatureVerificationFailureEvent(purchaseData, keyEncoded);
-        }
-
-        return result;
+    @Override
+    public void queryProductDetailsAsync(QueryProductDetailsParams queryProductDetailsParams,
+        ProductDetailsResponseListener productDetailsResponseListener) {
+        stopPreviousSkuDetailsRequests();
+        ProductDetailsAsync productDetailsAsync =
+            new ProductDetailsAsync(queryProductDetailsParams, productDetailsResponseListener, repository);
+        querySkuDetailsThread = new Thread(productDetailsAsync);
+        querySkuDetailsThread.start();
     }
 
     @Override
@@ -77,14 +81,6 @@ public class AppCoinsBilling implements Billing {
             new SkuDetailsAsync(skuDetailsParams, onSkuDetailsResponseListener, repository);
         querySkuDetailsThread = new Thread(skuDetailsAsync);
         querySkuDetailsThread.start();
-    }
-
-    private void stopPreviousSkuDetailsRequests() {
-        try {
-            querySkuDetailsThread.stop();
-        } catch (Exception e) {
-            logWarning("Failed to stop previous SkuDetails Request Thread: " + e);
-        }
     }
 
     @Override
@@ -117,6 +113,29 @@ public class AppCoinsBilling implements Billing {
             return repository.isFeatureSupported(feature);
         } catch (ServiceConnectionException e) {
             return ResponseCode.SERVICE_UNAVAILABLE.getValue();
+        }
+    }
+
+    private void stopPreviousPurchasesRequests(QueryPurchasesParams queryPurchasesParams) {
+        try {
+            if (queryPurchasesParams.getProductType()
+                .equalsIgnoreCase("inapp")) {
+                queryInappPurchasesThread.stop();
+            } else if (queryPurchasesParams.getProductType()
+                .equalsIgnoreCase("subs")) {
+                querySubsPurchasesThread.stop();
+            }
+        } catch (Exception e) {
+            logWarning(
+                "Failed to stop previous Purchases " + queryPurchasesParams.getProductType() + " Request Thread: " + e);
+        }
+    }
+
+    private void stopPreviousSkuDetailsRequests() {
+        try {
+            querySkuDetailsThread.stop();
+        } catch (Exception e) {
+            logWarning("Failed to stop previous SkuDetails Request Thread: " + e);
         }
     }
 }
