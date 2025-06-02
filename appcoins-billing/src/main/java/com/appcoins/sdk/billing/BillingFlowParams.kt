@@ -41,13 +41,13 @@ constructor(
         }
 
         fun setDeveloperPayload(developerPayload: String): Builder {
-            require(developerPayload.isNotEmpty()) { "Developer must not be empty. Use null if not necessary" }
+            require(developerPayload.isNotEmpty()) { "Developer Payload must not be empty. Use null if not necessary" }
             this.developerPayload = developerPayload
             return this
         }
 
         fun setObfuscatedAccountId(obfuscatedAccountId: String): Builder {
-            require(obfuscatedAccountId.isNotEmpty()) { "Developer must not be empty. Use null if not necessary" }
+            require(obfuscatedAccountId.isNotEmpty()) { "Obfuscated Account ID must not be empty. Use null if not necessary" }
             this.obfuscatedAccountId = obfuscatedAccountId
             return this
         }
