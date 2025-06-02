@@ -6,10 +6,13 @@ import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
 
 public interface Billing {
 
+    void queryPurchasesAsync(QueryPurchasesParams queryPurchasesParams,
+        PurchasesResponseListener purchasesResponseListener);
+
     PurchasesResult queryPurchases(String skuType);
 
-    void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
-        SkuDetailsResponseListener onSkuDetailsResponseListener);
+    void queryProductDetailsAsync(QueryProductDetailsParams queryProductDetailsParams,
+        ProductDetailsResponseListener productDetailsResponseListener);
 
     void consumeAsync(String purchaseToken, ConsumeResponseListener listener);
 
@@ -18,8 +21,10 @@ public interface Billing {
 
     boolean isReady();
 
-    boolean verifyPurchase(String purchaseData, byte[] decodeSignature);
-
     int isFeatureSupported(FeatureType feature);
+
+    @Deprecated
+    void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
+        SkuDetailsResponseListener onSkuDetailsResponseListener);
 }
 

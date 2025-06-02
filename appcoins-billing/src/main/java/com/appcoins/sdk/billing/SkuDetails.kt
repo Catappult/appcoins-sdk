@@ -2,6 +2,10 @@ package com.appcoins.sdk.billing
 
 import java.io.Serializable
 
+/**
+ * Deprecated class. Use [ProductDetails] instead.
+ */
+@Deprecated("Deprecated class. Use [ProductDetails] instead.")
 class SkuDetails(
     val itemType: String,
     val sku: String,

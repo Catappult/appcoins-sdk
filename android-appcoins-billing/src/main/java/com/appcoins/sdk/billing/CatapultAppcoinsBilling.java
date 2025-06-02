@@ -5,11 +5,13 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
+import androidx.annotation.NonNull;
 import com.appcoins.communication.requester.MainThreadException;
 import com.appcoins.sdk.billing.activities.UpdateDialogActivity;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.helpers.AnalyticsMappingHelper;
 import com.appcoins.sdk.billing.helpers.PayloadHelper;
+import com.appcoins.sdk.billing.helpers.QueryProductDetailsParamsMapper;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
@@ -21,6 +23,8 @@ import com.appcoins.sdk.billing.usecases.GetReferralDeeplink;
 import com.appcoins.sdk.billing.usecases.ingameupdates.IsUpdateAvailable;
 import com.appcoins.sdk.billing.usecases.ingameupdates.LaunchAppUpdate;
 import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import kotlin.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,11 +47,11 @@ public class CatapultAppcoinsBilling
     }
 
     @Override
-    public PurchasesResult queryPurchases(String skuType) {
+    public PurchasesResult queryPurchasesAsync(QueryPurchasesParams queryPurchasesParams) {
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
-            .sendQueryPurchasesRequestEvent(skuType);
+            .sendQueryPurchasesRequestEvent(queryPurchasesParams.getProductType());
 
-        PurchasesResult result = billing.queryPurchases(skuType);
+        PurchasesResult result = billing.queryPurchases(queryPurchasesParams.getProductType());
 
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
             .sendQueryPurchasesResultEvent(new AnalyticsMappingHelper().mapPurchasesToListOfStrings(result));
@@ -56,18 +60,30 @@ public class CatapultAppcoinsBilling
     }
 
     @Override
-    public void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
-        SkuDetailsResponseListener onSkuDetailsResponseListener) {
+    public void queryPurchasesAsync(QueryPurchasesParams queryPurchasesParams,
+        PurchasesResponseListener purchasesResponseListener) {
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
-            .sendQuerySkuDetailsRequestEvent(skuDetailsParams.getMoreItemSkus(), skuDetailsParams.getItemType());
-        billing.querySkuDetailsAsync(skuDetailsParams, onSkuDetailsResponseListener);
+            .sendQueryPurchasesRequestEvent(queryPurchasesParams.getProductType());
+
+        billing.queryPurchasesAsync(queryPurchasesParams, purchasesResponseListener);
     }
 
     @Override
-    public void consumeAsync(String token, ConsumeResponseListener consumeResponseListener) {
+    public void queryProductDetailsAsync(QueryProductDetailsParams queryProductDetailsParams,
+        ProductDetailsResponseListener productDetailsResponseListener) {
+        QueryProductDetailsParamsMapper queryProductDetailsParamsMapper = new QueryProductDetailsParamsMapper();
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
-            .sendConsumePurchaseRequest(token);
-        billing.consumeAsync(token, consumeResponseListener);
+            .sendQuerySkuDetailsRequestEvent(
+                queryProductDetailsParamsMapper.mapProductDetailsListToProductIdsList(queryProductDetailsParams),
+                queryProductDetailsParamsMapper.getProductIdFromQueryProductDetailsParams(queryProductDetailsParams));
+        billing.queryProductDetailsAsync(queryProductDetailsParams, productDetailsResponseListener);
+    }
+
+    @Override
+    public void consumeAsync(ConsumeParams consumeParams, ConsumeResponseListener consumeResponseListener) {
+        SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+            .sendConsumePurchaseRequest(consumeParams.getPurchaseToken());
+        billing.consumeAsync(consumeParams.getPurchaseToken(), consumeResponseListener);
     }
 
     @Override
@@ -111,7 +127,7 @@ public class CatapultAppcoinsBilling
             if (responseCode != ResponseCode.OK.getValue()) {
                 logError("Failed to launch billing flow. ResponseCode: " + responseCode);
                 SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
-                ApplicationUtils.handleActivityResult(billing, sdkPaymentResponse.getResultCode(),
+                ApplicationUtils.handleActivityResult(sdkPaymentResponse.getResultCode(),
                     sdkPaymentResponse.getIntent(), purchaseFinishedListener);
                 return responseCode;
             }
@@ -135,8 +151,8 @@ public class CatapultAppcoinsBilling
     private int handleErrorTypeResponse(int value, Exception e) {
         logError("Failed to launch billing flow.", e);
         SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
-        ApplicationUtils.handleActivityResult(billing, sdkPaymentResponse.getResultCode(),
-            sdkPaymentResponse.getIntent(), purchaseFinishedListener);
+        ApplicationUtils.handleActivityResult(sdkPaymentResponse.getResultCode(), sdkPaymentResponse.getIntent(),
+            purchaseFinishedListener);
         return value;
     }
 
@@ -242,10 +258,6 @@ public class CatapultAppcoinsBilling
         return true;
     }
 
-    public Billing getBilling() {
-        return billing;
-    }
-
     public PurchasesUpdatedListener getPurchaseFinishedListener() {
         return purchaseFinishedListener;
     }
@@ -287,7 +299,7 @@ public class CatapultAppcoinsBilling
             if (responseCode != ResponseCode.OK.getValue()) {
                 logError("Failed to launch billing flow. ResponseCode: " + responseCode);
                 SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
-                ApplicationUtils.handleActivityResult(billing, sdkPaymentResponse.getResultCode(),
+                ApplicationUtils.handleActivityResult(sdkPaymentResponse.getResultCode(),
                     sdkPaymentResponse.getIntent(), purchaseFinishedListener);
                 return;
             }
@@ -304,5 +316,125 @@ public class CatapultAppcoinsBilling
         } catch (ServiceConnectionException e) {
             handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e);
         }
+    }
+
+    /**
+     * Deprecated. Use
+     * {@link CatapultAppcoinsBilling#queryPurchasesAsync(QueryPurchasesParams, PurchasesResponseListener)} or
+     * {@link CatapultAppcoinsBilling#queryPurchasesAsync(QueryPurchasesParams)} instead.
+     *
+     * @param skuType Type of SKU to be searched.
+     */
+    @Override
+    @Deprecated
+    public PurchasesResult queryPurchases(String skuType) {
+        SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+            .sendQueryPurchasesRequestEvent(skuType);
+
+        PurchasesResult result = billing.queryPurchases(skuType);
+
+        SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+            .sendQueryPurchasesResultEvent(new AnalyticsMappingHelper().mapPurchasesToListOfStrings(result));
+
+        return result;
+    }
+
+    /**
+     * Deprecated. Use
+     * {@link CatapultAppcoinsBilling#queryProductDetailsAsync(QueryProductDetailsParams, ProductDetailsResponseListener)}
+     * instead.
+     *
+     * @param skuDetailsParams {@link SkuDetailsParams} of the SKUs to be searched.
+     * @param onSkuDetailsResponseListener {@link SkuDetailsResponseListener} listener to which the SKU Details will
+     * be sent.
+     */
+    @Override
+    @Deprecated
+    public void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,
+        SkuDetailsResponseListener onSkuDetailsResponseListener) {
+        SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+            .sendQuerySkuDetailsRequestEvent(skuDetailsParams.getMoreItemSkus(), skuDetailsParams.getItemType());
+        billing.querySkuDetailsAsync(skuDetailsParams, onSkuDetailsResponseListener);
+    }
+
+    /**
+     * Deprecated. Use
+     * {@link CatapultAppcoinsBilling#consumeAsync(ConsumeParams, ConsumeResponseListener)}
+     * instead.
+     */
+    @Override
+    @Deprecated
+    public void consumeAsync(String token, ConsumeResponseListener consumeResponseListener) {
+        SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+            .sendConsumePurchaseRequest(token);
+        billing.consumeAsync(token, consumeResponseListener);
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface BillingResponseCode {
+        /**
+         * Requested Feature is not supported by the SDK Version or the Billing Service used.
+         */
+        int FEATURE_NOT_SUPPORTED = -2;
+        /**
+         * Success
+         */
+        int OK = 0;
+
+        /**
+         * User pressed back or canceled a dialog
+         */
+        int USER_CANCELED = 1;
+
+        /**
+         * The network connection is down
+         */
+        int SERVICE_UNAVAILABLE = 2;
+
+        /**
+         * This billing API version is not supported for the type requested
+         */
+        int BILLING_UNAVAILABLE = 3;
+
+        /**
+         * Requested SKU is not available for purchase
+         */
+        int ITEM_UNAVAILABLE = 4;
+
+        /**
+         * Invalid arguments provided to the API
+         */
+        int DEVELOPER_ERROR = 5;
+
+        /**
+         * Fatal error during the API action
+         */
+        int ERROR = 6;
+
+        /**
+         * Failure to purchase since item is already owned
+         */
+        int ITEM_ALREADY_OWNED = 7;
+
+        /**
+         * Failure to consume since item is not owned
+         */
+        int ITEM_NOT_OWNED = 8;
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ProductType {
+
+        /**
+         * One Time Product type.
+         */
+        @NonNull
+        String INAPP = "inapp";
+
+        /**
+         * Subscription Product type.
+         */
+        @NonNull
+        String SUBS = "subs";
     }
 }

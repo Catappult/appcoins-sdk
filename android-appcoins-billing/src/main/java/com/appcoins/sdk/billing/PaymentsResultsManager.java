@@ -25,7 +25,6 @@ class PaymentsResultsManager {
     }
 
     private final PaymentResponseStream.Consumer<SDKPaymentResponse> sdkWebResponseCollector =
-        sdkWebResponse -> ApplicationUtils.handleActivityResult(catapultAppcoinsBilling.getBilling(),
-            sdkWebResponse.getResultCode(), sdkWebResponse.getIntent(),
+        sdkWebResponse -> ApplicationUtils.handleActivityResult(sdkWebResponse.getResultCode(), sdkWebResponse.getIntent(),
             catapultAppcoinsBilling.getPurchaseFinishedListener());
 }
