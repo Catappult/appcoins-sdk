@@ -20,6 +20,7 @@ class ConsumeParams private constructor(val purchaseToken: String) {
     }
 
     companion object {
+        @JvmStatic
         fun newBuilder(): Builder {
             return Builder()
         }

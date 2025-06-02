@@ -3,6 +3,7 @@ package com.appcoins.sdk.billing
 class QueryProductDetailsParams private constructor(val productList: List<Product>) {
 
     companion object {
+        @JvmStatic
         fun newBuilder(): Builder {
             return Builder()
         }
@@ -33,6 +34,7 @@ class QueryProductDetailsParams private constructor(val productList: List<Produc
     class Product private constructor(val productId: String, val productType: String) {
 
         companion object {
+            @JvmStatic
             fun newBuilder(): Builder {
                 return Builder()
             }
