@@ -47,7 +47,9 @@ constructor(
         }
 
         fun setObfuscatedAccountId(obfuscatedAccountId: String): Builder {
-            require(obfuscatedAccountId.isNotEmpty()) { "Obfuscated Account ID must not be empty. Use null if not necessary" }
+            require(obfuscatedAccountId.isNotEmpty()) {
+                "Obfuscated Account ID must not be empty. Use null if not necessary"
+            }
             this.obfuscatedAccountId = obfuscatedAccountId
             return this
         }

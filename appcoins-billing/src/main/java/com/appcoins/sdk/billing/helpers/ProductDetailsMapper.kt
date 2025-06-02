@@ -45,9 +45,9 @@ class ProductDetailsMapper {
         return if (skuDetails.type.equals("subs", true)) {
             listOf(
                 ProductDetails.SubscriptionOfferDetails(
-                    ProductDetails.SubscriptionOfferDetails.PricingPhases(
+                    ProductDetails.PricingPhases(
                         listOf(
-                            ProductDetails.SubscriptionOfferDetails.PricingPhases.PricingPhase(
+                            ProductDetails.PricingPhase(
                                 skuDetails.period ?: "",
                                 skuDetails.price,
                                 skuDetails.priceAmountMicros,
@@ -61,7 +61,7 @@ class ProductDetailsMapper {
                             ),
                         )
                     ),
-                    ProductDetails.SubscriptionOfferDetails.TrialDetails(
+                    ProductDetails.TrialDetails(
                         skuDetails.trialPeriod ?: "",
                         skuDetails.trialPeriodEndDate ?: ""
                     )
