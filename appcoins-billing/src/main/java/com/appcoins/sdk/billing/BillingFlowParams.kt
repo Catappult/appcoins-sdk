@@ -40,10 +40,12 @@ constructor(
             return this
         }
 
-        @Deprecated("Deprecated parameter. " +
-            "DeveloperPayload should not be used to identify Purchases. " +
-            "Use instead the purchaseToken. " +
-            "If needed to identify the User use the [obfuscatedAccountId] parameter.")
+        @Deprecated(
+            "Deprecated parameter. " +
+                "DeveloperPayload should not be used to identify Purchases. " +
+                "Use instead the purchaseToken. " +
+                "If needed to identify the User use the [obfuscatedAccountId] parameter."
+        )
         fun setDeveloperPayload(developerPayload: String): Builder {
             require(developerPayload.isNotEmpty()) { "Developer Payload must not be empty. Use null if not necessary" }
             this.developerPayload = developerPayload
