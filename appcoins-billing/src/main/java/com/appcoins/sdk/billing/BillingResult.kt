@@ -3,6 +3,7 @@ package com.appcoins.sdk.billing
 class BillingResult internal constructor(val responseCode: Int? = null, val debugMessage: String? = "") {
 
     companion object {
+        @JvmStatic
         fun newBuilder(): Builder {
             return Builder()
         }

@@ -40,14 +40,22 @@ constructor(
             return this
         }
 
+        @Deprecated(
+            "Deprecated parameter. " +
+                "DeveloperPayload should not be used to identify Purchases. " +
+                "Use instead the purchaseToken. " +
+                "If needed to identify the User use the [obfuscatedAccountId] parameter."
+        )
         fun setDeveloperPayload(developerPayload: String): Builder {
-            require(developerPayload.isNotEmpty()) { "Developer must not be empty. Use null if not necessary" }
+            require(developerPayload.isNotEmpty()) { "Developer Payload must not be empty. Use null if not necessary" }
             this.developerPayload = developerPayload
             return this
         }
 
         fun setObfuscatedAccountId(obfuscatedAccountId: String): Builder {
-            require(obfuscatedAccountId.isNotEmpty()) { "Developer must not be empty. Use null if not necessary" }
+            require(obfuscatedAccountId.isNotEmpty()) {
+                "Obfuscated Account ID must not be empty. Use null if not necessary"
+            }
             this.obfuscatedAccountId = obfuscatedAccountId
             return this
         }
@@ -95,6 +103,7 @@ constructor(
         }
 
         companion object {
+            @JvmStatic
             fun newBuilder(): Builder {
                 return Builder()
             }
@@ -102,6 +111,7 @@ constructor(
     }
 
     companion object {
+        @JvmStatic
         fun newBuilder(): Builder {
             return Builder()
         }

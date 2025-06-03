@@ -20,6 +20,7 @@ class QueryPurchasesParams private constructor(val productType: String) {
     }
 
     companion object {
+        @JvmStatic
         fun newBuilder(): Builder {
             return Builder()
         }
