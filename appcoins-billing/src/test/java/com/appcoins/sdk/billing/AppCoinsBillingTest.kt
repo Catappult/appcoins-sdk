@@ -40,7 +40,7 @@ class AppCoinsBillingTest {
         val result = appCoinsBilling.queryPurchases(skuType)
 
         assertEquals(ResponseCode.OK.value, result.responseCode)
-        assertTrue(result.purchases.isNotEmpty())
+        assertTrue(result.purchasesList.isNotEmpty())
     }
 
     @Test
@@ -60,7 +60,7 @@ class AppCoinsBillingTest {
         val result = appCoinsBilling.queryPurchases(skuType)
 
         assertEquals(ResponseCode.ERROR.value, result.responseCode)
-        assertTrue(result.purchases.isEmpty())
+        assertTrue(result.purchasesList.isEmpty())
     }
 
     @Test
@@ -72,7 +72,7 @@ class AppCoinsBillingTest {
         val result = appCoinsBilling.queryPurchases(skuType)
 
         assertEquals(ResponseCode.SERVICE_UNAVAILABLE.value, result.responseCode)
-        assertTrue(result.purchases.isEmpty())
+        assertTrue(result.purchasesList.isEmpty())
     }
 
     @Test
@@ -84,7 +84,7 @@ class AppCoinsBillingTest {
         val result = appCoinsBilling.queryPurchases(skuType)
 
         assertEquals(ResponseCode.DEVELOPER_ERROR.value, result.responseCode)
-        assertTrue(result.purchases.isEmpty())
+        assertTrue(result.purchasesList.isEmpty())
     }
 
     @Test

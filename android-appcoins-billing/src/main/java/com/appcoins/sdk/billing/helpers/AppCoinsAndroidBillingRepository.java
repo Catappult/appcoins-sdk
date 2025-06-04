@@ -46,7 +46,9 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
         isServiceReady = true;
         RetryFailedRequests.INSTANCE.invoke();
         logInfo("Billing Connected, notifying client onBillingSetupFinished(ResponseCode.OK)");
-        listener.onBillingSetupFinished(ResponseCode.OK.getValue());
+        listener.onBillingSetupFinished(BillingResult.newBuilder()
+            .setResponseCode(ResponseCode.OK.getValue())
+            .build());
     }
 
     @Override
@@ -129,7 +131,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
     }
 
     @Override
-    public int consumeAsync(String purchaseToken) throws ServiceConnectionException {
+    public BillingResult consumeAsync(String purchaseToken) throws ServiceConnectionException {
         logInfo("Executing consumeAsync.");
         logDebug(String.format("Debuggable parameters purchaseToken:%s ", purchaseToken));
 
@@ -143,7 +145,9 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
             int consumeResult = service.consumePurchase(apiVersion, packageName, purchaseToken);
             logInfo("Consume result: " + consumeResult);
 
-            return consumeResult;
+            return BillingResult.newBuilder()
+                .setResponseCode(consumeResult)
+                .build();
         } catch (RemoteException e) {
             logError("Error consumeAsync. ", e);
             throw new ServiceConnectionException(e.getMessage());

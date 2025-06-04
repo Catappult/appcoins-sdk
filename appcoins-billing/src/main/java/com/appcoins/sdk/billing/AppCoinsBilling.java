@@ -47,21 +47,24 @@ public class AppCoinsBilling implements Billing {
 
             if (purchasesResult.getBillingResult()
                 .getResponseCode() != ResponseCode.OK.getValue()) {
-                return new PurchasesResult(new ArrayList<>(), purchasesResult.getResponseCode());
+                return new PurchasesResult(new ArrayList<>(), purchasesResult.getBillingResult());
             }
 
-            for (Purchase purchase : purchasesResult.getPurchases()) {
+            for (Purchase purchase : purchasesResult.getPurchasesList()) {
                 String purchaseData = purchase.getOriginalJson();
                 byte[] decodeSignature = purchase.getSignature();
 
                 if (!PurchasesSecurityHelper.INSTANCE.verifyPurchase(purchaseData, decodeSignature)) {
-                    return new PurchasesResult(Collections.emptyList(), ResponseCode.ERROR.getValue());
+                    return new PurchasesResult(Collections.emptyList(),
+                        BillingResultHelper.buildBillingResult(ResponseCode.ERROR.getValue(), null));
                 }
             }
 
             return purchasesResult;
         } catch (ServiceConnectionException e) {
-            return new PurchasesResult(Collections.emptyList(), ResponseCode.SERVICE_UNAVAILABLE.getValue());
+            return new PurchasesResult(Collections.emptyList(),
+                BillingResultHelper.buildBillingResult(ResponseCode.SERVICE_UNAVAILABLE.getValue(),
+                    BillingResultHelper.ERROR_TYPE_SERVICE_NOT_AVAILABLE));
         }
     }
 
