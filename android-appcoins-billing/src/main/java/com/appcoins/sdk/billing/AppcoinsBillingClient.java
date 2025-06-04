@@ -53,9 +53,9 @@ public interface AppcoinsBillingClient {
      * <p>
      * <b>Can't be called in the Main/UI Thread. Use IO Thread when executing this method.</b>
      *
-     * @return int type value of the {@link ResponseCode}.
+     * @return {@link BillingResult} with the {@link CatapultAppcoinsBilling.BillingResponseCode} and a Debug message.
      */
-    int launchBillingFlow(Activity activity, BillingFlowParams billingFlowParams);
+    BillingResult launchBillingFlow(Activity activity, BillingFlowParams billingFlowParams);
 
     /**
      * Call this method to initialize the Connection to the BillingClient.
@@ -121,7 +121,7 @@ public interface AppcoinsBillingClient {
      *
      * @return Integer value of the ResponseCode. ResponseCode.OK if the Feature is Supported.
      */
-    int isFeatureSupported(FeatureType feature);
+    BillingResult isFeatureSupported(FeatureType feature);
 
     /**
      * This method is deprecated, use {@link #queryPurchasesAsync(QueryPurchasesParams, PurchasesResponseListener)}

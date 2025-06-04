@@ -1,6 +1,7 @@
 package com.appcoins.sdk.billing;
 
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
+import com.appcoins.sdk.billing.helpers.BillingResultHelper;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
 import com.appcoins.sdk.core.security.PurchasesSecurityHelper;
@@ -44,7 +45,8 @@ public class AppCoinsBilling implements Billing {
         try {
             PurchasesResult purchasesResult = repository.getPurchases(skuType);
 
-            if (purchasesResult.getResponseCode() != ResponseCode.OK.getValue()) {
+            if (purchasesResult.getBillingResult()
+                .getResponseCode() != ResponseCode.OK.getValue()) {
                 return new PurchasesResult(new ArrayList<>(), purchasesResult.getResponseCode());
             }
 
@@ -108,11 +110,12 @@ public class AppCoinsBilling implements Billing {
     }
 
     @Override
-    public int isFeatureSupported(FeatureType feature) {
+    public BillingResult isFeatureSupported(FeatureType feature) {
         try {
             return repository.isFeatureSupported(feature);
         } catch (ServiceConnectionException e) {
-            return ResponseCode.SERVICE_UNAVAILABLE.getValue();
+            return BillingResultHelper.buildBillingResult(ResponseCode.SERVICE_UNAVAILABLE.getValue(),
+                BillingResultHelper.ERROR_TYPE_SERVICE_NOT_AVAILABLE);
         }
     }
 

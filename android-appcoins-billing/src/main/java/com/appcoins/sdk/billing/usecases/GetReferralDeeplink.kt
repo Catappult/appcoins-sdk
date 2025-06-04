@@ -2,6 +2,7 @@ package com.appcoins.sdk.billing.usecases
 
 import com.appcoins.sdk.billing.ReferralDeeplink
 import com.appcoins.sdk.billing.ResponseCode
+import com.appcoins.sdk.billing.helpers.BillingResultHelper
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.managers.StoreLinkMapperManager
 import com.appcoins.sdk.billing.utils.ServiceUtils.responseCodeFromNetworkResponseCode
@@ -31,7 +32,7 @@ object GetReferralDeeplink : UseCase() {
         sdkAnalytics.sendGetReferralDeeplinkResultEvent(referralDeeplinkResponse.storeDeeplink)
 
         return ReferralDeeplink(
-            responseCode,
+            BillingResultHelper.buildBillingResult(responseCode.value),
             referralDeeplinkResponse.storeDeeplink,
             referralDeeplinkResponse.fallbackDeeplink
         )

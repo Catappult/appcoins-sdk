@@ -2,6 +2,7 @@ package com.appcoins.sdk.billing.helpers;
 
 import android.os.Bundle;
 import android.util.Base64;
+import com.appcoins.sdk.billing.BillingResult;
 import com.appcoins.sdk.billing.LaunchBillingFlowResult;
 import com.appcoins.sdk.billing.Purchase;
 import com.appcoins.sdk.billing.PurchasesResult;
@@ -63,7 +64,8 @@ public class AndroidBillingMapper {
                 }
             }
         }
-        return new PurchasesResult(list, responseCode);
+        return new PurchasesResult(list, BillingResult.newBuilder().setResponseCode(responseCode)
+            .build());
     }
 
     public static Bundle mapArrayListToBundleSkuDetails(List<String> skus) {

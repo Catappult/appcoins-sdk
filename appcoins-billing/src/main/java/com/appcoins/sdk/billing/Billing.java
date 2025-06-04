@@ -21,7 +21,7 @@ public interface Billing {
 
     boolean isReady();
 
-    int isFeatureSupported(FeatureType feature);
+    BillingResult isFeatureSupported(FeatureType feature);
 
     @Deprecated
     void querySkuDetailsAsync(SkuDetailsParams skuDetailsParams,

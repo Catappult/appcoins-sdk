@@ -16,5 +16,5 @@ public interface Repository {
 
     boolean isReady();
 
-    int isFeatureSupported(FeatureType feature) throws ServiceConnectionException;
+    BillingResult isFeatureSupported(FeatureType feature) throws ServiceConnectionException;
 }
