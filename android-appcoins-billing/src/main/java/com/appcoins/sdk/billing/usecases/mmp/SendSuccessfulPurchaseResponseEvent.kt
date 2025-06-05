@@ -14,7 +14,7 @@ object SendSuccessfulPurchaseResponseEvent : UseCase() {
         super.invokeUseCase()
         Thread {
             try {
-                val purchaseToken = purchase.token ?: throw NullPointerException("Purchase Token is missing.")
+                val purchaseToken = purchase.purchaseToken
                 val inappPurchaseResponse = ProductV2Manager.getInappPurchase(purchaseToken)
 
                 val orderId =

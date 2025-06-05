@@ -66,26 +66,31 @@ internal object ApplicationUtils {
                 val purchaseDataJSON: JSONObject
                 try {
                     purchaseDataJSON = JSONObject(purchaseData)
+                    val accountIdentifiers =
+                        getObjectFromJson(purchaseDataJSON, "accountId")?.let { AccountIdentifiers(it) }
                     val purchase =
                         Purchase(
-                            getObjectFromJson(purchaseDataJSON, "orderId"),
-                            skuType ?: "inapp",
-                            purchaseData,
-                            Base64.decode(dataSignature, Base64.DEFAULT),
-                            getObjectFromJson(purchaseDataJSON, "purchaseTime").toLong(),
-                            Integer.decode(getObjectFromJson(purchaseDataJSON, "purchaseState")),
+                            accountIdentifiers,
                             getObjectFromJson(purchaseDataJSON, "developerPayload"),
-                            getObjectFromJson(purchaseDataJSON, "obfuscatedExternalAccountId"),
-                            getObjectFromJson(purchaseDataJSON, "purchaseToken"),
-                            getObjectFromJson(purchaseDataJSON, "packageName"),
-                            getObjectFromJson(purchaseDataJSON, "productId"),
-                            getObjectFromJson(purchaseDataJSON, "isAutoRenewing").toBoolean()
+                            getObjectFromJson(purchaseDataJSON, "orderId", ""),
+                            purchaseData,
+                            getObjectFromJson(purchaseDataJSON, "packageName", ""),
+                            listOf(getObjectFromJson(purchaseDataJSON, "productId", "")),
+                            Integer.decode(getObjectFromJson(purchaseDataJSON, "purchaseState", "0")),
+                            getObjectFromJson(purchaseDataJSON, "purchaseTime", "0").toLong(),
+                            getObjectFromJson(purchaseDataJSON, "purchaseToken", ""),
+                            dataSignature,
+                            getObjectFromJson(purchaseDataJSON, "isAutoRenewing", "false").toBoolean()
                         )
 
                     val purchases: MutableList<Purchase> = ArrayList()
                     purchases.add(purchase)
                     SendSuccessfulPurchaseResponseEvent.invoke(purchase)
-                    sdkAnalytics.sendPurchaseResultEvent(responseCode, purchase.token, purchase.sku)
+                    sdkAnalytics.sendPurchaseResultEvent(
+                        responseCode,
+                        purchase.purchaseToken,
+                        purchase.products.first()
+                    )
                     purchaseFinishedListener.onPurchasesUpdated(
                         BillingResult.newBuilder().setResponseCode(responseCode).build(), purchases
                     )
@@ -151,8 +156,11 @@ internal object ApplicationUtils {
     private fun getResponseCodeFromIntent(intent: Intent): Int =
         intent.getIntExtra(RESPONSE_CODE, ResponseCode.ERROR.value)
 
-    private fun getObjectFromJson(data: JSONObject, objectId: String): String =
-        data.optString(objectId)
+    private fun getObjectFromJson(data: JSONObject, objectId: String): String? =
+        data.optString(objectId).takeIf { it.isNotEmpty() }
+
+    private fun getObjectFromJson(data: JSONObject, objectId: String, defaultValue: String): String =
+        data.optString(objectId).takeIf { it.isNotEmpty() } ?: defaultValue
 
     private fun getResponseDesc(code: Int): String {
         val iabMsgs = (
