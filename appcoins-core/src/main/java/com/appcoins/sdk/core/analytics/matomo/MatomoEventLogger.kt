@@ -9,7 +9,6 @@ import com.appcoins.sdk.core.logger.Logger.logInfo
 import org.matomo.sdk.Matomo
 import org.matomo.sdk.Tracker
 import org.matomo.sdk.TrackerBuilder
-import org.matomo.sdk.extra.CustomVariables
 import org.matomo.sdk.extra.TrackHelper
 
 object MatomoEventLogger : EventLogger {
@@ -20,8 +19,7 @@ object MatomoEventLogger : EventLogger {
         if (context != null && key != null) {
             logDebug("Initializing MatomoEventLogger with key: $key")
             //tracker = TrackerBuilder.createDefault("$key?api_key=123", 1)
-            tracker = TrackerBuilder.createDefault(key, 1)
-                .build(Matomo.getInstance(context))
+            tracker = TrackerBuilder.createDefault(key, 1).build(Matomo.getInstance(context))
         }
     }
 
@@ -35,23 +33,13 @@ object MatomoEventLogger : EventLogger {
         val superPropertiesAndData: Map<String, Any> =
             SdkAnalyticsUtils.superProperties + completedData
 
+        tracker?.setUserId(SdkAnalyticsUtils.instanceId)
+
         val trackHelper = TrackHelper.track()
         addDimensionsToTracker(trackHelper, superPropertiesAndData)
         trackHelper
             .event(eventName, action.name)
             .with(tracker)
-    }
-
-    private fun addVisitVariablesToTracker(trackHelper: TrackHelper, data: Map<String, Any>) {
-        val customVariables = CustomVariables()
-        data.keys.forEach { key ->
-            val property = Property.ofKey(key)
-            if (property != null) {
-                logInfo("Matomo: Adding visit variable: $key")
-                customVariables.put(property.id, property.key, data[key].toString())
-            }
-        }
-        trackHelper.visitVariables(customVariables)
     }
 
     private fun addDimensionsToTracker(trackHelper: TrackHelper, data: Map<String, Any>) {

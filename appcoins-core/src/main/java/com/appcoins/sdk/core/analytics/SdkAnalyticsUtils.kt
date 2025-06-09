@@ -47,7 +47,6 @@ object SdkAnalyticsUtils {
         superProperties[AnalyticsContent.GAME_PACKAGE_NAME] = packageName ?: ""
         superProperties[AnalyticsContent.SDK_VERSION_CODE] = versionCode ?: ""
         superProperties[AnalyticsContent.SDK_PACKAGE] = "android-billing"
-        superProperties[AnalyticsContent.INSTANCE_ID] = instanceId
 
         // device information:
         superProperties[AnalyticsContent.OS_VERSION] = deviceInformation.osVersion
@@ -61,7 +60,6 @@ object SdkAnalyticsUtils {
         logInfo("Update Analytics Instance ID for User.")
         logDebug("New Id: $instanceId")
         this.instanceId = instanceId
-        superProperties[AnalyticsContent.INSTANCE_ID] = instanceId
     }
 
     fun getLoggableSuperProperties(): String =
