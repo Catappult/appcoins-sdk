@@ -274,31 +274,30 @@ public abstract class AppcoinsBillingClient {
 
             if (this.context == null) {
                 throw new IllegalArgumentException("Please provide a valid Context for your application.");
-            } else {
-                if (this.purchasesUpdatedListener != null) {
-                    throw new IllegalArgumentException("Please provide a valid listener for the purchases updates.");
-                }
-
-                if (this.publicKey != null) {
-                    throw new IllegalArgumentException("Please provide a valid public key for the purchases updates.");
-                }
-
-                Logger.setupLogger(context);
-                LogGeneralInformation.INSTANCE.invoke(context);
-
-                AppCoinsAndroidBillingRepository repository =
-                    new AppCoinsAndroidBillingRepository(3, context.getPackageName());
-
-                RepositoryServiceConnection connection =
-                    new RepositoryServiceConnection(context.getApplicationContext(), repository);
-                WalletUtils.INSTANCE.setContext(context.getApplicationContext());
-
-                byte[] base64DecodedPublicKey = Base64.decode(publicKey, Base64.DEFAULT);
-                PurchasesSecurityHelper.INSTANCE.setBase64DecodedPublicKey(base64DecodedPublicKey);
-
-                return new CatapultAppcoinsBilling(new AppCoinsBilling(repository), connection,
-                    purchasesUpdatedListener);
             }
+
+            if (this.purchasesUpdatedListener == null) {
+                throw new IllegalArgumentException("Please provide a valid listener for the purchases updates.");
+            }
+
+            if (this.publicKey == null) {
+                throw new IllegalArgumentException("Please provide a valid public key for the purchases updates.");
+            }
+
+            Logger.setupLogger(context);
+            LogGeneralInformation.INSTANCE.invoke(context);
+
+            AppCoinsAndroidBillingRepository repository =
+                new AppCoinsAndroidBillingRepository(3, context.getPackageName());
+
+            RepositoryServiceConnection connection =
+                new RepositoryServiceConnection(context.getApplicationContext(), repository);
+            WalletUtils.INSTANCE.setContext(context.getApplicationContext());
+
+            byte[] base64DecodedPublicKey = Base64.decode(publicKey, Base64.DEFAULT);
+            PurchasesSecurityHelper.INSTANCE.setBase64DecodedPublicKey(base64DecodedPublicKey);
+
+            return new CatapultAppcoinsBilling(new AppCoinsBilling(repository), connection, purchasesUpdatedListener);
         }
     }
 }
