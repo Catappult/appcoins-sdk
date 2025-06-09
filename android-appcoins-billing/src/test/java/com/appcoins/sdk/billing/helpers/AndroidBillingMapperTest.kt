@@ -139,7 +139,7 @@ class AndroidBillingMapperTest {
         }
         val result = AndroidBillingMapper.mapPurchases(bundle, INAPP_TYPE)
 
-        assertTrue(result.purchasesList.first().sku.equals("productId"))
+        assertTrue(result.purchasesList.first().products.first() == "productId")
         assertEquals(result.billingResult.responseCode, 0)
     }
 
