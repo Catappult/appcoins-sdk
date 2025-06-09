@@ -3,6 +3,7 @@ package com.appcoins.sdk.billing.helpers
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import com.appcoins.sdk.billing.CatapultAppcoinsBilling
+import com.appcoins.sdk.billing.PurchasesUpdatedListener
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk

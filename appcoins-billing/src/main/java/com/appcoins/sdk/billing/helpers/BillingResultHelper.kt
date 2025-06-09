@@ -14,7 +14,9 @@ object BillingResultHelper {
                         ERROR_TYPE_INVALID_PUBLIC_KEY -> setDebugMessage("Invalid public key.")
                         ERROR_TYPE_MAIN_THREAD -> setDebugMessage("Request from MainThread. Cancelling.")
                         ERROR_TYPE_SERVICE_NOT_AVAILABLE -> setDebugMessage("Service not available.")
-                        ERROR_TYPE_PURCHASE_TOKEN_CANNOT_BE_NULL -> setDebugMessage("Purchase token cannot be null or empty.")
+                        ERROR_TYPE_PURCHASE_TOKEN_CANNOT_BE_NULL ->
+                            setDebugMessage("Purchase token cannot be null or empty.")
+
                         ERROR_TYPE_INVALID_PRODUCT_TYPE -> setDebugMessage("Invalid product type.")
                         else -> setDebugMessage("Unknown error")
                     }
