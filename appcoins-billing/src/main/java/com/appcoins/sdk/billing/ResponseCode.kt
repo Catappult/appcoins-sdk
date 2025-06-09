@@ -1,6 +1,7 @@
 package com.appcoins.sdk.billing
 
 @Suppress("MagicNumber")
+@Deprecated("Use BillingResponseCode Annotation in CatappultAppcoinsBilling instead.")
 enum class ResponseCode(val value: Int) {
     /**
      * Success

@@ -2,6 +2,10 @@ package com.appcoins.sdk.billing;
 
 import java.util.List;
 
+/**
+ * @deprecated Deprecated class. Use {@link QueryProductDetailsParams} instead.
+ */
+@Deprecated
 public class SkuDetailsParams {
 
     private String itemType;

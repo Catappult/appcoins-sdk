@@ -12,6 +12,7 @@ import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
+import com.appcoins.sdk.core.security.PurchasesSecurityHelper
 import org.json.JSONObject
 
 internal object ApplicationUtils {
@@ -19,7 +20,6 @@ internal object ApplicationUtils {
     @Suppress("CyclomaticComplexMethod", "LongMethod")
     @JvmStatic
     fun handleActivityResult(
-        billing: Billing,
         resultCode: Int,
         data: Intent?,
         purchaseFinishedListener: PurchasesUpdatedListener
@@ -58,7 +58,7 @@ internal object ApplicationUtils {
                 return
             }
 
-            if (billing.verifyPurchase(purchaseData, Base64.decode(dataSignature, Base64.DEFAULT))) {
+            if (PurchasesSecurityHelper.verifyPurchase(purchaseData, Base64.decode(dataSignature, Base64.DEFAULT))) {
                 val purchaseDataJSON: JSONObject
                 try {
                     purchaseDataJSON = JSONObject(purchaseData)
@@ -71,7 +71,7 @@ internal object ApplicationUtils {
                             getObjectFromJson(purchaseDataJSON, "purchaseTime").toLong(),
                             Integer.decode(getObjectFromJson(purchaseDataJSON, "purchaseState")),
                             getObjectFromJson(purchaseDataJSON, "developerPayload"),
-                            getObjectFromJson(purchaseDataJSON, "obfuscatedAccountId"),
+                            getObjectFromJson(purchaseDataJSON, "obfuscatedExternalAccountId"),
                             getObjectFromJson(purchaseDataJSON, "purchaseToken"),
                             getObjectFromJson(purchaseDataJSON, "packageName"),
                             getObjectFromJson(purchaseDataJSON, "productId"),
