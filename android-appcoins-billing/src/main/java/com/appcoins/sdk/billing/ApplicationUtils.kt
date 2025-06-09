@@ -33,7 +33,8 @@ internal object ApplicationUtils {
                 failureMessage = "Null data in IAB activity result."
             )
             purchaseFinishedListener.onPurchasesUpdated(
-                BillingResult.newBuilder().setResponseCode(ResponseCode.ERROR.value).build(), emptyList()
+                BillingResult.newBuilder().setResponseCode(ResponseCode.ERROR.value).build(),
+                emptyList()
             )
             return
         }
@@ -57,7 +58,8 @@ internal object ApplicationUtils {
                     failureMessage = "Either purchaseData or dataSignature is null."
                 )
                 purchaseFinishedListener.onPurchasesUpdated(
-                    BillingResult.newBuilder().setResponseCode(ResponseCode.ERROR.value).build(), emptyList()
+                    BillingResult.newBuilder().setResponseCode(ResponseCode.ERROR.value).build(),
+                    emptyList()
                 )
                 return
             }
@@ -87,7 +89,8 @@ internal object ApplicationUtils {
                     SendSuccessfulPurchaseResponseEvent.invoke(purchase)
                     sdkAnalytics.sendPurchaseResultEvent(responseCode, purchase.token, purchase.sku)
                     purchaseFinishedListener.onPurchasesUpdated(
-                        BillingResult.newBuilder().setResponseCode(responseCode).build(), purchases
+                        BillingResult.newBuilder().setResponseCode(responseCode).build(),
+                        purchases
                     )
                     logInfo("Purchase result successfully sent.")
                 } catch (e: Exception) {
@@ -98,7 +101,8 @@ internal object ApplicationUtils {
                     )
                     purchaseFinishedListener
                         .onPurchasesUpdated(
-                            BillingResult.newBuilder().setResponseCode(ResponseCode.ERROR.value).build(), emptyList()
+                            BillingResult.newBuilder().setResponseCode(ResponseCode.ERROR.value).build(),
+                            emptyList()
                         )
                 }
             } else {
@@ -108,7 +112,8 @@ internal object ApplicationUtils {
                     failureMessage = "Signature verification failed."
                 )
                 purchaseFinishedListener.onPurchasesUpdated(
-                    BillingResult.newBuilder().setResponseCode(ResponseCode.ERROR.value).build(), emptyList()
+                    BillingResult.newBuilder().setResponseCode(ResponseCode.ERROR.value).build(),
+                    emptyList()
                 )
             }
         } else if (resultCode == Activity.RESULT_OK) {
@@ -123,14 +128,16 @@ internal object ApplicationUtils {
                 failureMessage = "Result code was OK but in-app billing response was not OK."
             )
             purchaseFinishedListener.onPurchasesUpdated(
-                BillingResult.newBuilder().setResponseCode(responseCode).build(), emptyList()
+                BillingResult.newBuilder().setResponseCode(responseCode).build(),
+                emptyList()
             )
         } else if (resultCode == Activity.RESULT_CANCELED) {
             logInfo("Purchase canceled - Response: " + getResponseDesc(responseCode))
             logDebug("Bundle: $data")
             sdkAnalytics.sendPurchaseResultEvent(responseCode = ResponseCode.USER_CANCELED.value)
             purchaseFinishedListener.onPurchasesUpdated(
-                BillingResult.newBuilder().setResponseCode(ResponseCode.USER_CANCELED.value).build(), emptyList()
+                BillingResult.newBuilder().setResponseCode(ResponseCode.USER_CANCELED.value).build(),
+                emptyList()
             )
         } else {
             logError(
@@ -143,7 +150,8 @@ internal object ApplicationUtils {
                 failureMessage = "Purchase failed. Result code: $resultCode."
             )
             purchaseFinishedListener.onPurchasesUpdated(
-                BillingResult.newBuilder().setResponseCode(ResponseCode.ERROR.value).build(), emptyList()
+                BillingResult.newBuilder().setResponseCode(ResponseCode.ERROR.value).build(),
+                emptyList()
             )
         }
     }

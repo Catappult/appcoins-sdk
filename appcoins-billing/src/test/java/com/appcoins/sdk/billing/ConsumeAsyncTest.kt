@@ -24,13 +24,18 @@ class ConsumeAsyncTest {
         consumeAsync = ConsumeAsync(null, mockkConsumeResponseListener, mockkRepository)
 
         every {
-            mockkConsumeResponseListener.onConsumeResponse(ResponseCode.DEVELOPER_ERROR.value, null)
+            mockkConsumeResponseListener.onConsumeResponse(
+                BillingResult.newBuilder().setResponseCode(ResponseCode.DEVELOPER_ERROR.value).build(),
+                null
+            )
         } just runs
 
         consumeAsync.run()
 
         verify(exactly = 1) {
-            mockkConsumeResponseListener.onConsumeResponse(ResponseCode.DEVELOPER_ERROR.value, null)
+            mockkConsumeResponseListener.onConsumeResponse(
+                BillingResult.newBuilder().setResponseCode(ResponseCode.DEVELOPER_ERROR.value).build(), null
+            )
         }
     }
 
@@ -39,13 +44,17 @@ class ConsumeAsyncTest {
         consumeAsync = ConsumeAsync("", mockkConsumeResponseListener, mockkRepository)
 
         every {
-            mockkConsumeResponseListener.onConsumeResponse(ResponseCode.DEVELOPER_ERROR.value, null)
+            mockkConsumeResponseListener.onConsumeResponse(
+                BillingResult.newBuilder().setResponseCode(ResponseCode.DEVELOPER_ERROR.value).build(), null
+            )
         } just runs
 
         consumeAsync.run()
 
         verify(exactly = 1) {
-            mockkConsumeResponseListener.onConsumeResponse(ResponseCode.DEVELOPER_ERROR.value, null)
+            mockkConsumeResponseListener.onConsumeResponse(
+                BillingResult.newBuilder().setResponseCode(ResponseCode.DEVELOPER_ERROR.value).build(), null
+            )
         }
     }
 
@@ -54,15 +63,20 @@ class ConsumeAsyncTest {
         val token = "token"
         consumeAsync = ConsumeAsync(token, mockkConsumeResponseListener, mockkRepository)
 
-        every { mockkRepository.consumeAsync(token) } returns ResponseCode.OK.value
+        every { mockkRepository.consumeAsync(token) } returns BillingResult.newBuilder()
+            .setResponseCode(ResponseCode.OK.value).build()
         every {
-            mockkConsumeResponseListener.onConsumeResponse(ResponseCode.OK.value, token)
+            mockkConsumeResponseListener.onConsumeResponse(
+                BillingResult.newBuilder().setResponseCode(ResponseCode.OK.value).build(), token
+            )
         } just runs
 
         consumeAsync.run()
 
         verify(exactly = 1) {
-            mockkConsumeResponseListener.onConsumeResponse(ResponseCode.OK.value, token)
+            mockkConsumeResponseListener.onConsumeResponse(
+                BillingResult.newBuilder().setResponseCode(ResponseCode.OK.value).build(), token
+            )
         }
     }
 
@@ -73,13 +87,17 @@ class ConsumeAsyncTest {
 
         every { mockkRepository.consumeAsync(token) } throws ServiceConnectionException()
         every {
-            mockkConsumeResponseListener.onConsumeResponse(ResponseCode.SERVICE_UNAVAILABLE.value, null)
+            mockkConsumeResponseListener.onConsumeResponse(
+                BillingResult.newBuilder().setResponseCode(ResponseCode.SERVICE_UNAVAILABLE.value).build(), null
+            )
         } just runs
 
         consumeAsync.run()
 
         verify(exactly = 1) {
-            mockkConsumeResponseListener.onConsumeResponse(ResponseCode.SERVICE_UNAVAILABLE.value, null)
+            mockkConsumeResponseListener.onConsumeResponse(
+                BillingResult.newBuilder().setResponseCode(ResponseCode.SERVICE_UNAVAILABLE.value).build(), null
+            )
         }
     }
 }

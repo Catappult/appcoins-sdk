@@ -39,7 +39,7 @@ class AppCoinsBillingTest {
 
         val result = appCoinsBilling.queryPurchases(skuType)
 
-        assertEquals(ResponseCode.OK.value, result.responseCode)
+        assertEquals(ResponseCode.OK.value, result.billingResult.responseCode)
         assertTrue(result.purchasesList.isNotEmpty())
     }
 
@@ -59,7 +59,7 @@ class AppCoinsBillingTest {
 
         val result = appCoinsBilling.queryPurchases(skuType)
 
-        assertEquals(ResponseCode.ERROR.value, result.responseCode)
+        assertEquals(ResponseCode.ERROR.value, result.billingResult.responseCode)
         assertTrue(result.purchasesList.isEmpty())
     }
 
@@ -71,7 +71,7 @@ class AppCoinsBillingTest {
 
         val result = appCoinsBilling.queryPurchases(skuType)
 
-        assertEquals(ResponseCode.SERVICE_UNAVAILABLE.value, result.responseCode)
+        assertEquals(ResponseCode.SERVICE_UNAVAILABLE.value, result.billingResult.responseCode)
         assertTrue(result.purchasesList.isEmpty())
     }
 
@@ -83,7 +83,7 @@ class AppCoinsBillingTest {
 
         val result = appCoinsBilling.queryPurchases(skuType)
 
-        assertEquals(ResponseCode.DEVELOPER_ERROR.value, result.responseCode)
+        assertEquals(ResponseCode.DEVELOPER_ERROR.value, result.billingResult.responseCode)
         assertTrue(result.purchasesList.isEmpty())
     }
 
@@ -184,8 +184,12 @@ class AppCoinsBillingTest {
                 false
             )
         )
-        val SUCCESSFUL_PURCHASES_RESULT = PurchasesResult(PURCHASES_LIST, ResponseCode.OK.value)
-        val DEVELOPER_ERROR_PURCHASES_RESULT = PurchasesResult(PURCHASES_LIST, ResponseCode.DEVELOPER_ERROR.value)
+        val SUCCESSFUL_PURCHASES_RESULT =
+            PurchasesResult(PURCHASES_LIST, BillingResult.newBuilder().setResponseCode(ResponseCode.OK.value).build())
+        val DEVELOPER_ERROR_PURCHASES_RESULT = PurchasesResult(
+            PURCHASES_LIST,
+            BillingResult.newBuilder().setResponseCode(ResponseCode.DEVELOPER_ERROR.value).build()
+        )
 
         val BILLING_FLOW_PARAMS =
             BillingFlowParams("sku", "inapp", "order123", "user12345", "BDS", "user12345", true)
