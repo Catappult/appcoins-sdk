@@ -3,7 +3,7 @@ package com.appcoins.sdk.billing
 import android.app.Activity
 import android.content.Intent
 import android.util.Base64
-import com.appcoins.sdk.billing.CatapultAppcoinsBilling.BillingResponseCode
+import com.appcoins.sdk.billing.AppcoinsBillingClient.BillingResponseCode
 import com.appcoins.sdk.billing.helpers.BillingResultHelper
 import com.appcoins.sdk.billing.usecases.mmp.SendSuccessfulPurchaseResponseEvent
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE

@@ -5,7 +5,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
-import androidx.annotation.NonNull;
 import com.appcoins.communication.requester.MainThreadException;
 import com.appcoins.sdk.billing.activities.UpdateDialogActivity;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
@@ -24,8 +23,6 @@ import com.appcoins.sdk.billing.usecases.GetReferralDeeplink;
 import com.appcoins.sdk.billing.usecases.ingameupdates.IsUpdateAvailable;
 import com.appcoins.sdk.billing.usecases.ingameupdates.LaunchAppUpdate;
 import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import kotlin.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,8 +30,8 @@ import static com.appcoins.sdk.core.logger.Logger.logDebug;
 import static com.appcoins.sdk.core.logger.Logger.logError;
 import static com.appcoins.sdk.core.logger.Logger.logInfo;
 
-public class CatapultAppcoinsBilling
-    implements AppcoinsBillingClient, PendingPurchaseStream.Consumer<Pair<Activity, BuyItemProperties>> {
+public class CatapultAppcoinsBilling extends AppcoinsBillingClient
+    implements PendingPurchaseStream.Consumer<Pair<Activity, BuyItemProperties>> {
 
     private final Billing billing;
     private final RepositoryConnection connection;
@@ -370,73 +367,5 @@ public class CatapultAppcoinsBilling
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
             .sendConsumePurchaseRequest(token);
         billing.consumeAsync(token, consumeResponseListener);
-    }
-
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface BillingResponseCode {
-        /**
-         * Requested Feature is not supported by the SDK Version or the Billing Service used.
-         */
-        int FEATURE_NOT_SUPPORTED = -2;
-        /**
-         * Success
-         */
-        int OK = 0;
-
-        /**
-         * User pressed back or canceled a dialog
-         */
-        int USER_CANCELED = 1;
-
-        /**
-         * The network connection is down
-         */
-        int SERVICE_UNAVAILABLE = 2;
-
-        /**
-         * This billing API version is not supported for the type requested
-         */
-        int BILLING_UNAVAILABLE = 3;
-
-        /**
-         * Requested SKU is not available for purchase
-         */
-        int ITEM_UNAVAILABLE = 4;
-
-        /**
-         * Invalid arguments provided to the API
-         */
-        int DEVELOPER_ERROR = 5;
-
-        /**
-         * Fatal error during the API action
-         */
-        int ERROR = 6;
-
-        /**
-         * Failure to purchase since item is already owned
-         */
-        int ITEM_ALREADY_OWNED = 7;
-
-        /**
-         * Failure to consume since item is not owned
-         */
-        int ITEM_NOT_OWNED = 8;
-    }
-
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ProductType {
-
-        /**
-         * One Time Product type.
-         */
-        @NonNull
-        String INAPP = "inapp";
-
-        /**
-         * Subscription Product type.
-         */
-        @NonNull
-        String SUBS = "subs";
     }
 }

@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.os.IBinder
 import android.os.RemoteException
 import com.appcoins.billing.AppcoinsBilling
+import com.appcoins.sdk.billing.AppcoinsBillingClient.BillingResponseCode
 import com.appcoins.sdk.billing.BillingResult
-import com.appcoins.sdk.billing.CatapultAppcoinsBilling.BillingResponseCode
 import com.appcoins.sdk.billing.LaunchBillingFlowResult
 import com.appcoins.sdk.billing.PurchasesResult
 import com.appcoins.sdk.billing.ResponseCode
