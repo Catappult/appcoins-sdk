@@ -1,6 +1,7 @@
 package com.appcoins.sdk.billing;
 
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
+import com.appcoins.sdk.billing.helpers.BillingResultHelper;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
 import com.appcoins.sdk.core.security.PurchasesSecurityHelper;
@@ -44,22 +45,26 @@ public class AppCoinsBilling implements Billing {
         try {
             PurchasesResult purchasesResult = repository.getPurchases(skuType);
 
-            if (purchasesResult.getResponseCode() != ResponseCode.OK.getValue()) {
-                return new PurchasesResult(new ArrayList<>(), purchasesResult.getResponseCode());
+            if (purchasesResult.getBillingResult()
+                .getResponseCode() != ResponseCode.OK.getValue()) {
+                return new PurchasesResult(new ArrayList<>(), purchasesResult.getBillingResult());
             }
 
-            for (Purchase purchase : purchasesResult.getPurchases()) {
+            for (Purchase purchase : purchasesResult.getPurchasesList()) {
                 String purchaseData = purchase.getOriginalJson();
                 byte[] decodeSignature = purchase.getSignature();
 
                 if (!PurchasesSecurityHelper.INSTANCE.verifyPurchase(purchaseData, decodeSignature)) {
-                    return new PurchasesResult(Collections.emptyList(), ResponseCode.ERROR.getValue());
+                    return new PurchasesResult(Collections.emptyList(),
+                        BillingResultHelper.buildBillingResult(ResponseCode.ERROR.getValue(), null));
                 }
             }
 
             return purchasesResult;
         } catch (ServiceConnectionException e) {
-            return new PurchasesResult(Collections.emptyList(), ResponseCode.SERVICE_UNAVAILABLE.getValue());
+            return new PurchasesResult(Collections.emptyList(),
+                BillingResultHelper.buildBillingResult(ResponseCode.SERVICE_UNAVAILABLE.getValue(),
+                    BillingResultHelper.ERROR_TYPE_SERVICE_NOT_AVAILABLE));
         }
     }
 
@@ -108,11 +113,12 @@ public class AppCoinsBilling implements Billing {
     }
 
     @Override
-    public int isFeatureSupported(FeatureType feature) {
+    public BillingResult isFeatureSupported(FeatureType feature) {
         try {
             return repository.isFeatureSupported(feature);
         } catch (ServiceConnectionException e) {
-            return ResponseCode.SERVICE_UNAVAILABLE.getValue();
+            return BillingResultHelper.buildBillingResult(ResponseCode.SERVICE_UNAVAILABLE.getValue(),
+                BillingResultHelper.ERROR_TYPE_SERVICE_NOT_AVAILABLE);
         }
     }
 

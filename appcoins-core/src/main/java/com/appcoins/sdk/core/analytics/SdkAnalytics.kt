@@ -145,11 +145,11 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkConsumePurchaseEvents.SdkConsumePurchaseRequest(eventData))
     }
 
-    fun sendConsumePurchaseResult(purchaseToken: String?, responseCode: Int) {
+    fun sendConsumePurchaseResult(purchaseToken: String?, responseCode: Int?) {
         val eventData: MutableMap<String, Any> = HashMap()
 
         purchaseToken?.let { eventData[SdkConsumePurchaseLabels.PURCHASE_TOKEN] = it }
-        eventData[SdkConsumePurchaseLabels.RESPONSE_CODE] = responseCode
+        eventData[SdkConsumePurchaseLabels.RESPONSE_CODE] = responseCode ?: -1
 
         logEvent(SdkConsumePurchaseEvents.SdkConsumePurchaseResult(eventData))
     }
@@ -207,10 +207,10 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkIsFeatureSupportedEvents.SdkIsFeatureSupportedRequest(eventData))
     }
 
-    fun sendIsFeatureSupportedResultEvent(result: Int) {
+    fun sendIsFeatureSupportedResultEvent(result: Int?) {
         val eventData: MutableMap<String, Any> = HashMap()
 
-        eventData[SdkIsFeatureSupportedLabels.RESULT] = result
+        eventData[SdkIsFeatureSupportedLabels.RESULT] = result ?: -1
 
         logEvent(SdkIsFeatureSupportedEvents.SdkIsFeatureSupportedResult(eventData))
     }

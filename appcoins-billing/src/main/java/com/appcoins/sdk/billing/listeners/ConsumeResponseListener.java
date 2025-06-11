@@ -1,6 +1,8 @@
 package com.appcoins.sdk.billing.listeners;
 
+import com.appcoins.sdk.billing.BillingResult;
+
 public interface ConsumeResponseListener {
 
-    void onConsumeResponse(int responseCode, String purchaseToken);
+    void onConsumeResponse(BillingResult billingResult, String purchaseToken);
 }

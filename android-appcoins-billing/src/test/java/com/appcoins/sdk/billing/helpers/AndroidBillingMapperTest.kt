@@ -86,8 +86,8 @@ class AndroidBillingMapperTest {
         }
         val result = AndroidBillingMapper.mapPurchases(bundle, INAPP_TYPE)
 
-        assertTrue(result.purchases.isEmpty())
-        assertEquals(result.responseCode, 0)
+        assertTrue(result.purchasesList.isEmpty())
+        assertEquals(result.billingResult.responseCode, 0)
     }
 
     @Test
@@ -98,8 +98,8 @@ class AndroidBillingMapperTest {
         }
         val result = AndroidBillingMapper.mapPurchases(bundle, INAPP_TYPE)
 
-        assertTrue(result.purchases.isEmpty())
-        assertEquals(result.responseCode, 0)
+        assertTrue(result.purchasesList.isEmpty())
+        assertEquals(result.billingResult.responseCode, 0)
     }
 
     @Test
@@ -111,8 +111,8 @@ class AndroidBillingMapperTest {
         }
         val result = AndroidBillingMapper.mapPurchases(bundle, INAPP_TYPE)
 
-        assertTrue(result.purchases.isEmpty())
-        assertEquals(result.responseCode, 0)
+        assertTrue(result.purchasesList.isEmpty())
+        assertEquals(result.billingResult.responseCode, 0)
     }
 
     @Test
@@ -125,8 +125,8 @@ class AndroidBillingMapperTest {
         }
         val result = AndroidBillingMapper.mapPurchases(bundle, INAPP_TYPE)
 
-        assertTrue(result.purchases.isEmpty())
-        assertEquals(result.responseCode, 0)
+        assertTrue(result.purchasesList.isEmpty())
+        assertEquals(result.billingResult.responseCode, 0)
     }
 
     @Test
@@ -139,8 +139,8 @@ class AndroidBillingMapperTest {
         }
         val result = AndroidBillingMapper.mapPurchases(bundle, INAPP_TYPE)
 
-        assertTrue(result.purchases.first().sku.equals("productId"))
-        assertEquals(result.responseCode, 0)
+        assertTrue(result.purchasesList.first().sku.equals("productId"))
+        assertEquals(result.billingResult.responseCode, 0)
     }
 
     private companion object {

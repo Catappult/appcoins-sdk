@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import com.appcoins.billing.AppcoinsBilling;
+import com.appcoins.sdk.billing.BillingResult;
 import com.appcoins.sdk.billing.ConnectionLifeCycle;
 import com.appcoins.sdk.billing.FeatureType;
 import com.appcoins.sdk.billing.LaunchBillingFlowResult;
@@ -45,7 +46,9 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
         isServiceReady = true;
         RetryFailedRequests.INSTANCE.invoke();
         logInfo("Billing Connected, notifying client onBillingSetupFinished(ResponseCode.OK)");
-        listener.onBillingSetupFinished(ResponseCode.OK.getValue());
+        listener.onBillingSetupFinished(BillingResult.newBuilder()
+            .setResponseCode(ResponseCode.OK.getValue())
+            .build());
     }
 
     @Override
@@ -72,7 +75,8 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
             logDebug("Purchases received: " + purchases.toString());
 
             PurchasesResult purchasesResult = AndroidBillingMapper.mapPurchases(purchases, skuType);
-            logInfo("PurchasesResult code: " + purchasesResult.getResponseCode());
+            logInfo("PurchasesResult code: " + purchasesResult.getBillingResult()
+                .getResponseCode());
 
             return purchasesResult;
         } catch (RemoteException e) {
@@ -127,7 +131,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
     }
 
     @Override
-    public int consumeAsync(String purchaseToken) throws ServiceConnectionException {
+    public BillingResult consumeAsync(String purchaseToken) throws ServiceConnectionException {
         logInfo("Executing consumeAsync.");
         logDebug(String.format("Debuggable parameters purchaseToken:%s ", purchaseToken));
 
@@ -141,7 +145,9 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
             int consumeResult = service.consumePurchase(apiVersion, packageName, purchaseToken);
             logInfo("Consume result: " + consumeResult);
 
-            return consumeResult;
+            return BillingResult.newBuilder()
+                .setResponseCode(consumeResult)
+                .build();
         } catch (RemoteException e) {
             logError("Error consumeAsync. ", e);
             throw new ServiceConnectionException(e.getMessage());
@@ -182,7 +188,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
     }
 
     @Override
-    public int isFeatureSupported(FeatureType feature) throws ServiceConnectionException {
+    public BillingResult isFeatureSupported(FeatureType feature) throws ServiceConnectionException {
         logInfo("Executing isFeatureSupported " + feature);
 
         if (!isReady()) {
@@ -191,8 +197,16 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
                 .sendServiceConnectionExceptionEvent(SdkGeneralFailureStep.IS_FEATURE_SUPPORTED);
             throw new ServiceConnectionException();
         }
-        ResponseCode featureSupportedResult = IsFeatureSupported.INSTANCE.invoke(feature);
-        logInfo("Feature supported result: " + featureSupportedResult);
-        return featureSupportedResult.getValue();
+        boolean isFeatureSupported = IsFeatureSupported.INSTANCE.invoke(feature);
+        logInfo("Feature supported result: " + isFeatureSupported);
+        if (isFeatureSupported) {
+            return BillingResult.newBuilder()
+                .setResponseCode(ResponseCode.OK.getValue())
+                .build();
+        } else {
+            return BillingResult.newBuilder()
+                .setResponseCode(ResponseCode.FEATURE_NOT_SUPPORTED.getValue())
+                .build();
+        }
     }
 }

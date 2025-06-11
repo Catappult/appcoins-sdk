@@ -10,6 +10,7 @@ import com.appcoins.communication.requester.MainThreadException;
 import com.appcoins.sdk.billing.activities.UpdateDialogActivity;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.helpers.AnalyticsMappingHelper;
+import com.appcoins.sdk.billing.helpers.BillingResultHelper;
 import com.appcoins.sdk.billing.helpers.PayloadHelper;
 import com.appcoins.sdk.billing.helpers.QueryProductDetailsParamsMapper;
 import com.appcoins.sdk.billing.helpers.WalletUtils;
@@ -87,7 +88,7 @@ public class CatapultAppcoinsBilling
     }
 
     @Override
-    public int launchBillingFlow(Activity activity, BillingFlowParams billingFlowParams) {
+    public BillingResult launchBillingFlow(Activity activity, BillingFlowParams billingFlowParams) {
 
         int responseCode;
 
@@ -101,7 +102,7 @@ public class CatapultAppcoinsBilling
             if (Looper.myLooper() == Looper.getMainLooper()) {
                 SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
                     .sendLaunchPurchaseMainThreadFailureEvent();
-                return handleErrorTypeResponse(ResponseCode.DEVELOPER_ERROR.getValue(),
+                return handleErrorTypeResponse(BillingResponseCode.DEVELOPER_ERROR,
                     new MainThreadException("launchBillingFlow"));
             }
 
@@ -124,12 +125,12 @@ public class CatapultAppcoinsBilling
 
             responseCode = launchBillingFlowResult.getResponseCode();
 
-            if (responseCode != ResponseCode.OK.getValue()) {
+            if (responseCode != BillingResponseCode.OK) {
                 logError("Failed to launch billing flow. ResponseCode: " + responseCode);
                 SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
                 ApplicationUtils.handleActivityResult(sdkPaymentResponse.getResultCode(),
                     sdkPaymentResponse.getIntent(), purchaseFinishedListener);
-                return responseCode;
+                return BillingResultHelper.buildBillingResult(responseCode, null);
             }
 
             Intent buyIntent = launchBillingFlowResult.getBuyIntent();
@@ -141,19 +142,11 @@ public class CatapultAppcoinsBilling
                 activity.startActivity(buyIntent);
             }
         } catch (NullPointerException | ActivityNotFoundException e) {
-            return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e);
+            return handleErrorTypeResponse(BillingResponseCode.ERROR, e);
         } catch (ServiceConnectionException e) {
-            return handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e);
+            return handleErrorTypeResponse(BillingResponseCode.SERVICE_UNAVAILABLE, e);
         }
-        return ResponseCode.OK.getValue();
-    }
-
-    private int handleErrorTypeResponse(int value, Exception e) {
-        logError("Failed to launch billing flow.", e);
-        SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
-        ApplicationUtils.handleActivityResult(sdkPaymentResponse.getResultCode(), sdkPaymentResponse.getIntent(),
-            purchaseFinishedListener);
-        return value;
+        return BillingResultHelper.buildBillingResult(BillingResponseCode.OK, null);
     }
 
     @Override
@@ -235,20 +228,21 @@ public class CatapultAppcoinsBilling
             logInfo("Request from MainThread. Cancelling.");
             SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
                 .sendGetReferralDeeplinkMainThreadFailureEvent();
-            return new ReferralDeeplink(ResponseCode.DEVELOPER_ERROR, null, null);
+            return new ReferralDeeplink(BillingResultHelper.buildBillingResult(BillingResponseCode.DEVELOPER_ERROR,
+                BillingResultHelper.ERROR_TYPE_MAIN_THREAD), null, null);
         } else {
             return GetReferralDeeplink.INSTANCE.invoke();
         }
     }
 
     @Override
-    public int isFeatureSupported(FeatureType feature) {
+    public BillingResult isFeatureSupported(FeatureType feature) {
         logInfo("Request to verify if Feature is supported.");
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
             .sendIsFeatureSupportedRequestEvent(feature.name());
-        int result = billing.isFeatureSupported(feature);
+        BillingResult result = billing.isFeatureSupported(feature);
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
-            .sendIsFeatureSupportedResultEvent(result);
+            .sendIsFeatureSupportedResultEvent(result.getResponseCode());
         return result;
     }
 
@@ -316,6 +310,14 @@ public class CatapultAppcoinsBilling
         } catch (ServiceConnectionException e) {
             handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e);
         }
+    }
+
+    private BillingResult handleErrorTypeResponse(int value, Exception e) {
+        logError("Failed to launch billing flow.", e);
+        SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
+        ApplicationUtils.handleActivityResult(sdkPaymentResponse.getResultCode(), sdkPaymentResponse.getIntent(),
+            purchaseFinishedListener);
+        return BillingResultHelper.buildBillingResult(value, null);
     }
 
     /**

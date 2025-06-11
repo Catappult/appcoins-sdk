@@ -32,7 +32,10 @@ internal object ApplicationUtils {
                 responseCode = ResponseCode.ERROR.value,
                 failureMessage = "Null data in IAB activity result."
             )
-            purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.value, emptyList())
+            purchaseFinishedListener.onPurchasesUpdated(
+                BillingResult.newBuilder().setResponseCode(ResponseCode.ERROR.value).build(),
+                emptyList()
+            )
             return
         }
 
@@ -54,7 +57,10 @@ internal object ApplicationUtils {
                     responseCode = ResponseCode.ERROR.value,
                     failureMessage = "Either purchaseData or dataSignature is null."
                 )
-                purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.value, emptyList())
+                purchaseFinishedListener.onPurchasesUpdated(
+                    BillingResult.newBuilder().setResponseCode(ResponseCode.ERROR.value).build(),
+                    emptyList()
+                )
                 return
             }
 
@@ -82,7 +88,10 @@ internal object ApplicationUtils {
                     purchases.add(purchase)
                     SendSuccessfulPurchaseResponseEvent.invoke(purchase)
                     sdkAnalytics.sendPurchaseResultEvent(responseCode, purchase.token, purchase.sku)
-                    purchaseFinishedListener.onPurchasesUpdated(responseCode, purchases)
+                    purchaseFinishedListener.onPurchasesUpdated(
+                        BillingResult.newBuilder().setResponseCode(responseCode).build(),
+                        purchases
+                    )
                     logInfo("Purchase result successfully sent.")
                 } catch (e: Exception) {
                     logError("Failed to parse purchase data: $e")
@@ -91,7 +100,10 @@ internal object ApplicationUtils {
                         failureMessage = "Purchase failed. Result code: $resultCode."
                     )
                     purchaseFinishedListener
-                        .onPurchasesUpdated(ResponseCode.ERROR.value, emptyList())
+                        .onPurchasesUpdated(
+                            BillingResult.newBuilder().setResponseCode(ResponseCode.ERROR.value).build(),
+                            emptyList()
+                        )
                 }
             } else {
                 logError("Signature verification failed.")
@@ -99,7 +111,10 @@ internal object ApplicationUtils {
                     responseCode = ResponseCode.ERROR.value,
                     failureMessage = "Signature verification failed."
                 )
-                purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.value, emptyList())
+                purchaseFinishedListener.onPurchasesUpdated(
+                    BillingResult.newBuilder().setResponseCode(ResponseCode.ERROR.value).build(),
+                    emptyList()
+                )
             }
         } else if (resultCode == Activity.RESULT_OK) {
             // result code was OK, but in-app billing response was not OK.
@@ -112,12 +127,18 @@ internal object ApplicationUtils {
                 responseCode = responseCode,
                 failureMessage = "Result code was OK but in-app billing response was not OK."
             )
-            purchaseFinishedListener.onPurchasesUpdated(responseCode, emptyList())
+            purchaseFinishedListener.onPurchasesUpdated(
+                BillingResult.newBuilder().setResponseCode(responseCode).build(),
+                emptyList()
+            )
         } else if (resultCode == Activity.RESULT_CANCELED) {
             logInfo("Purchase canceled - Response: " + getResponseDesc(responseCode))
             logDebug("Bundle: $data")
             sdkAnalytics.sendPurchaseResultEvent(responseCode = ResponseCode.USER_CANCELED.value)
-            purchaseFinishedListener.onPurchasesUpdated(ResponseCode.USER_CANCELED.value, emptyList())
+            purchaseFinishedListener.onPurchasesUpdated(
+                BillingResult.newBuilder().setResponseCode(ResponseCode.USER_CANCELED.value).build(),
+                emptyList()
+            )
         } else {
             logError(
                 "Purchase failed. Result code: $resultCode. Response: " +
@@ -128,7 +149,10 @@ internal object ApplicationUtils {
                 responseCode = responseCode,
                 failureMessage = "Purchase failed. Result code: $resultCode."
             )
-            purchaseFinishedListener.onPurchasesUpdated(ResponseCode.ERROR.value, emptyList())
+            purchaseFinishedListener.onPurchasesUpdated(
+                BillingResult.newBuilder().setResponseCode(ResponseCode.ERROR.value).build(),
+                emptyList()
+            )
         }
     }
 

@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.os.IBinder
 import android.os.RemoteException
 import com.appcoins.billing.AppcoinsBilling
+import com.appcoins.sdk.billing.BillingResult
+import com.appcoins.sdk.billing.CatapultAppcoinsBilling.BillingResponseCode
 import com.appcoins.sdk.billing.LaunchBillingFlowResult
 import com.appcoins.sdk.billing.PurchasesResult
 import com.appcoins.sdk.billing.ResponseCode
@@ -105,7 +107,8 @@ class AppCoinsAndroidBillingRepositoryTest {
 
         mockkStatic(AndroidBillingMapper::class)
 
-        val purchaseResult = PurchasesResult(emptyList(), ResponseCode.OK.value)
+        val purchaseResult =
+            PurchasesResult(emptyList(), mockBillingResultOk)
 
         every {
             mockAppcoinsBilling.getPurchases(
@@ -273,7 +276,7 @@ class AppCoinsAndroidBillingRepositoryTest {
 
         val result = appCoinsAndroidBillingRepository.consumeAsync(EMPTY_STRING)
 
-        assertEquals(result, ResponseCode.OK.value)
+        assertEquals(result, mockBillingResultOk)
     }
 
     @Test(expected = ServiceConnectionException::class)
@@ -360,6 +363,8 @@ class AppCoinsAndroidBillingRepositoryTest {
         mockkStatic(WalletBinderUtil::class)
         mockkStatic(AppcoinsBillingStubHelper.Stub::class)
         mockkObject(RetryFailedRequests)
+        mockkStatic(BillingResult.Builder::class)
+        mockkObject(BillingResult)
 
         val mockkComponentName = mockk<ComponentName>()
         val mockkIBinder = mockk<IBinder>()
@@ -369,7 +374,8 @@ class AppCoinsAndroidBillingRepositoryTest {
         every { RetryFailedRequests.invoke() } just runs
         every { WalletBinderUtil.bindType } returns BindType.BILLING_SERVICE_NOT_INSTALLED
         every { AppcoinsBillingStubHelper.Stub.asInterface(mockkIBinder) } returns mockAppcoinsBilling
-        every { mockkAppCoinsBillingStateListener.onBillingSetupFinished(ResponseCode.OK.value) } just runs
+        every { mockkAppCoinsBillingStateListener.onBillingSetupFinished(mockBillingResultOk) } just runs
+        every { BillingResult.newBuilder().setResponseCode(BillingResponseCode.OK).build() } returns mockBillingResultOk
 
         appCoinsAndroidBillingRepository.onConnect(
             mockkComponentName,
@@ -379,7 +385,7 @@ class AppCoinsAndroidBillingRepositoryTest {
 
         verify(exactly = 1) {
             RetryFailedRequests.invoke()
-            mockkAppCoinsBillingStateListener.onBillingSetupFinished(ResponseCode.OK.value)
+            mockkAppCoinsBillingStateListener.onBillingSetupFinished(mockBillingResultOk)
         }
     }
 
@@ -390,5 +396,7 @@ class AppCoinsAndroidBillingRepositoryTest {
         const val EMPTY_STRING = ""
         val EMPTY_STRING_LIST = emptyList<String>()
         val EMPTY_BUNDLE = Bundle()
+
+        val mockBillingResultOk = BillingResult.newBuilder().setResponseCode(BillingResponseCode.OK).build()
     }
 }
