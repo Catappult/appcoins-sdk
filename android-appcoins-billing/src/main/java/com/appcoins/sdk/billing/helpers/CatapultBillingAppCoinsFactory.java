@@ -13,6 +13,10 @@ import com.appcoins.sdk.core.security.PurchasesSecurityHelper;
 
 import static com.appcoins.sdk.core.logger.Logger.logInfo;
 
+/**
+ * This class is deprecated, use {@link AppcoinsBillingClient#newBuilder(Context)} instead.
+ */
+@Deprecated
 public class CatapultBillingAppCoinsFactory {
 
     @SuppressWarnings("checkstyle:methodnamecheck")

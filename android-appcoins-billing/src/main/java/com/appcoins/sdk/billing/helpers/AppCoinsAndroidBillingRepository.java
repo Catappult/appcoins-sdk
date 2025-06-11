@@ -26,7 +26,7 @@ import static com.appcoins.sdk.core.logger.Logger.logDebug;
 import static com.appcoins.sdk.core.logger.Logger.logError;
 import static com.appcoins.sdk.core.logger.Logger.logInfo;
 
-class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycle {
+public class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycle {
     private final int apiVersion;
     private final String packageName;
     private AppcoinsBilling service;
