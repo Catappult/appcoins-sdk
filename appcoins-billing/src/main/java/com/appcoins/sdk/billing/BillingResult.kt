@@ -6,7 +6,7 @@ package com.appcoins.sdk.billing
  * @param responseCode BillingResponseCode with the integer value for the response.
  * @param debugMessage Error message if present for debugging purposes.
  */
-class BillingResult internal constructor(val responseCode: Int, val debugMessage: String? = "") {
+class BillingResult internal constructor(val responseCode: Int, val debugMessage: String?) {
 
     companion object {
         @JvmStatic
@@ -17,14 +17,14 @@ class BillingResult internal constructor(val responseCode: Int, val debugMessage
 
     class Builder internal constructor() {
         private var responseCode: Int? = null
-        private var debugMessage: String = ""
+        private var debugMessage: String? = null
 
         fun setResponseCode(responseCode: Int): Builder {
             this.responseCode = responseCode
             return this
         }
 
-        fun setDebugMessage(debugMessage: String): Builder {
+        fun setDebugMessage(debugMessage: String?): Builder {
             this.debugMessage = debugMessage
             return this
         }

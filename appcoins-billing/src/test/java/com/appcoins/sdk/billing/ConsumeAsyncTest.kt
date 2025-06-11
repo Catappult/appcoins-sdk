@@ -1,12 +1,11 @@
 package com.appcoins.sdk.billing
 
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException
-import com.appcoins.sdk.billing.helpers.BillingResultHelper
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
-import io.mockk.mockkStatic
+import io.mockk.mockkObject
 import io.mockk.runs
 import io.mockk.verify
 import org.junit.Before
@@ -24,7 +23,7 @@ class ConsumeAsyncTest {
 
     @Before
     fun setup() {
-        mockkStatic(BillingResultHelper::class)
+        mockkObject(BillingResult)
     }
 
     @Test
@@ -38,10 +37,10 @@ class ConsumeAsyncTest {
 
         every { mockkConsumeResponseListener.onConsumeResponse(mockBillingResult, null) } just runs
         every {
-            BillingResultHelper.buildBillingResult(
-                ResponseCode.DEVELOPER_ERROR.value,
-                BillingResultHelper.ERROR_TYPE_PURCHASE_TOKEN_CANNOT_BE_NULL
-            )
+            BillingResult.newBuilder()
+                .setResponseCode(ResponseCode.DEVELOPER_ERROR.value)
+                .setDebugMessage("Purchase token cannot be null or empty.")
+                .build()
         } returns mockBillingResult
 
         consumeAsync.run()
@@ -61,12 +60,11 @@ class ConsumeAsyncTest {
             .build()
 
         every { mockkConsumeResponseListener.onConsumeResponse(mockBillingResult, null) } just runs
-
         every {
-            BillingResultHelper.buildBillingResult(
-                ResponseCode.DEVELOPER_ERROR.value,
-                BillingResultHelper.ERROR_TYPE_PURCHASE_TOKEN_CANNOT_BE_NULL
-            )
+            BillingResult.newBuilder()
+                .setResponseCode(ResponseCode.DEVELOPER_ERROR.value)
+                .setDebugMessage("Purchase token cannot be null or empty.")
+                .build()
         } returns mockBillingResult
 
         consumeAsync.run()
@@ -87,6 +85,11 @@ class ConsumeAsyncTest {
 
         every { mockkRepository.consumeAsync(token) } returns mockBillingResult
         every { mockkConsumeResponseListener.onConsumeResponse(mockBillingResult, token) } just runs
+        every {
+            BillingResult.newBuilder()
+                .setResponseCode(ResponseCode.OK.value)
+                .build()
+        } returns mockBillingResult
 
         consumeAsync.run()
 
@@ -108,10 +111,10 @@ class ConsumeAsyncTest {
         every { mockkRepository.consumeAsync(token) } throws ServiceConnectionException()
         every { mockkConsumeResponseListener.onConsumeResponse(mockBillingResult, null) } just runs
         every {
-            BillingResultHelper.buildBillingResult(
-                ResponseCode.SERVICE_UNAVAILABLE.value,
-                BillingResultHelper.ERROR_TYPE_SERVICE_NOT_AVAILABLE
-            )
+            BillingResult.newBuilder()
+                .setResponseCode(ResponseCode.SERVICE_UNAVAILABLE.value)
+                .setDebugMessage("Service not available.")
+                .build()
         } returns mockBillingResult
 
         consumeAsync.run()

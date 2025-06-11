@@ -37,9 +37,11 @@ public class AppCoinsBilling implements Billing {
             querySubsPurchasesThread = new Thread(purchasesAsync);
             querySubsPurchasesThread.start();
         } else {
-            purchasesResponseListener.onQueryPurchasesResponse(
-                BillingResultHelper.buildBillingResult(ResponseCode.DEVELOPER_ERROR.getValue(),
-                    BillingResultHelper.ERROR_TYPE_INVALID_PRODUCT_TYPE), emptyList());
+            purchasesResponseListener.onQueryPurchasesResponse(BillingResult.newBuilder()
+                .setResponseCode(ResponseCode.DEVELOPER_ERROR.getValue())
+                .setDebugMessage(
+                    BillingResultHelper.getMessageFromErrorType(BillingResultHelper.ERROR_TYPE_INVALID_PRODUCT_TYPE))
+                .build(), emptyList());
             logError("Invalid product type: " + queryPurchasesParams.getProductType());
         }
     }
@@ -59,16 +61,19 @@ public class AppCoinsBilling implements Billing {
                 byte[] decodeSignature = Base64.decode(purchase.getSignature(), Base64.DEFAULT);
 
                 if (!PurchasesSecurityHelper.INSTANCE.verifyPurchase(purchaseData, decodeSignature)) {
-                    return new PurchasesResult(emptyList(),
-                        BillingResultHelper.buildBillingResult(ResponseCode.ERROR.getValue(), null));
+                    return new PurchasesResult(emptyList(), BillingResult.newBuilder()
+                        .setResponseCode(ResponseCode.ERROR.getValue())
+                        .build());
                 }
             }
 
             return purchasesResult;
         } catch (ServiceConnectionException e) {
-            return new PurchasesResult(emptyList(),
-                BillingResultHelper.buildBillingResult(ResponseCode.SERVICE_UNAVAILABLE.getValue(),
-                    BillingResultHelper.ERROR_TYPE_SERVICE_NOT_AVAILABLE));
+            return new PurchasesResult(emptyList(), BillingResult.newBuilder()
+                .setResponseCode(ResponseCode.SERVICE_UNAVAILABLE.getValue())
+                .setDebugMessage(
+                    BillingResultHelper.getMessageFromErrorType(BillingResultHelper.ERROR_TYPE_SERVICE_NOT_AVAILABLE))
+                .build());
         }
     }
 
@@ -121,8 +126,11 @@ public class AppCoinsBilling implements Billing {
         try {
             return repository.isFeatureSupported(feature);
         } catch (ServiceConnectionException e) {
-            return BillingResultHelper.buildBillingResult(ResponseCode.SERVICE_UNAVAILABLE.getValue(),
-                BillingResultHelper.ERROR_TYPE_SERVICE_NOT_AVAILABLE);
+            return BillingResult.newBuilder()
+                .setResponseCode(ResponseCode.SERVICE_UNAVAILABLE.getValue())
+                .setDebugMessage(
+                    BillingResultHelper.getMessageFromErrorType(BillingResultHelper.ERROR_TYPE_SERVICE_NOT_AVAILABLE))
+                .build();
         }
     }
 
