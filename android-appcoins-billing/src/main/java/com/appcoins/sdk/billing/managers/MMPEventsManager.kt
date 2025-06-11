@@ -40,7 +40,7 @@ object MMPEventsManager {
             packageName,
             attributionSharedPreferences.getOemId(),
             walletId,
-            purchase.sku,
+            purchase.products.first(),
             orderId,
             purchaseValue,
             paymentMethod,

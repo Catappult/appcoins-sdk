@@ -1,15 +1,16 @@
 package com.appcoins.sdk.billing;
 
+import android.util.Base64;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.helpers.BillingResultHelper;
 import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
 import com.appcoins.sdk.core.security.PurchasesSecurityHelper;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import static com.appcoins.sdk.core.logger.Logger.logError;
 import static com.appcoins.sdk.core.logger.Logger.logWarning;
+import static java.util.Collections.emptyList;
 
 public class AppCoinsBilling implements Billing {
     private final Repository repository;
@@ -36,6 +37,9 @@ public class AppCoinsBilling implements Billing {
             querySubsPurchasesThread = new Thread(purchasesAsync);
             querySubsPurchasesThread.start();
         } else {
+            purchasesResponseListener.onQueryPurchasesResponse(
+                BillingResultHelper.buildBillingResult(ResponseCode.DEVELOPER_ERROR.getValue(),
+                    BillingResultHelper.ERROR_TYPE_INVALID_PRODUCT_TYPE), emptyList());
             logError("Invalid product type: " + queryPurchasesParams.getProductType());
         }
     }
@@ -52,17 +56,17 @@ public class AppCoinsBilling implements Billing {
 
             for (Purchase purchase : purchasesResult.getPurchasesList()) {
                 String purchaseData = purchase.getOriginalJson();
-                byte[] decodeSignature = purchase.getSignature();
+                byte[] decodeSignature = Base64.decode(purchase.getSignature(), Base64.DEFAULT);
 
                 if (!PurchasesSecurityHelper.INSTANCE.verifyPurchase(purchaseData, decodeSignature)) {
-                    return new PurchasesResult(Collections.emptyList(),
+                    return new PurchasesResult(emptyList(),
                         BillingResultHelper.buildBillingResult(ResponseCode.ERROR.getValue(), null));
                 }
             }
 
             return purchasesResult;
         } catch (ServiceConnectionException e) {
-            return new PurchasesResult(Collections.emptyList(),
+            return new PurchasesResult(emptyList(),
                 BillingResultHelper.buildBillingResult(ResponseCode.SERVICE_UNAVAILABLE.getValue(),
                     BillingResultHelper.ERROR_TYPE_SERVICE_NOT_AVAILABLE));
         }

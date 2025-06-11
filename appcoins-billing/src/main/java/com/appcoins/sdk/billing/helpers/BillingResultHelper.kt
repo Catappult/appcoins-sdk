@@ -17,6 +17,7 @@ object BillingResultHelper {
                         ERROR_TYPE_PURCHASE_TOKEN_CANNOT_BE_NULL ->
                             setDebugMessage("Purchase token cannot be null or empty.")
 
+                        ERROR_TYPE_INVALID_PRODUCT_TYPE -> setDebugMessage("Invalid product type.")
                         else -> setDebugMessage("Unknown error")
                     }
                 }
@@ -28,4 +29,5 @@ object BillingResultHelper {
     const val ERROR_TYPE_MAIN_THREAD = 1
     const val ERROR_TYPE_SERVICE_NOT_AVAILABLE = 2
     const val ERROR_TYPE_PURCHASE_TOKEN_CANNOT_BE_NULL = 3
+    const val ERROR_TYPE_INVALID_PRODUCT_TYPE = 4
 }

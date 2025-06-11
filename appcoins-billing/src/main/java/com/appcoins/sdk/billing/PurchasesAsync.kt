@@ -1,5 +1,6 @@
 package com.appcoins.sdk.billing
 
+import android.util.Base64
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException
 import com.appcoins.sdk.billing.helpers.AnalyticsMappingHelper
 import com.appcoins.sdk.billing.helpers.BillingResultHelper
@@ -29,7 +30,11 @@ class PurchasesAsync(
                 val purchaseData = purchase.originalJson
                 val decodeSignature = purchase.signature
 
-                if (!PurchasesSecurityHelper.verifyPurchase(purchaseData, decodeSignature)) {
+                if (!PurchasesSecurityHelper.verifyPurchase(
+                        purchaseData,
+                        Base64.decode(decodeSignature, Base64.DEFAULT)
+                    )
+                ) {
                     purchasesResponseListener.onQueryPurchasesResponse(
                         BillingResultHelper.buildBillingResult(
                             ResponseCode.DEVELOPER_ERROR.value,

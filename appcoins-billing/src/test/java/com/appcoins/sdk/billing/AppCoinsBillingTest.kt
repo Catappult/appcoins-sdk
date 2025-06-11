@@ -170,17 +170,16 @@ class AppCoinsBillingTest {
         val BASE_64_DECODED_PUBLIC_KEY = ByteArray(1)
         val PURCHASES_LIST = listOf(
             Purchase(
-                "orderId",
-                "itemType",
-                "originalJson",
-                byteArrayOf(),
-                0,
-                0,
+                null,
                 "developerPayload",
-                "obfuscatedAccountId",
-                "token",
+                "orderId",
+                "originalJson",
                 "packageName",
-                "sku",
+                listOf("product"),
+                0,
+                0,
+                "purchaseToken",
+                "c2lnbmF0dXJl",
                 false
             )
         )
