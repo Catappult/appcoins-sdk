@@ -127,7 +127,9 @@ public class CatapultAppcoinsBilling extends AppcoinsBillingClient
                 SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
                 ApplicationUtils.handleActivityResult(sdkPaymentResponse.getResultCode(),
                     sdkPaymentResponse.getIntent(), purchaseFinishedListener);
-                return BillingResultHelper.buildBillingResult(responseCode, null);
+                return BillingResult.newBuilder()
+                    .setResponseCode(responseCode)
+                    .build();
             }
 
             Intent buyIntent = launchBillingFlowResult.getBuyIntent();
@@ -143,7 +145,9 @@ public class CatapultAppcoinsBilling extends AppcoinsBillingClient
         } catch (ServiceConnectionException e) {
             return handleErrorTypeResponse(BillingResponseCode.SERVICE_UNAVAILABLE, e);
         }
-        return BillingResultHelper.buildBillingResult(BillingResponseCode.OK, null);
+        return BillingResult.newBuilder()
+            .setResponseCode(BillingResponseCode.OK)
+            .build();
     }
 
     @Override
@@ -225,8 +229,11 @@ public class CatapultAppcoinsBilling extends AppcoinsBillingClient
             logInfo("Request from MainThread. Cancelling.");
             SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
                 .sendGetReferralDeeplinkMainThreadFailureEvent();
-            return new ReferralDeeplink(BillingResultHelper.buildBillingResult(BillingResponseCode.DEVELOPER_ERROR,
-                BillingResultHelper.ERROR_TYPE_MAIN_THREAD), null, null);
+            return new ReferralDeeplink(BillingResult.newBuilder()
+                .setResponseCode(BillingResponseCode.DEVELOPER_ERROR)
+                .setDebugMessage(
+                    BillingResultHelper.getMessageFromErrorType(BillingResultHelper.ERROR_TYPE_MAIN_THREAD))
+                .build(), null, null);
         } else {
             return GetReferralDeeplink.INSTANCE.invoke();
         }
@@ -314,7 +321,9 @@ public class CatapultAppcoinsBilling extends AppcoinsBillingClient
         SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
         ApplicationUtils.handleActivityResult(sdkPaymentResponse.getResultCode(), sdkPaymentResponse.getIntent(),
             purchaseFinishedListener);
-        return BillingResultHelper.buildBillingResult(value, null);
+        return BillingResult.newBuilder()
+            .setResponseCode(value)
+            .build();
     }
 
     /**

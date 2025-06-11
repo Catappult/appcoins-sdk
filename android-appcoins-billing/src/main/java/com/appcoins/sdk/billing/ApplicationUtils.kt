@@ -159,10 +159,12 @@ internal object ApplicationUtils {
             failureMessage = "Signature verification failed."
         )
         purchaseFinishedListener.onPurchasesUpdated(
-            BillingResultHelper.buildBillingResult(
-                BillingResponseCode.DEVELOPER_ERROR,
-                BillingResultHelper.ERROR_TYPE_INVALID_PUBLIC_KEY
-            ),
+            BillingResult.newBuilder()
+                .setResponseCode(BillingResponseCode.DEVELOPER_ERROR)
+                .setDebugMessage(
+                    BillingResultHelper.getMessageFromErrorType(BillingResultHelper.ERROR_TYPE_INVALID_PUBLIC_KEY)
+                )
+                .build(),
             emptyList()
         )
     }

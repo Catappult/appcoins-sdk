@@ -20,8 +20,11 @@ public class ConsumeAsync implements Runnable {
     @Override
     public void run() {
         if (token == null || token.isEmpty()) {
-            listener.onConsumeResponse(BillingResultHelper.buildBillingResult(ResponseCode.DEVELOPER_ERROR.getValue(),
-                BillingResultHelper.ERROR_TYPE_PURCHASE_TOKEN_CANNOT_BE_NULL), null);
+            listener.onConsumeResponse(BillingResult.newBuilder()
+                .setResponseCode(ResponseCode.DEVELOPER_ERROR.getValue())
+                .setDebugMessage(BillingResultHelper.getMessageFromErrorType(
+                    BillingResultHelper.ERROR_TYPE_PURCHASE_TOKEN_CANNOT_BE_NULL))
+                .build(), null);
             SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
                 .sendConsumePurchaseResult(null, ResponseCode.DEVELOPER_ERROR.getValue());
             return;
@@ -34,9 +37,11 @@ public class ConsumeAsync implements Runnable {
             SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
                 .sendConsumePurchaseResult(token, billingResult.getResponseCode());
         } catch (ServiceConnectionException e) {
-            listener.onConsumeResponse(
-                BillingResultHelper.buildBillingResult(ResponseCode.SERVICE_UNAVAILABLE.getValue(),
-                    BillingResultHelper.ERROR_TYPE_SERVICE_NOT_AVAILABLE), null);
+            listener.onConsumeResponse(BillingResult.newBuilder()
+                .setResponseCode(ResponseCode.SERVICE_UNAVAILABLE.getValue())
+                .setDebugMessage(
+                    BillingResultHelper.getMessageFromErrorType(BillingResultHelper.ERROR_TYPE_SERVICE_NOT_AVAILABLE))
+                .build(), null);
             SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
                 .sendConsumePurchaseResult(token, ResponseCode.SERVICE_UNAVAILABLE.getValue());
         }

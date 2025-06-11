@@ -36,10 +36,12 @@ class PurchasesAsync(
                     )
                 ) {
                     purchasesResponseListener.onQueryPurchasesResponse(
-                        BillingResultHelper.buildBillingResult(
-                            ResponseCode.DEVELOPER_ERROR.value,
-                            BillingResultHelper.ERROR_TYPE_INVALID_PUBLIC_KEY
-                        ),
+                        BillingResult.newBuilder().setResponseCode(ResponseCode.DEVELOPER_ERROR.value)
+                            .setDebugMessage(
+                                BillingResultHelper
+                                    .getMessageFromErrorType(BillingResultHelper.ERROR_TYPE_INVALID_PUBLIC_KEY)
+                            )
+                            .build(),
                         emptyList()
                     )
                     sdkAnalytics.sendQueryPurchasesResultEvent(null)
@@ -58,7 +60,7 @@ class PurchasesAsync(
         } catch (e: ServiceConnectionException) {
             logError("Service is not ready to request Purchases: $e")
             purchasesResponseListener.onQueryPurchasesResponse(
-                BillingResult(ResponseCode.SERVICE_UNAVAILABLE.value),
+                BillingResult.newBuilder().setResponseCode(ResponseCode.SERVICE_UNAVAILABLE.value).build(),
                 emptyList()
             )
             sdkAnalytics.sendQueryPurchasesResultEvent(null)
