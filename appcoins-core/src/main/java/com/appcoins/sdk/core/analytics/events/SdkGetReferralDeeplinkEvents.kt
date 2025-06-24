@@ -50,7 +50,6 @@ enum class SdkGetReferralDeeplinkProperties(
     override val key: String,
     override val eventName: String,
     override val id: Int,
-    override val skip: Boolean = false
 ) : Property {
-    DEEPLINK_FROM_DEEPLINK_RESULT(DEEPLINK, SDK_GET_REFERRAL_DEEPLINK_RESULT, 600, true),
+    DEEPLINK_FROM_DEEPLINK_RESULT(DEEPLINK, SDK_GET_REFERRAL_DEEPLINK_RESULT, 600),
 }

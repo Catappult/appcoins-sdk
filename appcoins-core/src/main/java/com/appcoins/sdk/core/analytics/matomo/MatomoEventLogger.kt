@@ -26,25 +26,7 @@ import org.matomo.sdk.extra.TrackHelper
 object MatomoEventLogger : EventLogger {
 
     private var tracker: Tracker? = null
-    private val allProperties: List<Property> by lazy {
-        val mutableList = mutableListOf<Property>()
-        mutableList.addAll(SdkGeneralProperties.values())
-        mutableList.addAll(SdkAppUpdateAvailableProperties.values())
-        mutableList.addAll(SdkBackendRequestsProperties.values())
-        mutableList.addAll(SdkConsumePurchaseProperties.values())
-        mutableList.addAll(SdkGeneralFailureProperties.values())
-        mutableList.addAll(SdkGetReferralDeeplinkProperties.values())
-        mutableList.addAll(SdkInitializationProperties.values())
-        mutableList.addAll(SdkInstallWalletDialogProperties.values())
-        mutableList.addAll(SdkIsFeatureSupportedProperties.values())
-        mutableList.addAll(SdkLaunchAppUpdateDialogProperties.values())
-        mutableList.addAll(SdkLaunchAppUpdateProperties.values())
-        mutableList.addAll(SdkPurchaseFlowProperties.values())
-        mutableList.addAll(SdkQueryPurchasesProperties.values())
-        mutableList.addAll(SdkQuerySkuDetailsProperties.values())
-        mutableList.addAll(SdkWebPaymentFlowProperties.values())
-        mutableList.filter { !it.skip }
-    }
+    private var allProperties: List<Property> = emptyList()
     private const val GENERAL_PROPERTIES_EVENT_NAME = "general_properties"
 
     override fun initialize(context: Context?, key: String?, domain: String?) {
@@ -52,6 +34,7 @@ object MatomoEventLogger : EventLogger {
             tracker = TrackerBuilder
                 .createDefault("$domain?api_key=$key", 1)
                 .build(Matomo.getInstance(context))
+            setupProperties()
         }
     }
 
@@ -85,4 +68,25 @@ object MatomoEventLogger : EventLogger {
 
     private fun List<Property>.findPropertyId(eventName: String, key: String) =
         firstOrNull { it.eventName == GENERAL_PROPERTIES_EVENT_NAME || (it.eventName == eventName && it.key == key) }
+
+    private fun setupProperties() {
+        val propertiesIds = SdkAnalyticsUtils.analyticsPropertiesIds ?: SdkAnalyticsUtils.defaultAnalyticsPropertiesIds
+        val properties = mutableListOf<Property>()
+        properties.addAll(SdkGeneralProperties.entries)
+        properties.addAll(SdkAppUpdateAvailableProperties.entries)
+        properties.addAll(SdkBackendRequestsProperties.entries)
+        properties.addAll(SdkConsumePurchaseProperties.entries)
+        properties.addAll(SdkGeneralFailureProperties.entries)
+        properties.addAll(SdkGetReferralDeeplinkProperties.entries)
+        properties.addAll(SdkInitializationProperties.entries)
+        properties.addAll(SdkInstallWalletDialogProperties.entries)
+        properties.addAll(SdkIsFeatureSupportedProperties.entries)
+        properties.addAll(SdkLaunchAppUpdateDialogProperties.entries)
+        properties.addAll(SdkLaunchAppUpdateProperties.entries)
+        properties.addAll(SdkPurchaseFlowProperties.entries)
+        properties.addAll(SdkQueryPurchasesProperties.entries)
+        properties.addAll(SdkQuerySkuDetailsProperties.entries)
+        properties.addAll(SdkWebPaymentFlowProperties.entries)
+        allProperties = properties.filter { propertiesIds.contains(it.id) }
+    }
 }

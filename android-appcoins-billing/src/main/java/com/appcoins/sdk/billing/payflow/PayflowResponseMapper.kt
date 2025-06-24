@@ -18,7 +18,7 @@ class PayflowResponseMapper {
                 "Failed to obtain Payflow Response. " +
                     "ResponseCode: ${response.responseCode} | Cause: ${response.exception}"
             )
-            return PayflowMethodResponse(response.responseCode, arrayListOf(), null)
+            return PayflowMethodResponse(response.responseCode, arrayListOf(), null, null, null, null)
         }
 
         val paymentFlowList = mapPaymentFlowMethods(response)
@@ -26,7 +26,19 @@ class PayflowResponseMapper {
         val analyticsFlowSeverityLevels: ArrayList<AnalyticsFlowSeverityLevel>? =
             mapAnalyticsFlowSeverityLevels(response)
 
-        return PayflowMethodResponse(response.responseCode, paymentFlowList, analyticsFlowSeverityLevels)
+        val analyticsPropertiesIds: ArrayList<Int>? = mapAnalyticsPropertiesIds(response)
+
+        val matomoUrl = getMatomoUrl(response)
+        val matomoApiKey = getMatomoApiKey(response)
+
+        return PayflowMethodResponse(
+            response.responseCode,
+            paymentFlowList,
+            analyticsFlowSeverityLevels,
+            analyticsPropertiesIds,
+            matomoUrl,
+            matomoApiKey,
+        )
     }
 
     private fun mapPaymentFlowMethods(response: RequestResponse): ArrayList<PaymentFlowMethod> =
@@ -43,8 +55,9 @@ class PayflowResponseMapper {
                                     arrayList.add(it.optInt(i))
                                 }
                                 arrayList.mapNotNull { featureInt ->
-                                    FeatureType.values()
-                                        .find { featureTypeValue -> featureTypeValue.value == featureInt }
+                                    FeatureType.entries.find { featureTypeValue ->
+                                        featureTypeValue.value == featureInt
+                                    }
                                 }
                             }
                         when (methodName) {
@@ -100,6 +113,53 @@ class PayflowResponseMapper {
                 }
         }.getOrElse {
             logError("There was an error mapping the AnalyticsFlowSeverityLevels.", Exception(it))
+            SdkAnalyticsUtils.sdkAnalytics.sendBackendMappingFailureEvent(
+                SdkBackendRequestType.PAYMENT_FLOW,
+                response.response,
+                Exception(it).toString()
+            )
+            null
+        }
+
+    private fun mapAnalyticsPropertiesIds(response: RequestResponse): ArrayList<Int>? =
+        runCatching {
+            JSONObject(response.response).optJSONArray("analytics_properties_ids")
+                ?.let { analyticsPropertiesIdsJsonArray ->
+                    val analyticsPropertiesIds = arrayListOf<Int>()
+                    for (i in 0 until analyticsPropertiesIdsJsonArray.length()) {
+                        val propertyId = analyticsPropertiesIdsJsonArray.optInt(i)
+                        analyticsPropertiesIds.add(propertyId)
+                    }
+                    analyticsPropertiesIds
+                }
+        }.getOrElse {
+            logError("There was an error mapping the AnalyticsFlowSeverityLevels.", Exception(it))
+            SdkAnalyticsUtils.sdkAnalytics.sendBackendMappingFailureEvent(
+                SdkBackendRequestType.PAYMENT_FLOW,
+                response.response,
+                Exception(it).toString()
+            )
+            null
+        }
+
+    private fun getMatomoUrl(response: RequestResponse): String? =
+        runCatching {
+            JSONObject(response.response).optString("matomo_url").takeIf { it.isNotEmpty() }
+        }.getOrElse {
+            logError("There was an error mapping the MatomoUrl.", Exception(it))
+            SdkAnalyticsUtils.sdkAnalytics.sendBackendMappingFailureEvent(
+                SdkBackendRequestType.PAYMENT_FLOW,
+                response.response,
+                Exception(it).toString()
+            )
+            null
+        }
+
+    private fun getMatomoApiKey(response: RequestResponse): String? =
+        runCatching {
+            JSONObject(response.response).optString("matomo_api_key").takeIf { it.isNotEmpty() }
+        }.getOrElse {
+            logError("There was an error mapping the MatomoApiKey.", Exception(it))
             SdkAnalyticsUtils.sdkAnalytics.sendBackendMappingFailureEvent(
                 SdkBackendRequestType.PAYMENT_FLOW,
                 response.response,

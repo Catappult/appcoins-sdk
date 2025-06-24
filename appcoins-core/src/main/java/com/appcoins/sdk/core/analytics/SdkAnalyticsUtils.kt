@@ -16,6 +16,11 @@ object SdkAnalyticsUtils {
             field = value
             logInfo(value.toString())
         }
+    var analyticsPropertiesIds: List<Int>? = null
+        set(value) {
+            field = value
+            logInfo(value.toString())
+        }
     val defaultAnalyticsFlowSeverityLevels =
         listOf(
             AnalyticsFlowSeverityLevel(flow = CONSUME_PURCHASE_FLOW, 1),
@@ -24,6 +29,22 @@ object SdkAnalyticsUtils {
             AnalyticsFlowSeverityLevel(flow = WEB_PAYMENT_FLOW, 2),
             AnalyticsFlowSeverityLevel(flow = INSTALL_WALLET_DIALOG_FLOW, 1),
         )
+
+    @Suppress("MagicNumber")
+    val defaultAnalyticsPropertiesIds = listOf(
+        1, // SDK Version Code
+        10, // Game Package Name
+        400, // Consume Result
+        410, // Consume Request Purchase Token
+        780, // Service From Service Connection Failure
+        900, // Wallet Install Action
+        1300, // Sku From Launch Purchase
+        1301, // Sku From Purchase Result
+        1370, // Failure Message From Purchase Result
+        1380, // Response Code From Purchase Result
+        1390, // Purchase Token From Purchase Result
+        1600, // Url From Start Web Payment
+    )
     var isAnalyticsSetupFromPayflowFinalized: Boolean = false
         set(value) {
             field = value

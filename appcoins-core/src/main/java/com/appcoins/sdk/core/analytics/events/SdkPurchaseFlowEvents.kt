@@ -82,7 +82,6 @@ enum class SdkPurchaseFlowProperties(
     override val key: String,
     override val eventName: String,
     override val id: Int,
-    override val skip: Boolean = false
 ) : Property {
     SKU_FROM_LAUNCH_PURCHASE(SKU, SDK_LAUNCH_PURCHASE, 1300),
     SKU_FROM_PURCHASE_RESULT(SKU, SDK_PURCHASE_RESULT, 1301),

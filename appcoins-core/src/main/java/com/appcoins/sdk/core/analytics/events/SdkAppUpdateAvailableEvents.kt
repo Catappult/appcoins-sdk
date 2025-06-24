@@ -60,8 +60,7 @@ object SdkAppUpdateAvailableLabels {
 enum class SdkAppUpdateAvailableProperties(
     override val key: String,
     override val eventName: String,
-    override val id: Int,
-    override val skip: Boolean = false
+    override val id: Int
 ) : Property {
-    RESULT_FROM_APP_UPDATE_AVAILABLE(RESULT, SDK_APP_UPDATE_AVAILABLE_RESULT, 100, true),
+    RESULT_FROM_APP_UPDATE_AVAILABLE(RESULT, SDK_APP_UPDATE_AVAILABLE_RESULT, 100),
 }

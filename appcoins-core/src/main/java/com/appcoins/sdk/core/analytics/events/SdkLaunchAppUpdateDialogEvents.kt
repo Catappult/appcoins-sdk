@@ -43,7 +43,6 @@ enum class SdkLaunchAppUpdateDialogProperties(
     override val key: String,
     override val eventName: String,
     override val id: Int,
-    override val skip: Boolean = false
 ) : Property {
-    ACTION_FROM_APP_UPDATE_AVAILABLE(ACTION, SDK_APP_UPDATE_AVAILABLE_RESULT, 1100, true),
+    ACTION_FROM_APP_UPDATE_AVAILABLE(ACTION, SDK_APP_UPDATE_AVAILABLE_RESULT, 1100),
 }
