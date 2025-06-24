@@ -14,4 +14,7 @@ internal object ApiKeysManager {
 
     fun getMatomoUrl(): String =
         privateKeysNativeHelper.getApiKey(BuildConfig.BUILD_TYPE, PrivateKeysNativeHelper.ApiKeys.MATOMO_URL.name)
+
+    fun getMatomoApiKey(): String =
+        privateKeysNativeHelper.getApiKey(BuildConfig.BUILD_TYPE, PrivateKeysNativeHelper.ApiKeys.MATOMO_API_KEY.name)
 }

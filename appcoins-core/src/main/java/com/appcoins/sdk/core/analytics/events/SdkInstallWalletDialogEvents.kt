@@ -1,6 +1,11 @@
 package com.appcoins.sdk.core.analytics.events
 
+import com.appcoins.sdk.core.analytics.events.SdkInstallWalletDialogEvents.SDK_INSTALL_WALLET_DIALOG_ACTION
+import com.appcoins.sdk.core.analytics.events.SdkInstallWalletDialogEvents.SDK_INSTALL_WALLET_DIALOG_DOWNLOAD_WALLET_FALLBACK
+import com.appcoins.sdk.core.analytics.events.SdkInstallWalletDialogLabels.SOURCE
+import com.appcoins.sdk.core.analytics.events.SdkInstallWalletDialogLabels.WALLET_INSTALL_ACTION
 import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
+import com.appcoins.sdk.core.analytics.matomo.Property
 
 object SdkInstallWalletDialogEvents {
 
@@ -64,4 +69,16 @@ object SdkInstallWalletDialogLabels {
     const val CANCEL = "cancel"
     const val INSTALL = "install"
     const val SOURCE = "source"
+}
+
+@Suppress("MagicNumber")
+enum class SdkInstallWalletDialogProperties(
+    override val key: String,
+    override val eventName: String,
+    override val id: Int,
+    override val skip: Boolean = false
+) : Property {
+    WALLET_INSTALL_ACTION_FROM_DIALOG_ACTION(WALLET_INSTALL_ACTION, SDK_INSTALL_WALLET_DIALOG_ACTION, 900, true),
+
+    SOURCE_FROM_DIALOG_DOWNLOAD_WALLET_FALLBACK(SOURCE, SDK_INSTALL_WALLET_DIALOG_DOWNLOAD_WALLET_FALLBACK, 910, true),
 }

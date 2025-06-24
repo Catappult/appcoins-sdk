@@ -30,6 +30,14 @@ add_definitions(-DINDICATIVE_API_KEY_DEV="${INDICATIVE_API_KEY_DEV}")
 add_definitions(-DMATOMO_URL="${MATOMO_URL}")
 add_definitions(-DMATOMO_URL_DEV="${MATOMO_URL_DEV}")
 
+# Definition of the values for the Matomo URL
+add_definitions(-DMATOMO_URL="${MATOMO_URL}")
+add_definitions(-DMATOMO_URL_DEV="${MATOMO_URL_DEV}")
+
+# Definition of the values for the Matomo API Keys
+add_definitions(-DMATOMO_API_KEY="${MATOMO_API_KEY}")
+add_definitions(-DMATOMO_API_KEY_DEV="${MATOMO_API_KEY_DEV}")
+
 # Declaration of the project name.
 project("native-keys-storer")
 

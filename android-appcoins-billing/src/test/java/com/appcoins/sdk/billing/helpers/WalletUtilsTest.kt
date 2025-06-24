@@ -121,7 +121,7 @@ class WalletUtilsTest {
     }
 
     @Test
-    fun `startIndicative should return OK when generates correctly Bundle`() {
+    fun `startAnalytics should return OK when generates correctly Bundle`() {
         mockkStatic(Indicative::class)
         mockkObject(ApiKeysManager)
         mockkObject(SdkAnalyticsUtils)
@@ -130,12 +130,14 @@ class WalletUtilsTest {
         val mockkSharedPreferences = mockk<SharedPreferences>()
 
         every { Indicative.launch(mockkContext, EMPTY_STRING) } returns mockkIndicative
+        every { ApiKeysManager.getIndicativeApiKey() } returns EMPTY_STRING
         every { ApiKeysManager.getMatomoApiKey() } returns EMPTY_STRING
+        every { ApiKeysManager.getMatomoUrl() } returns EMPTY_STRING
         every { PreferenceManager.getDefaultSharedPreferences(mockkContext) } returns mockkSharedPreferences
         every { mockkSharedPreferences.getString(WALLET_ID_KEY, null) } returns EMPTY_STRING
         every { SdkAnalyticsUtils.sdkAnalytics.sendStartConnectionEvent() } just runs
 
-        WalletUtils.startIndicative(EMPTY_STRING)
+        WalletUtils.startAnalytics(EMPTY_STRING)
 
         shadowOf(Looper.getMainLooper()).idle()
         shadowOf(Looper.getMainLooper()).runToNextTask()

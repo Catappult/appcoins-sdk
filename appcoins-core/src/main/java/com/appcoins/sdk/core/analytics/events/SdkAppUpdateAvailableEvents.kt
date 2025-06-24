@@ -1,6 +1,9 @@
 package com.appcoins.sdk.core.analytics.events
 
+import com.appcoins.sdk.core.analytics.events.SdkAppUpdateAvailableEvents.SDK_APP_UPDATE_AVAILABLE_RESULT
+import com.appcoins.sdk.core.analytics.events.SdkAppUpdateAvailableLabels.RESULT
 import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
+import com.appcoins.sdk.core.analytics.matomo.Property
 
 object SdkAppUpdateAvailableEvents {
 
@@ -51,4 +54,14 @@ object SdkAppUpdateAvailableEvents {
 
 object SdkAppUpdateAvailableLabels {
     const val RESULT = "result"
+}
+
+@Suppress("MagicNumber")
+enum class SdkAppUpdateAvailableProperties(
+    override val key: String,
+    override val eventName: String,
+    override val id: Int,
+    override val skip: Boolean = false
+) : Property {
+    RESULT_FROM_APP_UPDATE_AVAILABLE(RESULT, SDK_APP_UPDATE_AVAILABLE_RESULT, 100, true),
 }

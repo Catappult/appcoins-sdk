@@ -1,75 +1,23 @@
 package com.appcoins.sdk.core.analytics.matomo
 
-enum class Property(val key: String, val id: Int) {
-    // General Properties
-    INSTANCE_ID("instance_id", 1),
-    SDK_VERSION_CODE("version_code", 2),
-    GAME_PACKAGE_NAME("package_name", 3),
-    SDK_PACKAGE("sdk_package", 4),
-    OS_VERSION("os_version", 5),
-    BRAND("device_brand", 6),
-    MODEL("device_model", 7),
-    LANGUAGE("language", 8),
-    IS_EMULATOR("probably_emulator", 9),
+interface Property {
+    val key: String
+    val eventName: String
+    val id: Int
+    val skip: Boolean
+}
 
-    // SDK Related Properties
-    RESULT("result", 100),
-    TYPE("type", 101),
-    URL("url", 102),
-    METHOD("method", 103),
-    HEADERS("headers", 104),
-    PATHS("paths", 105),
-    QUERIES("queries", 106),
-    BODY("body", 107),
-    RESPONSE_CODE("response_code", 108),
-    RESPONSE_MESSAGE("response_message", 109),
-    ERROR_MESSAGE("error_message", 110),
-    NETWORK_SPEED("network_speed", 111),
-    PURCHASE_TOKEN("purchase_token", 112),
-    STEP("step", 113),
-    SIGNED_DATA("signed_data", 114),
-    API_KEY("api_key", 115),
-    DATA("data", 116),
-    DEEPLINK("deeplink", 117),
-    OEMID("oemid", 118),
-    GUEST_ID("guest_id", 119),
-    UTM_SOURCE("utm_source", 120),
-    UTM_MEDIUM("utm_medium", 121),
-    UTM_CAMPAIGN("utm_campaign", 122),
-    UTM_TERM("utm_term", 123),
-    UTM_CONTENT("utm_content", 124),
-    PAYMENT_FLOW_LIST("payment_flow_list", 125),
-    SERVICE("service", 126),
-    SERVICE_INSTALL_WALLET_DIALOG("install_wallet_dialog", 127),
-    METHOD_BINDING("binding", 128),
-    METHOD_URI("uri", 129),
-    APP_PACKAGE_NAME("app_package_name", 130),
-    STATE("state", 131),
-    INSTALLED("installed", 132),
-    REMOVED("removed", 133),
-    MESSAGE("message", 134),
-    WALLET_INSTALL_ACTION("wallet_install_action", 135),
-    BACK_BUTTON("back_button", 136),
-    CANCEL("cancel", 137),
-    INSTALL("install", 138),
-    SOURCE("source", 139),
-    FEATURE("feature", 140),
-    ACTION("action", 141),
-    CLOSE("close", 142),
-    UPDATE("update", 143),
-    SKU("sku", 144),
-    SKU_TYPE("sku_type", 145),
-    DEVELOPER_PAYLOAD("developer_payload", 146),
-    ORDER_REFERENCE("order_reference", 147),
-    ORIGIN("origin", 148),
-    FAILURE_MESSAGE("failure_message", 149),
-    PURCHASES("purchases", 150),
-    SKUS("skus", 151),
-    EXCEPTION("exception", 152),
-    ALLOW("allow", 153);
+@Suppress("MagicNumber")
+enum class SdkGeneralProperties(
+    override val key: String,
+    override val eventName: String,
+    override val id: Int,
+    override val skip: Boolean = false
+) : Property {
+    SDK_VERSION_CODE("version_code", "general_properties", 1),
+    GAME_PACKAGE_NAME("package_name", "general_properties", 10),
 
-    companion object {
-        fun ofKey(key: String) =
-            values().firstOrNull { it.key == key }
-    }
+    LANGUAGE("language", "general_properties", 20, true),
+
+    IS_EMULATOR("probably_emulator", "general_properties", 30, true),
 }

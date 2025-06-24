@@ -1,6 +1,10 @@
 package com.appcoins.sdk.core.analytics.events
 
+import com.appcoins.sdk.core.analytics.events.SdkGetReferralDeeplinkLabels.DEEPLINK
+import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateEvents.SDK_LAUNCH_APP_UPDATE_DEEPLINK_FAILURE
+import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateEvents.SDK_LAUNCH_APP_UPDATE_RESULT
 import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
+import com.appcoins.sdk.core.analytics.matomo.Property
 
 object SdkLaunchAppUpdateEvents {
 
@@ -30,4 +34,15 @@ object SdkLaunchAppUpdateEvents {
 
 object SdkLaunchAppUpdateLabels {
     const val DEEPLINK = "deeplink"
+}
+
+@Suppress("MagicNumber")
+enum class SdkLaunchAppUpdateProperties(
+    override val key: String,
+    override val eventName: String,
+    override val id: Int,
+    override val skip: Boolean = false
+) : Property {
+    DEEPLINK_FROM_APP_UPDATE_RESULT(DEEPLINK, SDK_LAUNCH_APP_UPDATE_RESULT, 1200, true),
+    DEEPLINK_FROM_APP_UPDATE_DEEPLINK_FAILURE(DEEPLINK, SDK_LAUNCH_APP_UPDATE_DEEPLINK_FAILURE, 1201, true),
 }

@@ -1,6 +1,19 @@
 package com.appcoins.sdk.core.analytics.events
 
+import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_ALLOW_EXTERNAL_APPS
+import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_ERROR_PROCESSING_PURCHASE_RESULT
+import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_EXECUTE_EXTERNAL_DEEPLINK
+import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_FAILURE_TO_OPEN_DEEPLINK
+import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_LAUNCH_EXTERNAL_PAYMENT
+import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_OPEN_DEEPLINK
+import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_START
+import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowLabels.ALLOW
+import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowLabels.DEEPLINK
+import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowLabels.EXCEPTION
+import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowLabels.RESULT
+import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowLabels.URL
 import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
+import com.appcoins.sdk.core.analytics.matomo.Property
 
 object SdkWebPaymentFlowEvents {
 
@@ -124,4 +137,25 @@ object SdkWebPaymentFlowLabels {
     const val EXCEPTION = "exception"
     const val RESULT = "result"
     const val ALLOW = "allow"
+}
+
+@Suppress("MagicNumber")
+enum class SdkWebPaymentFlowProperties(
+    override val key: String,
+    override val eventName: String,
+    override val id: Int,
+    override val skip: Boolean = false
+) : Property {
+    URL_FROM_START(URL, SDK_WEB_PAYMENT_START, 1600, true),
+    URL_FROM_LAUNCH_EXTERNAL_PAYMENT(URL, SDK_WEB_PAYMENT_LAUNCH_EXTERNAL_PAYMENT, 1601, true),
+
+    DEEPLINK_FROM_OPEN_DEEPLINK(DEEPLINK, SDK_WEB_PAYMENT_OPEN_DEEPLINK, 1610, true),
+    DEEPLINK_FROM_FAILURE_TO_OPEN_DEEPLINK(DEEPLINK, SDK_WEB_PAYMENT_FAILURE_TO_OPEN_DEEPLINK, 1611, true),
+    DEEPLINK_FROM_EXECUTE_EXTERNAL_DEEPLINK(DEEPLINK, SDK_WEB_PAYMENT_EXECUTE_EXTERNAL_DEEPLINK, 1612, true),
+
+    EXCEPTION_FROM_FAILURE_TO_OPEN_DEEPLINK(EXCEPTION, SDK_WEB_PAYMENT_FAILURE_TO_OPEN_DEEPLINK, 1620, true),
+
+    RESULT_FROM_ERROR_PROCESSING_PURCHASE_RESULT(RESULT, SDK_WEB_PAYMENT_ERROR_PROCESSING_PURCHASE_RESULT, 1630, true),
+
+    ALLOW_FROM_ALLOW_EXTERNAL_APPS(ALLOW, SDK_WEB_PAYMENT_ALLOW_EXTERNAL_APPS, 1640, true),
 }

@@ -8,7 +8,7 @@ import com.indicative.client.android.Indicative
 
 object IndicativeEventLogger : EventLogger {
 
-    override fun initialize(context: Context?, key: String?) {
+    override fun initialize(context: Context?, key: String?, domain: String?) {
         if (context != null && key != null) {
             Indicative.launch(context, key)
         }

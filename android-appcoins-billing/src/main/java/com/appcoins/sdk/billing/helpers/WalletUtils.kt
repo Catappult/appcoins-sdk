@@ -19,6 +19,7 @@ import com.appcoins.sdk.billing.activities.BillingFlowActivity.Companion.newInte
 import com.appcoins.sdk.billing.activities.InstallDialogActivity
 import com.appcoins.sdk.billing.activities.UnavailableBillingDialogActivity
 import com.appcoins.sdk.billing.managers.ApiKeysManager.getIndicativeApiKey
+import com.appcoins.sdk.billing.managers.ApiKeysManager.getMatomoApiKey
 import com.appcoins.sdk.billing.managers.ApiKeysManager.getMatomoUrl
 import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod
 import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod.AptoideGames
@@ -106,14 +107,14 @@ object WalletUtils {
         return intentBundle
     }
 
-    fun startIndicative(packageName: String?) {
-        logInfo("Starting Indicative for $packageName")
-        if (!SdkAnalyticsUtils.isIndicativeEventLoggerInitialized) {
+    fun startAnalytics(packageName: String?) {
+        logInfo("Starting Analytics for $packageName")
+        if (!SdkAnalyticsUtils.isAnalyticsEventLoggerInitialized) {
             launchAnalytics()
-            SdkAnalyticsUtils.isIndicativeEventLoggerInitialized = true
+            SdkAnalyticsUtils.isAnalyticsEventLoggerInitialized = true
             val walletId = getWalletIdForUserSession()
             logDebug(
-                "Parameters for indicative: walletId: $walletId" +
+                "Parameters for analytics: walletId: $walletId" +
                     " packageName: $packageName" +
                     " versionCode: ${BuildConfig.VERSION_CODE}"
             )
@@ -177,13 +178,13 @@ object WalletUtils {
 
     private fun launchAnalytics() {
         try {
-            IndicativeEventLogger.initialize(context, getIndicativeApiKey())
+            IndicativeEventLogger.initialize(context, getIndicativeApiKey(), null)
         } catch (ex: Exception) {
             logError("Failed to Launch Indicative.", ex)
         }
 
         try {
-            MatomoEventLogger.initialize(context, getMatomoUrl())
+            MatomoEventLogger.initialize(context, getMatomoApiKey(), getMatomoUrl())
         } catch (ex: Exception) {
             logError("Failed to Launch Matomo.", ex)
         }

@@ -32,7 +32,7 @@ object SdkAnalyticsUtils {
             }
         }
     val sdkAnalytics: SdkAnalytics by lazy { SdkAnalytics(AnalyticsManagerProvider.provideAnalyticsManager()) }
-    var isIndicativeEventLoggerInitialized = false
+    var isAnalyticsEventLoggerInitialized = false
 
     var instanceId: String = "" // Instance id from
     var superProperties: MutableMap<String, Any> = HashMap()

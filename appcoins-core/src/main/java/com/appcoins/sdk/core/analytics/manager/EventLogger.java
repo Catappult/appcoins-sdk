@@ -4,7 +4,7 @@ import android.content.Context;
 import java.util.Map;
 
 public interface EventLogger {
-    void initialize(Context context, String key);
+    void initialize(Context context, String key, String domain);
 
     /**
      * <p>Sends an event with parameters.</p>
