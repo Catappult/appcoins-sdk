@@ -1,6 +1,9 @@
 package com.appcoins.sdk.core.analytics.events
 
+import com.appcoins.sdk.core.analytics.events.SdkGetReferralDeeplinkEvents.SDK_GET_REFERRAL_DEEPLINK_RESULT
+import com.appcoins.sdk.core.analytics.events.SdkGetReferralDeeplinkLabels.DEEPLINK
 import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
+import com.appcoins.sdk.core.analytics.matomo.Property
 
 object SdkGetReferralDeeplinkEvents {
 
@@ -40,4 +43,13 @@ object SdkGetReferralDeeplinkEvents {
 
 object SdkGetReferralDeeplinkLabels {
     const val DEEPLINK = "deeplink"
+}
+
+@Suppress("MagicNumber")
+enum class SdkGetReferralDeeplinkProperties(
+    override val key: String,
+    override val eventName: String,
+    override val id: Int,
+) : Property {
+    DEEPLINK_FROM_DEEPLINK_RESULT(DEEPLINK, SDK_GET_REFERRAL_DEEPLINK_RESULT, 600),
 }

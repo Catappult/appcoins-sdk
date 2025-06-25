@@ -1,6 +1,22 @@
 package com.appcoins.sdk.core.analytics.events
 
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestEvents.SDK_CALL_BACKEND_ERROR
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestEvents.SDK_CALL_BACKEND_MAPPING_FAILURE
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestEvents.SDK_CALL_BACKEND_REQUEST
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestEvents.SDK_CALL_BACKEND_RESPONSE
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestLabels.BODY
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestLabels.ERROR_MESSAGE
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestLabels.HEADERS
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestLabels.METHOD
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestLabels.NETWORK_SPEED
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestLabels.PATHS
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestLabels.QUERIES
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestLabels.RESPONSE_CODE
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestLabels.RESPONSE_MESSAGE
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestLabels.TYPE
+import com.appcoins.sdk.core.analytics.events.SdkBackendRequestLabels.URL
 import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
+import com.appcoins.sdk.core.analytics.matomo.Property
 
 object SdkBackendRequestEvents {
 
@@ -78,4 +94,40 @@ enum class SdkBackendRequestType(val type: String) {
     STORE_DEEPLINK("store_deeplink"),
     GUEST_WALLET("guest_wallet"),
     NEW_VERSION_AVAILABLE("new_version_available")
+}
+
+@Suppress("MagicNumber")
+enum class SdkBackendRequestsProperties(
+    override val key: String,
+    override val eventName: String,
+    override val id: Int,
+) : Property {
+    TYPE_FROM_BACKEND_REQUEST(TYPE, SDK_CALL_BACKEND_REQUEST, 200),
+    TYPE_FROM_BACKEND_RESPONSE(TYPE, SDK_CALL_BACKEND_RESPONSE, 201),
+    TYPE_FROM_BACKEND_MAPPING_FAILURE(TYPE, SDK_CALL_BACKEND_MAPPING_FAILURE, 202),
+    TYPE_FROM_BACKEND_ERROR(TYPE, SDK_CALL_BACKEND_ERROR, 203),
+
+    URL_FROM_BACKEND_REQUEST(URL, SDK_CALL_BACKEND_REQUEST, 210),
+    URL_FROM_BACKEND_ERROR(URL, SDK_CALL_BACKEND_ERROR, 211),
+
+    METHOD_FROM_BACKEND_REQUEST(METHOD, SDK_CALL_BACKEND_REQUEST, 220),
+
+    HEADERS_FROM_BACKEND_REQUEST(HEADERS, SDK_CALL_BACKEND_REQUEST, 230),
+
+    PATHS_FROM_BACKEND_REQUEST(PATHS, SDK_CALL_BACKEND_REQUEST, 240),
+
+    QUERIES_FROM_BACKEND_REQUEST(QUERIES, SDK_CALL_BACKEND_REQUEST, 250),
+
+    BODY_FROM_BACKEND_REQUEST(BODY, SDK_CALL_BACKEND_REQUEST, 260),
+
+    RESPONSE_CODE_FROM_BACKEND_RESPONSE(RESPONSE_CODE, SDK_CALL_BACKEND_RESPONSE, 270),
+
+    RESPONSE_MESSAGE_FROM_BACKEND_RESPONSE(RESPONSE_MESSAGE, SDK_CALL_BACKEND_REQUEST, 280),
+    RESPONSE_MESSAGE_FROM_BACKEND_ERROR(RESPONSE_MESSAGE, SDK_CALL_BACKEND_ERROR, 281),
+    RESPONSE_MESSAGE_FROM_BACKEND_MAPPING_FAILURE(RESPONSE_MESSAGE, SDK_CALL_BACKEND_MAPPING_FAILURE, 282),
+
+    ERROR_MESSAGE_FROM_BACKEND_MAPPING_FAILURE(ERROR_MESSAGE, SDK_CALL_BACKEND_MAPPING_FAILURE, 290),
+    ERROR_MESSAGE_FROM_BACKEND_RESPONSE(ERROR_MESSAGE, SDK_CALL_BACKEND_RESPONSE, 291),
+
+    NETWORK_SPEED_FROM_BACKEND_ERROR(NETWORK_SPEED, SDK_CALL_BACKEND_ERROR, 300),
 }

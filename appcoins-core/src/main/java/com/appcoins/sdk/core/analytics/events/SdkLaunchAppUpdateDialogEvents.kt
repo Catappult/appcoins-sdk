@@ -1,6 +1,9 @@
 package com.appcoins.sdk.core.analytics.events
 
+import com.appcoins.sdk.core.analytics.events.SdkAppUpdateAvailableEvents.SDK_APP_UPDATE_AVAILABLE_RESULT
+import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateDialogLabels.ACTION
 import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
+import com.appcoins.sdk.core.analytics.matomo.Property
 
 object SdkLaunchAppUpdateDialogEvents {
 
@@ -33,4 +36,13 @@ object SdkLaunchAppUpdateDialogLabels {
     const val BACK_BUTTON = "back_button"
     const val CLOSE = "close"
     const val UPDATE = "update"
+}
+
+@Suppress("MagicNumber")
+enum class SdkLaunchAppUpdateDialogProperties(
+    override val key: String,
+    override val eventName: String,
+    override val id: Int,
+) : Property {
+    ACTION_FROM_APP_UPDATE_AVAILABLE(ACTION, SDK_APP_UPDATE_AVAILABLE_RESULT, 1100),
 }

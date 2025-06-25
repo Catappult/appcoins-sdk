@@ -2,9 +2,6 @@ package com.appcoins.sdk.core.analytics
 
 import com.appcoins.sdk.core.analytics.indicative.IndicativeEventLogger
 import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
-import com.appcoins.sdk.core.logger.Logger
-import com.appcoins.sdk.core.logger.Logger.logDebug
-import com.appcoins.sdk.core.logger.Logger.logInfo
 import com.indicative.client.android.Indicative
 import io.mockk.every
 import io.mockk.just
@@ -24,23 +21,16 @@ class IndicativeEventLoggerTest {
 
     @Before
     fun setup() {
-        indicativeEventLogger = IndicativeEventLogger()
+        indicativeEventLogger = IndicativeEventLogger
     }
 
     @Test
     fun `should log event when logEvent is called`() {
         mockkStatic(Indicative::class)
-        mockkStatic(Logger::class)
 
         val eventName = "exampleEventName"
 
-        every {
-            Indicative.recordEvent(
-                eventName,
-                any(),
-                any<MutableMap<String, Any>>()
-            )
-        } just runs
+        every { Indicative.recordEvent(eventName, any(), any<MutableMap<String, Any>>()) } just runs
 
         indicativeEventLogger.logEvent(
             eventName,
@@ -50,13 +40,7 @@ class IndicativeEventLoggerTest {
         )
 
         verify(exactly = 1) {
-            Indicative.recordEvent(
-                eventName,
-                any(),
-                any<MutableMap<String, Any>>()
-            )
-            logDebug(any())
-            logInfo(any())
+            Indicative.recordEvent(eventName, any(), any<MutableMap<String, Any>>())
         }
     }
 

@@ -1,6 +1,11 @@
 package com.appcoins.sdk.core.analytics.events
 
+import com.appcoins.sdk.core.analytics.events.SdkIsFeatureSupportedEvents.SDK_IS_FEATURE_SUPPORTED_REQUEST
+import com.appcoins.sdk.core.analytics.events.SdkIsFeatureSupportedEvents.SDK_IS_FEATURE_SUPPORTED_RESULT
+import com.appcoins.sdk.core.analytics.events.SdkIsFeatureSupportedLabels.FEATURE
+import com.appcoins.sdk.core.analytics.events.SdkIsFeatureSupportedLabels.RESULT
 import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
+import com.appcoins.sdk.core.analytics.matomo.Property
 
 object SdkIsFeatureSupportedEvents {
 
@@ -31,4 +36,15 @@ object SdkIsFeatureSupportedEvents {
 object SdkIsFeatureSupportedLabels {
     const val FEATURE = "feature"
     const val RESULT = "result"
+}
+
+@Suppress("MagicNumber")
+enum class SdkIsFeatureSupportedProperties(
+    override val key: String,
+    override val eventName: String,
+    override val id: Int,
+) : Property {
+    FEATURE_FROM_FEATURE_SUPPORTED_REQUEST(FEATURE, SDK_IS_FEATURE_SUPPORTED_REQUEST, 1000),
+
+    RESULT_FROM_FEATURE_SUPPORTED_RESULT(RESULT, SDK_IS_FEATURE_SUPPORTED_RESULT, 1010),
 }

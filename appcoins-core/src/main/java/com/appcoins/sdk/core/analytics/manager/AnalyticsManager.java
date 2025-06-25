@@ -1,11 +1,13 @@
 package com.appcoins.sdk.core.analytics.manager;
 
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.appcoins.sdk.core.logger.Logger.logDebug;
+import static com.appcoins.sdk.core.logger.Logger.logInfo;
 import static com.appcoins.sdk.core.logger.Logger.logWarningDebug;
 
 public class AnalyticsManager implements Serializable {
@@ -30,14 +32,29 @@ public class AnalyticsManager implements Serializable {
      * @param context The context of where the event took place
      */
     public void logEvent(Map<String, Object> data, String eventName, Action action, String context) {
-        logDebug("Called with: "
-            + "eventName = ["
+        logDebug("Called with: eventName = ["
             + eventName
-            + "], data = ["
+            + "], superProperties = ["
+            + SdkAnalyticsUtils.INSTANCE.getSuperProperties()
+            + "], data = "
             + data
-            + "],  action = ["
+            + "], action = "
             + action
-            + "], context = ["
+            + "], context = "
+            + context
+            + "], instanceId = ["
+            + SdkAnalyticsUtils.INSTANCE.getInstanceId()
+            + "]");
+        logInfo("Called with: eventName = "
+            + eventName
+            + "], "
+            + "superProperties = ["
+            + SdkAnalyticsUtils.INSTANCE.getLoggableSuperProperties()
+            + "], "
+            + "action = "
+            + action
+            + "], "
+            + "context = "
             + context
             + "]");
         int eventsSent = 0;

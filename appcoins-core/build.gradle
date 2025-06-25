@@ -81,6 +81,7 @@ dependencies {
     implementation libs.kotlin.stdlib
 
     api libs.indicative
+    api libs.matomo.android
 }
 
 //Publish configuration
