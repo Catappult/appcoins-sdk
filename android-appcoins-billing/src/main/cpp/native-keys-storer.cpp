@@ -36,9 +36,6 @@ Java_com_appcoins_sdk_billing_helpers_PrivateKeysNativeHelper_getApiKey(JNIEnv *
             case E_MATOMO_API_KEY:
                 stringToBeReturned = MATOMO_API_KEY;
                 break;
-            case E_MATOMO_URL:
-                stringToBeReturned = MATOMO_URL;
-                break;
             default:
                 stringToBeReturned = "";
         }
@@ -52,9 +49,6 @@ Java_com_appcoins_sdk_billing_helpers_PrivateKeysNativeHelper_getApiKey(JNIEnv *
                 break;
             case E_MATOMO_API_KEY:
                 stringToBeReturned = MATOMO_API_KEY_DEV;
-                break;
-            case E_MATOMO_URL:
-                stringToBeReturned = MATOMO_URL;
                 break;
             default:
                 stringToBeReturned = "";

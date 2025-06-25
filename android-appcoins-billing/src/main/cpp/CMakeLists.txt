@@ -26,10 +26,6 @@ read_config_file(${API_KEYS_FILE})
 add_definitions(-DINDICATIVE_API_KEY="${INDICATIVE_API_KEY}")
 add_definitions(-DINDICATIVE_API_KEY_DEV="${INDICATIVE_API_KEY_DEV}")
 
-# Definition of the values for the Matomo Keys
-add_definitions(-DMATOMO_URL="${MATOMO_URL}")
-add_definitions(-DMATOMO_URL_DEV="${MATOMO_URL_DEV}")
-
 # Definition of the values for the Matomo URL
 add_definitions(-DMATOMO_URL="${MATOMO_URL}")
 add_definitions(-DMATOMO_URL_DEV="${MATOMO_URL_DEV}")
