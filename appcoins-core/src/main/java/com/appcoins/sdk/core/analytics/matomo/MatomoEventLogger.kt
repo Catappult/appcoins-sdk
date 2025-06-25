@@ -18,6 +18,8 @@ import com.appcoins.sdk.core.analytics.events.SdkQuerySkuDetailsProperties
 import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowProperties
 import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
 import com.appcoins.sdk.core.analytics.manager.EventLogger
+import com.appcoins.sdk.core.logger.Logger.logError
+import org.json.JSONObject
 import org.matomo.sdk.Matomo
 import org.matomo.sdk.Tracker
 import org.matomo.sdk.TrackerBuilder
@@ -44,33 +46,55 @@ object MatomoEventLogger : EventLogger {
         action: AnalyticsManager.Action,
         context: String
     ) {
-        val completedData: Map<String, Any> = (data ?: HashMap())
-        val superPropertiesAndData: Map<String, Any> =
-            SdkAnalyticsUtils.superProperties + completedData
+        try {
+            val completedData: Map<String, Any> = (data ?: HashMap())
+            val superPropertiesAndData: Map<String, Any> =
+                SdkAnalyticsUtils.superProperties + completedData
 
-        tracker?.setUserId(SdkAnalyticsUtils.instanceId)
+            tracker?.setUserId(SdkAnalyticsUtils.instanceId)
 
-        val trackHelper = TrackHelper.track()
-        addDimensionsToTracker(trackHelper, eventName, superPropertiesAndData)
-        trackHelper
-            .event(eventName, action.name)
-            .with(tracker)
+            val trackHelper = TrackHelper.track()
+            addDimensionsToTracker(trackHelper, eventName, superPropertiesAndData)
+            val jsonObjectData = createJsonObjectFromData(superPropertiesAndData)
+            trackHelper
+                .event(eventName, action.name)
+                .apply {
+                    jsonObjectData?.let {
+                        name(jsonObjectData)
+                    }
+                }
+                .with(tracker)
+        } catch (ex: Exception) {
+            logError("There was a failure when sending the Matomo Event.", ex)
+        }
     }
 
     private fun addDimensionsToTracker(trackHelper: TrackHelper, eventName: String, data: Map<String, Any>) {
         data.keys.forEach { key ->
             val property = allProperties.findPropertyId(eventName, key)
             if (property != null) {
-                trackHelper.dimension(property.id, data[key].toString())
+                val matomoId = getMatomoId(property.id)
+                if (matomoId != null) {
+                    trackHelper.dimension(matomoId, data[key].toString())
+                } else {
+                    logError("Matomo id not found for property id: ${property.id}")
+                }
             }
         }
     }
 
     private fun List<Property>.findPropertyId(eventName: String, key: String) =
-        firstOrNull { it.eventName == GENERAL_PROPERTIES_EVENT_NAME || (it.eventName == eventName && it.key == key) }
+        firstOrNull {
+            if (it.eventName == GENERAL_PROPERTIES_EVENT_NAME) {
+                it.key == key
+            } else {
+                it.eventName == eventName && it.key == key
+            }
+        }
 
     private fun setupProperties() {
-        val propertiesIds = SdkAnalyticsUtils.analyticsPropertiesIds ?: SdkAnalyticsUtils.defaultAnalyticsPropertiesIds
+        val propertiesIds =
+            SdkAnalyticsUtils.matomoCustomProperties ?: SdkAnalyticsUtils.defaultMatomoCustomProperties
         val properties = mutableListOf<Property>()
         properties.addAll(SdkGeneralProperties.entries)
         properties.addAll(SdkAppUpdateAvailableProperties.entries)
@@ -87,6 +111,24 @@ object MatomoEventLogger : EventLogger {
         properties.addAll(SdkQueryPurchasesProperties.entries)
         properties.addAll(SdkQuerySkuDetailsProperties.entries)
         properties.addAll(SdkWebPaymentFlowProperties.entries)
-        allProperties = properties.filter { propertiesIds.contains(it.id) }
+        allProperties = properties.filter { propertiesIds.map { propertiesIds -> propertiesIds.sdkId }.contains(it.id) }
     }
+
+    private fun getMatomoId(sdkId: Int): Int? =
+        (
+            SdkAnalyticsUtils.matomoCustomProperties
+                ?: SdkAnalyticsUtils.defaultMatomoCustomProperties
+            ).find { it.sdkId == sdkId }?.matomoId
+
+    private fun createJsonObjectFromData(data: Map<String, Any>): String? =
+        runCatching {
+            val jsonObject = JSONObject()
+            data.forEach { (key, value) ->
+                jsonObject.put(key, value.toString())
+            }
+            jsonObject.toString()
+        }.getOrElse {
+            logError("There was an error mapping the event Data.", Exception(it))
+            null
+        }
 }

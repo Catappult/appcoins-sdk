@@ -31,14 +31,14 @@ object PayflowManager {
                         payflowMethodResponse.analyticsFlowSeverityLevels?.let {
                             SdkAnalyticsUtils.analyticsFlowSeverityLevels = it
                         }
-                        payflowMethodResponse.analyticsPropertiesIds?.let {
-                            SdkAnalyticsUtils.analyticsPropertiesIds = it
+                        payflowMethodResponse.matomoDetails?.matomoCustomProperties?.let {
+                            SdkAnalyticsUtils.matomoCustomProperties = it
                         }
                         setupMatomo(payflowMethodResponse)
                     } else {
                         PayflowPriorityStream.getInstance().emit(arrayListOf())
                         SdkAnalyticsUtils.analyticsFlowSeverityLevels = null
-                        SdkAnalyticsUtils.analyticsPropertiesIds = null
+                        SdkAnalyticsUtils.matomoCustomProperties = null
                     }
                     SdkAnalyticsUtils.isAnalyticsSetupFromPayflowFinalized = true
                 }
@@ -49,8 +49,8 @@ object PayflowManager {
     }
 
     private fun setupMatomo(payflowMethodResponse: PayflowMethodResponse) {
-        payflowMethodResponse.matomoUrl?.takeIf { it.isNotEmpty() }?.let { matomoUrl ->
-            payflowMethodResponse.matomoApiKey?.takeIf { it.isNotEmpty() }?.let { matomoApiKey ->
+        payflowMethodResponse.matomoDetails?.matomoUrl?.takeIf { it.isNotEmpty() }?.let { matomoUrl ->
+            payflowMethodResponse.matomoDetails.matomoApiKey?.takeIf { it.isNotEmpty() }?.let { matomoApiKey ->
                 MatomoEventLogger.initialize(WalletUtils.context, matomoApiKey, matomoUrl)
             }
         }

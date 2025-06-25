@@ -5,6 +5,7 @@ import com.appcoins.sdk.core.analytics.events.SdkInstallWalletDialogEvents.INSTA
 import com.appcoins.sdk.core.analytics.events.SdkPurchaseFlowEvents.PURCHASE_FLOW
 import com.appcoins.sdk.core.analytics.events.SdkWalletPaymentFlowEvents.WALLET_PAYMENT_FLOW
 import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents.WEB_PAYMENT_FLOW
+import com.appcoins.sdk.core.analytics.matomo.models.CustomProperty
 import com.appcoins.sdk.core.analytics.severity.AnalyticsFlowSeverityLevel
 import com.appcoins.sdk.core.device.DeviceInformation
 import com.appcoins.sdk.core.logger.Logger.logDebug
@@ -16,7 +17,7 @@ object SdkAnalyticsUtils {
             field = value
             logInfo(value.toString())
         }
-    var analyticsPropertiesIds: List<Int>? = null
+    var matomoCustomProperties: List<CustomProperty>? = null
         set(value) {
             field = value
             logInfo(value.toString())
@@ -31,19 +32,19 @@ object SdkAnalyticsUtils {
         )
 
     @Suppress("MagicNumber")
-    val defaultAnalyticsPropertiesIds = listOf(
-        1, // SDK Version Code
-        10, // Game Package Name
-        400, // Consume Result
-        410, // Consume Request Purchase Token
-        780, // Service From Service Connection Failure
-        900, // Wallet Install Action
-        1300, // Sku From Launch Purchase
-        1301, // Sku From Purchase Result
-        1370, // Failure Message From Purchase Result
-        1380, // Response Code From Purchase Result
-        1390, // Purchase Token From Purchase Result
-        1600, // Url From Start Web Payment
+    val defaultMatomoCustomProperties = listOf(
+        CustomProperty(1, 1), // SDK Version Code
+        CustomProperty(10, 2), // Game Package Name
+        CustomProperty(400, 3), // Consume Result
+        CustomProperty(410, 4), // Consume Request Purchase Token
+        CustomProperty(780, 5), // Service From Service Connection Failure
+        CustomProperty(900, 6), // Wallet Install Action
+        CustomProperty(1300, 7), // Sku From Launch Purchase
+        CustomProperty(1301, 8), // Sku From Purchase Result
+        CustomProperty(1370, 9), // Failure Message From Purchase Result
+        CustomProperty(1380, 10), // Response Code From Purchase Result
+        CustomProperty(1390, 11), // Purchase Token From Purchase Result
+        CustomProperty(1600, 12), // Url From Start Web Payment
     )
     var isAnalyticsSetupFromPayflowFinalized: Boolean = false
         set(value) {
