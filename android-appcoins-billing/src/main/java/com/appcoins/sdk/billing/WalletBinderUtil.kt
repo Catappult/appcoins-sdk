@@ -124,6 +124,8 @@ object WalletBinderUtil {
 
                 BindType.UNAVAILABLE_BILLING ->
                     connection.onServiceDisconnected(ComponentName(context, UnavailableBillingService::class.java))
+
+                else -> Unit
             }
             WalletUtils.currentPaymentFlowMethod = null
         } catch (e: IllegalArgumentException) {

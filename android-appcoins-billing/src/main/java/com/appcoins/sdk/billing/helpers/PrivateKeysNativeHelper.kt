@@ -11,5 +11,7 @@ internal class PrivateKeysNativeHelper {
 
     enum class ApiKeys {
         INDICATIVE_API_KEY,
+        MATOMO_URL,
+        MATOMO_API_KEY,
     }
 }

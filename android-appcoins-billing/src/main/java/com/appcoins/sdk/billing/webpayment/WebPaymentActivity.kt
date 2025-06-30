@@ -76,8 +76,7 @@ class WebPaymentActivity :
         }
 
         skuType = intent.getStringExtra(SKU_TYPE)
-        val sku = intent.getStringExtra(SKU)
-        SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentStartEvent(sku ?: "")
+        SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentStartEvent(url)
 
         webViewDetails =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

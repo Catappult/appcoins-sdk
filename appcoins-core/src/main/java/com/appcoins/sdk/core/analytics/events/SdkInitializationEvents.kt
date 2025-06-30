@@ -1,6 +1,26 @@
 package com.appcoins.sdk.core.analytics.events
 
+import com.appcoins.sdk.core.analytics.events.SdkInitializationEvents.SDK_APP_INSTALLATION_TRIGGER
+import com.appcoins.sdk.core.analytics.events.SdkInitializationEvents.SDK_ATTRIBUTION_RESULT
+import com.appcoins.sdk.core.analytics.events.SdkInitializationEvents.SDK_ATTRIBUTION_RETRY_ATTEMPT
+import com.appcoins.sdk.core.analytics.events.SdkInitializationEvents.SDK_PAYFLOW_RESULT
+import com.appcoins.sdk.core.analytics.events.SdkInitializationEvents.SDK_SERVICE_CONNECTED
+import com.appcoins.sdk.core.analytics.events.SdkInitializationEvents.SDK_SERVICE_CONNECTION_FAILED
+import com.appcoins.sdk.core.analytics.events.SdkInitializationLabels.APP_PACKAGE_NAME
+import com.appcoins.sdk.core.analytics.events.SdkInitializationLabels.GUEST_ID
+import com.appcoins.sdk.core.analytics.events.SdkInitializationLabels.MESSAGE
+import com.appcoins.sdk.core.analytics.events.SdkInitializationLabels.METHOD
+import com.appcoins.sdk.core.analytics.events.SdkInitializationLabels.OEMID
+import com.appcoins.sdk.core.analytics.events.SdkInitializationLabels.PAYMENT_FLOW_LIST
+import com.appcoins.sdk.core.analytics.events.SdkInitializationLabels.SERVICE
+import com.appcoins.sdk.core.analytics.events.SdkInitializationLabels.STATE
+import com.appcoins.sdk.core.analytics.events.SdkInitializationLabels.UTM_CAMPAIGN
+import com.appcoins.sdk.core.analytics.events.SdkInitializationLabels.UTM_CONTENT
+import com.appcoins.sdk.core.analytics.events.SdkInitializationLabels.UTM_MEDIUM
+import com.appcoins.sdk.core.analytics.events.SdkInitializationLabels.UTM_SOURCE
+import com.appcoins.sdk.core.analytics.events.SdkInitializationLabels.UTM_TERM
 import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
+import com.appcoins.sdk.core.analytics.matomo.Property
 
 object SdkInitializationEvents {
     class SdkStartConnection :
@@ -140,4 +160,39 @@ object SdkInitializationLabels {
     const val REMOVED = "removed"
 
     const val MESSAGE = "message"
+}
+
+@Suppress("MagicNumber")
+enum class SdkInitializationProperties(
+    override val key: String,
+    override val eventName: String,
+    override val id: Int,
+) : Property {
+    OEMID_FROM_ATTRIBUTION_RESULT(OEMID, SDK_ATTRIBUTION_RESULT, 700),
+
+    GUEST_ID_FROM_ATTRIBUTION_RESULT(GUEST_ID, SDK_ATTRIBUTION_RESULT, 710),
+
+    UTM_SOURCE_FROM_ATTRIBUTION_RESULT(UTM_SOURCE, SDK_ATTRIBUTION_RESULT, 720),
+
+    UTM_MEDIUM_FROM_ATTRIBUTION_RESULT(UTM_MEDIUM, SDK_ATTRIBUTION_RESULT, 730),
+
+    UTM_CAMPAIGN_FROM_ATTRIBUTION_RESULT(UTM_CAMPAIGN, SDK_ATTRIBUTION_RESULT, 740),
+
+    UTM_TERM_FROM_ATTRIBUTION_RESULT(UTM_TERM, SDK_ATTRIBUTION_RESULT, 750),
+
+    UTM_CONTENT_FROM_ATTRIBUTION_RESULT(UTM_CONTENT, SDK_ATTRIBUTION_RESULT, 760),
+
+    PAYMENT_FLOW_LIST_FROM_PAYFLOW_RESULT(PAYMENT_FLOW_LIST, SDK_PAYFLOW_RESULT, 770),
+
+    SERVICE_FROM_SERVICE_CONNECTED(SERVICE, SDK_SERVICE_CONNECTED, 780),
+    SERVICE_FROM_SERVICE_CONNECTION_FAILED(SERVICE, SDK_SERVICE_CONNECTION_FAILED, 781),
+
+    METHOD_FROM_SERVICE_CONNECTED(METHOD, SDK_SERVICE_CONNECTED, 790),
+    METHOD_FROM_SERVICE_CONNECTION_FAILED(METHOD, SDK_SERVICE_CONNECTION_FAILED, 791),
+
+    APP_PACKAGE_NAME_FROM_APP_INSTALLATION_TRIGGER(APP_PACKAGE_NAME, SDK_APP_INSTALLATION_TRIGGER, 800),
+
+    STATE_FROM_APP_INSTALLATION_TRIGGER(STATE, SDK_APP_INSTALLATION_TRIGGER, 810),
+
+    MESSAGE_FROM_ATTRIBUTION_RETRY_ATTEMPT(MESSAGE, SDK_ATTRIBUTION_RETRY_ATTEMPT, 820),
 }

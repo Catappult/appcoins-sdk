@@ -1,6 +1,15 @@
 package com.appcoins.sdk.core.analytics.events
 
+import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureEvents.SDK_PURCHASE_SIGNATURE_VERIFICATION_FAILURE
+import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureEvents.SDK_SERVICE_CONNECTION_EXCEPTION
+import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureEvents.SDK_UNEXPECTED_FAILURE
+import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureLabels.API_KEY
+import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureLabels.DATA
+import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureLabels.SIGNED_DATA
+import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureLabels.STEP
+import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureLabels.TYPE
 import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
+import com.appcoins.sdk.core.analytics.matomo.Property
 
 object SdkGeneralFailureEvents {
 
@@ -52,4 +61,21 @@ enum class SdkGeneralFailureStep(val type: String) {
     CONSUME("consume"),
     START_PURCHASE("start_purchase"),
     IS_FEATURE_SUPPORTED("is_feature_supported"),
+}
+
+@Suppress("MagicNumber")
+enum class SdkGeneralFailureProperties(
+    override val key: String,
+    override val eventName: String,
+    override val id: Int,
+) : Property {
+    STEP_FROM_SERVICE_CONNECTION_EXCEPTION(STEP, SDK_SERVICE_CONNECTION_EXCEPTION, 500),
+
+    SIGNED_DATA_FROM_SIGNATURE_VERIFICATION_FAILURE(SIGNED_DATA, SDK_PURCHASE_SIGNATURE_VERIFICATION_FAILURE, 510),
+
+    API_KEY_FROM_SIGNATURE_VERIFICATION_FAILURE(API_KEY, SDK_PURCHASE_SIGNATURE_VERIFICATION_FAILURE, 520),
+
+    TYPE_FROM_UNEXPECTED_FAILURE(TYPE, SDK_UNEXPECTED_FAILURE, 530),
+
+    DATA_FROM_UNEXPECTED_FAILURE(DATA, SDK_UNEXPECTED_FAILURE, 540),
 }

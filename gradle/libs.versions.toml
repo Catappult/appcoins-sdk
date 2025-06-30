@@ -6,17 +6,17 @@ app_compat_constraint_layout_version = "1.1.3"
 androidx_browser = "1.5.0"
 
 # Kotlin
-kotlin_version = "1.5.30"
+kotlin_version = "1.9.0"
 
 # Serialization
 json_version = "20220924"
 
 # General
 indicative_version = "1.1.0"
+matomo_version = "4.1.0"
 
 # Classpaths
 android_tools_build_gradle_version = "4.2.2"
-kotlin_gradle_plugin_version = "1.5.30"
 fat_arr_version = "1.3.8"
 detekt_version = "1.23.3"
 
@@ -47,12 +47,14 @@ json = { module = "org.json:json", version.ref = "json_version" }
 # General
 # https://mvnrepository.com/artifact/com.indicative.client.android/Indicative-Android
 indicative = { module = "com.indicative.client.android:Indicative-Android", version.ref = "indicative_version" }
+# https://jitpack.io/#matomo-org/matomo-sdk-android
+matomo-android = { module = "com.github.matomo-org:matomo-sdk-android", version.ref = "matomo_version" }
 
 # Classpaths
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle
 android-tools-build-gradle = { module = "com.android.tools.build:gradle", version.ref = "android_tools_build_gradle_version" }
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin_gradle_plugin_version" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin_version" }
 # https://mvnrepository.com/artifact/com.github.kezong/fat-aar
 fat-arr = { module = "com.github.kezong:fat-aar", version.ref = "fat_arr_version" }
 # https://mvnrepository.com/artifact/com.github.kezong/fat-aar

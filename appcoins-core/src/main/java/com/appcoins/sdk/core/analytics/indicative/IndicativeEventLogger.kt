@@ -1,13 +1,18 @@
 package com.appcoins.sdk.core.analytics.indicative
 
+import android.content.Context
+import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.analytics.manager.AnalyticsManager
 import com.appcoins.sdk.core.analytics.manager.EventLogger
-import com.appcoins.sdk.core.logger.Logger.logDebug
-import com.appcoins.sdk.core.logger.Logger.logInfo
 import com.indicative.client.android.Indicative
-import java.io.Serializable
 
-class IndicativeEventLogger : EventLogger, Serializable {
+object IndicativeEventLogger : EventLogger {
+
+    override fun initialize(context: Context?, key: String?, domain: String?) {
+        if (context != null && key != null) {
+            Indicative.launch(context, key)
+        }
+    }
 
     override fun logEvent(
         eventName: String,
@@ -17,21 +22,7 @@ class IndicativeEventLogger : EventLogger, Serializable {
     ) {
         val completedData: Map<String, Any> = (data ?: HashMap())
         val superPropertiesAndData: Map<String, Any> =
-            IndicativeAnalytics.superProperties + completedData
-        Indicative.recordEvent(eventName, IndicativeAnalytics.instanceId, superPropertiesAndData)
-        logDebug(
-            "Called with: eventName = [$eventName], " +
-                "superProperties = [${IndicativeAnalytics.superProperties}] " +
-                "data = [$completedData], " +
-                "action = [$action], " +
-                "context = [$context], " +
-                "instanceId = [${IndicativeAnalytics.instanceId}]"
-        )
-        logInfo(
-            "Called with: eventName = [$eventName], " +
-                "superProperties = [${IndicativeAnalytics.getLoggableSuperProperties()}], " +
-                "action = [$action], " +
-                "context = [$context]"
-        )
+            SdkAnalyticsUtils.superProperties + completedData
+        Indicative.recordEvent(eventName, SdkAnalyticsUtils.instanceId, superPropertiesAndData)
     }
 }
