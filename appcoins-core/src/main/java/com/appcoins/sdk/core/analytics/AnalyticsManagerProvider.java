@@ -100,6 +100,7 @@ public class AnalyticsManagerProvider {
         list.add(SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_FAILURE_TO_OPEN_DEEPLINK);
         list.add(SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_FAILURE_TO_OBTAIN_URL);
         list.add(SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_ALLOW_EXTERNAL_APPS);
+        list.add(SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_UPDATE_CLOSE_BEHAVIOR);
         list.add(SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_LAUNCH_EXTERNAL_PAYMENT);
         list.add(SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_EXTERNAL_PAYMENT_RESULT);
         list.add(SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_WALLET_PAYMENT_RESULT);
