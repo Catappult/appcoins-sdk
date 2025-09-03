@@ -39,3 +39,7 @@ project("native-keys-storer")
 
 # Adding library to the project for visibility to the Java code.
 add_library(${CMAKE_PROJECT_NAME} SHARED native-keys-storer.cpp)
+
+# Add 16 KB page size compatibility
+target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-Wl,-z,max-page-size=16384")
+target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-Wl,-z,common-page-size=16384")
