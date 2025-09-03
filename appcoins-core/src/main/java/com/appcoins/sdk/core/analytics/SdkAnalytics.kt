@@ -136,6 +136,16 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkBackendRequestEvents.SdkCallBackendMappingFailure(eventData))
     }
 
+    fun sendBackendDnsManualCacheSuccessEvent(url: String, ip: String, responseCode: Int) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        eventData[SdkBackendRequestLabels.URL] = url
+        eventData[SdkBackendRequestLabels.IP_ADDRESS] = ip
+        eventData[SdkBackendRequestLabels.RESPONSE_CODE] = responseCode
+
+        logEvent(SdkBackendRequestEvents.SdkCallBackendDnsManualCacheSuccess(eventData))
+    }
+
     // Consume Purchase events
     fun sendConsumePurchaseRequest(purchaseToken: String?) {
         val eventData: MutableMap<String, Any> = HashMap()

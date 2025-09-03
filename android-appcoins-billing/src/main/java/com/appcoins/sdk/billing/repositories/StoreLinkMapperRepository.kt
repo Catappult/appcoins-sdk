@@ -1,6 +1,6 @@
 package com.appcoins.sdk.billing.repositories
 
-import com.appcoins.sdk.billing.ResponseCode
+import com.appcoins.sdk.billing.CatapultAppcoinsBilling.BillingResponseCode
 import com.appcoins.sdk.billing.mappers.NewVersionAvailableResponse
 import com.appcoins.sdk.billing.mappers.NewVersionAvailableResponseMapper
 import com.appcoins.sdk.billing.mappers.ReferralDeeplinkResponse
@@ -50,7 +50,7 @@ class StoreLinkMapperRepository(private val bdsService: BdsService) {
             emptyList(),
             queries.toMap(),
             emptyMap(),
-            emptyMap<String?, Any>(),
+            emptyMap(),
             serviceResponseListener,
             SdkBackendRequestType.STORE_DEEPLINK
         )
@@ -65,7 +65,7 @@ class StoreLinkMapperRepository(private val bdsService: BdsService) {
         oemid: String?,
     ): ReferralDeeplinkResponse {
         val countDownLatch = CountDownLatch(1)
-        var referralDeeplink = ReferralDeeplinkResponse(ResponseCode.ERROR.value)
+        var referralDeeplink = ReferralDeeplinkResponse(BillingResponseCode.ERROR)
 
         val queries: MutableMap<String, String> = LinkedHashMap()
         queries["version"] = "2"
@@ -92,7 +92,7 @@ class StoreLinkMapperRepository(private val bdsService: BdsService) {
             emptyList(),
             queries.toMap(),
             emptyMap(),
-            emptyMap<String?, Any>(),
+            emptyMap(),
             serviceResponseListener,
             SdkBackendRequestType.STORE_DEEPLINK
         )
@@ -109,7 +109,7 @@ class StoreLinkMapperRepository(private val bdsService: BdsService) {
         q: String?,
     ): NewVersionAvailableResponse {
         val countDownLatch = CountDownLatch(1)
-        var referralDeeplink = NewVersionAvailableResponse(ResponseCode.ERROR.value)
+        var referralDeeplink = NewVersionAvailableResponse(BillingResponseCode.ERROR)
 
         val queries: MutableMap<String, String> = LinkedHashMap()
         queries["version_code"] = "$versionCode"
@@ -136,7 +136,7 @@ class StoreLinkMapperRepository(private val bdsService: BdsService) {
             emptyList(),
             queries.toMap(),
             emptyMap(),
-            emptyMap<String?, Any>(),
+            emptyMap(),
             serviceResponseListener,
             SdkBackendRequestType.NEW_VERSION_AVAILABLE
         )

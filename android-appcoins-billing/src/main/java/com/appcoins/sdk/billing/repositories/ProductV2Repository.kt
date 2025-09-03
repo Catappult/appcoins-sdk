@@ -1,6 +1,6 @@
 package com.appcoins.sdk.billing.repositories
 
-import com.appcoins.sdk.billing.ResponseCode
+import com.appcoins.sdk.billing.CatapultAppcoinsBilling.BillingResponseCode
 import com.appcoins.sdk.billing.mappers.InappPurchaseResponse
 import com.appcoins.sdk.billing.mappers.InappPurchaseResponseMapper
 import com.appcoins.sdk.billing.mappers.PurchaseResponse
@@ -43,7 +43,7 @@ class ProductV2Repository(private val bdsService: BdsService) {
             emptyList(),
             emptyMap(),
             emptyMap(),
-            emptyMap<String?, Any>(),
+            emptyMap(),
             serviceResponseListener,
             SdkBackendRequestType.INAPP_PURCHASE
         )
@@ -59,7 +59,7 @@ class ProductV2Repository(private val bdsService: BdsService) {
         type: String
     ): PurchasesResponse {
         val countDownLatch = CountDownLatch(1)
-        var purchasesResponse = PurchasesResponse(ResponseCode.ERROR.value)
+        var purchasesResponse = PurchasesResponse(BillingResponseCode.ERROR)
 
         val serviceResponseListener =
             ServiceResponseListener { requestResponse ->
@@ -129,7 +129,7 @@ class ProductV2Repository(private val bdsService: BdsService) {
         purchaseToken: String
     ): Int {
         val countDownLatch = CountDownLatch(1)
-        val responseCode = intArrayOf(ResponseCode.ERROR.value)
+        val responseCode = intArrayOf(BillingResponseCode.ERROR)
 
         val serviceResponseListener =
             ServiceResponseListener { requestResponse ->
@@ -198,9 +198,9 @@ class ProductV2Repository(private val bdsService: BdsService) {
         responseCode: IntArray
     ) {
         if (ServiceUtils.isSuccess(requestResponse.responseCode)) {
-            responseCode[0] = ResponseCode.OK.value
+            responseCode[0] = BillingResponseCode.OK
         } else {
-            responseCode[0] = ResponseCode.ERROR.value
+            responseCode[0] = BillingResponseCode.ERROR
         }
         countDownLatch.countDown()
     }
