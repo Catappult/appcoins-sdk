@@ -15,4 +15,7 @@ interface SDKWebPaymentInterface {
 
     @JavascriptInterface
     fun allowExternalApps(allow: Boolean)
+
+    @JavascriptInterface
+    fun updateCloseBehavior(configJson: String)
 }

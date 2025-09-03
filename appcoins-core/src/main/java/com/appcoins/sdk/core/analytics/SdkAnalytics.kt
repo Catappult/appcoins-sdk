@@ -485,6 +485,14 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentAllowExternalApps(eventData))
     }
 
+    fun sendWebPaymentCloseBehaviorEvent(configJson: String) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        eventData[SdkWebPaymentFlowLabels.CONFIG] = configJson
+
+        logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentUpdateCloseBehavior(eventData))
+    }
+
     fun sendWebPaymentExternalPaymentResultEvent() {
         logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentExternalPaymentResult())
     }

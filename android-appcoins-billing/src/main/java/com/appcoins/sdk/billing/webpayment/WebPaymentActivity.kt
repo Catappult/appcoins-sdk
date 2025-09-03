@@ -13,7 +13,7 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.widget.LinearLayout
 import com.appcoins.billing.sdk.R
-import com.appcoins.sdk.billing.ResponseCode
+import com.appcoins.sdk.billing.CatapultAppcoinsBilling.BillingResponseCode
 import com.appcoins.sdk.billing.listeners.PaymentResponseStream
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse
 import com.appcoins.sdk.billing.listeners.SDKWebResponse
@@ -22,6 +22,7 @@ import com.appcoins.sdk.billing.listeners.WebPaymentActionStream
 import com.appcoins.sdk.billing.payflow.models.WebViewDetails
 import com.appcoins.sdk.billing.usecases.HandleDeeplinkFromWebView
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESULT_CODE
+import com.appcoins.sdk.billing.webpayment.ScreenLockingConfig.Companion.TIMEOUT_DEFAULT
 import com.appcoins.sdk.billing.webpayment.WebViewLandscapeUtils.applyDefaultLandscapeConstraints
 import com.appcoins.sdk.billing.webpayment.WebViewLandscapeUtils.applyDynamicLandscapeConstraints
 import com.appcoins.sdk.billing.webpayment.WebViewOrientationUtils.setupOrientation
@@ -32,7 +33,9 @@ import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.logger.Logger.logDebug
 import com.appcoins.sdk.core.logger.Logger.logError
 import com.appcoins.sdk.core.logger.Logger.logInfo
+import com.appcoins.sdk.core.threading.LifecycleAwareThread
 import com.appcoins.sdk.core.ui.getScreenOrientation
+import org.json.JSONException
 import org.json.JSONObject
 
 class WebPaymentActivity :
@@ -54,6 +57,9 @@ class WebPaymentActivity :
     private var skuType: String? = null
 
     private var webViewDetails: WebViewDetails? = null
+
+    private var screenLockingConfig: ScreenLockingConfig = ScreenLockingConfig.newBuilder().build()
+    private var timeoutLifecycleAwareThread: LifecycleAwareThread? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,6 +117,7 @@ class WebPaymentActivity :
             PaymentResponseStream.getInstance().emit(sdkPaymentResponse)
         }
         removeWalletPurchaseResultDeeplinkStreamCollector()
+        timeoutLifecycleAwareThread?.cancel()
         super.onDestroy()
     }
 
@@ -118,7 +125,7 @@ class WebPaymentActivity :
     override fun accept(value: SDKWebResponse) {
         logInfo("Received response from WalletPaymentDeeplinkResponseStream with responseCode: ${value.responseCode}.")
         SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentWalletPaymentResultEvent()
-        if (value.responseCode == ResponseCode.OK.value) {
+        if (value.responseCode == BillingResponseCode.OK) {
             logInfo(
                 "Response code successful. " +
                     "Sending Purchase Result and finishing WebPaymentActivity."
@@ -148,6 +155,9 @@ class WebPaymentActivity :
     }
 
     override fun onBackPressed() {
+        if (screenLockingConfig.lockBackButton) {
+            return
+        }
         if (webView?.canGoBack() == true) {
             logInfo("Going back in WebView.")
             webView?.goBack()
@@ -203,6 +213,12 @@ class WebPaymentActivity :
         internalWebViewClient.shouldAllowExternalApps = allow
     }
 
+    @JavascriptInterface
+    override fun updateCloseBehavior(configJson: String) {
+        SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentCloseBehaviorEvent(configJson)
+        handleCloseBehavior(configJson)
+    }
+
     private fun connectViews() {
         webView = findViewById(R.id.web_view)
         webViewContainer = findViewById(R.id.container_for_web_view)
@@ -211,6 +227,9 @@ class WebPaymentActivity :
 
     private fun setupBackgroundToClose() {
         findViewById<ConstraintLayout>(R.id.base_constraint_layout).setOnClickListener {
+            if (screenLockingConfig.lockCloseView) {
+                return@setOnClickListener
+            }
             finish()
         }
     }
@@ -294,6 +313,37 @@ class WebPaymentActivity :
         } else {
             SdkAnalyticsUtils.sdkAnalytics.sendWebPaymentExternalPaymentResultEvent()
             webView?.loadUrl("javascript:onPaymentStateUpdated()")
+        }
+    }
+
+    private fun handleCloseBehavior(configJson: String) {
+        try {
+            logInfo("Handling Close Behavior with config: $configJson")
+            timeoutLifecycleAwareThread?.cancel()
+            val jsonObj = JSONObject(configJson)
+            val shouldLockCloseView = jsonObj.optBoolean("lockCloseView")
+            val shouldLockBackButton = jsonObj.optBoolean("lockBackButton")
+            val lockTimeout = jsonObj.optInt("timeout", TIMEOUT_DEFAULT)
+
+            screenLockingConfig = ScreenLockingConfig.newBuilder()
+                .setLockCloseView(shouldLockCloseView)
+                .setLockBackButton(shouldLockBackButton)
+                .setTimeout(lockTimeout)
+                .build()
+
+            if (screenLockingConfig.lockCloseView || screenLockingConfig.lockBackButton) {
+                timeoutLifecycleAwareThread =
+                    LifecycleAwareThread(screenLockingConfig.timeout) {
+                        try {
+                            screenLockingConfig = ScreenLockingConfig.newBuilder().build()
+                        } catch (e: JSONException) {
+                            logError("Error parsing the ScreenLockingConfig JSON.", e)
+                        }
+                    }
+                timeoutLifecycleAwareThread?.start()
+            }
+        } catch (ex: Exception) {
+            logDebug("Failed to handle close behavior $ex.")
         }
     }
 
