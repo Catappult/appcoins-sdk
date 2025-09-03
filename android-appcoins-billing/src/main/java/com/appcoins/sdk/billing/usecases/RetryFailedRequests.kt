@@ -21,7 +21,7 @@ object RetryFailedRequests : UseCase() {
                 val request = iterator.next()
                 val newBdsService = BdsService(request.baseUrl, request.timeoutInMillis)
                 newBdsService.makeRequest(
-                    request.endPoint,
+                    request.endPoint ?: "",
                     request.httpMethod,
                     request.paths,
                     request.queries,

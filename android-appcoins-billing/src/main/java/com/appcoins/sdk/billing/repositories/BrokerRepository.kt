@@ -35,7 +35,7 @@ class BrokerRepository(private val bdsService: BdsService) {
             emptyList(),
             emptyMap(),
             emptyMap(),
-            emptyMap<String?, Any>(),
+            emptyMap(),
             serviceResponseListener,
             SdkBackendRequestType.TRANSACTION
         )

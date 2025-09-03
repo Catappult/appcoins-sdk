@@ -51,6 +51,7 @@ public class AnalyticsManagerProvider {
         list.add(SdkBackendRequestEvents.SDK_CALL_BACKEND_RESPONSE);
         list.add(SdkBackendRequestEvents.SDK_CALL_BACKEND_MAPPING_FAILURE);
         list.add(SdkBackendRequestEvents.SDK_CALL_BACKEND_ERROR);
+        list.add(SdkBackendRequestEvents.SDK_CALL_DNS_MANUAL_CACHE_SUCCESS);
         list.add(SdkConsumePurchaseEvents.SDK_CONSUME_PURCHASE_REQUEST);
         list.add(SdkConsumePurchaseEvents.SDK_CONSUME_PURCHASE_RESULT);
         list.add(SdkGeneralFailureEvents.SDK_UNEXPECTED_FAILURE);
