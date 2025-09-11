@@ -31,6 +31,7 @@ import com.appcoins.sdk.core.analytics.events.SdkQueryPurchasesEvents
 import com.appcoins.sdk.core.analytics.events.SdkQueryPurchasesLabels
 import com.appcoins.sdk.core.analytics.events.SdkQuerySkuDetailsEvents
 import com.appcoins.sdk.core.analytics.events.SdkQuerySkuDetailsLabels
+import com.appcoins.sdk.core.analytics.events.SdkSystemInformationEvents
 import com.appcoins.sdk.core.analytics.events.SdkWalletPaymentFlowEvents
 import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents
 import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowLabels
@@ -592,6 +593,11 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         eventData[SdkQuerySkuDetailsLabels.SKU_TYPE] = skuType
 
         logEvent(SdkQuerySkuDetailsEvents.SdkQuerySkuDetailsFailureParsingSkus(eventData))
+    }
+
+    // System Information events
+    fun sendDoNotKeepActivitiesEvent() {
+        logEvent(SdkSystemInformationEvents.SdkDoNotKeepActivitiesActive())
     }
 
     private fun addBackendRequestData(
