@@ -28,6 +28,7 @@ object BillingLifecycleManager {
                 receiverIntentFilter
             )
             VerifyDontKeepActivitiesStatus()
+            SessionManager.getInstance().initSession()
         }.start()
     }
 

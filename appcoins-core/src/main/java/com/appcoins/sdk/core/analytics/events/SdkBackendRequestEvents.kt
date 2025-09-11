@@ -107,7 +107,9 @@ enum class SdkBackendRequestType(val type: String) {
     SKU_DETAILS("sku_details"),
     STORE_DEEPLINK("store_deeplink"),
     GUEST_WALLET("guest_wallet"),
-    NEW_VERSION_AVAILABLE("new_version_available")
+    NEW_VERSION_AVAILABLE("new_version_available"),
+    SESSION_START("session_start"),
+    SESSION_END("session_end"),
 }
 
 @Suppress("MagicNumber")

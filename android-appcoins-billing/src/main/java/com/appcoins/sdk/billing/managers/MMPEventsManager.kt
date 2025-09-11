@@ -51,4 +51,44 @@ object MMPEventsManager {
             attributionSharedPreferences.getUtmContent()
         )
     }
+
+    fun sendSessionStartEvent(
+        sessionId: String,
+        sessionStartTimestamp: Long,
+    ) {
+        logInfo("Sending Session Start Event to MMP.")
+        val walletId = attributionSharedPreferences.getWalletId() ?: return
+        mmpEventsRepository.sendSessionStartEvent(
+            sessionId,
+            sessionStartTimestamp,
+            packageName,
+            attributionSharedPreferences.getOemId(),
+            walletId,
+            attributionSharedPreferences.getUtmSource(),
+            attributionSharedPreferences.getUtmMedium(),
+            attributionSharedPreferences.getUtmCampaign(),
+            attributionSharedPreferences.getUtmTerm(),
+            attributionSharedPreferences.getUtmContent()
+        )
+    }
+
+    fun sendSessionEndEvent(
+        sessionId: String,
+        sessionEndTimestamp: Long,
+    ) {
+        logInfo("Sending Session End Event to MMP.")
+        val walletId = attributionSharedPreferences.getWalletId() ?: return
+        mmpEventsRepository.sendSessionEndEvent(
+            sessionId,
+            sessionEndTimestamp,
+            packageName,
+            attributionSharedPreferences.getOemId(),
+            walletId,
+            attributionSharedPreferences.getUtmSource(),
+            attributionSharedPreferences.getUtmMedium(),
+            attributionSharedPreferences.getUtmCampaign(),
+            attributionSharedPreferences.getUtmTerm(),
+            attributionSharedPreferences.getUtmContent()
+        )
+    }
 }
