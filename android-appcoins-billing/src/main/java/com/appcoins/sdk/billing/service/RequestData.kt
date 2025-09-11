@@ -12,6 +12,7 @@ import java.io.Serializable
  * @param queries List of the Queries to add to the request.
  * @param header List of the Headers to add to the request.
  * @param body Body to add to the request.
+ * @param timestamp Timestamp of the request.
  */
 class RequestData(
     val sdkBackendRequestType: SdkBackendRequestType,
@@ -23,4 +24,5 @@ class RequestData(
     val queries: Map<String, String>,
     val header: Map<String, String>,
     val body: Map<String, Any>,
+    val timestamp: Long,
 ) : Serializable
