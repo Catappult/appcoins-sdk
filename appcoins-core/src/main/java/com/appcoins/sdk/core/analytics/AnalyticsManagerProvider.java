@@ -14,6 +14,7 @@ import com.appcoins.sdk.core.analytics.events.SdkLaunchAppUpdateStoreEvents;
 import com.appcoins.sdk.core.analytics.events.SdkPurchaseFlowEvents;
 import com.appcoins.sdk.core.analytics.events.SdkQueryPurchasesEvents;
 import com.appcoins.sdk.core.analytics.events.SdkQuerySkuDetailsEvents;
+import com.appcoins.sdk.core.analytics.events.SdkSystemInformationEvents;
 import com.appcoins.sdk.core.analytics.events.SdkWalletPaymentFlowEvents;
 import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents;
 import com.appcoins.sdk.core.analytics.indicative.IndicativeEventLogger;
@@ -51,6 +52,7 @@ public class AnalyticsManagerProvider {
         list.add(SdkBackendRequestEvents.SDK_CALL_BACKEND_RESPONSE);
         list.add(SdkBackendRequestEvents.SDK_CALL_BACKEND_MAPPING_FAILURE);
         list.add(SdkBackendRequestEvents.SDK_CALL_BACKEND_ERROR);
+        list.add(SdkBackendRequestEvents.SDK_CALL_DNS_MANUAL_CACHE_SUCCESS);
         list.add(SdkConsumePurchaseEvents.SDK_CONSUME_PURCHASE_REQUEST);
         list.add(SdkConsumePurchaseEvents.SDK_CONSUME_PURCHASE_RESULT);
         list.add(SdkGeneralFailureEvents.SDK_UNEXPECTED_FAILURE);
@@ -99,12 +101,14 @@ public class AnalyticsManagerProvider {
         list.add(SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_FAILURE_TO_OPEN_DEEPLINK);
         list.add(SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_FAILURE_TO_OBTAIN_URL);
         list.add(SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_ALLOW_EXTERNAL_APPS);
+        list.add(SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_UPDATE_CLOSE_BEHAVIOR);
         list.add(SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_LAUNCH_EXTERNAL_PAYMENT);
         list.add(SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_EXTERNAL_PAYMENT_RESULT);
         list.add(SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_WALLET_PAYMENT_RESULT);
         list.add(SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_EXECUTE_EXTERNAL_DEEPLINK);
         list.add(SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_ERROR_PROCESSING_PURCHASE_RESULT);
         list.add(SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_PURCHASE_RESULT_EMPTY);
+        list.add(SdkSystemInformationEvents.SDK_DO_NOT_KEEP_ACTIVITIES_ACTIVE);
         return list;
     }
 }

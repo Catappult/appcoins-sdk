@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import com.appcoins.sdk.billing.payflow.PayflowManager
 import com.appcoins.sdk.billing.receivers.AppInstallationReceiver
+import com.appcoins.sdk.billing.usecases.VerifyDontKeepActivitiesStatus
 import com.appcoins.sdk.core.logger.Logger.logError
 
 object BillingLifecycleManager {
@@ -26,6 +27,8 @@ object BillingLifecycleManager {
                 appInstallationReceiver,
                 receiverIntentFilter
             )
+            VerifyDontKeepActivitiesStatus()
+            SessionManager.getInstance().initSession()
         }.start()
     }
 

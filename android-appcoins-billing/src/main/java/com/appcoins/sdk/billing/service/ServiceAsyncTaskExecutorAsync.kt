@@ -10,10 +10,10 @@ class ServiceAsyncTaskExecutorAsync(
     private val baseUrl: String,
     private val endPoint: String,
     private val httpMethod: String,
-    private val paths: MutableList<String>,
-    private val queries: MutableMap<String, String>,
-    private val header: MutableMap<String, String>,
-    private val body: MutableMap<String, out Any>,
+    private val paths: List<String>,
+    private val queries: Map<String, String>,
+    private val header: Map<String, String>,
+    private val body: Map<String, Any>,
     private val serviceResponseListener: ServiceResponseListener?,
     private val sdkBackendRequestType: SdkBackendRequestType
 ) {

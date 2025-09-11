@@ -7,7 +7,9 @@ import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents.SDK_WEB_PA
 import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_LAUNCH_EXTERNAL_PAYMENT
 import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_OPEN_DEEPLINK
 import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_START
+import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents.SDK_WEB_PAYMENT_UPDATE_CLOSE_BEHAVIOR
 import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowLabels.ALLOW
+import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowLabels.CONFIG
 import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowLabels.DEEPLINK
 import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowLabels.EXCEPTION
 import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowLabels.RESULT
@@ -89,6 +91,15 @@ object SdkWebPaymentFlowEvents {
             4
         )
 
+    class SdkWebPaymentUpdateCloseBehavior(data: MutableMap<String, Any>) :
+        AnalyticsEvent(
+            AnalyticsManager.Action.IMPRESSION,
+            SDK_WEB_PAYMENT_UPDATE_CLOSE_BEHAVIOR,
+            data,
+            WEB_PAYMENT_FLOW,
+            4
+        )
+
     class SdkWebPaymentExternalPaymentResult :
         AnalyticsEvent(
             AnalyticsManager.Action.IMPRESSION,
@@ -124,6 +135,7 @@ object SdkWebPaymentFlowEvents {
     const val SDK_WEB_PAYMENT_OPEN_DEEPLINK = "sdk_web_payment_open_deeplink"
     const val SDK_WEB_PAYMENT_LAUNCH_EXTERNAL_PAYMENT = "sdk_web_payment_launch_external_payment"
     const val SDK_WEB_PAYMENT_ALLOW_EXTERNAL_APPS = "sdk_web_payment_allow_external_apps"
+    const val SDK_WEB_PAYMENT_UPDATE_CLOSE_BEHAVIOR = "sdk_web_payment_update_close_behavior"
     const val SDK_WEB_PAYMENT_EXTERNAL_PAYMENT_RESULT = "sdk_web_payment_external_payment_result"
     const val SDK_WEB_PAYMENT_EXECUTE_EXTERNAL_DEEPLINK = "sdk_web_payment_execute_external_deeplink"
     const val SDK_WEB_PAYMENT_WALLET_PAYMENT_RESULT = "sdk_web_payment_wallet_payment_result"
@@ -137,6 +149,7 @@ object SdkWebPaymentFlowLabels {
     const val EXCEPTION = "exception"
     const val RESULT = "result"
     const val ALLOW = "allow"
+    const val CONFIG = "config"
 }
 
 @Suppress("MagicNumber")
@@ -157,4 +170,6 @@ enum class SdkWebPaymentFlowProperties(
     RESULT_FROM_ERROR_PROCESSING_PURCHASE_RESULT(RESULT, SDK_WEB_PAYMENT_ERROR_PROCESSING_PURCHASE_RESULT, 1630),
 
     ALLOW_FROM_ALLOW_EXTERNAL_APPS(ALLOW, SDK_WEB_PAYMENT_ALLOW_EXTERNAL_APPS, 1640),
+
+    CONFIG_FROM_UPDATE_CLOSE_BEHAVIOR(CONFIG, SDK_WEB_PAYMENT_UPDATE_CLOSE_BEHAVIOR, 1650),
 }

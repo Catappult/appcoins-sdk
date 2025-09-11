@@ -31,6 +31,7 @@ import com.appcoins.sdk.core.analytics.events.SdkQueryPurchasesEvents
 import com.appcoins.sdk.core.analytics.events.SdkQueryPurchasesLabels
 import com.appcoins.sdk.core.analytics.events.SdkQuerySkuDetailsEvents
 import com.appcoins.sdk.core.analytics.events.SdkQuerySkuDetailsLabels
+import com.appcoins.sdk.core.analytics.events.SdkSystemInformationEvents
 import com.appcoins.sdk.core.analytics.events.SdkWalletPaymentFlowEvents
 import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowEvents
 import com.appcoins.sdk.core.analytics.events.SdkWebPaymentFlowLabels
@@ -134,6 +135,16 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         eventData[SdkBackendRequestLabels.ERROR_MESSAGE] = errorMessage ?: ""
 
         logEvent(SdkBackendRequestEvents.SdkCallBackendMappingFailure(eventData))
+    }
+
+    fun sendBackendDnsManualCacheSuccessEvent(url: String, ip: String, responseCode: Int) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        eventData[SdkBackendRequestLabels.URL] = url
+        eventData[SdkBackendRequestLabels.IP_ADDRESS] = ip
+        eventData[SdkBackendRequestLabels.RESPONSE_CODE] = responseCode
+
+        logEvent(SdkBackendRequestEvents.SdkCallBackendDnsManualCacheSuccess(eventData))
     }
 
     // Consume Purchase events
@@ -475,6 +486,14 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentAllowExternalApps(eventData))
     }
 
+    fun sendWebPaymentCloseBehaviorEvent(configJson: String) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        eventData[SdkWebPaymentFlowLabels.CONFIG] = configJson
+
+        logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentUpdateCloseBehavior(eventData))
+    }
+
     fun sendWebPaymentExternalPaymentResultEvent() {
         logEvent(SdkWebPaymentFlowEvents.SdkWebPaymentExternalPaymentResult())
     }
@@ -574,6 +593,11 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         eventData[SdkQuerySkuDetailsLabels.SKU_TYPE] = skuType
 
         logEvent(SdkQuerySkuDetailsEvents.SdkQuerySkuDetailsFailureParsingSkus(eventData))
+    }
+
+    // System Information events
+    fun sendDoNotKeepActivitiesEvent() {
+        logEvent(SdkSystemInformationEvents.SdkDoNotKeepActivitiesActive())
     }
 
     private fun addBackendRequestData(
