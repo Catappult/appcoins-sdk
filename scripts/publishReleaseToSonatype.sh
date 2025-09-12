@@ -5,4 +5,4 @@ export BUILD_TYPE_NAME="release"
 
 ./gradlew :android-appcoins-billing:clean :appcoins-billing:clean :communication:clean :appcoins-core:clean
 ./gradlew :android-appcoins-billing:assemble :appcoins-billing:assemble :communication:assemble :appcoins-core:assemble
-./gradlew publish
+./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --info

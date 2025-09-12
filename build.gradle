@@ -1,44 +1,43 @@
+buildscript {
+    ext {
+        agp_version = '8.4.0'
+        kotlin_version = '1.5.30'
+    }
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        google()
+        maven { url "https://dl.bintray.com/aptoide/Aptoide" }
+        maven { url 'https://jitpack.io' }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://central.sonatype.com/repository/maven-snapshots/" }
+    }
+
+    dependencies {
+        classpath libs.android.tools.build.gradle
+        classpath libs.detekt
+        classpath libs.kotlin.gradle.plugin
+    }
+}
+
+plugins {
+    id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
+}
+
 allprojects {
     apply from: "${rootProject.projectDir}/gradle/publish.gradle"
 
     group PUBLISH_GROUP_ID
     version PUBLISH_VERSION
 
-    buildscript {
-        repositories {
-            mavenCentral()
-            maven { url "https://dl.bintray.com/aptoide/Aptoide" }
-            maven { url 'https://jitpack.io' }
-            maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        }
-    }
-
     repositories {
+        gradlePluginPortal()
         mavenCentral()
         google()
-        maven { url "https://dl.bintray.com/aptoide/Aptoide" }
-        maven { url 'https://jitpack.io' }
-    }
-}
-
-buildscript {
-    ext {
-        agp_version = '4.2.2'
-        kotlin_version = '1.5.30'
-    }
-    repositories {
-        mavenCentral()
         maven { url "https://dl.bintray.com/aptoide/Aptoide" }
         maven { url 'https://jitpack.io' }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        google()
-    }
-
-    dependencies {
-        classpath libs.android.tools.build.gradle
-        classpath libs.kotlin.gradle.plugin
-        classpath libs.fat.arr
-        classpath libs.detekt
+        maven { url "https://central.sonatype.com/repository/maven-snapshots/" }
     }
 }
 
@@ -61,5 +60,16 @@ configure(allprojects) {
         reports.html.enabled = true
         reports.xml.enabled = true
         reports.txt.enabled = true
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
+            username.set(ossrhUsername)
+            password.set(ossrhPassword)
+        }
     }
 }

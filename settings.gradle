@@ -4,5 +4,3 @@ include ':android-appcoins-billing'
 include ':appcoins-billing'
 include ':appcoins-core'
 include ':communication'
-
-enableFeaturePreview("VERSION_CATALOGS")
