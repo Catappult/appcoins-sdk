@@ -5,3 +5,48 @@ ext {
     PUBLISH_VERSION = VERSION_NAME
     PUBLISH_GROUP_ID = "io.catappult"
 }
+
+plugins.withId('maven-publish') {
+    apply plugin: 'signing'
+
+    // Signing credentials from env or local.properties
+    ext["signing.keyId"] = ''
+    ext["signing.password"] = ''
+    ext["signing.secretKeyRingFile"] = ''
+    ext["ossrhUsername"] = ''
+    ext["ossrhPassword"] = ''
+
+    File secretPropsFile = rootProject.file("local.properties")
+    if (secretPropsFile.exists()) {
+        Properties p = new Properties()
+        p.load(new FileInputStream(secretPropsFile))
+        p.each { name, value -> ext[name] = value }
+    } else {
+        ext["signing.keyId"] = System.getenv("SIGNING_KEY_ID")
+        ext["signing.password"] = System.getenv("SIGNING_PASSWORD")
+        ext["signing.secretKeyRingFile"] = System.getenv("SIGNING_SECRET_KEY_RING_FILE")
+        ext["ossrhUsername"] = System.getenv("OSSRH_USERNAME")
+        ext["ossrhPassword"] = System.getenv("OSSRH_PASSWORD")
+    }
+
+    publishing {
+        repositories {
+            maven {
+                name = "sonatype"
+                def releasesRepoUrl = "https://central.sonatype.com/publish/"
+                def snapshotsRepoUrl = "https://central.sonatype.com/repository/maven-snapshots/"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+
+                credentials {
+                    username = ossrhUsername
+                    password = ossrhPassword
+                }
+            }
+        }
+    }
+
+    signing {
+        required { !version.endsWith('SNAPSHOT') }
+        sign publishing.publications
+    }
+}
