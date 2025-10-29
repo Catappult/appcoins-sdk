@@ -8,7 +8,6 @@ import com.appcoins.sdk.billing.mappers.ReferralDeeplinkResponse
 import com.appcoins.sdk.billing.mappers.StoreLinkResponse
 import com.appcoins.sdk.billing.repositories.StoreLinkMapperRepository
 import com.appcoins.sdk.billing.service.BdsService
-import com.appcoins.sdk.billing.usecases.GetAppInstalledVersion
 import com.appcoins.sdk.billing.usecases.GetOemIdForPackage
 import com.appcoins.sdk.billing.usecases.ingameupdates.GetInstallerAppPackage
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.TIMEOUT_3_SECS
@@ -48,7 +47,7 @@ class StoreLinkMapperManager(private val context: Context) {
         logInfo("Getting New Version Availability.")
         val oemid = GetOemIdForPackage(WalletUtils.context.packageName, WalletUtils.context)
         val installerAppPackage = GetInstallerAppPackage(context)
-        val currentVersion = GetAppInstalledVersion(context.packageName, context)
+        val currentVersion = WalletUtils.appVersionCode
         val q = try {
             QGenerator.generateQ(WalletUtils.context)
         } catch (ex: Exception) {

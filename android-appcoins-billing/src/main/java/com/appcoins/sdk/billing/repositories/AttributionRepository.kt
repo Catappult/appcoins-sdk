@@ -17,7 +17,7 @@ class AttributionRepository(private val bdsService: BdsService) {
         oemId: String?,
         guestWalletId: String?,
         installerAppPackage: String?,
-        currentVersion: Int,
+        currentVersion: Long,
         initialAttributionTimestamp: Long,
     ): AttributionResponse? {
         val countDownLatch = CountDownLatch(1)

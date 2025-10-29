@@ -29,6 +29,7 @@ import com.appcoins.sdk.billing.payflow.models.WebViewDetails
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences
 import com.appcoins.sdk.billing.types.SkuType
+import com.appcoins.sdk.billing.usecases.GetAppInstalledVersion
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.KEY_BUY_INTENT
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
 import com.appcoins.sdk.billing.webpayment.WebPaymentActivity.Companion.newIntent
@@ -54,12 +55,17 @@ object WalletUtils {
         )
     var webPaymentUrl: String? = null
     lateinit var context: Context
+    var appVersionCode: Long = 0
 
     val userAgent: String by lazy {
         val displayMetrics = getDisplayMetrics()
         val widthPixels = displayMetrics.widthPixels
         val heightPixels = displayMetrics.heightPixels
         buildUserAgent(widthPixels, heightPixels)
+    }
+
+    fun updateAppVersionCode() {
+        appVersionCode = GetAppInstalledVersion(context.packageName, context)
     }
 
     fun startWebFirstPayment(sku: String, skuType: String, webViewDetails: WebViewDetails?): Bundle {

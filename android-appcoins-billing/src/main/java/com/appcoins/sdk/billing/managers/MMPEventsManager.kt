@@ -36,6 +36,7 @@ object MMPEventsManager {
     ) {
         logInfo("Sending Successful Purchase Result Event to MMP.")
         val walletId = attributionSharedPreferences.getWalletId() ?: return
+        val appVersionCode = WalletUtils.appVersionCode
         mmpEventsRepository.sendSuccessfulPurchaseResultEvent(
             packageName,
             attributionSharedPreferences.getOemId(),
@@ -44,51 +45,36 @@ object MMPEventsManager {
             orderId,
             purchaseValue,
             paymentMethod,
+            appVersionCode,
             attributionSharedPreferences.getUtmSource(),
             attributionSharedPreferences.getUtmMedium(),
             attributionSharedPreferences.getUtmCampaign(),
             attributionSharedPreferences.getUtmTerm(),
-            attributionSharedPreferences.getUtmContent()
+            attributionSharedPreferences.getUtmContent(),
         )
     }
 
-    fun sendSessionStartEvent(
+    fun sendUserSessionEvent(
         sessionId: String,
         sessionStartTimestamp: Long,
+        duration: Long,
     ) {
-        logInfo("Sending Session Start Event to MMP.")
+        logInfo("Sending User Session Event to MMP.")
         val walletId = attributionSharedPreferences.getWalletId() ?: return
-        mmpEventsRepository.sendSessionStartEvent(
+        val appVersionCode = WalletUtils.appVersionCode
+        mmpEventsRepository.sendUserSessionEvent(
             sessionId,
             sessionStartTimestamp,
+            duration,
             packageName,
             attributionSharedPreferences.getOemId(),
             walletId,
+            appVersionCode,
             attributionSharedPreferences.getUtmSource(),
             attributionSharedPreferences.getUtmMedium(),
             attributionSharedPreferences.getUtmCampaign(),
             attributionSharedPreferences.getUtmTerm(),
-            attributionSharedPreferences.getUtmContent()
-        )
-    }
-
-    fun sendSessionEndEvent(
-        sessionId: String,
-        sessionEndTimestamp: Long,
-    ) {
-        logInfo("Sending Session End Event to MMP.")
-        val walletId = attributionSharedPreferences.getWalletId() ?: return
-        mmpEventsRepository.sendSessionEndEvent(
-            sessionId,
-            sessionEndTimestamp,
-            packageName,
-            attributionSharedPreferences.getOemId(),
-            walletId,
-            attributionSharedPreferences.getUtmSource(),
-            attributionSharedPreferences.getUtmMedium(),
-            attributionSharedPreferences.getUtmCampaign(),
-            attributionSharedPreferences.getUtmTerm(),
-            attributionSharedPreferences.getUtmContent()
+            attributionSharedPreferences.getUtmContent(),
         )
     }
 }

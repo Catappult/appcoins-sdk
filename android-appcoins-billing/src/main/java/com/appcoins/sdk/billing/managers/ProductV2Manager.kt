@@ -1,6 +1,7 @@
 package com.appcoins.sdk.billing.managers
 
 import com.appcoins.billing.sdk.BuildConfig
+import com.appcoins.sdk.billing.CatapultAppcoinsBilling.ProductType.SUBS
 import com.appcoins.sdk.billing.managers.WalletManager.requestWallet
 import com.appcoins.sdk.billing.mappers.InappPurchaseResponse
 import com.appcoins.sdk.billing.mappers.PurchaseResponse
@@ -27,12 +28,19 @@ object ProductV2Manager {
     ): PurchasesResponse {
         logInfo("Getting Purchases.")
         val walletGenerationModel = requestWallet(walletId)
-        return productV2Repository.getPurchasesSync(
-            packageName,
-            walletGenerationModel.walletAddress,
-            walletGenerationModel.signature,
-            type
-        )
+        return if (type.equals(SUBS, true)) {
+            productV2Repository.getSubsPurchasesSync(
+                packageName,
+                walletGenerationModel.walletAddress,
+                walletGenerationModel.signature,
+            )
+        } else {
+            productV2Repository.getInappPurchasesSync(
+                packageName,
+                walletGenerationModel.walletAddress,
+                walletGenerationModel.signature,
+            )
+        }
     }
 
     fun getPurchaseSync(

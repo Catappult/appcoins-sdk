@@ -45,7 +45,7 @@ import static com.appcoins.sdk.core.logger.Logger.logWarning;
 
 public class InstallDialogActivity extends Activity {
 
-    private static final int MINIMUM_APTOIDE_VERSION = 9908;
+    private static final long MINIMUM_APTOIDE_VERSION = 9908;
     private static final String BUY_ITEM_PROPERTIES = "buy_item_properties";
 
     private static final String INSTALL_BUTTON_COLOR = "#ffffbb33";
