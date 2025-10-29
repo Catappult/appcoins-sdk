@@ -52,11 +52,10 @@ class ProductV2Repository(private val bdsService: BdsService) {
         return inappPurchase
     }
 
-    fun getPurchasesSync(
+    fun getInappPurchasesSync(
         packageName: String,
         walletAddress: String,
         signedWallet: String,
-        type: String
     ): PurchasesResponse {
         val countDownLatch = CountDownLatch(1)
         var purchasesResponse = PurchasesResponse(BillingResponseCode.ERROR)
@@ -71,11 +70,45 @@ class ProductV2Repository(private val bdsService: BdsService) {
         val queries: MutableMap<String, String> = HashMap()
         queries["wallet.address"] = walletAddress
         queries["wallet.signature"] = signedWallet
-        queries["type"] = type
         queries["state"] = "PENDING"
 
         bdsService.makeRequest(
             "/productv2/8.20240901/applications/$packageName/inapp/consumable/purchases",
+            "GET",
+            emptyList(),
+            queries,
+            emptyMap(),
+            emptyMap(),
+            serviceResponseListener,
+            SdkBackendRequestType.PURCHASES
+        )
+
+        waitForCountDown(countDownLatch)
+        return purchasesResponse
+    }
+
+    fun getSubsPurchasesSync(
+        packageName: String,
+        walletAddress: String,
+        signedWallet: String,
+    ): PurchasesResponse {
+        val countDownLatch = CountDownLatch(1)
+        var purchasesResponse = PurchasesResponse(BillingResponseCode.ERROR)
+
+        val serviceResponseListener =
+            ServiceResponseListener { requestResponse ->
+                val purchasesModel = PurchasesResponseMapper().map(requestResponse)
+                purchasesResponse = purchasesModel
+                countDownLatch.countDown()
+            }
+
+        val queries: MutableMap<String, String> = HashMap()
+        queries["wallet.address"] = walletAddress
+        queries["wallet.signature"] = signedWallet
+        queries["state"] = "PENDING"
+
+        bdsService.makeRequest(
+            "/productv2/8.20240901/applications/$packageName/inapp/subscription/purchases",
             "GET",
             emptyList(),
             queries,
