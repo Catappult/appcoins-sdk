@@ -13,6 +13,7 @@ class MMPEventsRepository(private val bdsRetryService: BdsRetryService) {
         orderId: String,
         purchaseAmount: String,
         paymentMethod: String,
+        appVersionCode: Long,
         utmSource: String?,
         utmMedium: String?,
         utmCampaign: String?,
@@ -28,6 +29,7 @@ class MMPEventsRepository(private val bdsRetryService: BdsRetryService) {
         queries["order_id"] = orderId
         queries["purchase_amount"] = purchaseAmount
         queries["payment_method"] = paymentMethod
+        queries["vercode"] = appVersionCode.toString()
         queries["timestamp"] = timestamp.toString()
         utmSource?.let { queries["utm_source"] = it }
         utmMedium?.let { queries["utm_medium"] = it }
@@ -48,12 +50,14 @@ class MMPEventsRepository(private val bdsRetryService: BdsRetryService) {
         )
     }
 
-    fun sendSessionStartEvent(
+    fun sendUserSessionEvent(
         sessionId: String,
         sessionStartTimestamp: Long,
+        duration: Long,
         packageName: String,
         oemId: String?,
         guestWalletId: String,
+        appVersionCode: Long,
         utmSource: String?,
         utmMedium: String?,
         utmCampaign: String?,
@@ -64,9 +68,11 @@ class MMPEventsRepository(private val bdsRetryService: BdsRetryService) {
         val queries: MutableMap<String, String> = LinkedHashMap()
         queries["session_id"] = sessionId
         queries["timestamp"] = sessionStartTimestamp.toString()
+        queries["duration"] = duration.toString()
         queries["package_name"] = packageName
         oemId?.let { queries["oemid"] = it }
         queries["guest_uid"] = guestWalletId
+        queries["vercode"] = appVersionCode.toString()
         utmSource?.let { queries["utm_source"] = it }
         utmMedium?.let { queries["utm_medium"] = it }
         utmCampaign?.let { queries["utm_campaign"] = it }
@@ -74,52 +80,14 @@ class MMPEventsRepository(private val bdsRetryService: BdsRetryService) {
         utmContent?.let { queries["utm_content"] = it }
 
         bdsRetryService.makeRequest(
-            "/session_start",
+            "/user_session",
             "GET",
             mutableListOf(),
             queries,
             mutableMapOf(),
             mutableMapOf(),
             null,
-            SdkBackendRequestType.SESSION_START,
-            timestamp
-        )
-    }
-
-    fun sendSessionEndEvent(
-        sessionId: String,
-        sessionEndTimestamp: Long,
-        packageName: String,
-        oemId: String?,
-        guestWalletId: String,
-        utmSource: String?,
-        utmMedium: String?,
-        utmCampaign: String?,
-        utmTerm: String?,
-        utmContent: String?,
-    ) {
-        val timestamp = System.currentTimeMillis()
-        val queries: MutableMap<String, String> = LinkedHashMap()
-        queries["session_id"] = sessionId
-        queries["timestamp"] = sessionEndTimestamp.toString()
-        queries["package_name"] = packageName
-        oemId?.let { queries["oemid"] = it }
-        queries["guest_uid"] = guestWalletId
-        utmSource?.let { queries["utm_source"] = it }
-        utmMedium?.let { queries["utm_medium"] = it }
-        utmCampaign?.let { queries["utm_campaign"] = it }
-        utmTerm?.let { queries["utm_term"] = it }
-        utmContent?.let { queries["utm_content"] = it }
-
-        bdsRetryService.makeRequest(
-            "/session_end",
-            "GET",
-            mutableListOf(),
-            queries,
-            mutableMapOf(),
-            mutableMapOf(),
-            null,
-            SdkBackendRequestType.SESSION_END,
+            SdkBackendRequestType.USER_SESSION,
             timestamp
         )
     }

@@ -105,7 +105,7 @@ class StoreLinkMapperRepository(private val bdsService: BdsService) {
         packageName: String,
         appInstallerPackageName: String?,
         oemid: String?,
-        versionCode: Int,
+        versionCode: Long,
         q: String?,
     ): NewVersionAvailableResponse {
         val countDownLatch = CountDownLatch(1)

@@ -60,8 +60,7 @@ internal class SessionManager {
                 logDebug("Sending previous session. Session duration: ${sessionDuration / MILLIS_MULTIPLIER}.")
                 if (sessionDuration > 0) {
                     val sessionId = UUID.randomUUID().toString()
-                    MMPEventsManager.sendSessionStartEvent(sessionId, sessionStartTime)
-                    MMPEventsManager.sendSessionEndEvent(sessionId, sessionEndTime)
+                    MMPEventsManager.sendUserSessionEvent(sessionId, sessionStartTime, sessionDuration)
                 }
             } catch (e: Exception) {
                 logError("Error saving previous session", e)
