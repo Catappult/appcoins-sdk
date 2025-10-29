@@ -28,6 +28,7 @@ public class CatapultBillingAppCoinsFactory {
         RepositoryServiceConnection connection =
             new RepositoryServiceConnection(context.getApplicationContext(), repository);
         WalletUtils.INSTANCE.setContext(context.getApplicationContext());
+        WalletUtils.INSTANCE.updateAppVersionCode();
 
         byte[] base64DecodedPublicKey = Base64.decode(base64PublicKey, Base64.DEFAULT);
         PurchasesSecurityHelper.INSTANCE.setBase64DecodedPublicKey(base64DecodedPublicKey);

@@ -108,8 +108,9 @@ enum class SdkBackendRequestType(val type: String) {
     STORE_DEEPLINK("store_deeplink"),
     GUEST_WALLET("guest_wallet"),
     NEW_VERSION_AVAILABLE("new_version_available"),
-    SESSION_START("session_start"),
-    SESSION_END("session_end"),
+    USER_SESSION("user_session"),
+    SESSION_START("session_start"), // Blacklisted Request Type
+    SESSION_END("session_end"), // Blacklisted Request Type
 }
 
 @Suppress("MagicNumber")

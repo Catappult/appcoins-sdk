@@ -2,6 +2,8 @@ package com.appcoins.sdk.billing.helpers
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import com.appcoins.sdk.billing.CatapultAppcoinsBilling
 import com.appcoins.sdk.billing.PurchasesUpdatedListener
 import io.mockk.confirmVerified
@@ -26,9 +28,13 @@ class CatapultBillingAppCoinsFactoryTest {
     fun setup() {
         val mockkApplicationInfo = mockk<ApplicationInfo>()
         val mockkPackageName = "packageName"
+        val mockkPackageManager = mockk<PackageManager>()
+        val mockkPackageInfo = mockk<PackageInfo>()
         every { mockkContext.applicationContext } returns mockkContext
         every { mockkContext.applicationInfo } returns mockkApplicationInfo
         every { mockkContext.packageName } returns mockkPackageName
+        every { mockkContext.packageManager } returns mockkPackageManager
+        every { mockkPackageManager.getPackageInfo(mockkPackageName, any<Int>()) } returns mockkPackageInfo
     }
 
     @After
@@ -44,11 +50,14 @@ class CatapultBillingAppCoinsFactoryTest {
             verify(exactly = 3) {
                 mockkContext.applicationContext
             }
-            verify(exactly = 2) {
+            verify(exactly = 3) {
                 mockkContext.packageName
             }
             verify(exactly = 1) {
                 mockkContext.applicationInfo
+            }
+            verify(exactly = 1) {
+                mockkContext.packageManager
             }
             throw ex
         }
@@ -65,11 +74,14 @@ class CatapultBillingAppCoinsFactoryTest {
         verify(exactly = 3) {
             mockkContext.applicationContext
         }
-        verify(exactly = 2) {
+        verify(exactly = 3) {
             mockkContext.packageName
         }
         verify(exactly = 1) {
             mockkContext.applicationInfo
+        }
+        verify(exactly = 1) {
+            mockkContext.packageManager
         }
         assertTrue(cabResult is CatapultAppcoinsBilling)
     }
