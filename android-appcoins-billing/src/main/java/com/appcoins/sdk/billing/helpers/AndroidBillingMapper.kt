@@ -1,156 +1,196 @@
-package com.appcoins.sdk.billing.helpers;
+package com.appcoins.sdk.billing.helpers
 
-import android.os.Bundle;
-import android.util.Base64;
-import com.appcoins.sdk.billing.LaunchBillingFlowResult;
-import com.appcoins.sdk.billing.Purchase;
-import com.appcoins.sdk.billing.PurchasesResult;
-import com.appcoins.sdk.billing.ResponseCode;
-import com.appcoins.sdk.billing.SkuDetails;
-import com.appcoins.sdk.billing.SkuDetailsResult;
-import java.util.ArrayList;
-import java.util.List;
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.os.Bundle
+import android.util.Base64
+import com.appcoins.sdk.billing.LaunchBillingFlowResult
+import com.appcoins.sdk.billing.Purchase
+import com.appcoins.sdk.billing.PurchasesResult
+import com.appcoins.sdk.billing.ResponseCode
+import com.appcoins.sdk.billing.SkuDetails
+import com.appcoins.sdk.billing.SkuDetailsResult
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.DETAILS_LIST
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.GET_SKU_DETAILS_ITEM_LIST
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE_LIST
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ID_LIST
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.KEY_BUY_INTENT
+import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE
+import com.appcoins.sdk.core.logger.Logger.logDebug
+import com.appcoins.sdk.core.logger.Logger.logError
+import org.json.JSONException
+import org.json.JSONObject
 
-import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.DETAILS_LIST;
-import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.GET_SKU_DETAILS_ITEM_LIST;
-import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE_LIST;
-import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA_LIST;
-import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_ID_LIST;
-import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.KEY_BUY_INTENT;
-import static com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.RESPONSE_CODE;
-import static com.appcoins.sdk.core.logger.Logger.logDebug;
-import static com.appcoins.sdk.core.logger.Logger.logError;
-
-public class AndroidBillingMapper {
-
-    public static PurchasesResult mapPurchases(Bundle bundle, String skuType) {
-        int responseCode = bundle.getInt(RESPONSE_CODE);
-        List<Purchase> list = new ArrayList<>();
-        ArrayList<String> purchaseDataList = bundle.getStringArrayList(INAPP_PURCHASE_DATA_LIST);
-        ArrayList<String> signatureList = bundle.getStringArrayList(INAPP_DATA_SIGNATURE_LIST);
-        ArrayList<String> idsList = bundle.getStringArrayList(INAPP_PURCHASE_ID_LIST);
+object AndroidBillingMapper {
+    @Suppress("NestedBlockDepth")
+    @JvmStatic
+    fun mapPurchases(bundle: Bundle, skuType: String): PurchasesResult {
+        val responseCode = bundle.getInt(RESPONSE_CODE)
+        val list: MutableList<Purchase> = ArrayList()
+        val listPurchaseTokens: MutableList<String> = ArrayList()
+        val purchaseDataList = bundle.getStringArrayList(INAPP_PURCHASE_DATA_LIST)
+        val signatureList = bundle.getStringArrayList(INAPP_DATA_SIGNATURE_LIST)
+        val idsList = bundle.getStringArrayList(INAPP_PURCHASE_ID_LIST)
 
         if (purchaseDataList != null && signatureList != null && idsList != null) {
-            for (int i = 0; i < purchaseDataList.size(); ++i) {
-                String purchaseData = purchaseDataList.get(i);
-                String signature = signatureList.get(i);
+            for (i in purchaseDataList.indices) {
+                val purchaseData = purchaseDataList[i]
+                val signature = signatureList[i]
 
-                JSONObject jsonElement;
                 try {
-                    jsonElement = new JSONObject(purchaseData);
-                    String orderId = jsonElement.getString("orderId");
-                    String packageName = jsonElement.getString("packageName");
-                    String sku = jsonElement.getString("productId");
-                    long purchaseTime = jsonElement.getLong("purchaseTime");
-                    int purchaseState = jsonElement.getInt("purchaseState");
+                    val jsonElement = JSONObject(purchaseData)
+                    val orderId = jsonElement.getString("orderId")
+                    val packageName = jsonElement.getString("packageName")
+                    val sku = jsonElement.getString("productId")
+                    val purchaseTime = jsonElement.getLong("purchaseTime")
+                    val purchaseState = jsonElement.getInt("purchaseState")
 
-                    String developerPayload = getStringValueFromJson(jsonElement, "developerPayload");
-                    String obfuscatedAccountId = getStringValueFromJson(jsonElement, "obfuscatedExternalAccountId");
-                    String token = getStringValueFromJson(jsonElement, "token");
+                    val developerPayload = getStringValueFromJson(jsonElement, "developerPayload", null)
+                    val obfuscatedAccountId =
+                        getStringValueFromJson(jsonElement, "obfuscatedExternalAccountId", null)
+                    var token = getStringValueFromJson(jsonElement, "token", null)
                     if (token == null) {
-                        token = getStringValueFromJson(jsonElement, "purchaseToken");
+                        token = getStringValueFromJson(jsonElement, "purchaseToken", null)
                     }
-                    boolean isAutoRenewing = getBooleanValueFromJson(jsonElement, "autoRenewing");
+                    val isAutoRenewing = getBooleanValueFromJson(jsonElement, "autoRenewing")
 
-                    //Base64 decoded string
-                    byte[] decodedSignature = Base64.decode(signature, Base64.DEFAULT);
-                    list.add(new Purchase(orderId, skuType, purchaseData, decodedSignature, purchaseTime, purchaseState,
-                        developerPayload, obfuscatedAccountId, token, packageName, sku, isAutoRenewing));
-                } catch (JSONException e) {
-                    logError("Failed to map Purchase: " + e);
+                    // Base64 decoded string
+                    val decodedSignature = Base64.decode(signature, Base64.DEFAULT)
+
+                    if (!listPurchaseTokens.contains(token!!)) {
+                        listPurchaseTokens.add(token)
+                        list.add(
+                            Purchase(
+                                orderId,
+                                skuType,
+                                purchaseData,
+                                decodedSignature,
+                                purchaseTime,
+                                purchaseState,
+                                developerPayload,
+                                obfuscatedAccountId,
+                                token,
+                                packageName,
+                                sku,
+                                isAutoRenewing
+                            )
+                        )
+                    }
+                } catch (e: JSONException) {
+                    logError("Failed to map Purchase: $e")
                 }
             }
         }
-        return new PurchasesResult(list, responseCode);
+        return PurchasesResult(list, responseCode)
     }
 
-    public static Bundle mapArrayListToBundleSkuDetails(List<String> skus) {
-        Bundle bundle = new Bundle();
-        bundle.putStringArrayList(GET_SKU_DETAILS_ITEM_LIST, (ArrayList<String>) skus);
-        return bundle;
+    @JvmStatic
+    fun mapArrayListToBundleSkuDetails(skus: List<String?>?): Bundle {
+        val bundle = Bundle()
+        bundle.putStringArrayList(GET_SKU_DETAILS_ITEM_LIST, skus as ArrayList<String?>?)
+        return bundle
     }
 
-    public static SkuDetailsResult mapBundleToHashMapSkuDetails(String skuType, Bundle bundle) {
-        ArrayList<SkuDetails> arrayList = new ArrayList<>();
+    @Suppress("NestedBlockDepth")
+    @JvmStatic
+    fun mapBundleToHashMapSkuDetails(skuType: String, bundle: Bundle): SkuDetailsResult {
+        val arrayList = ArrayList<SkuDetails>()
 
         if (bundle.containsKey(DETAILS_LIST)) {
-            ArrayList<String> responseList = bundle.getStringArrayList(DETAILS_LIST);
+            val responseList = bundle.getStringArrayList(DETAILS_LIST)
             if (responseList != null) {
-                for (String value : responseList) {
-                    SkuDetails skuDetails = parseSkuDetails(skuType, value);
+                for (value in responseList) {
+                    val skuDetails = parseSkuDetails(skuType, value)
                     if (skuDetails != null) {
-                        arrayList.add(skuDetails);
+                        arrayList.add(skuDetails)
                     }
                 }
             }
         }
 
-        int responseCode = ResponseCode.ERROR.getValue();
+        var responseCode = ResponseCode.ERROR.value
         if (bundle.containsKey(RESPONSE_CODE)) {
-            responseCode = (int) bundle.get(RESPONSE_CODE);
+            responseCode = bundle[RESPONSE_CODE] as Int
         }
 
-        return new SkuDetailsResult(arrayList, responseCode);
+        return SkuDetailsResult(arrayList, responseCode)
     }
 
-    public static LaunchBillingFlowResult mapBundleToHashMapGetIntent(Bundle bundle) {
-        return new LaunchBillingFlowResult(bundle.getInt(RESPONSE_CODE), bundle.getParcelable(KEY_BUY_INTENT));
+    @JvmStatic
+    fun mapBundleToHashMapGetIntent(bundle: Bundle): LaunchBillingFlowResult {
+        return LaunchBillingFlowResult(bundle.getInt(RESPONSE_CODE), bundle.getParcelable(KEY_BUY_INTENT))
     }
 
-    private static SkuDetails parseSkuDetails(String skuType, String skuDetailsData) {
+    private fun parseSkuDetails(skuType: String, skuDetailsData: String): SkuDetails? {
         try {
-            JSONObject jsonElement = new JSONObject(skuDetailsData);
+            val jsonElement = JSONObject(skuDetailsData)
 
-            String sku = jsonElement.getString("productId");
-            String type = jsonElement.getString("type");
-            String price = jsonElement.getString("price");
-            long priceAmountMicros = jsonElement.getLong("price_amount_micros");
-            String priceCurrencyCode = jsonElement.getString("price_currency_code");
-            String appcPrice = jsonElement.getString("appc_price");
-            long appcPriceAmountMicros = jsonElement.getLong("appc_price_amount_micros");
-            String appcPriceCurrencyCode = jsonElement.getString("appc_price_currency_code");
-            String fiatPrice = jsonElement.getString("fiat_price");
-            long fiatPriceAmountMicros = jsonElement.getLong("fiat_price_amount_micros");
-            String fiatPriceCurrencyCode = jsonElement.getString("fiat_price_currency_code");
-            String title = jsonElement.getString("title");
-            String description = getStringValueFromJson(jsonElement, "description");
-            String period = getStringValueFromJson(jsonElement, "period");
-            String trial_period = getStringValueFromJson(jsonElement, "trial_period");
-            String trial_period_end_date = getStringValueFromJson(jsonElement, "trial_period_end_date");
+            val sku = jsonElement.getString("productId")
+            val type = jsonElement.getString("type")
+            val price = jsonElement.getString("price")
+            val priceAmountMicros = jsonElement.getLong("price_amount_micros")
+            val priceCurrencyCode = jsonElement.getString("price_currency_code")
+            val appcPrice = jsonElement.getString("appc_price")
+            val appcPriceAmountMicros = jsonElement.getLong("appc_price_amount_micros")
+            val appcPriceCurrencyCode = jsonElement.getString("appc_price_currency_code")
+            val fiatPrice = jsonElement.getString("fiat_price")
+            val fiatPriceAmountMicros = jsonElement.getLong("fiat_price_amount_micros")
+            val fiatPriceCurrencyCode = jsonElement.getString("fiat_price_currency_code")
+            val title = jsonElement.getString("title")
+            val description = getStringValueFromJson(jsonElement, "description", null)
+            val period = getStringValueFromJson(jsonElement, "period", null)
+            val trialPeriod = getStringValueFromJson(jsonElement, "trial_period", null)
+            val trialPeriodEndDate = getStringValueFromJson(jsonElement, "trial_period_end_date", null)
 
-            return new SkuDetails(skuType, sku, type, price, priceAmountMicros, priceCurrencyCode, appcPrice,
-                appcPriceAmountMicros, appcPriceCurrencyCode, fiatPrice, fiatPriceAmountMicros, fiatPriceCurrencyCode,
-                title, description, period, trial_period, trial_period_end_date);
-        } catch (JSONException e) {
-            logError("Failed to parse SkuDetails: " + e);
+            return SkuDetails(
+                skuType,
+                sku,
+                type,
+                price,
+                priceAmountMicros,
+                priceCurrencyCode,
+                appcPrice,
+                appcPriceAmountMicros,
+                appcPriceCurrencyCode,
+                fiatPrice,
+                fiatPriceAmountMicros,
+                fiatPriceCurrencyCode,
+                title,
+                description,
+                period,
+                trialPeriod,
+                trialPeriodEndDate
+            )
+        } catch (e: JSONException) {
+            logError("Failed to parse SkuDetails: $e")
         }
 
-        return null;
+        return null
     }
 
-    private static String getStringValueFromJson(JSONObject jsonObject, String key) {
-        String value = null;
+    private fun getStringValueFromJson(jsonObject: JSONObject, key: String, defaultValue: String?): String? {
+        var value: String? = null
         try {
             if (jsonObject.has(key)) {
-                value = jsonObject.getString(key);
+                value = jsonObject.getString(key)
             }
-        } catch (org.json.JSONException e) {
-            logDebug("Field error" + e.getLocalizedMessage());
+        } catch (e: JSONException) {
+            logDebug("Field error" + e.localizedMessage)
         }
-        return value;
+        if (value == null) {
+            value = defaultValue
+        }
+        return value
     }
 
-    private static boolean getBooleanValueFromJson(JSONObject jsonObject, String key) {
-        boolean value = false;
+    private fun getBooleanValueFromJson(jsonObject: JSONObject, key: String): Boolean {
+        var value = false
         try {
             if (jsonObject.has(key)) {
-                value = jsonObject.getBoolean(key);
+                value = jsonObject.getBoolean(key)
             }
-        } catch (org.json.JSONException e) {
-            logDebug("Field error" + e.getLocalizedMessage());
+        } catch (e: JSONException) {
+            logDebug("Field error" + e.localizedMessage)
         }
-        return value;
+        return value
     }
 }
