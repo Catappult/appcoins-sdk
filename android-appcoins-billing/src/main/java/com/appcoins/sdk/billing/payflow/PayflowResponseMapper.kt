@@ -3,6 +3,7 @@ package com.appcoins.sdk.billing.payflow
 import com.appcoins.sdk.billing.FeatureType
 import com.appcoins.sdk.billing.payflow.models.PayflowMethodResponse
 import com.appcoins.sdk.billing.payflow.models.PaymentFlowMethod
+import com.appcoins.sdk.billing.payflow.models.featureflags.FeatureFlag
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.utils.ServiceUtils.isSuccess
 import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
@@ -20,21 +21,26 @@ class PayflowResponseMapper {
                 "Failed to obtain Payflow Response. " +
                     "ResponseCode: ${response.responseCode} | Cause: ${response.exception}"
             )
-            return PayflowMethodResponse(response.responseCode, arrayListOf(), null, null)
+            return PayflowMethodResponse(
+                response.responseCode,
+                arrayListOf(),
+                null,
+                null,
+                null
+            )
         }
 
         val paymentFlowList = mapPaymentFlowMethods(response)
-
-        val analyticsFlowSeverityLevels: ArrayList<AnalyticsFlowSeverityLevel>? =
-            mapAnalyticsFlowSeverityLevels(response)
-
-        val matomoDetails: MatomoDetails? = mapMatomoDetails(response)
+        val analyticsFlowSeverityLevels = mapAnalyticsFlowSeverityLevels(response)
+        val matomoDetails = mapMatomoDetails(response)
+        val featureFlags = mapFeatureFlags(response)
 
         return PayflowMethodResponse(
             response.responseCode,
             paymentFlowList,
             analyticsFlowSeverityLevels,
             matomoDetails,
+            featureFlags
         )
     }
 
@@ -110,6 +116,29 @@ class PayflowResponseMapper {
                 }
         }.getOrElse {
             logError("There was an error mapping the AnalyticsFlowSeverityLevels.", Exception(it))
+            SdkAnalyticsUtils.sdkAnalytics.sendBackendMappingFailureEvent(
+                SdkBackendRequestType.PAYMENT_FLOW,
+                response.response,
+                Exception(it).toString()
+            )
+            null
+        }
+
+    private fun mapFeatureFlags(response: RequestResponse): ArrayList<FeatureFlag>? =
+        runCatching {
+            JSONObject(response.response).optJSONArray("feature_flags")
+                ?.let { featuresFlagsJsonArray ->
+                    val featuresFlags = arrayListOf<FeatureFlag>()
+                    for (i in 0 until featuresFlagsJsonArray.length()) {
+                        val featuresFlagJsonObject = featuresFlagsJsonArray.optJSONObject(i)
+                        FeatureFlag.fromJsonObject(featuresFlagJsonObject)?.let {
+                            featuresFlags.add(it)
+                        }
+                    }
+                    featuresFlags
+                }
+        }.getOrElse {
+            logError("There was an error mapping the FeatureFlags.", Exception(it))
             SdkAnalyticsUtils.sdkAnalytics.sendBackendMappingFailureEvent(
                 SdkBackendRequestType.PAYMENT_FLOW,
                 response.response,

@@ -18,6 +18,7 @@ import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
 import com.appcoins.sdk.billing.listeners.PendingPurchaseStream;
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
+import com.appcoins.sdk.billing.managers.MMPPurchaseEventsRecoveryManager;
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
 import com.appcoins.sdk.billing.usecases.GetReferralDeeplink;
 import com.appcoins.sdk.billing.usecases.ingameupdates.IsUpdateAvailable;
@@ -140,6 +141,7 @@ public class CatapultAppcoinsBilling
             if (buyIntent != null) {
                 activity.startActivity(buyIntent);
             }
+            MMPPurchaseEventsRecoveryManager.INSTANCE.onPurchaseInitiated();
         } catch (NullPointerException | ActivityNotFoundException e) {
             return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e);
         } catch (ServiceConnectionException e) {
