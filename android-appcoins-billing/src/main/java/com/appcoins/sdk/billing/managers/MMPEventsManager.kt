@@ -1,7 +1,6 @@
 package com.appcoins.sdk.billing.managers
 
 import com.appcoins.billing.sdk.BuildConfig
-import com.appcoins.sdk.billing.Purchase
 import com.appcoins.sdk.billing.helpers.WalletUtils
 import com.appcoins.sdk.billing.repositories.MMPEventsRepository
 import com.appcoins.sdk.billing.service.BdsRetryService
@@ -29,10 +28,11 @@ object MMPEventsManager {
     }
 
     fun sendSuccessfulPurchaseResultEvent(
-        purchase: Purchase,
+        productId: String,
         orderId: String,
         purchaseValue: String,
-        paymentMethod: String
+        paymentMethod: String,
+        timestamp: Long,
     ) {
         logInfo("Sending Successful Purchase Result Event to MMP.")
         val walletId = attributionSharedPreferences.getWalletId() ?: return
@@ -41,11 +41,12 @@ object MMPEventsManager {
             packageName,
             attributionSharedPreferences.getOemId(),
             walletId,
-            purchase.sku,
+            productId,
             orderId,
             purchaseValue,
             paymentMethod,
             appVersionCode,
+            timestamp,
             attributionSharedPreferences.getUtmSource(),
             attributionSharedPreferences.getUtmMedium(),
             attributionSharedPreferences.getUtmCampaign(),

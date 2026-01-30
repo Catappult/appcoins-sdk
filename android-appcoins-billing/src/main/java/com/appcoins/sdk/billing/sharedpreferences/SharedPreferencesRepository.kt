@@ -25,6 +25,9 @@ abstract class SharedPreferencesRepository(context: Context) {
     fun getBoolean(key: String, defaultValue: Boolean = false): Boolean =
         sharedPreferences.getBoolean(key, defaultValue)
 
+    fun getStringSet(key: String, defaultValue: Set<String>? = null): Set<String>? =
+        sharedPreferences.getStringSet(key, defaultValue)
+
     fun setString(key: String, value: String? = null) =
         sharedPreferences.edit().putString(key, value).apply()
 
@@ -39,6 +42,9 @@ abstract class SharedPreferencesRepository(context: Context) {
 
     fun setBoolean(key: String, value: Boolean) =
         sharedPreferences.edit().putBoolean(key, value).apply()
+
+    fun setStringSet(key: String, value: Set<String>? = null) =
+        sharedPreferences.edit().putStringSet(key, value).apply()
 
     fun remove(key: String) =
         sharedPreferences.edit().remove(key).apply()

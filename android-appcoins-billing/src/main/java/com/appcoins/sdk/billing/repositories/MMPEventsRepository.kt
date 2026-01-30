@@ -14,13 +14,13 @@ class MMPEventsRepository(private val bdsRetryService: BdsRetryService) {
         purchaseAmount: String,
         paymentMethod: String,
         appVersionCode: Long,
+        timestamp: Long,
         utmSource: String?,
         utmMedium: String?,
         utmCampaign: String?,
         utmTerm: String?,
         utmContent: String?,
     ) {
-        val timestamp = System.currentTimeMillis()
         val queries: MutableMap<String, String> = LinkedHashMap()
         queries["package_name"] = packageName
         oemId?.let { queries["oemid"] = it }
