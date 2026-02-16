@@ -1,6 +1,7 @@
 package com.appcoins.sdk.billing.helpers
 
 import android.util.Base64
+import com.appcoins.sdk.core.date.SECONDS_TO_MILLIS
 import org.json.JSONObject
 
 class WalletDetailsHelper {
@@ -25,9 +26,5 @@ class WalletDetailsHelper {
         val nowSeconds = nowMillis / SECONDS_TO_MILLIS
 
         return nowSeconds < expirationTimeSeconds
-    }
-
-    companion object {
-        private const val SECONDS_TO_MILLIS = 1000
     }
 }

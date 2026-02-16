@@ -430,6 +430,11 @@ public class CatapultAppcoinsBilling
          * Failure to consume since item is not owned
          */
         int ITEM_NOT_OWNED = 8;
+
+        /**
+         * Too many requests were made to the SDK in a short period of time
+         */
+        int TOO_MANY_REQUESTS = 1429;
     }
 
     @Retention(RetentionPolicy.SOURCE)
