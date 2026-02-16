@@ -3,6 +3,7 @@ package com.appcoins.sdk.billing
 import android.app.Activity
 import android.content.Intent
 import android.util.Base64
+import com.appcoins.sdk.billing.managers.MMPPurchaseEventsRecoveryManager
 import com.appcoins.sdk.billing.usecases.mmp.SendSuccessfulPurchaseResponseEvent
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_DATA_SIGNATURE
 import com.appcoins.sdk.billing.utils.AppcoinsBillingConstants.INAPP_PURCHASE_DATA
@@ -81,6 +82,7 @@ internal object ApplicationUtils {
                     val purchases: MutableList<Purchase> = ArrayList()
                     purchases.add(purchase)
                     SendSuccessfulPurchaseResponseEvent.invoke(purchase)
+                    MMPPurchaseEventsRecoveryManager.onPurchaseCompleted(purchase)
                     sdkAnalytics.sendPurchaseResultEvent(responseCode, purchase.token, purchase.sku)
                     purchaseFinishedListener.onPurchasesUpdated(responseCode, purchases)
                     logInfo("Purchase result successfully sent.")

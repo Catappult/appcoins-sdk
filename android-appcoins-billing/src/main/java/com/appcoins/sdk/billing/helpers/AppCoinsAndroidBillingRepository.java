@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import com.appcoins.billing.AppcoinsBilling;
+import com.appcoins.sdk.billing.CatapultAppcoinsBilling;
 import com.appcoins.sdk.billing.ConnectionLifeCycle;
 import com.appcoins.sdk.billing.FeatureType;
 import com.appcoins.sdk.billing.LaunchBillingFlowResult;
@@ -14,6 +15,9 @@ import com.appcoins.sdk.billing.ResponseCode;
 import com.appcoins.sdk.billing.SkuDetailsResult;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
+import com.appcoins.sdk.billing.managers.LimitPurchaseRequestsManager;
+import com.appcoins.sdk.billing.managers.LimitSDKRequestsManager;
+import com.appcoins.sdk.billing.managers.MMPPurchaseEventsRecoveryManager;
 import com.appcoins.sdk.billing.service.WalletBillingService;
 import com.appcoins.sdk.billing.usecases.IsFeatureSupported;
 import com.appcoins.sdk.billing.usecases.RetryFailedRequests;
@@ -40,12 +44,15 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
     @Override
     public void onConnect(ComponentName name, IBinder service, final AppCoinsBillingStateListener listener) {
         logInfo(String.format("Billing Connected className:%s service:%s", name.getClassName(), service.getClass()
-            .getCanonicalName()));
+                .getCanonicalName()));
         this.service = new WalletBillingService(service, name.getClassName());
         isServiceReady = true;
         RetryFailedRequests.INSTANCE.invoke();
+        MMPPurchaseEventsRecoveryManager.INSTANCE.verifyMissingMMPEvents();
+        LimitPurchaseRequestsManager.INSTANCE.resetPurchaseRequestsCount();
+        LimitSDKRequestsManager.INSTANCE.resetRequestsCount();
         logInfo("Billing Connected, notifying client onBillingSetupFinished(ResponseCode.OK)");
-        listener.onBillingSetupFinished(ResponseCode.OK.getValue());
+        listener.onBillingSetupFinished(CatapultAppcoinsBilling.BillingResponseCode.OK);
     }
 
     @Override
@@ -64,7 +71,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
         if (!isReady()) {
             logError("Service is not ready. Throwing ServiceConnectionException.");
             SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
-                .sendServiceConnectionExceptionEvent(SdkGeneralFailureStep.GET_PURCHASES);
+                    .sendServiceConnectionExceptionEvent(SdkGeneralFailureStep.GET_PURCHASES);
             throw new ServiceConnectionException();
         }
         try {
@@ -83,7 +90,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
 
     @Override
     public SkuDetailsResult querySkuDetailsAsync(final String skuType, final List<String> sku)
-        throws ServiceConnectionException {
+            throws ServiceConnectionException {
         logInfo("Executing querySkuDetailsAsync.");
         String size = "0";
         if (sku != null) {
@@ -94,7 +101,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
         if (!isReady()) {
             logError("Service is not ready. Throwing ServiceConnectionException.");
             SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
-                .sendServiceConnectionExceptionEvent(SdkGeneralFailureStep.QUERY_SKU_DETAILS);
+                    .sendServiceConnectionExceptionEvent(SdkGeneralFailureStep.QUERY_SKU_DETAILS);
             throw new ServiceConnectionException();
         }
 
@@ -110,18 +117,18 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
 
                 skuDetailsResult = AndroidBillingMapper.mapBundleToHashMapSkuDetails(skuType, response);
 
-                if (skuDetailsResult.getResponseCode() == ResponseCode.SERVICE_UNAVAILABLE.getValue()) {
+                if (skuDetailsResult.getResponseCode() == CatapultAppcoinsBilling.BillingResponseCode.SERVICE_UNAVAILABLE) {
                     logError("Failed to get SkuDetails request: " + skuDetailsResult.getResponseCode());
                     Thread.sleep(5000);
                 }
-            } while (skuDetailsResult.getResponseCode() == ResponseCode.SERVICE_UNAVAILABLE.getValue());
+            } while (skuDetailsResult.getResponseCode() == CatapultAppcoinsBilling.BillingResponseCode.SERVICE_UNAVAILABLE);
 
             logInfo("SkuDetailsResult code: " + skuDetailsResult.getResponseCode());
             return skuDetailsResult;
         } catch (Exception e) {
             logError("Error querySkuDetailsAsync. ", e);
             SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
-                .sendQuerySkuDetailsFailureParsingSkusEvent(sku, skuType);
+                    .sendQuerySkuDetailsFailureParsingSkusEvent(sku, skuType);
             throw new ServiceConnectionException(e.getMessage());
         }
     }
@@ -134,7 +141,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
         if (!isReady()) {
             logError("Service is not ready. Throwing ServiceConnectionException.");
             SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
-                .sendServiceConnectionExceptionEvent(SdkGeneralFailureStep.CONSUME);
+                    .sendServiceConnectionExceptionEvent(SdkGeneralFailureStep.CONSUME);
             throw new ServiceConnectionException();
         }
         try {
@@ -150,7 +157,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
 
     @Override
     public LaunchBillingFlowResult launchBillingFlow(String skuType, String sku, String payload, String oemid,
-        String guestWalletId) throws ServiceConnectionException {
+                                                     String guestWalletId) throws ServiceConnectionException {
         logInfo("Executing launchBillingFlow.");
         logInfo(String.format("Parameters skuType:%s sku:%s oemid:%s", skuType, sku, oemid));
         logDebug(String.format("Debuggable parameters payload:%s guestWalletId:%s", payload, guestWalletId));
@@ -158,16 +165,16 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
         if (!isReady()) {
             logError("Service is not ready. Throwing ServiceConnectionException.");
             SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
-                .sendServiceConnectionExceptionEvent(SdkGeneralFailureStep.START_PURCHASE);
+                    .sendServiceConnectionExceptionEvent(SdkGeneralFailureStep.START_PURCHASE);
             throw new ServiceConnectionException();
         }
         try {
             Bundle response =
-                service.getBuyIntent(apiVersion, packageName, sku, skuType, payload, oemid, guestWalletId);
+                    service.getBuyIntent(apiVersion, packageName, sku, skuType, payload, oemid, guestWalletId);
             logDebug("Get Buy Intent bundle: " + response.toString());
 
             LaunchBillingFlowResult launchBillingFlowResult =
-                AndroidBillingMapper.mapBundleToHashMapGetIntent(response);
+                    AndroidBillingMapper.mapBundleToHashMapGetIntent(response);
             logInfo("LaunchBillingFlowResult code: " + launchBillingFlowResult.getResponseCode());
             return launchBillingFlowResult;
         } catch (RemoteException e) {
@@ -188,7 +195,7 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
         if (!isReady()) {
             logError("Service is not ready. Throwing ServiceConnectionException.");
             SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
-                .sendServiceConnectionExceptionEvent(SdkGeneralFailureStep.IS_FEATURE_SUPPORTED);
+                    .sendServiceConnectionExceptionEvent(SdkGeneralFailureStep.IS_FEATURE_SUPPORTED);
             throw new ServiceConnectionException();
         }
         ResponseCode featureSupportedResult = IsFeatureSupported.INSTANCE.invoke(feature);
