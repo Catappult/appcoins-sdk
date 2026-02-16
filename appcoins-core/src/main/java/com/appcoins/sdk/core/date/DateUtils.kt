@@ -14,3 +14,5 @@ fun parseIsoToMillis(isoString: String?): Long {
         0L
     }
 }
+
+const val SECONDS_TO_MILLIS = 1000

@@ -5,6 +5,7 @@ import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils
 import com.appcoins.sdk.core.analytics.events.SdkAppUpdateAvailableProperties
 import com.appcoins.sdk.core.analytics.events.SdkBackendRequestsProperties
 import com.appcoins.sdk.core.analytics.events.SdkConsumePurchaseProperties
+import com.appcoins.sdk.core.analytics.events.SdkFeatureFlagProperties
 import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureProperties
 import com.appcoins.sdk.core.analytics.events.SdkGetReferralDeeplinkProperties
 import com.appcoins.sdk.core.analytics.events.SdkInitializationProperties
@@ -100,6 +101,7 @@ object MatomoEventLogger : EventLogger {
         properties.addAll(SdkAppUpdateAvailableProperties.entries)
         properties.addAll(SdkBackendRequestsProperties.entries)
         properties.addAll(SdkConsumePurchaseProperties.entries)
+        properties.addAll(SdkFeatureFlagProperties.entries)
         properties.addAll(SdkGeneralFailureProperties.entries)
         properties.addAll(SdkGetReferralDeeplinkProperties.entries)
         properties.addAll(SdkInitializationProperties.entries)

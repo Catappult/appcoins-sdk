@@ -9,6 +9,8 @@ import com.appcoins.sdk.core.analytics.events.SdkBackendRequestLabels
 import com.appcoins.sdk.core.analytics.events.SdkBackendRequestType
 import com.appcoins.sdk.core.analytics.events.SdkConsumePurchaseEvents
 import com.appcoins.sdk.core.analytics.events.SdkConsumePurchaseLabels
+import com.appcoins.sdk.core.analytics.events.SdkFeatureFlagEvents
+import com.appcoins.sdk.core.analytics.events.SdkFeatureFlagLabels
 import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureEvents
 import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureLabels
 import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureStep
@@ -163,6 +165,27 @@ class SdkAnalytics(private val analyticsManager: AnalyticsManager) {
         eventData[SdkConsumePurchaseLabels.RESPONSE_CODE] = responseCode
 
         logEvent(SdkConsumePurchaseEvents.SdkConsumePurchaseResult(eventData))
+    }
+
+    // Feature Flag events
+    fun sendRequestLimitTriggered(sdkRequestType: String) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        eventData[SdkFeatureFlagLabels.SDK_REQUEST_TYPE] = sdkRequestType
+
+        logEvent(SdkFeatureFlagEvents.SdkRequestLimitTriggered(eventData))
+    }
+
+    fun sendPurchaseRequestLimitTriggered() {
+        logEvent(SdkFeatureFlagEvents.SdkPurchaseRequestLimitTriggered())
+    }
+
+    fun sendMMPPurchaseEventRecovered(orderId: String) {
+        val eventData: MutableMap<String, Any> = HashMap()
+
+        eventData[SdkFeatureFlagLabels.ORDER_ID] = orderId
+
+        logEvent(SdkFeatureFlagEvents.SdkMMPPurchaseEventRecovered(eventData))
     }
 
     // General Failures events

@@ -18,8 +18,11 @@ import com.appcoins.sdk.billing.listeners.ConsumeResponseListener;
 import com.appcoins.sdk.billing.listeners.PendingPurchaseStream;
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
+import com.appcoins.sdk.billing.managers.LimitPurchaseRequestsManager;
+import com.appcoins.sdk.billing.managers.LimitSDKRequestsManager;
 import com.appcoins.sdk.billing.managers.MMPPurchaseEventsRecoveryManager;
 import com.appcoins.sdk.billing.models.WalletDetails;
+import com.appcoins.sdk.billing.payflow.models.featureflags.LimitSDKRequests;
 import com.appcoins.sdk.billing.sharedpreferences.AptoideWalletSharedPreferences;
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
 import com.appcoins.sdk.billing.usecases.GetReferralDeeplink;
@@ -34,6 +37,8 @@ import org.jetbrains.annotations.Nullable;
 import static com.appcoins.sdk.core.logger.Logger.logDebug;
 import static com.appcoins.sdk.core.logger.Logger.logError;
 import static com.appcoins.sdk.core.logger.Logger.logInfo;
+import static com.appcoins.sdk.core.logger.Logger.logWarning;
+import static java.util.Collections.emptyList;
 
 public class CatapultAppcoinsBilling
     implements AppcoinsBillingClient, PendingPurchaseStream.Consumer<Pair<Activity, BuyItemProperties>> {
@@ -54,6 +59,11 @@ public class CatapultAppcoinsBilling
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
             .sendQueryPurchasesRequestEvent(queryPurchasesParams.getProductType());
 
+        if (isPurchasesRequestRateLimited()) {
+            logWarning("Purchases request rate limited.");
+            return new PurchasesResult(emptyList(), BillingResponseCode.TOO_MANY_REQUESTS);
+        }
+
         PurchasesResult result = billing.queryPurchases(queryPurchasesParams.getProductType());
 
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
@@ -68,6 +78,11 @@ public class CatapultAppcoinsBilling
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
             .sendQueryPurchasesRequestEvent(queryPurchasesParams.getProductType());
 
+        if (isPurchasesRequestRateLimited(purchasesResponseListener)) {
+            logWarning("Purchases request rate limited.");
+            return;
+        }
+
         billing.queryPurchasesAsync(queryPurchasesParams, purchasesResponseListener);
     }
 
@@ -79,6 +94,12 @@ public class CatapultAppcoinsBilling
             .sendQuerySkuDetailsRequestEvent(
                 queryProductDetailsParamsMapper.mapProductDetailsListToProductIdsList(queryProductDetailsParams),
                 queryProductDetailsParamsMapper.getProductIdFromQueryProductDetailsParams(queryProductDetailsParams));
+
+        if (isProductDetailsRequestRateLimited(productDetailsResponseListener)) {
+            logWarning("ProductDetails request rate limited.");
+            return;
+        }
+
         billing.queryProductDetailsAsync(queryProductDetailsParams, productDetailsResponseListener);
     }
 
@@ -86,7 +107,24 @@ public class CatapultAppcoinsBilling
     public void consumeAsync(ConsumeParams consumeParams, ConsumeResponseListener consumeResponseListener) {
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
             .sendConsumePurchaseRequest(consumeParams.getPurchaseToken());
-        billing.consumeAsync(consumeParams.getPurchaseToken(), consumeResponseListener);
+
+        if (isConsumeRequestRateLimited(consumeParams, consumeResponseListener)) {
+            logWarning("Consume request rate limited.");
+            return;
+        }
+
+        ConsumeResponseListener wrapperListener = (responseCode, purchaseToken) -> {
+            if (responseCode == BillingResponseCode.OK) {
+                LimitSDKRequestsManager.INSTANCE.resetSDKRequestTypeCount(
+                    LimitSDKRequests.SDKRequestType.CONSUME_PURCHASE);
+            }
+
+            if (consumeResponseListener != null) {
+                consumeResponseListener.onConsumeResponse(responseCode, purchaseToken);
+            }
+        };
+
+        billing.consumeAsync(consumeParams.getPurchaseToken(), wrapperListener);
     }
 
     @Override
@@ -104,7 +142,7 @@ public class CatapultAppcoinsBilling
             if (Looper.myLooper() == Looper.getMainLooper()) {
                 SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
                     .sendLaunchPurchaseMainThreadFailureEvent();
-                return handleErrorTypeResponse(ResponseCode.DEVELOPER_ERROR.getValue(),
+                return handleErrorTypeResponse(BillingResponseCode.DEVELOPER_ERROR,
                     new MainThreadException("launchBillingFlow"));
             }
 
@@ -127,7 +165,7 @@ public class CatapultAppcoinsBilling
 
             responseCode = launchBillingFlowResult.getResponseCode();
 
-            if (responseCode != ResponseCode.OK.getValue()) {
+            if (responseCode != BillingResponseCode.OK) {
                 logError("Failed to launch billing flow. ResponseCode: " + responseCode);
                 SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
                 ApplicationUtils.handleActivityResult(sdkPaymentResponse.getResultCode(),
@@ -144,13 +182,14 @@ public class CatapultAppcoinsBilling
                 activity.startActivity(buyIntent);
             }
             MMPPurchaseEventsRecoveryManager.INSTANCE.onPurchaseInitiated();
+            LimitPurchaseRequestsManager.INSTANCE.onPurchaseInitiated();
             resetStoredWalletDetails();
         } catch (NullPointerException | ActivityNotFoundException e) {
-            return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e);
+            return handleErrorTypeResponse(BillingResponseCode.ERROR, e);
         } catch (ServiceConnectionException e) {
-            return handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e);
+            return handleErrorTypeResponse(BillingResponseCode.SERVICE_UNAVAILABLE, e);
         }
-        return ResponseCode.OK.getValue();
+        return BillingResponseCode.OK;
     }
 
     private int handleErrorTypeResponse(int value, Exception e) {
@@ -164,6 +203,116 @@ public class CatapultAppcoinsBilling
     private void resetStoredWalletDetails() {
         new AptoideWalletSharedPreferences(WalletUtils.context).setWalletDetails(
             WalletDetails.Companion.createErrorWalletDetails());
+    }
+
+    private boolean isPurchasesRequestRateLimited(PurchasesResponseListener purchasesResponseListener) {
+        boolean canMakePurchasesRequest = LimitPurchaseRequestsManager.INSTANCE.canMakePurchaseRequest();
+        if (!canMakePurchasesRequest) {
+            purchasesResponseListener.onQueryPurchasesResponse(BillingResult.newBuilder()
+                .setResponseCode(BillingResponseCode.TOO_MANY_REQUESTS)
+                .build(), emptyList());
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendPurchaseRequestLimitTriggered();
+            logWarning("Purchases request rate limited via LimitPurchaseRequestsManager.");
+            return true;
+        }
+        boolean canMakeRequest =
+            LimitSDKRequestsManager.INSTANCE.canMakeRequest(LimitSDKRequests.SDKRequestType.GET_PURCHASES);
+        if (!canMakeRequest) {
+            purchasesResponseListener.onQueryPurchasesResponse(BillingResult.newBuilder()
+                .setResponseCode(BillingResponseCode.TOO_MANY_REQUESTS)
+                .build(), emptyList());
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendRequestLimitTriggered(LimitSDKRequests.SDKRequestType.GET_PURCHASES.getValue());
+            logWarning("Purchases request rate limited via LimitSDKRequestsManager.");
+            return true;
+        }
+        LimitPurchaseRequestsManager.INSTANCE.onPurchasesRequestMade();
+        LimitSDKRequestsManager.INSTANCE.onRequestMade(LimitSDKRequests.SDKRequestType.GET_PURCHASES);
+
+        return false;
+    }
+
+    private boolean isPurchasesRequestRateLimited() {
+        boolean canMakePurchasesRequest = LimitPurchaseRequestsManager.INSTANCE.canMakePurchaseRequest();
+        if (!canMakePurchasesRequest) {
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendPurchaseRequestLimitTriggered();
+            logWarning("Purchases request rate limited via LimitPurchaseRequestsManager.");
+            return true;
+        }
+        boolean canMakeRequest =
+            LimitSDKRequestsManager.INSTANCE.canMakeRequest(LimitSDKRequests.SDKRequestType.GET_PURCHASES);
+        if (!canMakeRequest) {
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendRequestLimitTriggered(LimitSDKRequests.SDKRequestType.GET_PURCHASES.getValue());
+            logWarning("Purchases request rate limited via LimitSDKRequestsManager.");
+            return true;
+        }
+        LimitPurchaseRequestsManager.INSTANCE.onPurchasesRequestMade();
+        LimitSDKRequestsManager.INSTANCE.onRequestMade(LimitSDKRequests.SDKRequestType.GET_PURCHASES);
+
+        return false;
+    }
+
+    private boolean isProductDetailsRequestRateLimited(ProductDetailsResponseListener productDetailsResponseListener) {
+        boolean canMakeRequest =
+            LimitSDKRequestsManager.INSTANCE.canMakeRequest(LimitSDKRequests.SDKRequestType.GET_PRODUCT_DETAILS);
+        if (!canMakeRequest) {
+            productDetailsResponseListener.onProductDetailsResponse(BillingResult.newBuilder()
+                .setResponseCode(BillingResponseCode.TOO_MANY_REQUESTS)
+                .build(), emptyList());
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendRequestLimitTriggered(LimitSDKRequests.SDKRequestType.GET_PRODUCT_DETAILS.getValue());
+            return true;
+        }
+        LimitSDKRequestsManager.INSTANCE.onRequestMade(LimitSDKRequests.SDKRequestType.GET_PRODUCT_DETAILS);
+
+        return false;
+    }
+
+    private boolean isSkuDetailsRequestRateLimited(SkuDetailsResponseListener skuDetailsResponseListener) {
+        boolean canMakeRequest =
+            LimitSDKRequestsManager.INSTANCE.canMakeRequest(LimitSDKRequests.SDKRequestType.GET_PRODUCT_DETAILS);
+        if (!canMakeRequest) {
+            skuDetailsResponseListener.onSkuDetailsResponse(BillingResponseCode.TOO_MANY_REQUESTS, emptyList());
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendRequestLimitTriggered(LimitSDKRequests.SDKRequestType.GET_PRODUCT_DETAILS.getValue());
+            return true;
+        }
+        LimitSDKRequestsManager.INSTANCE.onRequestMade(LimitSDKRequests.SDKRequestType.GET_PRODUCT_DETAILS);
+
+        return false;
+    }
+
+    private boolean isConsumeRequestRateLimited(ConsumeParams consumeParams,
+        ConsumeResponseListener consumeResponseListener) {
+        boolean canMakeRequest =
+            LimitSDKRequestsManager.INSTANCE.canMakeRequest(LimitSDKRequests.SDKRequestType.CONSUME_PURCHASE);
+        if (!canMakeRequest) {
+            consumeResponseListener.onConsumeResponse(BillingResponseCode.TOO_MANY_REQUESTS,
+                consumeParams.getPurchaseToken());
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendRequestLimitTriggered(LimitSDKRequests.SDKRequestType.CONSUME_PURCHASE.getValue());
+            return true;
+        }
+
+        LimitSDKRequestsManager.INSTANCE.onRequestMade(LimitSDKRequests.SDKRequestType.CONSUME_PURCHASE);
+        return false;
+    }
+
+    private boolean isConsumeRequestRateLimited(String purchaseToken, ConsumeResponseListener consumeResponseListener) {
+        boolean canMakeRequest =
+            LimitSDKRequestsManager.INSTANCE.canMakeRequest(LimitSDKRequests.SDKRequestType.CONSUME_PURCHASE);
+        if (!canMakeRequest) {
+            consumeResponseListener.onConsumeResponse(BillingResponseCode.TOO_MANY_REQUESTS, purchaseToken);
+            SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
+                .sendRequestLimitTriggered(LimitSDKRequests.SDKRequestType.CONSUME_PURCHASE.getValue());
+            return true;
+        }
+
+        LimitSDKRequestsManager.INSTANCE.onRequestMade(LimitSDKRequests.SDKRequestType.CONSUME_PURCHASE);
+        return false;
     }
 
     @Override
@@ -306,7 +455,7 @@ public class CatapultAppcoinsBilling
 
             responseCode = launchBillingFlowResult.getResponseCode();
 
-            if (responseCode != ResponseCode.OK.getValue()) {
+            if (responseCode != BillingResponseCode.OK) {
                 logError("Failed to launch billing flow. ResponseCode: " + responseCode);
                 SDKPaymentResponse sdkPaymentResponse = SDKPaymentResponse.Companion.createErrorTypeResponse();
                 ApplicationUtils.handleActivityResult(sdkPaymentResponse.getResultCode(),
@@ -322,9 +471,9 @@ public class CatapultAppcoinsBilling
                 activity.startActivity(buyIntent);
             }
         } catch (NullPointerException | ActivityNotFoundException e) {
-            handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e);
+            handleErrorTypeResponse(BillingResponseCode.ERROR, e);
         } catch (ServiceConnectionException e) {
-            handleErrorTypeResponse(ResponseCode.SERVICE_UNAVAILABLE.getValue(), e);
+            handleErrorTypeResponse(BillingResponseCode.SERVICE_UNAVAILABLE, e);
         }
     }
 
@@ -340,6 +489,11 @@ public class CatapultAppcoinsBilling
     public PurchasesResult queryPurchases(String skuType) {
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
             .sendQueryPurchasesRequestEvent(skuType);
+
+        if (isPurchasesRequestRateLimited()) {
+            logWarning("Purchases request rate limited.");
+            return new PurchasesResult(emptyList(), BillingResponseCode.TOO_MANY_REQUESTS);
+        }
 
         PurchasesResult result = billing.queryPurchases(skuType);
 
@@ -364,6 +518,12 @@ public class CatapultAppcoinsBilling
         SkuDetailsResponseListener onSkuDetailsResponseListener) {
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
             .sendQuerySkuDetailsRequestEvent(skuDetailsParams.getMoreItemSkus(), skuDetailsParams.getItemType());
+
+        if (isSkuDetailsRequestRateLimited(onSkuDetailsResponseListener)) {
+            logWarning("ProductDetails request rate limited.");
+            return;
+        }
+
         billing.querySkuDetailsAsync(skuDetailsParams, onSkuDetailsResponseListener);
     }
 
@@ -377,7 +537,24 @@ public class CatapultAppcoinsBilling
     public void consumeAsync(String token, ConsumeResponseListener consumeResponseListener) {
         SdkAnalyticsUtils.INSTANCE.getSdkAnalytics()
             .sendConsumePurchaseRequest(token);
-        billing.consumeAsync(token, consumeResponseListener);
+
+        if (isConsumeRequestRateLimited(token, consumeResponseListener)) {
+            logWarning("Consume request rate limited.");
+            return;
+        }
+
+        ConsumeResponseListener wrapperListener = (responseCode, purchaseToken) -> {
+            if (responseCode == BillingResponseCode.OK) {
+                LimitSDKRequestsManager.INSTANCE.resetSDKRequestTypeCount(
+                    LimitSDKRequests.SDKRequestType.CONSUME_PURCHASE);
+            }
+
+            if (consumeResponseListener != null) {
+                consumeResponseListener.onConsumeResponse(responseCode, purchaseToken);
+            }
+        };
+
+        billing.consumeAsync(token, wrapperListener);
     }
 
     @Retention(RetentionPolicy.SOURCE)
@@ -430,6 +607,11 @@ public class CatapultAppcoinsBilling
          * Failure to consume since item is not owned
          */
         int ITEM_NOT_OWNED = 8;
+
+        /**
+         * Too many requests were made to the SDK in a short period of time
+         */
+        int TOO_MANY_REQUESTS = 1429;
     }
 
     @Retention(RetentionPolicy.SOURCE)

@@ -3,6 +3,7 @@ package com.appcoins.sdk.core.analytics;
 import com.appcoins.sdk.core.analytics.events.SdkAppUpdateAvailableEvents;
 import com.appcoins.sdk.core.analytics.events.SdkBackendRequestEvents;
 import com.appcoins.sdk.core.analytics.events.SdkConsumePurchaseEvents;
+import com.appcoins.sdk.core.analytics.events.SdkFeatureFlagEvents;
 import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureEvents;
 import com.appcoins.sdk.core.analytics.events.SdkGetReferralDeeplinkEvents;
 import com.appcoins.sdk.core.analytics.events.SdkInitializationEvents;
@@ -55,6 +56,9 @@ public class AnalyticsManagerProvider {
         list.add(SdkBackendRequestEvents.SDK_CALL_DNS_MANUAL_CACHE_SUCCESS);
         list.add(SdkConsumePurchaseEvents.SDK_CONSUME_PURCHASE_REQUEST);
         list.add(SdkConsumePurchaseEvents.SDK_CONSUME_PURCHASE_RESULT);
+        list.add(SdkFeatureFlagEvents.SDK_REQUEST_LIMIT_TRIGGERED);
+        list.add(SdkFeatureFlagEvents.SDK_PURCHASE_REQUEST_LIMIT_TRIGGERED);
+        list.add(SdkFeatureFlagEvents.SDK_MMP_PURCHASE_EVENT_RECOVERED);
         list.add(SdkGeneralFailureEvents.SDK_UNEXPECTED_FAILURE);
         list.add(SdkGeneralFailureEvents.SDK_PURCHASE_SIGNATURE_VERIFICATION_FAILURE);
         list.add(SdkGeneralFailureEvents.SDK_SERVICE_CONNECTION_EXCEPTION);

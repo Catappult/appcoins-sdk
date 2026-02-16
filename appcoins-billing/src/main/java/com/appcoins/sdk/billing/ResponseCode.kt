@@ -52,4 +52,9 @@ enum class ResponseCode(val value: Int) {
      * Requested Feature is not supported by the SDK Version or the Billing Service used.
      */
     FEATURE_NOT_SUPPORTED(-2),
+
+    /**
+     * Too many requests were made to the SDK in a short period of time.
+     */
+    TOO_MANY_REQUESTS(1429),
 }

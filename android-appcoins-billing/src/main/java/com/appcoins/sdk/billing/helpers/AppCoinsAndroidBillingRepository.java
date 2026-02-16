@@ -1,15 +1,11 @@
 package com.appcoins.sdk.billing.helpers;
 
-import static com.appcoins.sdk.core.logger.Logger.logDebug;
-import static com.appcoins.sdk.core.logger.Logger.logError;
-import static com.appcoins.sdk.core.logger.Logger.logInfo;
-
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-
 import com.appcoins.billing.AppcoinsBilling;
+import com.appcoins.sdk.billing.CatapultAppcoinsBilling;
 import com.appcoins.sdk.billing.ConnectionLifeCycle;
 import com.appcoins.sdk.billing.FeatureType;
 import com.appcoins.sdk.billing.LaunchBillingFlowResult;
@@ -19,14 +15,19 @@ import com.appcoins.sdk.billing.ResponseCode;
 import com.appcoins.sdk.billing.SkuDetailsResult;
 import com.appcoins.sdk.billing.exceptions.ServiceConnectionException;
 import com.appcoins.sdk.billing.listeners.AppCoinsBillingStateListener;
+import com.appcoins.sdk.billing.managers.LimitPurchaseRequestsManager;
+import com.appcoins.sdk.billing.managers.LimitSDKRequestsManager;
 import com.appcoins.sdk.billing.managers.MMPPurchaseEventsRecoveryManager;
 import com.appcoins.sdk.billing.service.WalletBillingService;
 import com.appcoins.sdk.billing.usecases.IsFeatureSupported;
 import com.appcoins.sdk.billing.usecases.RetryFailedRequests;
 import com.appcoins.sdk.core.analytics.SdkAnalyticsUtils;
 import com.appcoins.sdk.core.analytics.events.SdkGeneralFailureStep;
-
 import java.util.List;
+
+import static com.appcoins.sdk.core.logger.Logger.logDebug;
+import static com.appcoins.sdk.core.logger.Logger.logError;
+import static com.appcoins.sdk.core.logger.Logger.logInfo;
 
 class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycle {
     private final int apiVersion;
@@ -48,8 +49,10 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
         isServiceReady = true;
         RetryFailedRequests.INSTANCE.invoke();
         MMPPurchaseEventsRecoveryManager.INSTANCE.verifyMissingMMPEvents();
+        LimitPurchaseRequestsManager.INSTANCE.resetPurchaseRequestsCount();
+        LimitSDKRequestsManager.INSTANCE.resetRequestsCount();
         logInfo("Billing Connected, notifying client onBillingSetupFinished(ResponseCode.OK)");
-        listener.onBillingSetupFinished(ResponseCode.OK.getValue());
+        listener.onBillingSetupFinished(CatapultAppcoinsBilling.BillingResponseCode.OK);
     }
 
     @Override
@@ -114,11 +117,11 @@ class AppCoinsAndroidBillingRepository implements Repository, ConnectionLifeCycl
 
                 skuDetailsResult = AndroidBillingMapper.mapBundleToHashMapSkuDetails(skuType, response);
 
-                if (skuDetailsResult.getResponseCode() == ResponseCode.SERVICE_UNAVAILABLE.getValue()) {
+                if (skuDetailsResult.getResponseCode() == CatapultAppcoinsBilling.BillingResponseCode.SERVICE_UNAVAILABLE) {
                     logError("Failed to get SkuDetails request: " + skuDetailsResult.getResponseCode());
                     Thread.sleep(5000);
                 }
-            } while (skuDetailsResult.getResponseCode() == ResponseCode.SERVICE_UNAVAILABLE.getValue());
+            } while (skuDetailsResult.getResponseCode() == CatapultAppcoinsBilling.BillingResponseCode.SERVICE_UNAVAILABLE);
 
             logInfo("SkuDetailsResult code: " + skuDetailsResult.getResponseCode());
             return skuDetailsResult;
