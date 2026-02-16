@@ -19,6 +19,8 @@ import com.appcoins.sdk.billing.listeners.PendingPurchaseStream;
 import com.appcoins.sdk.billing.listeners.SDKPaymentResponse;
 import com.appcoins.sdk.billing.listeners.SkuDetailsResponseListener;
 import com.appcoins.sdk.billing.managers.MMPPurchaseEventsRecoveryManager;
+import com.appcoins.sdk.billing.models.WalletDetails;
+import com.appcoins.sdk.billing.sharedpreferences.AptoideWalletSharedPreferences;
 import com.appcoins.sdk.billing.sharedpreferences.AttributionSharedPreferences;
 import com.appcoins.sdk.billing.usecases.GetReferralDeeplink;
 import com.appcoins.sdk.billing.usecases.ingameupdates.IsUpdateAvailable;
@@ -142,6 +144,7 @@ public class CatapultAppcoinsBilling
                 activity.startActivity(buyIntent);
             }
             MMPPurchaseEventsRecoveryManager.INSTANCE.onPurchaseInitiated();
+            resetStoredWalletDetails();
         } catch (NullPointerException | ActivityNotFoundException e) {
             return handleErrorTypeResponse(ResponseCode.ERROR.getValue(), e);
         } catch (ServiceConnectionException e) {
@@ -156,6 +159,11 @@ public class CatapultAppcoinsBilling
         ApplicationUtils.handleActivityResult(sdkPaymentResponse.getResultCode(), sdkPaymentResponse.getIntent(),
             purchaseFinishedListener);
         return value;
+    }
+
+    private void resetStoredWalletDetails() {
+        new AptoideWalletSharedPreferences(WalletUtils.context).setWalletDetails(
+            WalletDetails.Companion.createErrorWalletDetails());
     }
 
     @Override

@@ -24,7 +24,10 @@ object BrokerManager {
     fun getIapTransactionsFromTimestamp(timestamp: Long): TransactionsResponse? {
         logInfo("Getting transactions from timestamp.")
         val walletId = AttributionSharedPreferences(WalletUtils.context).getWalletId()
-        val walletGenerationModel = requestWallet(walletId)
-        return brokerRepository.getIapTransactionsFromTimestamp(timestamp, walletGenerationModel.walletAddress)
+        val walletDetails = requestWallet(walletId)
+        if (walletDetails.hasError()) {
+            return null
+        }
+        return brokerRepository.getIapTransactionsFromTimestamp(timestamp, walletDetails.walletAddress)
     }
 }
