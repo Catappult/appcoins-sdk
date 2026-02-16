@@ -1,6 +1,7 @@
 package com.appcoins.sdk.billing.managers
 
 import com.appcoins.billing.sdk.BuildConfig
+import com.appcoins.sdk.billing.CatapultAppcoinsBilling
 import com.appcoins.sdk.billing.CatapultAppcoinsBilling.ProductType.SUBS
 import com.appcoins.sdk.billing.managers.WalletManager.requestWallet
 import com.appcoins.sdk.billing.mappers.InappPurchaseResponse
@@ -27,18 +28,21 @@ object ProductV2Manager {
         type: String
     ): PurchasesResponse {
         logInfo("Getting Purchases.")
-        val walletGenerationModel = requestWallet(walletId)
+        val walletDetails = requestWallet(walletId)
+        if (walletDetails.hasError()) {
+            return PurchasesResponse(0, emptyList())
+        }
         return if (type.equals(SUBS, true)) {
             productV2Repository.getSubsPurchasesSync(
                 packageName,
-                walletGenerationModel.walletAddress,
-                walletGenerationModel.signature,
+                walletDetails.walletAddress,
+                walletDetails.walletToken,
             )
         } else {
             productV2Repository.getInappPurchasesSync(
                 packageName,
-                walletGenerationModel.walletAddress,
-                walletGenerationModel.signature,
+                walletDetails.walletAddress,
+                walletDetails.walletToken,
             )
         }
     }
@@ -49,20 +53,28 @@ object ProductV2Manager {
         purchaseToken: String
     ): PurchaseResponse? {
         logInfo("Getting Purchase.")
-        val walletGenerationModel = requestWallet(walletId)
+        val walletDetails = requestWallet(walletId)
+        if (walletDetails.hasError()) {
+            return null
+        }
+
         return productV2Repository.getPurchaseSync(
             packageName,
-            walletGenerationModel.ewt,
+            walletDetails.walletToken,
             purchaseToken
         )
     }
 
     fun consumePurchase(walletId: String, packageName: String, purchaseToken: String): Int {
         logInfo("Consuming purchase.")
-        val walletGenerationModel = requestWallet(walletId)
+        val walletDetails = requestWallet(walletId)
+        if (walletDetails.hasError()) {
+            return CatapultAppcoinsBilling.BillingResponseCode.ERROR
+        }
+
         return productV2Repository.consumePurchaseSync(
-            walletGenerationModel.walletAddress,
-            walletGenerationModel.signature,
+            walletDetails.walletAddress,
+            walletDetails.walletToken,
             packageName,
             purchaseToken
         )

@@ -1,7 +1,7 @@
 package com.appcoins.sdk.billing.repositories
 
-import com.appcoins.sdk.billing.mappers.WalletGenerationMapper
-import com.appcoins.sdk.billing.models.WalletGenerationModel
+import com.appcoins.sdk.billing.mappers.WalletDetailsMapper
+import com.appcoins.sdk.billing.models.WalletDetails
 import com.appcoins.sdk.billing.service.BdsService
 import com.appcoins.sdk.billing.service.RequestResponse
 import com.appcoins.sdk.billing.service.ServiceResponseListener
@@ -12,27 +12,27 @@ import java.util.concurrent.TimeUnit
 
 class WalletRepository(private val service: BdsService) {
 
-    fun requestWalletSync(id: String): WalletGenerationModel {
+    fun requestWalletSync(id: String): WalletDetails {
         val countDownLatch = CountDownLatch(1)
-        var walletGenerationModel = WalletGenerationModel.createErrorWalletGenerationModel()
+        var walletDetails = WalletDetails.createErrorWalletDetails()
 
         val queries: MutableMap<String, String> = HashMap()
         queries["id"] = id
 
         val serviceResponseListener = ServiceResponseListener { requestResponse: RequestResponse? ->
-            val walletGenerationResponse = WalletGenerationMapper().map(requestResponse!!)
-            walletGenerationModel =
-                WalletGenerationModel(
-                    walletGenerationResponse.address,
-                    walletGenerationResponse.signature,
-                    walletGenerationResponse.ewt,
-                    walletGenerationResponse.hasError()
+            val walletDetailsResponse = WalletDetailsMapper().map(requestResponse!!)
+            walletDetails =
+                WalletDetails(
+                    walletDetailsResponse.walletAddress,
+                    walletDetailsResponse.walletToken,
+                    walletDetailsResponse.expirationTimeMillis,
+                    walletDetailsResponse.hasError()
                 )
             countDownLatch.countDown()
         }
 
         service.makeRequest(
-            "/appc/guest_wallet",
+            "/appc/1.20251009/guest_wallet",
             "GET",
             ArrayList(),
             queries,
@@ -47,6 +47,6 @@ class WalletRepository(private val service: BdsService) {
         } catch (e: InterruptedException) {
             logError("Timeout for Wallet Request: $e")
         }
-        return walletGenerationModel
+        return walletDetails
     }
 }
