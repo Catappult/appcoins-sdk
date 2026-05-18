@@ -54,6 +54,10 @@ android {
         targetCompatibility TARGET_COMPATIBILITY
         sourceCompatibility SOURCE_COMPATIBILITY
     }
+
+    kotlinOptions {
+        jvmTarget = TARGET_COMPATIBILITY
+    }
 }
 
 dependencies {
